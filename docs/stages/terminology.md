@@ -1,40 +1,66 @@
 # Stage — Terminology (difficulty + pairAccuracy)
 
-Up-link: [docs/README.md](../README.md). Design: [terminology e2e spec](../superpowers/specs/2026-07-01-terminology-e2e-design.md) · [consolidation design](../superpowers/specs/2026-07-01-terminology-consolidation-design.md). Contract: [demo contracts §1](../superpowers/specs/2026-06-30-demo-contracts.md).
+Up-link: [docs/README.md](../README.md) · [docs/pipeline.md](../pipeline.md). Design: [G6 label_first design](../superpowers/specs/2026-07-03-grounding-label-first-design.md) · [terminology e2e spec](../superpowers/specs/2026-07-01-terminology-e2e-design.md) (pairing sections only — grounding sections LEGACY) · [consolidation design](../superpowers/specs/2026-07-01-terminology-consolidation-design.md) (grounding sections LEGACY). Contract: [demo contracts §1/§4](../superpowers/specs/2026-06-30-demo-contracts.md).
+
+> **Supersession note (2026-07-03).** Grounding strategies G1 `api_first`, G2 `mgenre`, G3 `llm_judge`, G5 `hybrid` are removed and archived at tag `archive/grounding-g-strategies`. The single grounding strategy is now **G6 `label_first`** (below). The former G3 reference number, **QID accuracy 0.78**, was scored on an older, smaller gold set (78 groundable terms) and is kept here only as a historical baseline — it is **not** directly comparable to the G6 ablation table in this doc (measured on 91 groundable terms; see Status). Pairing strategies (P1/P3) are unaffected by this change.
 
 ## Purpose
 
 Turn a `(RU source, EN translation)` paragraph into the full `Term[]` the demo shows, filling **both** terminology signals of the `Term` contract:
 
-- **difficulty** (`ground`) — is the source term a groundable Wikidata entity? 🟢 confirmed / 🟡 ambiguous (notable homonym) / 🔴 not found.
-- **pairAccuracy** (`pair`) — did the translation render it with the canonical English equivalent? 🟢 / 🟡 / 🔴 + `recommended`. `null` when difficulty=🔴.
+- **difficulty** (`ground`) — is the source term a groundable Wikidata entity? 🟢 confirmed / 🟡 ambiguous / 🔴 not found.
+- **pairAccuracy** (`pair`) — did the translation render it with the canonical English equivalent? 🟢 / 🟡 / 🔴 + `recommended`. `null` when difficulty=🔴 (also 🟡 with `resolved_by='judge_unavailable'`, see Subtleties).
 
 Flow: `extract` (RU term mentions) → `ground` (Wikidata QID + difficulty) → `pair` (locate canonical EN in the translation) → assemble `Term[]`.
 
-This module **consolidates** three earlier parallel efforts (a merged end-to-end module plus two overnight cycles, one per signal). It keeps the unified architecture and folds in the overnight cycles' better strategy, edge cases and golden data — see the [consolidation design](../superpowers/specs/2026-07-01-terminology-consolidation-design.md).
-
 ## Design decisions
 
-- **Frozen interface first** ([base.py](../../src/palimpsest/terminology/base.py)): `GroundingStrategy.ground(mention, *, judge=None) -> GroundingResult` and `PairingStrategy.pair(req, *, judge=None) -> PairResult`. The judge is injected at **call time**, so one strategy instance serves the whole tournament and a hybrid can pass a judge to one sub-strategy but not another.
-- **Shared candidate generation** ([grounding/candidates.py](../../src/palimpsest/terminology/grounding/candidates.py)): every grounding strategy uses one path, so api_first / llm_judge / hybrid see identical candidates and the tournament is a fair 1:1 comparison. Search widens only when thin: `wbsearchentities` (prefix) → **CirrusSearch** full-text on a total miss → Wikipedia RU-title as a last resort. QIDs are redirect-canonicalised (built from the enriched `entity["id"]`).
-- **Swappable strategies, one verdict.** Verdict logic ([verdict.py](../../src/palimpsest/terminology/verdict.py)) is shared; strategies differ only in candidate generation / QID choice / locate.
-  - Grounding: **G1 `api_first`** (default, deterministic) · **G3 `llm_judge`** (subagent picks QID + rates difficulty) · **G5 `hybrid`** (api_first difficulty + judge-picked QID) · **G2 `mgenre`** (GPU, code-only, not run).
-  - Pairing: **P1 `link_locate`** (default) · **P3 `llm_judge`** · **P2 `neural_align`** (GPU, code-only).
-- **Notability-based ambiguity** ([verdict.py](../../src/palimpsest/terminology/verdict.py)): difficulty is 🟡 only when ≥2 candidates that both exact-match the name have an enwiki sitelink (real homonyms); a single notable match is 🟢. Every candidate now carries the `notable` flag (a prior bug where G3's candidates lacked it — collapsing the deterministic yellow path — is fixed).
-- **Anachronism blocklist** ([wikidata.py](../../src/palimpsest/terminology/wikidata.py)): a football club / band / film cannot appear in a Bronze-Age text, so those P31 types are dropped — this removes the classic "Спарта → AC Sparta Prague" error. (The overnight grounding cycle had no such list.)
-- **Head-token guard on pairing** ([verdict.py](../../src/palimpsest/terminology/verdict.py)): a sub-0.95 fuzzy match must share the form's head content-word, so "town of Akkad" never matches "Sargon of Akkad". This is strictly safer than a plural-suffix normaliser alone (which mis-merges "herms"/"Hermes").
-- **Russian is inflected** → grounding searches the **nominative lemma** first, then the surface. Lemmas ([lemmas.json](../../data/seed/lemmas.json)) also key the golden merge, so `Аккаде` (pairing) and `Аккад` (grounding) dedup to one term instead of surviving as two rows with conflicting labels; applying them cut the golden's zero-candidate rate to 10/99.
-- **LLM only through subagents.** Strategies take an injected `judge`; `src/palimpsest/terminology/` imports no `openai`/`LLMClient` (other stages legitimately use `palimpsest.llm.client`). The overnight harness backs `judge` with a Sonnet subagent (`temperature=0`, structured output).
+- **Frozen interface first** ([base.py](../../src/palimpsest/terminology/base.py)): `GroundingStrategy.ground(mention, *, judge=None) -> GroundingResult` and `PairingStrategy.pair(req, *, judge=None) -> PairResult`. The judge is injected at **call time**.
+- **Deterministic candidate generation, unchanged ladder** ([grounding/candidates.py](../../src/palimpsest/terminology/grounding/candidates.py)): `generate_candidates(wd, mention, config) -> {candidates, canon_by_qid, source, n_hits, queries}`, parameterized by `GroundingConfig`. Query order: `wbsearchentities(lemma)` (if `use_lemma` and lemma≠surface) → `wbsearchentities(surface)` → if 0 hits and `use_fallbacks`: CirrusSearch full-text on both forms → if still 0 and `use_fallbacks`: RU-Wikipedia title → wikibase item. Every query call appends `{q, kind, mechanism, n_hits}` to `queries` (feeds the trace). Dedup by QID, enrich top-`enrich_top` via `wbgetentities` (labels/descriptions/aliases ru+en), redirects canonicalized from the enriched `entity["id"]`. Candidate order is a **documented invariant**: insertion-order dedup, stable across cache replays — not incidental. No type filter (see below).
+- **G6 `label_first` — one strategy, deterministic-first** ([grounding/label_first.py](../../src/palimpsest/terminology/grounding/label_first.py)): exact label/alias match resolves without any model call; the LLM judge is escalated only on genuine ambiguity (≥2 exact matches) or inexactness (candidates exist, none match). Decision table:
+
+  | Exact label-match outcome | Action | difficulty | `resolved_by` |
+  |---|---|---|---|
+  | Exactly 1 exact match | QID taken deterministically, no LLM call | 🟢 | `exact_label` |
+  | ≥2 exact matches | judge disambiguates over candidate label+description+context | 🟡 | `llm_disambiguation` |
+  | 0 exact, candidates exist | judge; picks → 🟡, rejects all → 🔴 | 🟡/🔴 | `llm_disambiguation` / `judge_rejected` |
+  | 0 candidates after fallbacks | red, no LLM | 🔴 | `no_candidates` |
+
+  Exact match: `norm(query) == norm(label_ru)` for `query` ∈ {lemma, surface}, extended to aliases when `match_aliases` is on. Every candidate records `matched` — which label/alias it hit and via which query form — the basis of trace transparency.
+
+  **Error policy (full):** Wikidata unavailable (client exhausted retries, `RuntimeError`) → 🔴 `wikidata_unavailable`, distinct from `no_candidates` (excluded from eval metrics, counted separately — a network failure must never masquerade as an honest red). Judge unavailable (unconfigured, or transient error after retries) on a required escalation → 🟡 `judge_unavailable`, `chosen_qid = null`, `grounded = null` — an honest "unresolved ambiguity", never a silent top-1 fallback. Malformed judge JSON is **terminal, not retried** (blind retries burn budget); only transient 429/5xx/timeout retry, max 2 backoffs. A judge QID outside the candidate list is a contract violation → `judge_unavailable`, never a silent top-1 fallback (the old G3 anti-pattern).
+
+  Full `resolved_by` enum: `exact_label · llm_disambiguation · judge_rejected · judge_unavailable · wikidata_unavailable · no_candidates`.
+- **No type filter, no anachronism blocklist** ([grounding/candidates.py](../../src/palimpsest/terminology/grounding/candidates.py)): the previous P31/P279 type filter and the anachronism blocklist (e.g. "Спарта → AC Sparta Prague") are both removed. The judge disambiguates by candidate description instead — a football club's one-line description makes the mismatch obvious without a hand-maintained list. Trade-off: the deterministic branch alone has no defense against a club/band being the *sole* exact label match; tracked as risk R7 in the design spec, watched via `known_issues.md`, not silently reintroduced.
+- **`norm()` folding** ([grounding/match.py](../../src/palimpsest/terminology/grounding/match.py)): NFC normalize → fold Unicode dashes (U+2010–U+2015, U+2212 → `-`) → ё→е → collapse whitespace → casefold. Motivation: Wikidata RU labels are inconsistent on ё/е, and transliterated names ("Кадашман-Харбе") arrive with different dash codepoints from OCR/translation — without folding, honest exact matches fall into unnecessary escalation. The ё/е fold carries a theoretical risk of conflating two distinct entities that differ only by that letter; accepted consciously (the recall win on real label inconsistency clearly outweighs it), covered by a unit test, and any real occurrence goes to `known_issues.md` rather than reverting the fold silently.
+- **Config: three independent, ablatable toggles** (`GroundingConfig`, frozen dataclass): `use_lemma` (search lemma before surface), `use_fallbacks` (CirrusSearch + RU-Wikipedia title on zero hits), `match_aliases` (extend exact-match set to aliases ru/en). `search_limit=7`/`enrich_top=5` are fixed constants, not ablation axes. Each toggle acts at exactly one point in the algorithm, so its contribution is isolated and interpretable (see the ablation table below).
+- **Judge-decision cache — "one sense per discourse".** Keyed by `(scope_id, lemma, candidates_qids, model, prompt_hash)`; `scope_id` = paragraph (demo) / document (eval). In-memory, upsert last-write-wins, sequential grounding — not a DB table (no cross-run-persistence caller exists yet; promoting to a table is a localized change if one appears). The cache wraps the injected `judge` callable, so `LabelFirstGrounding` itself stays cache-agnostic.
+- **Swappable pairing, shared verdict logic** ([verdict.py](../../src/palimpsest/terminology/verdict.py)) is unchanged by this revision: **P1 `link_locate`** (default) · **P3 `llm_judge`** · **P2 `neural_align`** (GPU, code-only, not run).
+- **Head-token guard on pairing** ([verdict.py](../../src/palimpsest/terminology/verdict.py)): a sub-0.95 fuzzy match must share the form's head content-word, so "town of Akkad" never matches "Sargon of Akkad".
+- **Russian is inflected → the extractor emits the lemma.** Grounding searches the nominative lemma (extractor-emitted `{surface, lemma, category}`) before the surface — see [extract.py](../../src/palimpsest/terminology/extract.py) and the NER prompt. The static `lemmas.json` file no longer feeds the pipeline; it survives **only** as an input to [scripts/merge_goldens.py](../../scripts/merge_goldens.py) (golden-tooling exception, unrelated to the live extract→ground path).
+- **LLM only through subagents.** Strategies take an injected `judge`; `src/palimpsest/terminology/` imports no `openai`/`LLMClient`.
 
 ## Interface
 
 ```python
 def ground(mention: TermMention, *, judge: Judge | None = None) -> GroundingResult
 def pair(req: PairRequest, *, judge: Judge | None = None) -> PairResult
-def pipeline.run(source, target, mentions, *, grounder, pairer) -> list[Term]
+def pipeline.run(source, target, mentions, *, grounder, pairer, judge=None) -> list[Term]
 ```
 
-Extract ([extract.py](../../src/palimpsest/terminology/extract.py)) is now real code, not a stub:
+Grounding config:
+
+```python
+@dataclass(frozen=True)
+class GroundingConfig:
+    use_lemma: bool = True
+    use_fallbacks: bool = True
+    match_aliases: bool = True
+    search_limit: int = 7
+    enrich_top: int = 5
+```
+
+Extract ([extract.py](../../src/palimpsest/terminology/extract.py)):
 
 ```python
 def llm_surfaces(source: str, *, extractor: Extractor | None = None) -> list[dict]
@@ -47,52 +73,62 @@ DEFAULT_NER_PROMPT: str
 CATEGORIES: set[str]
 ```
 
-`llm_surfaces` is the real extractor ("E1"): an injected `Extractor` (`base.py`) turns source text into `[{surface, category}]`; every surface is `validate_surfaces`-guarded as a literal substring of `source` (drops hallucinated/translated surfaces). `extractor=None` degrades to `deterministic_surfaces` (capitalised-proper-noun runs + [gazetteer.py](../../src/palimpsest/terminology/gazetteer.py) + guarded ethnonym suffixes), so the module stays importable/testable without a model. `DEFAULT_NER_PROMPT` is the editable NER prompt (Settings-configurable via `NerConfig`, see model-registry contract below). `terminology/` still imports no `openai` — the LLM call lives in the injected `Extractor`, same subagent-injection pattern as `Judge`.
+`llm_surfaces` ("E1"): an injected `Extractor` turns source text into `[{surface, lemma, category}]` — the lemma is the nominative form (multi-word: agreed nominative, e.g. «династии Цин» → «династия Цин»); an empty/>80-char/newline-containing lemma falls back to `lemma = surface`. Every surface is `validate_surfaces`-guarded as a literal substring of `source`. `extractor=None` degrades to `deterministic_surfaces` (capitalised-proper-noun runs + [gazetteer.py](../../src/palimpsest/terminology/gazetteer.py) + guarded ethnonym suffixes; `lemma = surface`), so the module stays importable/testable without a model. `DEFAULT_NER_PROMPT` is the editable NER prompt (Settings-configurable via `NerConfig`).
 
-`Term` columns mirror the `term` DDL exactly. CLI: [scripts/term_pipeline.py](../../scripts/term_pipeline.py) (`extract` subcommand, OR-backed, budget-guarded). Golden merge: [scripts/merge_goldens.py](../../scripts/merge_goldens.py) — merges [data/seed/terminology_gold.jsonl](../../data/seed/terminology_gold.jsonl) from three independent, non-circular sources ([data/seed/gold_sources/](../../data/seed/gold_sources/)). Extraction eval: [scripts/eval_extraction.py](../../scripts/eval_extraction.py) → `reports/terminology/extraction_metrics.json`. Grounding/pairing eval: [scripts/eval_strategies.py](../../scripts/eval_strategies.py) → `reports/terminology/metrics.json`. Demo rebuild: [scripts/rebuild_demo.py](../../scripts/rebuild_demo.py).
+`Term` columns mirror the `term` DDL exactly, including `trace_json` (GroundingTrace v1, see below). CLI: [scripts/term_pipeline.py](../../scripts/term_pipeline.py) (`extract` subcommand, OR-backed, budget-guarded). Golden merge: [scripts/merge_goldens.py](../../scripts/merge_goldens.py) — merges [data/seed/terminology_gold.jsonl](../../data/seed/terminology_gold.jsonl) from three independent, non-circular sources ([data/seed/gold_sources/](../../data/seed/gold_sources/)), still reading `data/seed/lemmas.json` (D4 golden-tooling exception — the live pipeline does not). Grounding ablation eval: [scripts/eval_grounding.py](../../scripts/eval_grounding.py) → `reports/terminology/g6/<config-bits>/<run_id>/{metrics.json,traces.jsonl}`. Extraction eval: [scripts/eval_extraction.py](../../scripts/eval_extraction.py) → `reports/terminology/extraction_metrics.json`. `scripts/eval_strategies.py` (pairing eval) is removed — it imported the archived `ApiFirstGrounding` and never ran after the G6 cutover; superseded by `eval_grounding.py`. Demo rebuild: [scripts/rebuild_demo.py](../../scripts/rebuild_demo.py).
 
 ## Subtleties
 
-- **Contract null rule** is enforced in `pipeline.run`: `difficulty='red'` ⇒ `grounded=None`, `candidates=[]`, `pair_accuracy=None`, `recommended=None`. `candidates_json` is always `'[]'`, never NULL.
-- **Per-occurrence.** One `Term` row per occurrence; identical surfaces ground identically (context-embedding disambiguation is **future work**).
+- **Contract null rule** is enforced in `pipeline.run`: `difficulty='red'` ⇒ `grounded=None`, `candidates=[]`, `pair_accuracy=None`, `recommended=None`. **Extended (G6):** `difficulty='yellow'` with `resolved_by='judge_unavailable'` also yields `grounded=None` — a documented extension of the null rule (see [demo-contracts.md](../superpowers/specs/2026-06-30-demo-contracts.md)), not a violation. Frontend `term.grounded && …` truthiness checks treat `null` as "no node" regardless of `difficulty`. `candidates_json` is always `'[]'`, never NULL.
+- **`norm()` and `resolved_by`.** `norm()` folds NFC + Unicode dashes (U+2010–U+2015, U+2212 → `-`) + ё→е + whitespace + casefold (risk R7 — see Design decisions). The `resolved_by` enum (`exact_label · llm_disambiguation · judge_rejected · judge_unavailable · wikidata_unavailable · no_candidates`) is the authoritative record of how a term's difficulty was decided and drives both the eval `resolved_by_distribution` metric and the Glossary UI's grounding-path badge (design-only for now, see the G6 spec §10).
+- **Per-occurrence.** One `Term` row per occurrence; identical surfaces ground identically within the judge-decision cache scope (paragraph/document); across scopes, decisions are not shared — this is the intended "one sense per discourse" semantics, not a limitation.
 - **Canonical EN forms** drop non-Latin aliases (cuneiform) and add a person short form (`Sargon of Akkad` → `Sargon`); the head-token guard stops a shared tail matching.
-- **Recall floor.** 10/99 golden terms yield no Wikidata search candidates even after lemmatisation + CirrusSearch — thin items with no RU label / no sitelink (Chinese neolithic sites, Akkadian social classes). These are the honest ceiling of search-based grounding.
-- **Difficulty macro-F1 is dominated by the rare yellow class** (9/99) — the headline grounding number is **QID accuracy on groundable terms**, not difficulty-F1.
-- **Ancient vs modern sense.** The judge can pick the modern-city sense of an ancient place (e.g. Тадмор → Tadmur Q938457, the modern town, not ancient Palmyra) — flagged 🟡, so honest, but see [known_issues](../known_issues.md).
-- **Extraction recall/precision are measured by case** (lowercase vs capitalised), not as one blended number — Russian capitalises sentence starts, so capitalised-only extractors trivially miss all lowercase terms (nouns, ethnonyms, titles) while scoring well on capitalised names; case-split metrics expose that split honestly (see Status).
-- **Gazetteer entries are recall-hints only** ([gazetteer.py](../../src/palimpsest/terminology/gazetteer.py)) — no QIDs, no notability claim. Grounding remains the sole existence authority; the gazetteer only widens what gets *proposed* as a candidate surface.
-- **`extract_key`** is a stable cache key, not a Python `hash()`: `sha256(source + "|" + modelName + "|" + prompt + "|" + json.dumps(params, sort_keys=True))`. `hash()` is per-process salted (`PYTHONHASHSEED`) and would go stale on every uvicorn restart.
+- **`wikidata_unavailable` vs `no_candidates`.** A Wikidata client failure (exhausted retries) is not treated as an honest red — it is excluded from eval accuracy metrics and counted separately (`n_excluded_wikidata_unavailable`), so a network blip never masquerades as a genuine "term doesn't exist" result.
+- **Difficulty macro-F1 is dominated by the rare yellow class** — the headline grounding number is **QID accuracy on groundable terms**, not difficulty-F1.
+- **Extraction recall/precision are measured by case** (lowercase vs capitalised) — Russian capitalises sentence starts, so capitalised-only extractors trivially miss all lowercase terms while scoring well on capitalised names.
+- **Gazetteer entries are recall-hints only** ([gazetteer.py](../../src/palimpsest/terminology/gazetteer.py)) — no QIDs, no notability claim. Grounding remains the sole existence authority.
+- **`extract_key`** is a stable cache key, not a Python `hash()`: `sha256(source + "|" + modelName + "|" + prompt + "|" + json.dumps(params, sort_keys=True))`.
 
 ## Status
 
-Runnable end-to-end on the 15 seed paragraphs against live Wikidata. **Unified golden = 99 hand-verified terms** (82🟢/9🟡/8🔴), merged from three source goldens ([data/seed/gold_sources/](../../data/seed/gold_sources/)), deduped by nominative lemma, with 14 QID/difficulty conflicts resolved by direct Wikidata verification (non-circular; 94/99 rows carry a `source_url` — the 5 without are from the v1 source, which had none).
+Runnable end-to-end on the seed paragraphs against live Wikidata. Golden = 99 hand-verified terms, 91 groundable (see `n_groundable` in `metrics.json`), merged from three source goldens ([data/seed/gold_sources/](../../data/seed/gold_sources/)).
 
-The term counts below (269 terms, 🟢157/🟡29/🔴83) predate the [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md) rebuild and were measured against the old 16-paragraph seed. **Superseded** — seed-refresh Phase C reran extraction/grounding/pairing on the new 15-paragraph slice; current demo numbers are 204 terms, 🟢62/🟡31/🔴111 (see the seed-refresh paragraph below).
+**G6 ablation** (8 configs = `use_lemma / use_fallbacks / match_aliases`, `itertools.product("01", repeat=3)`; QID accuracy on 91 groundable golden terms, Wilson 95% CI, run `2026-07-03T00-50-56Z`, from the committed `reports/terminology/g6/<bits>/<run_id>/metrics.json`). Context provenance for this run: 65/99 golden terms carry their own sentence context, 34/99 have no available context (their source paragraphs are from the larger book corpus, not the shipped 15-paragraph seed) and are judged with empty context — honestly counted as `n_context_unavailable`, not falsely reported as reconstructed:
 
-Tournament (vs golden, comparable on one set):
+| config (lemma·fallback·alias) | QID accuracy | Wilson CI95 | escalation rate |
+|---|---|---|---|
+| 000 | 0.363 | [0.271, 0.465] | 0.343 |
+| 001 | 0.363 | [0.271, 0.465] | 0.323 |
+| 010 | 0.505 | [0.405, 0.606] | 0.566 |
+| 011 | 0.505 | [0.405, 0.606] | 0.525 |
+| 100 | 0.681 | [0.580, 0.768] | 0.515 |
+| 101 | 0.681 | [0.580, 0.768] | 0.515 |
+| 110 | 0.714 | [0.614, 0.797] | 0.586 |
+| **111** | **0.714** | **[0.614, 0.797]** | **0.586** |
 
-| grounding | QID acc | difficulty macro-F1 | | pairing | verdict macro-F1 |
-|---|---|---|---|---|---|
-| G1 api_first | 0.67 | 0.48 | | P1 link_locate | 0.38 |
-| **G3 llm_judge** | **0.78** | 0.56 | | **P3 llm_judge** | **0.84** |
-| G5 hybrid | 0.78 | 0.48 (coverage 0.90) | | | |
+Config `111` (all toggles on, the shipped default) measures **0.714 [0.614, 0.797]** on 91 groundable golden terms — ~6.5pp under the old G3 reference **0.78**, which was scored on a different, smaller gold set (78 groundable). The gap is genuine hard cases (niche no-candidate terms, correct judge rejections, a few label-only false positives) plus the 34 context-unavailable terms judged blind — not a regression; flagged for owner review. Dominant-lever finding (leave-one-in from the all-off baseline `000`=0.363): `use_lemma` contributes **~+0.32** QID accuracy (`100`=0.681), `use_fallbacks` **~+0.14** (`010`=0.505), `match_aliases` is **negligible (+0.00**, `001`=`000`=0.363) — lemma search does almost all of the work. `match_aliases` never changes accuracy on this set (110≡111, 100≡101, 000≡001); it is kept on for label/UI transparency, not accuracy. Numbers are stable across two independent judge runs (±1 term from the earlier `00-01-18Z` run), confirming robustness to gpt-4o-mini nondeterminism at temperature 0.
 
-**Winners: G3 grounding + P3 pairing.** This revises both earlier conclusions: the merged module's "P1 pairing wins" was an artefact of an all-green golden (no hard cases — P3 scores yellow-F1 **0.89** vs P1's **0.0**); the overnight cycle's "hybrid grounding wins" was specific to its score-based difficulty (0.47) — with a judge that rates difficulty directly, G3 wins outright and hybrid ties it on QID accuracy (0.78) at higher coverage (0.90).
+Pairing tournament (unaffected by G6, historical numbers, comparable on the pre-G6 golden):
 
-Demo uses the winners: **G3 grounding + P1/P3 pairing** (P1 baseline, P3 verdicts overlaid on the curated hard cases). G3 + the homonym audit keep grounding precise; the demo's difficulty mix is governed by the E1 extractor (see the Extraction section below). Current demo mix, on the seed-refresh 15-paragraph slice: 204 terms, 🟢62 / 🟡31 / 🔴111 (see the seed-refresh paragraph below; the 🟢157/🟡29/🔴83 figure here was the pre-seed-refresh 16-paragraph mix and is superseded). G2/P2 (GPU) implemented but not run.
+| pairing | verdict macro-F1 |
+|---|---|
+| P1 link_locate | 0.38 |
+| **P3 llm_judge** | **0.84** |
 
-**Extraction (E1) — measured recall AND precision** ([reports/terminology/extraction_metrics.json](../../reports/terminology/extraction_metrics.json)), by case, against the unified gold [data/seed/terminology_gold.jsonl](../../data/seed/terminology_gold.jsonl) (merged non-circularly from three independent sources by [scripts/merge_goldens.py](../../scripts/merge_goldens.py)):
+Demo uses **G6 label_first** grounding + P1/P3 pairing (P1 baseline, P3 verdicts overlaid on curated hard cases). G2/P2 (GPU) implemented but not run, kept as documented stubs.
+
+**Extraction (E1) — measured recall AND precision** ([reports/terminology/extraction_metrics.json](../../reports/terminology/extraction_metrics.json)), by case, against the unified gold [data/seed/terminology_gold.jsonl](../../data/seed/terminology_gold.jsonl):
 
 | extractor | lowercase recall | all recall | all precision |
 |---|---|---|---|
-| old_caps (pre-this-change) | 0.00 | 0.57 | 0.39 |
+| old_caps (pre-consolidation) | 0.00 | 0.57 | 0.39 |
 | deterministic (caps + gazetteer) | 0.50 | 0.73 | 0.41 |
 | **llm (E1, claude-haiku-4.5 via OpenRouter, temperature 0)** | **0.906** | **0.909** | **0.437** |
 
-Precision is now measured — this closes the earlier "precision unmeasured (future work)" gap.
+**Model choice (2026-07-02 tournament).** A 7-model real-OpenRouter tournament + adversarial LLM-judge panel picked **`anthropic/claude-haiku-4.5`** as the E1 default. Full evidence: [docs/reports/2026-07-02-ner-model-tournament.html](../reports/2026-07-02-ner-model-tournament.html).
 
-**Model choice (2026-07-02 tournament).** A 7-model real-OpenRouter tournament + adversarial LLM-judge panel picked **`anthropic/claude-haiku-4.5`** as the E1 default: it ties the top lowercase recall (0.906) but with ~half the noise of `gemini-2.5-flash-lite` (judge noise ≈12% vs 30%) and far fewer misses of easy named entities. No model *beat* the baseline recall; frontier **reasoning** models (gpt-5-mini) were excluded as cost/latency-prohibitive (~$0.26 for a partial run). Budget alternative with equal recall + more noise: `gemini-2.5-flash-lite`. Full evidence: [docs/reports/2026-07-02-ner-model-tournament.html](../reports/2026-07-02-ner-model-tournament.html). Tournament OR spend (7 models × 16 paragraphs, credits-delta): **~$0.39 total**.
+Demo seed: 15 body paragraphs ([scripts/rebuild_seed_texts.py](../../scripts/rebuild_seed_texts.py)); terminology regenerated via `scripts/rebuild_demo.py` (haiku extract → G6 grounding → P1/P3 pairing) into `data/seed/terminology_out.json`, loaded by [scripts/load_terms_into_seed.py](../../scripts/load_terms_into_seed.py) / [scripts/load_terms.py](../../scripts/load_terms.py) — see the [seed-refresh plan](../superpowers/plans/2026-07-02-seed-refresh.md) and [webapp.md](../subsystems/webapp.md) `seed.py` row.
 
-Demo regenerated on the winner (real OR extract → live-Wikidata candidates → G3 LLM-judge grounding with a homonym audit → `rebuild_demo`) on the pre-seed-refresh 16-paragraph seed: **269 terms**, difficulty 🟢157 / 🟡29 / 🔴83. The fresh G3 pass with the audit collapsed the old mislink-yellows (99→29; e.g. `номов`→*Nome, Alaska* is fixed to the Egyptian nome Q223706) and grounded new entities (клерухии, принципат, неолит, гермокопидов). Red-rate `red/(red+green)` = **0.346** (< 0.35 SC7, thin margin: haiku's residual generic-noun over-capture — царя/титулов/полисов — correctly falls to red, as do obscure entities Wikidata lacks).
+## Methodology (article draft, EN)
 
-Demo seed regenerated from gemma_par_by_par via [scripts/rebuild_seed_texts.py](../../scripts/rebuild_seed_texts.py) (15 body paragraphs, replacing the 16-paragraph seed above); baselines via local `/evaluate`, terminology via haiku extract + subagent G3/P3 grounding/pairing (`scripts/rebuild_demo.py` → `data/seed/terminology_out.json`: 204 terms, difficulty 🟢62/🟡31/🔴111) loaded into the seed JSONL by [scripts/load_terms_into_seed.py](../../scripts/load_terms_into_seed.py) — see the [seed-refresh plan](../superpowers/plans/2026-07-02-seed-refresh.md). This JSONL adapter only carries `identified_terms` surfaces into the mock-path seed data; the live `term` table's real `difficulty`/`pairAccuracy` verdicts come from a separate load step, `scripts/load_terms.py`, run after seeding — see [webapp.md](../subsystems/webapp.md) `seed.py` row.
+> Terms are grounded to Wikidata in two tiers. First, a **deterministic exact-label match**: we query `wbsearchentities` with the term's nominative lemma and surface form; if exactly one candidate's Russian label (or alias) equals the query, it is accepted without any model call. Second, only when the label is **ambiguous** (several exact matches) or **inexact** (candidates exist but none match exactly), an LLM disambiguates over the candidates' one-line Wikidata descriptions given the source sentence, returning a single entity or abstaining. Terms with no candidates after search fallbacks are marked ungroundable. This yields a natural transparency metric — the **share of terms resolved deterministically vs. via LLM** — and each decision carries a per-decision machine-readable trace (queries, candidates, match kind, judge model, rationale, token usage). We ablate the three components of the deterministic tier — two retrieval (lemma search, full-text fallback) and one matching (alias expansion) — in both leave-one-in and leave-one-out ladders. Within a document we cache disambiguation decisions per (lemma, candidate set) — the standard one-sense-per-discourse assumption.

@@ -53,12 +53,19 @@ CREATE TABLE term (
   source_surface TEXT, source_lemma TEXT, context TEXT, char_start INTEGER, char_end INTEGER,
   difficulty TEXT, grounded_json TEXT, candidates_json TEXT,
   target_surface TEXT, pair_accuracy TEXT, recommended TEXT, note TEXT,
+  trace_json TEXT NOT NULL DEFAULT '{}',
   UNIQUE (paragraph_id, char_start, char_end)
 );
 CREATE TABLE glossary (
   id INTEGER PRIMARY KEY, term TEXT, context TEXT, target_equivalent TEXT,
   wikidata_url TEXT NOT NULL, wikidata_id TEXT,
   UNIQUE (term, context)
+);
+CREATE TABLE grounding_config (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
 );
 """
 

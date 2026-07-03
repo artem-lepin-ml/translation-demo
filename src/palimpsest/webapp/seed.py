@@ -18,6 +18,10 @@ from .aggregate import compute_aggregate
 from .judge import derive_severity, sanitize_issue
 from .model_matrix import MATRIX, DEFAULT_CRITERION_MODEL
 
+# label_first is the terminology grounding package's judge-prompt constant, not
+# an LLMClient import — no invariant-#6 conflict (repo CLAUDE.md hard invariant 6).
+from ..terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_PROMPT
+
 SEED_FILE = paths.DATA / "seed" / "seed_paragraphs.jsonl"
 
 # 4 default evaluators (one per carried v2 prompt, minus Cultural Adaptation —
@@ -138,6 +142,7 @@ def seed() -> None:
         _seed_terms(conn, pid, ru, en, d.get("terminology"))
 
     _seed_glossary(conn)
+    _seed_grounding_config(conn)
     conn.commit()
     n = conn.execute("SELECT COUNT(*) n FROM paragraph").fetchone()["n"]
     print(f"seeded {n} paragraphs, doc_id={doc_id}, model_key={'set' if os.environ.get('OPENROUTER_API_KEY') else 'EMPTY (cache fallback)'}")
@@ -172,11 +177,18 @@ def _seed_terms(conn, pid: int, ru: str, en: str, terminology) -> None:
             target = None  # not present in translation → pairAccuracy stays, EN span suppressed by UI
         conn.execute(
             "INSERT OR IGNORE INTO term(paragraph_id,source_surface,source_lemma,context,char_start,char_end,"
-            "difficulty,grounded_json,candidates_json,target_surface,pair_accuracy,recommended,note) "
-            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "difficulty,grounded_json,candidates_json,target_surface,pair_accuracy,recommended,note,trace_json) "
+            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (pid, surface, surface, ctx, start, end, diff,
              json.dumps(grounded) if grounded else None, json.dumps([]),
-             target, pair, rec, t.get("domain", "")))
+             target, pair, rec, t.get("domain", ""), "{}"))
+
+
+def _seed_grounding_config(conn) -> None:
+    conn.execute(
+        "INSERT INTO grounding_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
+        (MODEL_NAME, DEFAULT_GROUNDING_JUDGE_PROMPT,
+         json.dumps({"max_tokens": 512, "temperature": 0})))
 
 
 def _seed_glossary(conn) -> None:

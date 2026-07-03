@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary redesign — mockup</title>
+<style>
+:root {
+  --va-bg: #1a1b26; --va-surface: #1f2035; --va-surface2: #24253a;
+  --va-border: #2d2e4a; --va-border2: #3b3c5c;
+  --va-text: #c0caf5; --va-text-muted: #6272a4; --va-text-dim: #414868;
+  --va-accent: #7aa2f7; --va-accent2: #bb9af7;
+  --va-green: #3ddc84; --va-yellow: #e0af68; --va-red: #f7768e;
+  --va-radius: 8px; --va-radius-sm: 4px;
+  --va-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --va-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--va-bg);color:var(--va-text);font-family:var(--va-font);font-size:14px;line-height:1.55}
+.mock-banner{background:#2a2340;border-bottom:1px solid var(--va-border2);color:var(--va-accent2);font-size:12px;padding:6px 24px;letter-spacing:.05em}
+.chrome{display:flex;align-items:center;padding:0 24px;height:52px;background:var(--va-surface);border-bottom:1px solid var(--va-border);gap:16px}
+.brand{font-size:15px;font-weight:700;letter-spacing:.04em;color:var(--va-accent)}
+.tabs{display:flex;gap:2px;flex:1}
+.tab{padding:6px 14px;border-radius:var(--va-radius-sm);color:var(--va-text-muted);font-size:13px;cursor:default}
+.tab.active{background:var(--va-surface2);color:var(--va-text)}
+.content{padding:24px;max-width:1280px;margin:0 auto}
+.section-title{font-size:17px;font-weight:700;margin-bottom:4px}
+.section-sub{font-size:12.5px;color:var(--va-text-muted);margin-bottom:18px}
+table.gl{border-collapse:collapse;width:100%}
+.gl th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--va-text-muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--va-border2);font-weight:600}
+.gl td{padding:10px 12px;border-bottom:1px solid var(--va-border);vertical-align:middle}
+.gl tr.row{cursor:pointer}
+.gl tr.row:hover td{background:var(--va-surface)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.dot.g{background:var(--va-green)}.dot.y{background:var(--va-yellow)}.dot.r{background:var(--va-red)}
+.dash{color:var(--va-text-dim)}
+.src{font-style:italic;color:var(--va-text-muted)}
+.tgt{font-weight:600}
+.cat{display:inline-block;font-size:10.5px;color:var(--va-text-muted);background:var(--va-surface2);border:1px solid var(--va-border);border-radius:999px;padding:0 8px;margin-left:8px;vertical-align:1px}
+a.wd{color:var(--va-accent);text-decoration:underline;text-underline-offset:2px}
+.qid{font-family:var(--va-font-mono);font-size:11.5px;color:var(--va-text-muted);margin-left:6px}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.badge.det{background:rgba(61,220,132,.12);color:var(--va-green)}
+.badge.llm{background:rgba(224,175,104,.12);color:var(--va-yellow)}
+.badge.rej{background:rgba(247,118,142,.12);color:var(--va-red)}
+.badge.none{background:rgba(65,72,104,.25);color:var(--va-text-muted)}
+.mentions{font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-muted)}
+.chev{color:var(--va-text-dim);font-size:11px;transition:transform .15s}
+tr.open .chev{transform:rotate(90deg)}
+/* ── expanded detail panel ── */
+tr.detail>td{background:var(--va-surface);padding:0;border-bottom:1px solid var(--va-border2)}
+.panel{padding:18px 20px 20px;display:flex;flex-direction:column;gap:16px}
+.blk h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--va-text-muted);margin-bottom:8px;font-weight:600}
+.ctx{background:var(--va-surface2);border:1px solid var(--va-border);border-radius:var(--va-radius);padding:10px 14px;margin-bottom:6px;font-size:13.5px}
+.ctx .lang{font-size:10px;letter-spacing:.08em;color:var(--va-text-dim);margin-right:8px;font-family:var(--va-font-mono)}
+mark{background:rgba(122,162,247,.25);color:var(--va-text);border-radius:3px;padding:0 3px}
+mark.t{background:rgba(187,154,247,.25)}
+/* path stepper */
+.path{display:flex;gap:0;align-items:stretch;overflow-x:auto}
+.step{flex:1;min-width:170px;background:var(--va-surface2);border:1px solid var(--va-border);padding:10px 12px;position:relative}
+.step:first-child{border-radius:var(--va-radius) 0 0 var(--va-radius)}
+.step:last-child{border-radius:0 var(--va-radius) var(--va-radius) 0}
+.step+.step{border-left:none}
+.step .n{font-size:10px;font-family:var(--va-font-mono);color:var(--va-text-dim)}
+.step .t{font-size:12px;font-weight:700;margin:2px 0 6px}
+.step .b{font-size:12px;color:var(--va-text-muted)}
+.step .b code{font-family:var(--va-font-mono);font-size:11px;color:var(--va-text);background:var(--va-bg);border-radius:3px;padding:0 4px}
+.step.done{border-top:2px solid var(--va-green)}
+.step.warn{border-top:2px solid var(--va-yellow)}
+.step.fail{border-top:2px solid var(--va-red)}
+.step.skip{border-top:2px solid var(--va-border2);opacity:.55}
+.hit{color:var(--va-green);font-family:var(--va-font-mono);font-size:11px}
+.miss{color:var(--va-red);font-family:var(--va-font-mono);font-size:11px}
+/* candidates */
+.cand{border-collapse:collapse;width:100%;font-size:12.5px}
+.cand th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--va-text-dim);text-align:left;padding:4px 10px;border-bottom:1px solid var(--va-border)}
+.cand td{padding:6px 10px;border-bottom:1px solid var(--va-border);color:var(--va-text-muted)}
+.cand tr.chosen td{background:rgba(61,220,132,.06)}
+.cand tr.chosen td:first-child{border-left:2px solid var(--va-green)}
+.via{display:inline-block;font-size:10.5px;font-family:var(--va-font-mono);border-radius:3px;padding:0 5px;background:rgba(122,162,247,.15);color:var(--va-accent)}
+.via.al{background:rgba(187,154,247,.15);color:var(--va-accent2)}
+.via.no{background:rgba(65,72,104,.25);color:var(--va-text-dim)}
+.pick{font-weight:700;color:var(--va-green)}
+.rejx{color:var(--va-red);font-weight:700}
+/* judge card */
+.judge{background:rgba(224,175,104,.06);border:1px solid rgba(224,175,104,.35);border-radius:var(--va-radius);padding:10px 14px;font-size:12.5px}
+.judge .m{font-family:var(--va-font-mono);font-size:11px;color:var(--va-yellow)}
+.judge .r{color:var(--va-text-muted);margin-top:4px}
+.occ{max-height:120px;overflow-y:auto;border:1px solid var(--va-border);border-radius:var(--va-radius);background:var(--va-surface2)}
+.occ div{padding:7px 12px;border-bottom:1px solid var(--va-border);font-size:12.5px;color:var(--va-text-muted)}
+.occ div:last-child{border-bottom:none}
+.occ .p{font-family:var(--va-font-mono);font-size:11px;color:var(--va-accent);margin-right:8px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.legend{margin-top:22px;font-size:12px;color:var(--va-text-dim)}
+</style>
+</head>
+<body>
+<div class="mock-banner">MOCKUP · Glossary redesign proposal · click a row to expand the grounding path · not implemented yet</div>
+<div class="chrome">
+  <div class="brand">PALIMPSEST</div>
+  <div class="tabs">
+    <div class="tab">Editor</div><div class="tab">Ranking</div><div class="tab active">Glossary</div><div class="tab">Settings</div>
+  </div>
+</div>
+
+<div class="content">
+<div class="section-title">Terminology Glossary</div>
+<div class="section-sub">Grouped by lemma + entity · 9 terms · 12 mentions · resolved deterministically: 4 · via LLM: 3 · not grounded: 2</div>
+
+<table class="gl">
+<thead><tr>
+  <th></th><th>Difficulty</th><th>Pair</th><th>Source · Russian</th><th>Translation · English</th><th>Wikidata</th><th>Grounding</th><th>Mentions</th>
+</tr></thead>
+<tbody>
+
+<!-- ═══ example 1: green / exact label, expanded ═══ -->
+<tr class="row open" onclick="tg(this,'d1')">
+  <td><span class="chev">▶</span></td>
+  <td><span class="dot g"></span></td><td><span class="dot g"></span></td>
+  <td class="src">Заиорданье<span class="cat">Geographical</span></td>
+  <td class="tgt">Transjordan</td>
+  <td><a class="wd" href="#" onclick="return false">Transjordan</a><span class="qid">Q1097394</span></td>
+  <td><span class="badge det">◆ label match</span></td>
+  <td class="mentions">×2</td>
+</tr>
+<tr class="detail" id="d1"><td colspan="8"><div class="panel">
+
+  <div class="blk">
+    <h4>Context — mention 1 of 2</h4>
+    <div class="ctx"><span class="lang">RU</span>Дальнейшее продвижение сутиев на юг привело их в <mark>Заиорданье</mark>, где они смешались с местным населением.</div>
+    <div class="ctx"><span class="lang">EN</span>Their further southward advance brought the Sutians into <mark class="t">Transjordan</mark>, where they mingled with the local population.</div>
+  </div>
+
+  <div class="blk">
+    <h4>Grounding path — resolved deterministically, no LLM call</h4>
+    <div class="path">
+      <div class="step done"><div class="n">1 · QUERY</div><div class="t">Lemma, then surface</div><div class="b">lemma <code>Заиорданье</code> <span class="hit">4 hits</span><br>surface <code>Заиорданье</code> <span class="hit">dedup</span></div></div>
+      <div class="step done"><div class="n">2 · SEARCH</div><div class="t">wbsearchentities</div><div class="b">prefix search over labels + aliases, ru<br>fallbacks not needed</div></div>
+      <div class="step done"><div class="n">3 · LABEL MATCH</div><div class="t">Exactly 1 exact match</div><div class="b">RU label <code>Заиорданье</code> = query<br>3 other candidates: no exact match</div></div>
+      <div class="step done"><div class="n">4 · DECISION</div><div class="t">Deterministic</div><div class="b"><code>resolved_by: exact_label</code><br>difficulty 🟢 · 3 API calls · 0.4 s</div></div>
+    </div>
+  </div>
+
+  <div class="cols">
+  <div class="blk">
+    <h4>Candidates (4) · matched via</h4>
+    <table class="cand">
+      <tr><th></th><th>QID</th><th>Label · description</th><th>Matched</th></tr>
+      <tr class="chosen"><td class="pick">✓</td><td>Q1097394</td><td><b>Transjordan</b> — region east of the Jordan River <br><span style="font-size:11px">ru: Заиорданье</span></td><td><span class="via">label·ru</span></td></tr>
+      <tr><td></td><td>Q437165</td><td>Emirate of Transjordan — British protectorate, 1921–1946</td><td><span class="via no">none</span></td></tr>
+      <tr><td></td><td>Q120730765</td><td>Transjordan (region of Mandatory Palestine)</td><td><span class="via no">none</span></td></tr>
+      <tr><td></td><td>Q2907146</td><td>Jordan Rift Valley — elongated depression</td><td><span class="via no">none</span></td></tr>
+    </table>
+  </div>
+  <div class="blk">
+    <h4>All mentions (2)</h4>
+    <div class="occ">
+      <div><span class="p">§1</span>Дальнейшее продвижение сутиев на юг привело их в <mark>Заиорданье</mark>…</div>
+      <div><span class="p">§4</span>…кочевые племена <mark>Заиорданья</mark> постепенно переходили к оседлости.</div>
+    </div>
+  </div>
+  </div>
+
+</div></td></tr>
+
+<!-- ═══ example 2: yellow / LLM after cirrus fallback, expanded ═══ -->
+<tr class="row open" onclick="tg(this,'d2')">
+  <td><span class="chev">▶</span></td>
+  <td><span class="dot y"></span></td><td><span class="dot y"></span></td>
+  <td class="src">Кадашман-Харбе<span class="cat">Onomastics</span></td>
+  <td class="tgt">Kadashman-Harbe</td>
+  <td><a class="wd" href="#" onclick="return false">Kadashman-Harbe I</a><span class="qid">Q1721895</span></td>
+  <td><span class="badge llm">◇ LLM · gpt-5.5-low</span></td>
+  <td class="mentions">×1</td>
+</tr>
+<tr class="detail" id="d2"><td colspan="8"><div class="panel">
+
+  <div class="blk">
+    <h4>Context</h4>
+    <div class="ctx"><span class="lang">RU</span>При касситском царе <mark>Кадашман-Харбе</mark> были предприняты походы против сутиев.</div>
+    <div class="ctx"><span class="lang">EN</span>Under the Kassite king <mark class="t">Kadashman-Harbe</mark>, campaigns were undertaken against the Sutians.</div>
+  </div>
+
+  <div class="blk">
+    <h4>Grounding path — ambiguous, resolved by LLM</h4>
+    <div class="path">
+      <div class="step warn"><div class="n">1 · QUERY</div><div class="t">Lemma, then surface</div><div class="b">lemma <code>Кадашман-Харбе</code> <span class="miss">0 hits</span><br>surface <code>Кадашман-Харбе</code> <span class="miss">0 hits</span></div></div>
+      <div class="step warn"><div class="n">2 · SEARCH</div><div class="t">Fallback: CirrusSearch</div><div class="b">full-text search <span class="hit">2 hits</span><br><code>use_fallbacks: on</code></div></div>
+      <div class="step warn"><div class="n">3 · LABEL MATCH</div><div class="t">0 exact matches</div><div class="b">labels are <code>…-Харбе I</code> / <code>…-Харбе II</code><br>candidates exist → escalate</div></div>
+      <div class="step warn"><div class="n">4 · DECISION</div><div class="t">LLM disambiguation</div><div class="b"><code>resolved_by: llm_disambiguation</code><br>difficulty 🟡 · 5 API + 1 LLM call · 1.9 s</div></div>
+    </div>
+  </div>
+
+  <div class="cols">
+  <div class="blk">
+    <h4>Candidates (2) · offered to the judge</h4>
+    <table class="cand">
+      <tr><th></th><th>QID</th><th>Label · description</th><th>Matched</th></tr>
+      <tr class="chosen"><td class="pick">✓</td><td>Q1721895</td><td><b>Kadashman-Harbe I</b> — Kassite king of Babylon, 15th c. BC</td><td><span class="via no">none</span></td></tr>
+      <tr><td class="rejx">✗</td><td>Q1721903</td><td>Kadashman-Harbe II — Kassite king of Babylon, 13th c. BC</td><td><span class="via no">none</span></td></tr>
+    </table>
+  </div>
+  <div class="blk">
+    <h4>Judge decision</h4>
+    <div class="judge">
+      <div class="m">model: gpt-5.5-low · temperature 0 · Settings › Grounding</div>
+      <div class="r">“The paragraph describes early Kassite campaigns against the Sutians, which matches the reign of Kadashman-Harbe I (15th c. BC), not the later namesake.”</div>
+    </div>
+  </div>
+  </div>
+
+</div></td></tr>
+
+<!-- ═══ example 3: red / no candidates, expanded ═══ -->
+<tr class="row open" onclick="tg(this,'d3')">
+  <td><span class="chev">▶</span></td>
+  <td><span class="dot r"></span></td><td><span class="dash">—</span></td>
+  <td class="src">аморейскими племенами<span class="cat">Ethnographic</span></td>
+  <td class="tgt">Amorite tribes</td>
+  <td><span class="dash">—</span></td>
+  <td><span class="badge none">○ no candidates</span></td>
+  <td class="mentions">×1</td>
+</tr>
+<tr class="detail" id="d3"><td colspan="8"><div class="panel">
+
+  <div class="blk">
+    <h4>Context</h4>
+    <div class="ctx"><span class="lang">RU</span>Степи Сирии были заняты <mark>аморейскими племенами</mark>, родственными сутиям.</div>
+    <div class="ctx"><span class="lang">EN</span>The steppes of Syria were occupied by <mark class="t">Amorite tribes</mark> related to the Sutians.</div>
+  </div>
+
+  <div class="blk">
+    <h4>Grounding path — nothing found, no LLM call</h4>
+    <div class="path">
+      <div class="step fail"><div class="n">1 · QUERY</div><div class="t">Lemma, then surface</div><div class="b">lemma <code>аморейские племена</code> <span class="miss">0 hits</span><br>surface <code>аморейскими племенами</code> <span class="miss">0 hits</span></div></div>
+      <div class="step fail"><div class="n">2 · SEARCH</div><div class="t">All fallbacks tried</div><div class="b">CirrusSearch <span class="miss">0 hits</span><br>ru.wikipedia title <span class="miss">no page</span></div></div>
+      <div class="step skip"><div class="n">3 · LABEL MATCH</div><div class="t">Skipped</div><div class="b">no candidates to match</div></div>
+      <div class="step fail"><div class="n">4 · DECISION</div><div class="t">Not grounded</div><div class="b"><code>resolved_by: no_candidates</code><br>difficulty 🔴 · 6 API calls · 1.1 s</div></div>
+    </div>
+  </div>
+
+</div></td></tr>
+
+<!-- ═══ compact rows (collapsed) ═══ -->
+<tr class="row" onclick="void(0)">
+  <td><span class="chev">▶</span></td>
+  <td><span class="dot g"></span></td><td><span class="dot g"></span></td>
+  <td class="src">касситским царем<span class="cat">Political</span></td>
+  <td class="tgt">Kassite king</td>
+  <td><a class="wd" href="#" onclick="return false">Kassites</a><span class="qid">Q207163</span></td>
+  <td><span class="badge det">◆ label match</span></td>
+  <td class="mentions">×2</td>
+</tr>
+<tr class="row" onclick="void(0)">
+  <td><span class="chev">▶</span></td>
+  <td><span class="dot g"></span></td><td><span class="dot g"></span></td>
+  <td class="src">сутиев (амореев)<span class="cat">Ethnographic</span></td>
+  <td class="tgt">Sutians (Amorites)</td>
+  <td><a class="wd" href="#" onclick="return false">Suteans</a><span class="qid">Q1332231</span></td>
+  <td><span class="badge det">◆ label match</span></td>
+  <td class="mentions">×4</td>
+</tr>
+<tr class="row" onclick="void(0)">
+  <td><span class="chev">▶</span></td>
+  <td><span class="dot y"></span></td><td><span class="dot y"></span></td>
+  <td class="src">Сирийскую степь<span class="cat">Geographical</span></td>
+  <td class="tgt">Syrian steppe</td>
+  <td><a class="wd" href="#" onclick="return false">Syrian Desert</a><span class="qid">Q141225</span></td>
+  <td><span class="badge llm">◇ LLM · gpt-5.5-low</span></td>
+  <td class="mentions">×1</td>
+</tr>
+<tr class="row" onclick="void(0)">
+  <td><span class="chev">▶</span></td>
+  <td><span class="dot r"></span></td><td><span class="dash">—</span></td>
+  <td class="src">Тадморе<span class="cat">Geographical</span></td>
+  <td class="tgt">Tadmor</td>
+  <td><span class="dash">—</span></td>
+  <td><span class="badge rej">◇ LLM rejected all</span></td>
+  <td class="mentions">×1</td>
+</tr>
+<tr class="row" onclick="void(0)">
+  <td><span class="chev">▶</span></td>
+  <td><span class="dot y"></span></td><td><span class="dot y"></span></td>
+  <td class="src">древнееврейской этнической общности<span class="cat">Ethnographic</span></td>
+  <td class="tgt">ancient Hebrew ethnic community</td>
+  <td><a class="wd" href="#" onclick="return false">Hebrews</a><span class="qid">Q42176</span></td>
+  <td><span class="badge llm">◇ LLM · gpt-5.5-low</span></td>
+  <td class="mentions">×1</td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="legend">
+◆ label match — deterministic exact-label decision, no LLM · ◇ LLM — judge disambiguated among candidates (model shown) · ◇ LLM rejected all — candidates existed, none fit the context · ○ no candidates — search + enabled fallbacks returned nothing.<br>
+Row = unique (lemma, entity); Mentions ×N aggregates per-occurrence rows. Click any row to expand context, path, candidates and all mentions.
+</div>
+</div>
+
+<script>
+function tg(tr, id){
+  const d = document.getElementById(id);
+  const open = d.style.display === 'none';
+  d.style.display = open ? '' : 'none';
+  tr.classList.toggle('open', open);
+}
+</script>
+</body>
+</html>

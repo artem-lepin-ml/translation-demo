@@ -60,23 +60,28 @@ DEFAULT_NER_PROMPT = """## Роль
 ## Правила
 - surface — ТОЧНАЯ подстрока из <source>, в той форме и падеже, как в тексте
   (например «Лагаше», а не «Лагаш»). НЕ нормализуй, НЕ переводи, НЕ придумывай.
+- lemma — согласованная ИМЕНИТЕЛЬНАЯ форма термина: для одного слова — именительный
+  падеж («Лагаше» → «Лагаш»); для словосочетания — ВСЕ слова согласуются в
+  именительном («династии Цин» → «династия Цин», «авилумов» → «авилум»).
+  Если surface уже стоит в именительном падеже — lemma совпадает с surface
+  («Лагаш» → lemma «Лагаш»).
 - Одна запись на каждый УНИКАЛЬНЫЙ surface (повторы не дублируй).
 
 ## Хороший пример
 <example>
 <source>В Лагаше, одном из номов, правитель-лугаль опирался на авилумов, тогда как амореи наступали с запада.</source>
-<output>[{"surface":"Лагаше","category":"place"},{"surface":"номов","category":"title"},{"surface":"лугаль","category":"title"},{"surface":"авилумов","category":"social"},{"surface":"амореи","category":"people"}]</output>
+<output>[{"surface":"Лагаше","lemma":"Лагаш","category":"place"},{"surface":"номов","lemma":"ном","category":"title"},{"surface":"лугаль","lemma":"лугаль","category":"title"},{"surface":"авилумов","lemma":"авилум","category":"social"},{"surface":"амореи","lemma":"амореи","category":"people"}]</output>
 </example>
 
 ## Плохой пример (так НЕ делать)
 <bad_example>
 <source>В Лагаше правитель опирался на воинов.</source>
-<bad_output>[{"surface":"правитель","category":"title"},{"surface":"воинов","category":"people"},{"surface":"Lagash","category":"place"}]</bad_output>
+<bad_output>[{"surface":"правитель","lemma":"правитель","category":"title"},{"surface":"воинов","lemma":"воин","category":"people"},{"surface":"Lagash","lemma":"Lagash","category":"place"}]</bad_output>
 <why_bad>«правитель»/«воинов» — обычные слова, не термины; «Lagash» — перевод, а surface обязан быть русской подстрокой «Лагаше».</why_bad>
 </bad_example>
 
 ## Формат вывода
-Только JSON-массив объектов {surface, category}. Без пояснений и без markdown-ограды.
+Только JSON-массив объектов {surface, lemma, category}. Без пояснений и без markdown-ограды.
 
 <source>
 {{source}}
@@ -92,8 +97,18 @@ def _context(source: str, start: int, end: int) -> str:
     return source[max(0, start - CONTEXT_PAD): end + CONTEXT_PAD].strip()
 
 
+_LEMMA_MAX_LEN = 80
+
+
+def _sane_lemma(lemma: str, surface: str) -> str:
+    """Nominative lemma if it passes sanity (non-empty, <=80 chars, no newline), else surface."""
+    if lemma and len(lemma) <= _LEMMA_MAX_LEN and "\n" not in lemma:
+        return lemma
+    return surface
+
+
 def parse_surfaces(raw: str) -> list[dict]:
-    """Parse an LLM JSON reply into [{surface, category}]; tolerant of ``` fences."""
+    """Parse an LLM JSON reply into [{surface, lemma, category}]; tolerant of ``` fences."""
     text = (raw or "").strip()
     m = re.search(r"\[.*\]", text, re.DOTALL)
     if m:
@@ -108,8 +123,13 @@ def parse_surfaces(raw: str) -> list[dict]:
             continue
         surface = (item.get("surface") or "").strip()
         category = (item.get("category") or "").strip()
+        lemma = (item.get("lemma") or "").strip()
         if surface:
-            out.append({"surface": surface, "category": category if category in CATEGORIES else None})
+            out.append({
+                "surface": surface,
+                "lemma": _sane_lemma(lemma, surface),
+                "category": category if category in CATEGORIES else None,
+            })
     return out
 
 
@@ -128,7 +148,7 @@ def validate_surfaces(source: str, surfaces: list[dict]) -> tuple[list[dict], in
         if s in seen:
             continue
         seen.add(s)
-        valid.append({"surface": s, "category": item.get("category")})
+        valid.append({"surface": s, "lemma": item.get("lemma") or s, "category": item.get("category")})
     return valid, dropped
 
 
@@ -188,7 +208,8 @@ def _capitalized_surfaces(source: str) -> list[dict]:
 def deterministic_surfaces(source: str) -> list[dict]:
     """Offline floor: capitalised proper nouns + curated gazetteer + guarded suffixes.
 
-    Deterministic, deduplicated (seen-set), stable order. Returns [{surface, category}].
+    Deterministic, deduplicated (seen-set), stable order. Returns [{surface, lemma, category}]
+    with ``lemma == surface`` (no model available to infer the nominative form).
     """
     seen: set[str] = set()
     out: list[dict] = []
@@ -196,7 +217,7 @@ def deterministic_surfaces(source: str) -> list[dict]:
         s = item["surface"]
         if s and s not in seen:
             seen.add(s)
-            out.append(item)
+            out.append({**item, "lemma": s})
     return out
 
 

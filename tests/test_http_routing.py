@@ -199,3 +199,52 @@ def test_put_model_params_valid_dict_accepted(client):
     r = c.put("/api/models/qwen/qwen3.6-plus", json=_model_payload(params={"temperature": 0.5}))
     assert r.status_code == 200, r.text
     assert r.json()["params"] == {"temperature": 0.5}
+
+
+# ─────────────────────────── grounding_config ───────────────────────────
+
+def test_get_grounding_config_returns_seeded_default(client):
+    c, _ = client
+    r = c.get("/api/grounding-config")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["modelName"]
+    assert body["prompt"]
+    assert body["params"] == {"max_tokens": 512, "temperature": 0}
+
+
+def test_put_grounding_config_updates_and_get_reflects(client):
+    c, _ = client
+    r = c.put("/api/grounding-config",
+              json={"modelName": "qwen/qwen3.6-plus", "prompt": "Custom judge prompt",
+                    "params": {"max_tokens": 256, "temperature": 0}})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["modelName"] == "qwen/qwen3.6-plus"
+    assert body["prompt"] == "Custom judge prompt"
+    assert body["params"] == {"max_tokens": 256, "temperature": 0}
+
+    r2 = c.get("/api/grounding-config")
+    assert r2.status_code == 200, r2.text
+    assert r2.json() == body
+
+
+def test_put_grounding_config_params_array_is_422(client):
+    c, _ = client
+    r = c.put("/api/grounding-config",
+              json={"modelName": "qwen/qwen3.6-plus", "prompt": "x", "params": [1, 2, 3]})
+    assert r.status_code == 422, r.text
+
+
+def test_put_grounding_config_params_string_is_422(client):
+    c, _ = client
+    r = c.put("/api/grounding-config",
+              json={"modelName": "qwen/qwen3.6-plus", "prompt": "x", "params": "hello"})
+    assert r.status_code == 422, r.text
+
+
+def test_put_grounding_config_params_secret_key_is_400(client):
+    c, _ = client
+    r = c.put("/api/grounding-config",
+              json={"modelName": "qwen/qwen3.6-plus", "prompt": "x", "params": {"api_key": "x"}})
+    assert r.status_code == 400, r.text

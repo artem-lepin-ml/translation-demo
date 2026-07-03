@@ -1,0 +1,46 @@
+{
+ "v": 1,
+ "config": {
+  "use_lemma": true,
+  "use_fallbacks": true,
+  "match_aliases": true
+ },
+ "golden": {
+  "version": "terminology_gold.jsonl",
+  "n_total": 99,
+  "n_groundable": 91,
+  "n_context_reconstructed": 34,
+  "n_excluded_wikidata_unavailable": 0
+ },
+ "qid_accuracy_groundable": {
+  "correct": 66,
+  "total": 91,
+  "value": 0.7253,
+  "ci95": [
+   0.6259,
+   0.8064
+  ]
+ },
+ "red_split": {
+  "golden_red_hit": 6,
+  "golden_red_total": 8
+ },
+ "difficulty_distribution": {
+  "green": 31,
+  "yellow": 53,
+  "red": 15
+ },
+ "resolved_by_distribution": {
+  "llm_disambiguation": 52,
+  "exact_label": 31,
+  "judge_rejected": 5,
+  "no_candidates": 10,
+  "judge_unavailable": 1
+ },
+ "escalation_rate": 0.5859,
+ "n_api_calls": 0,
+ "n_judge_calls": 58,
+ "judge_cost_usd": 0.003568,
+ "latency_ms_p50": 894.2,
+ "latency_ms_p95": 1400.2
+}

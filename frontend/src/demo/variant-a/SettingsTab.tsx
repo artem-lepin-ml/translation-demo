@@ -2,7 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getBudget } from '../api-client';
-import type { BudgetSnapshot, Criterion, ModelRegistryEntryPublic, TestModelResult } from '../api-client';
+import type { BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, TestModelResult } from '../api-client';
 import type { DemoStore } from '../store';
 
 interface Props {
@@ -15,6 +15,8 @@ interface Props {
   onAddModel: DemoStore['addModel'];
   onRemoveModel: DemoStore['removeModel'];
   onTestModel: DemoStore['testModel'];
+  groundingConfig: GroundingConfig | null;
+  onSaveGroundingConfig: DemoStore['saveGroundingConfig'];
 }
 
 // Evaluator palette already in use by the seed criteria (seed.py CRITERIA) —
@@ -55,11 +57,15 @@ export default function SettingsTab({
   onAddModel,
   onRemoveModel,
   onTestModel,
+  groundingConfig,
+  onSaveGroundingConfig,
 }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null); // collapsed by default
   // Per-criterion error surfaced inline in EvaluatorEditor — covers both a
   // failed Remove and a failed field edit (Name/Color/Model/Weight).
   const [fieldError, setFieldError] = useState<{ id: string; message: string } | null>(null);
+  // Grounding card error — same "surface server rejection inline" pattern as fieldError.
+  const [groundingError, setGroundingError] = useState<string | null>(null);
 
   const [testState, setTestState] = useState<Record<string, TestState>>({});
   const [editing, setEditing] = useState<ModelRegistryEntryPublic | null>(null);
@@ -299,6 +305,25 @@ export default function SettingsTab({
         </div>
       </div>
 
+      {/* ─── Grounding ───────────────────────────────────────────────────────── */}
+      <div className="va-settings-section-title" style={{ marginTop: 32 }}>Grounding</div>
+      {groundingConfig && (
+        <GroundingEditor
+          config={groundingConfig}
+          models={models}
+          onSave={async (next) => {
+            try {
+              await onSaveGroundingConfig(next);
+              setGroundingError(null);
+            } catch (e) {
+              setGroundingError(String(e));
+              throw e;
+            }
+          }}
+          error={groundingError}
+        />
+      )}
+
       {editing && (
         <EditModelModal
           model={editing}
@@ -440,6 +465,103 @@ function EvaluatorEditor({ criterion, models, onUpdate, onRemove, fieldError }: 
       {fieldError && (
         <div className="va-inspector-warning" data-testid="evaluator-field-error">
           {fieldError}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── GroundingEditor — Grounding config card (mirrors EvaluatorEditor) ────────
+
+interface GroundingEditorProps {
+  config: GroundingConfig;
+  models: ModelRegistryEntryPublic[];
+  onSave: (cfg: GroundingConfig) => Promise<void>;
+  error: string | null;
+}
+
+function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps) {
+  const [modelName, setModelName] = useState(config.modelName ?? '');
+  const [prompt, setPrompt] = useState(config.prompt);
+  const [paramsText, setParamsText] = useState(JSON.stringify(config.params, null, 2));
+  const [paramsError, setParamsError] = useState<string | null>(null);
+  const [paramsOpen, setParamsOpen] = useState(false);
+
+  function commitField(next: Partial<GroundingConfig>) {
+    void onSave({ modelName, prompt, params: config.params, ...next }).catch(() => {
+      // onSave already recorded the error in `error`; nothing further to do here.
+    });
+  }
+
+  function commitParams() {
+    let params: Record<string, unknown>;
+    try {
+      params = JSON.parse(paramsText);
+    } catch {
+      setParamsError('Params must be valid JSON.');
+      return;
+    }
+    setParamsError(null);
+    commitField({ params });
+  }
+
+  return (
+    <div className="va-evaluator-detail" style={{ border: 'none', borderRadius: 0 }} data-testid="grounding-editor">
+      {/* Model picker — by name from registry */}
+      <div>
+        <div className="va-field-label">Model</div>
+        <select
+          className="va-field-input va-field-select"
+          value={modelName}          onChange={(e) => { setModelName(e.target.value); commitField({ modelName: e.target.value }); }}
+        >
+          {models.map((m) => (
+            <option key={m.name} value={m.name}>
+              {m.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Prompt — editable (unlike EvaluatorEditor's read-only preview) */}
+      <div>
+        <div className="va-field-label">Prompt</div>
+        <textarea
+          className="va-field-input va-prompt-textarea"
+          data-testid="grounding-prompt"
+          value={prompt}          onChange={(e) => setPrompt(e.target.value)}
+          onBlur={() => commitField({ prompt })}
+        />
+      </div>
+
+      {/* Params — Model Registry's expand pattern */}
+      <div>
+        <div className="va-field-label">Params</div>
+        <span
+          className={`va-params-badge${paramsOpen ? ' open' : ''}`}
+          data-testid="grounding-params-badge"
+          onClick={() => setParamsOpen((v) => !v)}
+        >
+          <span className="chev">▶</span>{Object.keys(config.params).length} params
+        </span>
+        {paramsOpen && (
+          <div className="va-params-expanded" data-testid="grounding-params-expanded">
+            <textarea
+              className="va-field-input"
+              style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, minHeight: 100, resize: 'vertical' }}
+              value={paramsText}
+              onChange={(e) => setParamsText(e.target.value)}
+              onBlur={commitParams}
+            />
+            {paramsError && (
+              <div className="va-inline-error" data-testid="grounding-params-error">{paramsError}</div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="va-inspector-warning" data-testid="grounding-field-error">
+          {error}
         </div>
       )}
     </div>

@@ -365,3 +365,19 @@ export function testModel(name: string, effort?: string): Promise<TestModelResul
 export function getBudget(): Promise<BudgetSnapshot> {
   return get('/budget');
 }
+
+// ─── §2 grounding-config endpoint ─────────────────────────────────────────────
+
+export interface GroundingConfig {
+  modelName: string | null;
+  prompt: string;
+  params: Record<string, unknown>;
+}
+
+export function getGroundingConfig(): Promise<GroundingConfig> {
+  return get('/grounding-config');
+}
+
+export function updateGroundingConfig(cfg: GroundingConfig): Promise<GroundingConfig> {
+  return put('/grounding-config', cfg);
+}

@@ -63,6 +63,7 @@ export default function VariantA() {
     documents,
     criteria,
     models,
+    groundingConfig,
     documentLoading,
     documentError,
     paraEvalState,
@@ -91,6 +92,7 @@ export default function VariantA() {
     addModel,
     removeModel,
     testModel,
+    saveGroundingConfig,
     switchDocument,
     deleteDoc,
     openUploadModal,
@@ -601,6 +603,8 @@ export default function VariantA() {
             onAddModel={addModel}
             onRemoveModel={removeModel}
             onTestModel={testModel}
+            groundingConfig={groundingConfig}
+            onSaveGroundingConfig={saveGroundingConfig}
           />
         )}
       </div>

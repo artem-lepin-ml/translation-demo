@@ -1,8 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import SettingsTab from './SettingsTab';
 import * as apiClient from '../api-client';
-import type { BudgetSnapshot, Criterion, ModelRegistryEntryPublic } from '../api-client';
+import type { BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic } from '../api-client';
 
 afterEach(() => {
   cleanup();
@@ -28,6 +28,12 @@ const model: ModelRegistryEntryPublic = {
   params: {},
 };
 
+const groundingConfig: GroundingConfig = {
+  modelName: 'openai/gpt-5.4-mini',
+  prompt: 'Disambiguate the candidate.',
+  params: { max_tokens: 512, temperature: 0 },
+};
+
 function renderSettings(overrides: Partial<React.ComponentProps<typeof SettingsTab>> = {}) {
   const props = {
     criteria: [criterion],
@@ -39,6 +45,8 @@ function renderSettings(overrides: Partial<React.ComponentProps<typeof SettingsT
     onAddModel: vi.fn(),
     onRemoveModel: vi.fn(),
     onTestModel: vi.fn(),
+    groundingConfig,
+    onSaveGroundingConfig: vi.fn(),
     ...overrides,
   };
   render(<SettingsTab {...props} />);
@@ -386,5 +394,81 @@ describe('SettingsTab params badge', () => {
     expect(await screen.findByTestId(`params-expanded-${paramsModel.name}`)).toBeTruthy();
     fireEvent.click(badge);
     expect(screen.queryByTestId(`params-expanded-${paramsModel.name}`)).toBeNull();
+  });
+});
+
+describe('SettingsTab Grounding card', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
+  it('renders the Grounding section with the model select populated', async () => {
+    renderSettings();
+
+    expect(await screen.findByText('Grounding')).toBeTruthy();
+    const editor = await screen.findByTestId('grounding-editor');
+    const select = editor.querySelector('select') as HTMLSelectElement;
+    expect(select.value).toBe(model.name);
+    expect(select.querySelectorAll('option')).toHaveLength(1);
+  });
+
+  it('does not render the Grounding editor when groundingConfig is null', () => {
+    renderSettings({ groundingConfig: null });
+
+    expect(screen.getByText('Grounding')).toBeTruthy();
+    expect(screen.queryByTestId('grounding-editor')).toBeNull();
+  });
+
+  it('editing the prompt and blurring calls onSaveGroundingConfig', async () => {
+    const onSaveGroundingConfig = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onSaveGroundingConfig });
+
+    const promptInput = await screen.findByTestId('grounding-prompt');
+    fireEvent.change(promptInput, { target: { value: 'New judge prompt.' } });
+    fireEvent.blur(promptInput);
+
+    await waitFor(() => expect(onSaveGroundingConfig).toHaveBeenCalledWith({
+      modelName: groundingConfig.modelName,
+      prompt: 'New judge prompt.',
+      params: groundingConfig.params,
+    }));
+  });
+
+  it('changing the model select calls onSaveGroundingConfig immediately', async () => {
+    const onSaveGroundingConfig = vi.fn().mockResolvedValue(undefined);
+    const otherModel: ModelRegistryEntryPublic = { ...model, name: 'anthropic/claude' };
+    renderSettings({ models: [model, otherModel], onSaveGroundingConfig });
+
+    const editor = await screen.findByTestId('grounding-editor');
+    const select = editor.querySelector('select') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: otherModel.name } });
+
+    await waitFor(() => expect(onSaveGroundingConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ modelName: otherModel.name }),
+    ));
+  });
+
+  it('expands params and shows an inline error on invalid JSON', async () => {
+    renderSettings();
+
+    const badge = await screen.findByTestId('grounding-params-badge');
+    fireEvent.click(badge);
+    const paramsArea = await screen.findByTestId('grounding-params-expanded');
+    const textarea = paramsArea.querySelector('textarea') as HTMLTextAreaElement;
+    fireEvent.change(textarea, { target: { value: '{not json' } });
+    fireEvent.blur(textarea);
+
+    expect(await screen.findByTestId('grounding-params-error')).toBeTruthy();
+  });
+
+  it('shows an inline error when the save is rejected', async () => {
+    const onSaveGroundingConfig = vi.fn().mockRejectedValue(new Error('PUT /grounding-config → 500'));
+    renderSettings({ onSaveGroundingConfig });
+
+    const promptInput = await screen.findByTestId('grounding-prompt');
+    fireEvent.change(promptInput, { target: { value: 'New judge prompt.' } });
+    fireEvent.blur(promptInput);
+
+    expect((await screen.findByTestId('grounding-field-error')).textContent).toContain('500');
   });
 });

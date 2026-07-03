@@ -109,6 +109,13 @@ def _criterion_dict(r) -> dict:
     }
 
 
+def _grounding_config_dict(r) -> dict:
+    if r is None:
+        return {"modelName": None, "prompt": "", "params": {}}
+    return {"modelName": r["model_name"], "prompt": r["prompt"] or "",
+            "params": json.loads(r["params_json"] or "{}")}
+
+
 def _model_public(r) -> dict:
     key = r["api_key"] or ""
     masked = (key[:4] + "…") if key else ""
@@ -809,6 +816,97 @@ def delete_model(name: str) -> None:
             raise HTTPException(409, "model referenced by a criterion")
         conn.execute("DELETE FROM model WHERE name=?", (name,))
         conn.commit()
+
+
+# ─────────────────────────── config: grounding ───────────────────────────
+
+class GroundingConfigBody(BaseModel):
+    modelName: str | None = None
+    prompt: str = ""
+    params: dict = Field(default_factory=dict)
+
+
+@app.get("/api/grounding-config")
+def get_grounding_config() -> dict:
+    conn = db.connect()
+    row = conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
+    return _grounding_config_dict(row)
+
+
+@app.put("/api/grounding-config")
+def update_grounding_config(gc: GroundingConfigBody) -> dict:
+    if not isinstance(gc.params, dict):
+        raise HTTPException(422, "params must be a JSON object")
+    _guard_params(gc.params)
+    conn = db.connect()
+    with db._lock:
+        conn.execute(
+            "INSERT INTO grounding_config(id,model_name,prompt,params_json) VALUES(1,?,?,?) "
+            "ON CONFLICT(id) DO UPDATE SET model_name=excluded.model_name, "
+            "prompt=excluded.prompt, params_json=excluded.params_json",
+            (gc.modelName, gc.prompt, json.dumps(gc.params)))
+        conn.commit()
+        return _grounding_config_dict(conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone())
+
+
+async def _grounding_judge_live(conn, prompt: str, endpoint: str = "grounding"):
+    """Mirrors ``_judge_live``: budget reserve/settle, retry only on transient
+    errors (malformed JSON is terminal — see label_first.py's error policy),
+    max_tokens=512/temperature=0 per the grounding_config row, reasoning param
+    omitted per-model via the existing model_matrix/ModelParams mechanism.
+
+    # TODO(wired when live re-grounding endpoint exists) — no caller in the
+    # webapp yet (spec scopes the Settings surface only: table + 2 endpoints +
+    # card + this wrapper; see 2026-07-03-grounding-label-first-design.md §4).
+    """
+    row = conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
+    if row is None or not row["model_name"]:
+        raise RuntimeError("grounding_config not set")
+    name = row["model_name"]
+    client = _client_for(conn, name)
+    if client is None:
+        raise RuntimeError("no api key for model")
+    raw = json.loads(row["params_json"] or "{}")
+    prompt_tok = budget.count_tokens(prompt)
+    rmt = additive_reasoning_tokens(name, raw)
+    est = budget.estimate(name, prompt_tok, client.config.max_tokens, rmt)
+    gen = await budget.reserve(est)
+    attempt = 0
+    while True:
+        try:
+            res = await asyncio.wait_for(
+                asyncio.to_thread(client.complete, "", prompt), EVAL_TIMEOUT)
+            break
+        except Exception as exc:
+            if is_transient_error(exc) and attempt < EVAL_RETRIES:
+                err = redact_error(f"{type(exc).__name__}: {exc}")
+                budget.log_call({"model": name, "endpoint": endpoint, "status": "retry",
+                                 "attempt": attempt, "error": err, "costUsd": None})
+                logger.warning("grounding judge retry: model=%s attempt=%d error=%s", name, attempt, err)
+                await asyncio.sleep(EVAL_BACKOFF * (2 ** attempt))
+                attempt += 1
+                continue
+            await budget.settle(est, 0.0, gen)
+            err = redact_error(f"{type(exc).__name__}: {exc}")
+            budget.log_call({"model": name, "endpoint": endpoint, "status": "error",
+                             "attempts": attempt + 1, "error": err, "costUsd": None})
+            logger.warning("grounding judge failed terminally: model=%s attempts=%d error=%s",
+                            name, attempt + 1, err)
+            raise
+    await budget.settle(est, res.usage.cost_usd, gen)
+    budget.log_call({"model": name, "endpoint": endpoint, "status": "ok",
+                     "tokens": {"prompt": res.usage.prompt_tokens, "completion": res.usage.completion_tokens,
+                     "reasoning": res.usage.reasoning_tokens}, "costUsd": res.usage.cost_usd})
+    try:
+        data = json.loads(res.content)
+    except json.JSONDecodeError as exc:
+        # malformed JSON is terminal — the strategy's judge callable classifies
+        # this the same as any other malformed response (yellow/judge_unavailable),
+        # it must NOT be retried (label_first.py's documented error policy).
+        budget.log_call({"model": name, "endpoint": endpoint, "status": "malformed_json",
+                         "error": redact_error(str(exc)), "costUsd": res.usage.cost_usd})
+        raise ValueError(f"malformed judge JSON: {exc}") from exc
+    return data
 
 
 # ─────────────────────────── config: models — Test probe ───────────────────────────

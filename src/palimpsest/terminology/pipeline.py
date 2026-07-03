@@ -5,7 +5,7 @@ contract null rule (difficulty=red ⇒ everything downstream is null).
 """
 from __future__ import annotations
 
-from .base import GroundingStrategy, PairingStrategy, PairRequest, Term, TermMention
+from .base import GroundingStrategy, Judge, PairingStrategy, PairRequest, Term, TermMention
 
 
 def run(
@@ -15,10 +15,13 @@ def run(
     *,
     grounder: GroundingStrategy,
     pairer: PairingStrategy,
+    judge: Judge | None = None,
+    scope_id: object | None = None,
+    judge_cache: dict | None = None,
 ) -> list[Term]:
     terms: list[Term] = []
     for m in mentions:
-        gr = grounder.ground(m)
+        gr = grounder.ground(m, judge=judge, scope_id=scope_id, judge_cache=judge_cache)
 
         if gr.difficulty == "red":
             terms.append(Term(
@@ -26,7 +29,7 @@ def run(
                 context=m.context, char_start=m.char_start, char_end=m.char_end,
                 difficulty="red", grounded=None, candidates=[],
                 target_surface=None, pair_accuracy=None, recommended=None,
-                note=m.category or "",
+                note=m.category or "", trace=gr.trace,
             ))
             continue
 
@@ -41,6 +44,6 @@ def run(
             context=m.context, char_start=m.char_start, char_end=m.char_end,
             difficulty=gr.difficulty, grounded=gr.grounded, candidates=gr.candidates,
             target_surface=pr.target_surface, pair_accuracy=pr.pair_accuracy,
-            recommended=pr.recommended, note=m.category or "",
+            recommended=pr.recommended, note=m.category or "", trace=gr.trace,
         ))
     return terms

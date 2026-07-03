@@ -1,15 +1,13 @@
 """Grounding strategies (difficulty signal).
 
-Runnable here: G1 ``api_first`` (default, deterministic), G3 ``llm_judge`` (subagent
-judge), G5 ``hybrid`` (api_first difficulty + judge-picked QID). Shared candidate
-generation lives in [candidates.py](candidates.py). Code-only (GPU, not run in this
-environment): G2 ``mgenre``.
+G1 ``api_first``, G2 ``mgenre``, G3 ``llm_judge``, G5 ``hybrid`` are archived at
+git tag ``archive/grounding-g-strategies`` — superseded by the single G6
+``label_first`` strategy (deterministic exact-label match, LLM judge only on
+genuine ambiguity). Shared candidate generation lives in
+[candidates.py](candidates.py).
 """
 from __future__ import annotations
 
-from .api_first import ApiFirstGrounding
-from .hybrid import HybridGrounding
-from .llm_judge import LlmJudgeGrounding
-from .mgenre import MGenreGrounding
+from .label_first import LabelFirstGrounding
 
-__all__ = ["ApiFirstGrounding", "HybridGrounding", "LlmJudgeGrounding", "MGenreGrounding"]
+__all__ = ["LabelFirstGrounding"]

@@ -23,31 +23,6 @@ USER_AGENT = (
     "(https://github.com/palimpsest; a.lepin.student@gmail.com) python-urllib"
 )
 
-# Type QIDs to drop as grounding noise.
-DISAMBIGUATION = "Q4167410"
-SCHOLARLY_ARTICLE = "Q13442814"
-
-# Anachronistic senses that cannot appear in an ancient/historical text. Dropping
-# them removes the classic "top search hit is a modern football club / band"
-# error (e.g. Спарта → "AC Sparta Prague" instead of the ancient city-state).
-ANACHRONISTIC_TYPES = {
-    "Q476028",    # association football club
-    "Q215380",    # musical group
-    "Q2088357",   # musical ensemble
-    "Q11424",     # film
-    "Q482994",    # album
-    "Q7889",      # video game
-    "Q4830453",   # business
-    "Q891723",    # public company
-    "Q431289",    # brand
-    "Q1616075",   # television station
-    "Q41298",     # magazine
-    "Q3918",      # university (modern institution)
-    "Q57305",     # railway station
-    "Q1420",      # motor car
-}
-
-
 def _ssl_context() -> ssl.SSLContext:
     try:
         return ssl.create_default_context()
@@ -169,22 +144,6 @@ class WikidataClient:
 
 
 # ── entity helpers (pure) ─────────────────────────────────────────────────────
-def instance_and_subclass_of(entity: dict) -> list[str]:
-    """P31 (instance of) + P279 (subclass of) target QIDs."""
-    out: list[str] = []
-    claims = entity.get("claims", {})
-    for prop in ("P31", "P279"):
-        for claim in claims.get(prop, []):
-            snak = claim.get("mainsnak", {})
-            if snak.get("snaktype") != "value":
-                continue  # somevalue/novalue → skip
-            dv = snak.get("datavalue", {}).get("value", {})
-            qid = dv.get("id")
-            if qid:
-                out.append(qid)
-    return out
-
-
 def label_of(entity: dict, lang: str = "en") -> str | None:
     return entity.get("labels", {}).get(lang, {}).get("value")
 

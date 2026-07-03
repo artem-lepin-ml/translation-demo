@@ -13,6 +13,24 @@ from collections import defaultdict
 VERDICTS = ("green", "yellow", "red")
 
 
+def wilson_ci(correct: int, total: int, z: float = 1.96) -> tuple[float, float]:
+    """Wilson score interval for a binomial proportion — honest CI on small-n
+    accuracy (spec §8: single-digit term counts move the golden-99 accuracy by
+    multiple points, so a plain point estimate without an interval is dishonest).
+
+    ``total=0`` returns the maximally uninformative interval ``(0.0, 1.0)``.
+    """
+    if total == 0:
+        return (0.0, 1.0)
+    p = correct / total
+    denom = 1 + z * z / total
+    center = p + z * z / (2 * total)
+    margin = z * ((p * (1 - p) / total + z * z / (4 * total * total)) ** 0.5)
+    lo = (center - margin) / denom
+    hi = (center + margin) / denom
+    return (round(max(0.0, lo), 4), round(min(1.0, hi), 4))
+
+
 def _f1_parts(y_true: list[str], y_pred: list[str], label: str) -> tuple[float, float, float]:
     tp = sum(1 for t, p in zip(y_true, y_pred) if t == label and p == label)
     fp = sum(1 for t, p in zip(y_true, y_pred) if t != label and p == label)

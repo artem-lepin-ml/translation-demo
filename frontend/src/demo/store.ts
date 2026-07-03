@@ -18,6 +18,7 @@ import type {
   EvaluateResponse,
   TestModelResult,
   CreateDocumentBody,
+  GroundingConfig,
 } from './api-client';
 import {
   getDocuments,
@@ -38,6 +39,8 @@ import {
   createDocument as apiCreateDocument,
   deleteDocument as apiDeleteDocument,
   patchIssueStatus,
+  getGroundingConfig,
+  updateGroundingConfig,
 } from './api-client';
 import type { CriterionId, ModelRegistryEntry } from './api-client';
 
@@ -60,6 +63,7 @@ export interface DemoStore {
   documents: DocumentSummary[];
   criteria: Criterion[];
   models: ModelRegistryEntryPublic[];
+  groundingConfig: GroundingConfig | null;
 
   // ── loading states ──────────────────────────────────────────────────────────
   documentLoading: boolean;
@@ -149,6 +153,9 @@ export interface DemoStore {
   saveModel: (name: string, entry: Partial<ModelRegistryEntry>) => Promise<void>;
   removeModel: (name: string) => Promise<void>;
   testModel: (name: string) => Promise<TestModelResult>;
+
+  // ─── grounding config ───────────────────────────────────────────────────────
+  saveGroundingConfig: (cfg: GroundingConfig) => Promise<void>;
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -230,6 +237,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   documents: [],
   criteria: [],
   models: [],
+  groundingConfig: null,
   documentLoading: false,
   documentError: null,
   paraEvalState: {},
@@ -246,10 +254,11 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   init: async () => {
     set({ documentLoading: true, documentError: null });
     try {
-      const [summaries, criteria, models] = await Promise.all([
+      const [summaries, criteria, models, groundingConfig] = await Promise.all([
         getDocuments(),
         getCriteria(),
         getModels(),
+        getGroundingConfig(),
       ]);
       const firstId = summaries[0]?.id;
       if (firstId === undefined) {
@@ -266,6 +275,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
         documents: summaries,
         criteria,
         models,
+        groundingConfig,
         activeCriteria,
         documentLoading: false,
         paraEvalState: Object.fromEntries(doc.paragraphs.map((_, i) => [i, defaultParaEval()])),
@@ -593,6 +603,13 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   },
 
   testModel: async (name) => apiTestModel(name),
+
+  // ── grounding config ──────────────────────────────────────────────────────
+
+  saveGroundingConfig: async (cfg) => {
+    const updated = await updateGroundingConfig(cfg);
+    set({ groundingConfig: updated });
+  },
   };
 });
 

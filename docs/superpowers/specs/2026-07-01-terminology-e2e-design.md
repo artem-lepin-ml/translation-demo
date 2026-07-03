@@ -2,6 +2,8 @@
 
 Up-link: [docs/stages/terminology.md](../../stages/terminology.md). Contract: [2026-06-30-demo-contracts.md](2026-06-30-demo-contracts.md) §1 (`Term`, `WikidataRef`). Merges the two goal-cycles [grounding](../../goals/2026-07-01-grounding-overnight.md) + [pairing](../../goals/2026-07-01-pairing-overnight.md) into ONE end-to-end module, executed autonomously on branch `feat/terminology`.
 
+> **LEGACY (2026-07-03):** superseded by G6 label_first — see [2026-07-03-grounding-label-first-design.md](2026-07-03-grounding-label-first-design.md). Pairing sections remain in force.
+
 ## 1. Goal
 
 One module that turns a `(RU source, EN translation)` paragraph into the full `Term[]` the demo needs — filling **both** signals of the `Term` contract:

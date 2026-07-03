@@ -40,10 +40,11 @@ def main() -> int:
             conn.execute(
                 "INSERT OR REPLACE INTO term(paragraph_id,source_surface,source_lemma,context,"
                 "char_start,char_end,difficulty,grounded_json,candidates_json,target_surface,"
-                "pair_accuracy,recommended,note) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "pair_accuracy,recommended,note,trace_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (pid, t["sourceSurface"], t["sourceLemma"], t["context"], t["charStart"], t["charEnd"],
                  t["difficulty"], json.dumps(g) if g else None, json.dumps(t["candidates"]),
-                 t["targetSurface"], t["pairAccuracy"], t["recommended"], t.get("note", "")),
+                 t["targetSurface"], t["pairAccuracy"], t["recommended"], t.get("note", ""),
+                 json.dumps(t.get("trace") or {})),
             )
             inserted += 1
         paras += 1

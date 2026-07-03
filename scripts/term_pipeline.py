@@ -28,7 +28,7 @@ from palimpsest.terminology.extract import (
     parse_surfaces,
     validate_surfaces,
 )
-from palimpsest.terminology.grounding import ApiFirstGrounding
+from palimpsest.terminology.grounding import LabelFirstGrounding
 from palimpsest.terminology.pairing import LinkLocatePairing
 from palimpsest.terminology.wikidata import WikidataClient
 
@@ -54,21 +54,16 @@ def _seed_rows() -> dict[int, dict]:
     return {json.loads(l)["id"]: json.loads(l) for l in SEED.open(encoding="utf-8")}
 
 
-LEMMAS = ROOT / "data/seed/lemmas.json"
-
-
 def cmd_mentions(_args) -> int:
     rows = _seed_rows()
     extracted = json.loads(SURFACES.read_text(encoding="utf-8"))
-    lemmas = json.loads(LEMMAS.read_text(encoding="utf-8")) if LEMMAS.exists() else {}
     MENTIONS.parent.mkdir(parents=True, exist_ok=True)
     n = 0
     with MENTIONS.open("w", encoding="utf-8") as fh:
         for para in extracted:
             pid = para["paragraph_id"]
             src = rows[pid]["source"]
-            surfaces = [{**s, "lemma": lemmas.get(s["surface"], s["surface"])} for s in para["surfaces"]]
-            for m in mentions_from_surfaces(src, surfaces):
+            for m in mentions_from_surfaces(src, para["surfaces"]):
                 fh.write(json.dumps({
                     "paragraph_id": pid, "surface": m.surface, "context": m.context,
                     "lemma": m.lemma, "char_start": m.char_start, "char_end": m.char_end,
@@ -87,7 +82,7 @@ def _term_json(t) -> dict:
         "grounded": t.grounded.as_dict() if t.grounded else None,
         "candidates": [c.as_dict() for c in t.candidates],
         "targetSurface": t.target_surface, "pairAccuracy": t.pair_accuracy,
-        "recommended": t.recommended, "note": t.note,
+        "recommended": t.recommended, "note": t.note, "trace": t.trace,
     }
 
 
@@ -95,7 +90,7 @@ def cmd_run(_args) -> int:
     rows = _seed_rows()
     by_para = load_mentions(MENTIONS)
     wd = WikidataClient(cache_path=CACHE)
-    grounder, pairer = ApiFirstGrounding(wd), LinkLocatePairing(wd)
+    grounder, pairer = LabelFirstGrounding(wd), LinkLocatePairing(wd)
 
     out: dict[str, list] = {}
     t0 = time.perf_counter()
@@ -206,7 +201,6 @@ def cmd_extract(args) -> int:
     n_retries = 0
     out: list[dict] = []
     calls_log: list[dict] = []
-    lemmas = json.loads(LEMMAS.read_text(encoding="utf-8")) if LEMMAS.exists() else {}
 
     for i, (pid, source) in enumerate(pairs):
         if n_calls >= MAX_CALLS:
@@ -230,10 +224,6 @@ def cmd_extract(args) -> int:
             "pid": pid, "model": model, "finish_reason": "stop" if surfaces else "empty",
             "n_surfaces": len(valid), "n_dropped_not_in_source": dropped, "latency_ms": round(latency_ms, 1),
         })
-        for item in valid:
-            s = item["surface"]
-            if s[:1].islower() and s not in lemmas:
-                lemmas[s] = s
 
         # mid-batch budget check (every 8 paragraphs, plus the last one)
         if i in (7, len(pairs) - 1):
@@ -248,7 +238,6 @@ def cmd_extract(args) -> int:
     delta = (usage_after - usage_before) if (usage_before is not None and usage_after is not None) else None
 
     SURFACES.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
-    LEMMAS.write_text(json.dumps(lemmas, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
     CALLS_LOG.parent.mkdir(parents=True, exist_ok=True)
     with CALLS_LOG.open("a", encoding="utf-8") as fh:
         for row in calls_log:

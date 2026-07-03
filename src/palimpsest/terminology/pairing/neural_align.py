@@ -9,7 +9,15 @@ degrading. Interface only; **not run** in the no-CUDA demo.
 from __future__ import annotations
 
 from ..base import Judge, PairRequest, PairResult
-from ..grounding.mgenre import cuda_available
+
+
+def cuda_available() -> bool:
+    try:
+        import torch  # noqa: PLC0415
+
+        return bool(torch.cuda.is_available())
+    except Exception:
+        return False
 
 
 class NeuralAlignPairing:

@@ -236,6 +236,7 @@ CREATE TABLE term (                        -- заполняет term-агент
   grounded_json TEXT, candidates_json TEXT,
   target_surface TEXT, pair_accuracy TEXT, -- green|yellow|red|NULL (пара; NULL при difficulty=red)
   recommended TEXT, note TEXT,
+  trace_json TEXT NOT NULL DEFAULT '{}',   -- GroundingTrace v1 (G6), полный лог решения граундинга
   UNIQUE (paragraph_id, char_start, char_end)   -- защита от дублей при ре-грундинге
 );
 CREATE TABLE criterion (
@@ -251,6 +252,12 @@ CREATE TABLE glossary (                    -- store term-агента; ключ 
   wikidata_id TEXT,                        -- QID — опционально
   UNIQUE (term, context)                   -- много записей на один term, различает context
 );
+CREATE TABLE grounding_config (            -- singleton (G6): judge-модель + промпт + params, зеркало NerConfig
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
+);
 ```
 
 `criterion_id`/`model_name` — FK с `ON DELETE RESTRICT` (по умолчанию): удалить критерий/модель, на которые ссылается история, нельзя — вернётся 409, прячь через `enabled=false`. `id`/`name` неизменяемы (rename = пересоздание не поддерживаем). Запуск: `uvicorn app:app --workers 1` (SQLite — один писатель).
@@ -260,6 +267,7 @@ CREATE TABLE glossary (                    -- store term-агента; ключ 
 На вход `{paragraphId, source(RU), target(EN)}`, на выход `Term[]` ровно по типу §1 — файлом `term_pairs.json` для seed или ответом `POST /terms`. Правила:
 - Одна `Term`-строка на **каждое вхождение** термина (свои `charStart/charEnd`, свой `targetSurface`/`pairAccuracy`).
 - При `difficulty='red'` → `grounded=null`, `pairAccuracy=null`, `recommended=null`.
+- **Амендмент (G6, 2026-07-03):** `difficulty='yellow'` с `resolved_by='judge_unavailable'` тоже даёт `grounded=null` — задокументированное расширение правила «red → null», не нарушение. Причина: judge был недоступен на эскалации, QID честно не выбран, но difficulty остаётся 🟡 (путь дошёл до эскалации, а не оборвался на пустых кандидатах). Фронтовые truthiness-проверки вида `term.grounded && …` трактуют `null` как «нет узла» независимо от `difficulty` — ветку `yellow`+`grounded=null` не нужно отличать от `red` на уровне рендера.
 - Агент предполагает RU-источник (морфология `sourceLemma`); другая пара языков — вне scope демо.
 - Фронт/бэкенд демо в его внутренности не лезут — только этот тип.
 

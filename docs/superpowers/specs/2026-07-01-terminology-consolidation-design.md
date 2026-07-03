@@ -2,6 +2,8 @@
 
 Up-link: [docs/README.md](../../README.md). Supersedes nothing; consolidates three parallel implementations into one best-of-breed terminology module on branch `feat/terminology-consolidated` (forked from `feat/terminology`).
 
+> **LEGACY (2026-07-03):** superseded by G6 label_first — see [2026-07-03-grounding-label-first-design.md](2026-07-03-grounding-label-first-design.md). Pairing sections remain in force.
+
 ## Goal
 
 Merge the strongest parts of three independent implementations of the terminology `Term` module (difficulty + pairAccuracy over live Wikidata) into one module, keeping the unified end-to-end architecture and folding in the overnight cycles' better strategies, edge cases, and golden data. No GPU work (G2/P2 stay documented stubs). Delete nothing: all source branches stay intact.

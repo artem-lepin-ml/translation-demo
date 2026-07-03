@@ -22,6 +22,21 @@ Extractor = Callable[[str], list[dict]]   # source text -> [{surface, category}]
 
 
 @dataclass(frozen=True)
+class GroundingConfig:
+    """Ablation toggles for candidate generation and exact-label matching.
+
+    Each toggle acts at exactly one point in the G6 label_first algorithm, so
+    ablation runs can isolate and attribute its contribution (spec §3.3).
+    """
+
+    use_lemma: bool = True
+    use_fallbacks: bool = True
+    match_aliases: bool = True
+    search_limit: int = 7
+    enrich_top: int = 5
+
+
+@dataclass(frozen=True)
 class WikidataRef:
     """A resolved (or candidate) Wikidata entity."""
 
@@ -112,9 +127,14 @@ class Term:
     pair_accuracy: Verdict | None
     recommended: str | None
     note: str = ""
+    trace: dict = field(default_factory=dict)
 
     def db_tuple(self, paragraph_id: int) -> tuple:
-        """Row tuple for INSERT into the ``term`` table (grounded/candidates as JSON)."""
+        """Row tuple for INSERT into the ``term`` table (grounded/candidates as JSON).
+
+        ``trace_json`` is appended LAST to match the column order in the
+        ``term`` DDL (db.py) -- it was added after the original columns.
+        """
         import json
 
         return (
@@ -131,13 +151,21 @@ class Term:
             self.pair_accuracy,
             self.recommended,
             self.note,
+            json.dumps(self.trace),
         )
 
 
 class GroundingStrategy(Protocol):
     name: str
 
-    def ground(self, mention: TermMention, *, judge: Judge | None = None) -> GroundingResult: ...
+    def ground(
+        self,
+        mention: TermMention,
+        *,
+        judge: Judge | None = None,
+        scope_id: object | None = None,
+        judge_cache: dict | None = None,
+    ) -> GroundingResult: ...
 
 
 class PairingStrategy(Protocol):
