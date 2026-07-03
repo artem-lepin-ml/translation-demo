@@ -2,7 +2,7 @@
 
 Up-link: [CLAUDE.md § Branches & worktrees](../../../CLAUDE.md#branches--worktrees) · [docs/README.md](../../README.md)
 
-Спека по итогам иерархического аудита (5 read-only агентов: reorg-спека, overnight-цели, свип specs/plans, git-форензика зеркала, known issues) + `/verify-spec` (4 аспекта: цель, документация, операции, скоуп; 3 HIGH и 8 MEDIUM закрыты переработкой). Статус: **на решение владельца** — удаления не выполняются до его явного подтверждения.
+Спека по итогам иерархического аудита (5 read-only агентов: reorg-спека, overnight-цели, свип specs/plans, git-форензика зеркала, known issues) + `/verify-spec` (4 аспекта: цель, документация, операции, скоуп; 3 HIGH и 8 MEDIUM закрыты переработкой). Статус: **`feat/glossary-overnight` решена владельцем (retire, 2026-07-03)**; остальной список удалений ждёт его явного подтверждения.
 
 ## Цель и non-goals
 
@@ -15,7 +15,8 @@ Up-link: [CLAUDE.md § Branches & worktrees](../../../CLAUDE.md#branches--worktr
 1. **GitHub-зеркало уже чистое.** Одна долгоживущая ветка `dev-demo` (aec95b7, 3 коммита), ноль PR на момент аудита, ноль тегов. Транзитные `claude/*` ветки облачных сессий (включая ветку этой спеки) — обычная PR-гигиена: удалять после мерджа/закрытия PR.
 2. **«Куча веток» живёт локально на Mac (`/Users/a1111/Projects/Work/…`) и в GitLab-origin.** Из облачной сессии они не видны — вердикты собраны из доков репо + сверки содержимого зеркала; каждый требует локальной верификации (§ Процедура, шаг 1).
 3. **Импорт на GitHub сделан 2026-07-03 11:57 MSK** — после всех волн 2026-07-02 и после мерджа wave-4. Содержимое почти всех feat-веток подтверждено в дереве зеркала ⇒ локально это смерженный балласт: бандл + удаление ссылки.
-4. **Единственная ветка с уникальной несмерженной ценностью — `feat/glossary-overnight`** (глоссарий на 869 записей; в `dev-demo` — заглушка на 1 запись). Рекомендация: импорт артефакта (§ Merge-план, опция b).
+4. **Единственная ветка с уникальной несмерженной ценностью — `feat/glossary-overnight`** (глоссарий на 869 записей; в `dev-demo` — заглушка на 1 запись). **Решение владельца 2026-07-03: retire (опция c)** — импорт не делаем; бандл уже существует, ссылку удалить.
+5. **Обновление по отчётам локальных агентов (2026-07-03, вечер):** локальный `dev-demo` на Mac ушёл вперёд зеркала — non-ff-мерджи `ebfd0a6` (G6 label_first grounding) и `081c40e` (wiki-eval harness) **не запушены**; ветки `feat/grounding-label-first` и `feat/wiki-eval` уже слиты и удалены (verified merge, вне таблиц ниже); старые G-стратегии сохранены тегом `archive/grounding-g-strategies` — при чистке тег не трогать. Шаг 2 процедуры (пуш хвоста) теперь заведомо непустой и обязателен до чистки.
 
 ## Инвентарь и вердикты
 
@@ -54,13 +55,15 @@ Evidence: `tree` = содержимое найдено в снапшоте зе�
 | `feat/demo` | база overnight-веток, предшественник `dev-demo` | бандл + удалить |
 | `feat/project` | база glossary-работ | бандл + удалить |
 
-### Особый случай — решение владельца
+### Особый случай — решено: retire
 
-| Ветка | Ценность | Опции |
+| Ветка | Ценность | Решение |
 |---|---|---|
-| `feat/glossary-overnight` | **глоссарий на 869 записей + build-пайплайн**; в `dev-demo` HEAD `glossary/main.json` — заглушка на 1 запись | см. § Merge-план |
+| `feat/glossary-overnight` | **глоссарий на 869 записей + build-пайплайн**; в `dev-demo` HEAD `glossary/main.json` — заглушка на 1 запись | **retire (c), владелец 2026-07-03**: бандл есть, ссылку удалить; см. § Merge-план |
 
 ## Merge-план: glossary-overnight → dev-demo
+
+**Решение владельца (2026-07-03): опция (c) — формальный retire.** Глоссарий в демо не импортируем; бандл сохраняется в `../worktree-backups/`, ссылка на ветку удаляется по общей процедуре. Опции ниже оставлены как история обсуждения (и bundle-fetch-рецепт (b) — на случай, если глоссарий понадобится позже).
 
 Контекст: инвариант — `glossary/main.json` это single source of truth для RU→EN терминологии; вкладка Glossary в демо сейчас работает поверх заглушки.
 
@@ -83,7 +86,7 @@ Evidence: `tree` = содержимое найдено в снапшоте зе�
   ```
 
   Дальше: прогнать демо на новом глоссарии (Glossary tab, terminology pairing), коммит `feat(glossary): import real 869-entry glossary from feat/glossary-overnight`, PR → `dev-demo`. После мерджа `feat/glossary-overnight` формально закрыта: бандл + удаление ссылки.
-- **(c) Формальный retire.** Если глоссарий в демо не нужен — бандл, удалить ссылку, снять «pending owner decision» в CLAUDE.md.
+- **(c) Формальный retire. ← выбрано владельцем.** Глоссарий в демо не нужен — бандл, удалить ссылку, снять «pending owner decision» в CLAUDE.md (снято в коммите этого решения).
 
 ## Процедура чистки (локально, на Mac)
 
@@ -117,7 +120,7 @@ git push <gitlab-remote> --delete <branch>   # если ветка была за
 
 ## Doc-parity
 
-- CLAUDE.md § Branches & worktrees: после исполнения решения (b) или (c) убрать строку «Bundled, pending an owner decision: feat/glossary-overnight» — в том же коммите, что исполняет решение.
+- ~~CLAUDE.md § Branches & worktrees: убрать строку «Bundled, pending an owner decision: feat/glossary-overnight»~~ — **выполнено** в коммите, фиксирующем retire-решение (сам drop ссылки — механика на Mac, шаги 3–4 процедуры).
 - ~~Фиксировать в CLAUDE.md список веток зеркала~~ — отклонено на `/verify-spec`: перечень запушенных веток — дрейфующий факт, CLAUDE.md такие не хранит; SSOT — сам `git ls-remote`.
 - Отдельный S-пункт вне скоупа чистки (на отмашку владельца, можно отдельным коммитом): [README.md](../../../README.md) «Renders 16 seed paragraphs» → **15**. Направление однозначное: 15 — канон после seed-refresh 2026-07-02 ([docs/testing/e2e-data.md](../../testing/e2e-data.md), [docs/subsystems/webapp.md](../../subsystems/webapp.md) уже говорят 15); «чинить сид назад» нельзя.
 
@@ -125,7 +128,7 @@ git push <gitlab-remote> --delete <branch>   # если ветка была за
 
 1. Локально `git branch -a` показывает только: `main`, `dev-demo`, `old-gse-translating` (+ живые `feat/*` активной работы).
 2. Каждая удалённая ветка имеет верифицированный `.bundle` в `../worktree-backups/`.
-3. Решение по `feat/glossary-overnight` исполнено: либо PR `feat/glossary-import` смержен в `dev-demo`, либо retire зафиксирован.
+3. Решение по `feat/glossary-overnight` исполнено: retire (c) — бандл в `../worktree-backups/`, ссылка удалена, импорта нет.
 4. `git worktree list` — только primary + `dev-demo`.
 5. `git log origin/dev-demo..dev-demo` пуст (зеркало несёт полный хвост коммитов).
 6. Doc-parity исполнен: строка «pending owner decision» снята из CLAUDE.md в коммите решения; README-фикс 16→15 либо сделан, либо явно отложен владельцем.

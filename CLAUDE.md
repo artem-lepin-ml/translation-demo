@@ -26,8 +26,6 @@ An agent works **only inside its assigned worktree path**. It must never `cd` or
 
 Archived branches are preserved as `git bundle` files under `../worktree-backups/` — **never hard-deleted**.
 
-Bundled, pending an owner decision (unique un-merged work, not on any keeper): `feat/glossary-overnight` (real 869-entry glossary + build pipeline). Merge-forward or formally retire before dropping the branch ref.
-
 ## Conventions
 
 ### Code
