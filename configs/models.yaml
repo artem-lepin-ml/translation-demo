@@ -1,0 +1,5 @@
+# Model registry. Every endpoint speaks OpenAI-compatible chat/completions —
+# that includes cloud providers (xAI, OpenAI, GigaChat-compat shim) and local vLLM.
+
+models:
+

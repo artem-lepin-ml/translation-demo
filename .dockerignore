@@ -1,0 +1,14 @@
+.git
+.venv
+node_modules
+frontend/node_modules
+frontend/src
+data
+docs
+references
+reports
+factowl
+graphify-out
+tests
+worktree-backups
+*.jsonl

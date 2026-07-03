@@ -1,0 +1,426 @@
+{
+  "Лагаше": {
+    "qid": "Q207330",
+    "difficulty": "green"
+  },
+  "Месопотамии": {
+    "qid": "Q11767",
+    "difficulty": "green"
+  },
+  "Уруинимгину": {
+    "qid": "Q315698",
+    "difficulty": "green"
+  },
+  "лугаля": {
+    "qid": "Q854642",
+    "difficulty": "green"
+  },
+  "номов": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "номовых": {
+    "qid": "Q223706",
+    "difficulty": "yellow"
+  },
+  "Аккаде": {
+    "qid": "Q150996",
+    "difficulty": "green"
+  },
+  "Киша": {
+    "qid": "Q132272",
+    "difficulty": "green"
+  },
+  "Лугальзагеси": {
+    "qid": "Q316241",
+    "difficulty": "green"
+  },
+  "Саргон": {
+    "qid": "Q199461",
+    "difficulty": "yellow"
+  },
+  "Шумера": {
+    "qid": "Q35355",
+    "difficulty": "green"
+  },
+  "номы": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "энси": {
+    "qid": "Q932495",
+    "difficulty": "green"
+  },
+  "Кавказ": {
+    "qid": "Q18869",
+    "difficulty": "yellow"
+  },
+  "Нарам-Суэн": {
+    "qid": "Q297506",
+    "difficulty": "green"
+  },
+  "Ниппуре": {
+    "qid": "Q188395",
+    "difficulty": "green"
+  },
+  "Шаркалишарри": {
+    "qid": "Q349653",
+    "difficulty": "green"
+  },
+  "Энлиля": {
+    "qid": "Q214672",
+    "difficulty": "green"
+  },
+  "горцев-кутиев": {
+    "qid": "Q5621802",
+    "difficulty": "yellow"
+  },
+  "кутиев": {
+    "qid": "Q5621802",
+    "difficulty": "yellow"
+  },
+  "умман-манда": {
+    "qid": "Q7881701",
+    "difficulty": "green"
+  },
+  "III династии Ура": {
+    "qid": "Q723587",
+    "difficulty": "green"
+  },
+  "Ибби-Суэн": {
+    "qid": "Q352752",
+    "difficulty": "green"
+  },
+  "Иссине": {
+    "qid": "Q501259",
+    "difficulty": "green"
+  },
+  "Ишби-Эрра": {
+    "qid": "Q561153",
+    "difficulty": "green"
+  },
+  "Симашки": {
+    "qid": "Q3396376",
+    "difficulty": "green"
+  },
+  "Ура": {
+    "qid": "Q5699",
+    "difficulty": "green"
+  },
+  "Элам": {
+    "qid": "Q128904",
+    "difficulty": "green"
+  },
+  "людьми су": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "аккадцами": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "шумерский": {
+    "qid": "Q36790",
+    "difficulty": "green"
+  },
+  "шумеры": {
+    "qid": "Q656043",
+    "difficulty": "green"
+  },
+  "Законы Хаммурапи": {
+    "qid": "Q93304",
+    "difficulty": "green"
+  },
+  "Хаммурапи": {
+    "qid": "Q36359",
+    "difficulty": "green"
+  },
+  "авилумы": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "вардумы": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "мушкенумы": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "наши бильтим": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "старовавилонской": {
+    "qid": "Q733897",
+    "difficulty": "green"
+  },
+  "Ашшур": {
+    "qid": "Q200200",
+    "difficulty": "green"
+  },
+  "Вавилон": {
+    "qid": "Q5684",
+    "difficulty": "green"
+  },
+  "Вавилонии": {
+    "qid": "Q47690",
+    "difficulty": "green"
+  },
+  "Дамаска": {
+    "qid": "Q3766",
+    "difficulty": "green"
+  },
+  "Евфрат": {
+    "qid": "Q34589",
+    "difficulty": "green"
+  },
+  "Кадашман-Харбе": {
+    "qid": "Q879879",
+    "difficulty": "yellow"
+  },
+  "Тадморе": {
+    "qid": "Q938457",
+    "difficulty": "green"
+  },
+  "амореев": {
+    "qid": "Q203507",
+    "difficulty": "green"
+  },
+  "залива": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "касситами": {
+    "qid": "Q243312",
+    "difficulty": "green"
+  },
+  "касситским": {
+    "qid": "Q243312",
+    "difficulty": "green"
+  },
+  "сутии-амореи": {
+    "qid": "Q203507",
+    "difficulty": "green"
+  },
+  "Гарвард": {
+    "qid": "Q13371",
+    "difficulty": "green"
+  },
+  "Китая": {
+    "qid": "Q29520",
+    "difficulty": "yellow"
+  },
+  "Плодородного Полумесяца": {
+    "qid": "Q170526",
+    "difficulty": "green"
+  },
+  "Хуанхэ": {
+    "qid": "Q7355",
+    "difficulty": "green"
+  },
+  "Чжан Гуан-жи": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "хуася": {
+    "qid": "Q2673403",
+    "difficulty": "green"
+  },
+  "шаньдунского архипелага": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "Байляньдун": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "Гуандун": {
+    "qid": "Q15175",
+    "difficulty": "yellow"
+  },
+  "Гуанси": {
+    "qid": "Q15176",
+    "difficulty": "yellow"
+  },
+  "Душицзы": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "Наньнина": {
+    "qid": "Q179608",
+    "difficulty": "green"
+  },
+  "Пэнтоушань": {
+    "qid": "Q1205679",
+    "difficulty": "green"
+  },
+  "Сяньжэньдун": {
+    "qid": "Q2812194",
+    "difficulty": "green"
+  },
+  "Цзэнпиянь": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "Янцзы": {
+    "qid": "Q5413",
+    "difficulty": "green"
+  },
+  "Чунь-цю": {
+    "qid": "Q747720",
+    "difficulty": "green"
+  },
+  "Шан шу": {
+    "qid": "Q875313",
+    "difficulty": "green"
+  },
+  "Ши цзина": {
+    "qid": "Q465108",
+    "difficulty": "green"
+  },
+  "чжоуских": {
+    "qid": "Q35216",
+    "difficulty": "green"
+  },
+  "шанъиньцев": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "Алкивиад": {
+    "qid": "Q187982",
+    "difficulty": "green"
+  },
+  "Гермеса": {
+    "qid": "Q41484",
+    "difficulty": "green"
+  },
+  "Никиев мир": {
+    "qid": "Q932202",
+    "difficulty": "green"
+  },
+  "Сицилию": {
+    "qid": "Q1460",
+    "difficulty": "green"
+  },
+  "Спарту": {
+    "qid": "Q5690",
+    "difficulty": "green"
+  },
+  "афиняне": {
+    "qid": "Q120096553",
+    "difficulty": "green"
+  },
+  "бога Гермеса": {
+    "qid": "Q41484",
+    "difficulty": "green"
+  },
+  "гермокопидов": {
+    "qid": "Q1097742",
+    "difficulty": "green"
+  },
+  "Анталкидова мира": {
+    "qid": "Q1132922",
+    "difficulty": "green"
+  },
+  "Афины": {
+    "qid": "Q1524",
+    "difficulty": "green"
+  },
+  "Беотийский союз": {
+    "qid": "Q833665",
+    "difficulty": "green"
+  },
+  "Беотию": {
+    "qid": "Q187570",
+    "difficulty": "green"
+  },
+  "Второму морскому союзу": {
+    "qid": "Q2338980",
+    "difficulty": "green"
+  },
+  "Спарта": {
+    "qid": "Q5690",
+    "difficulty": "green"
+  },
+  "Фивах": {
+    "qid": "Q11225429",
+    "difficulty": "yellow"
+  },
+  "Элладе": {
+    "qid": "Q12103805",
+    "difficulty": "yellow"
+  },
+  "Эпаминонда": {
+    "qid": "Q190436",
+    "difficulty": "green"
+  },
+  "клерухии": {
+    "qid": "Q1774212",
+    "difficulty": "green"
+  },
+  "республики": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "римской гражданской общины": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "римской фамилии": {
+    "qid": "Q15281450",
+    "difficulty": "green"
+  },
+  "фамилии": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "Александр": {
+    "qid": "Q8409",
+    "difficulty": "green"
+  },
+  "Александра": {
+    "qid": "Q8409",
+    "difficulty": "green"
+  },
+  "Аттал": {
+    "qid": "Q356050",
+    "difficulty": "green"
+  },
+  "Клеопатра": {
+    "qid": "Q257526",
+    "difficulty": "yellow"
+  },
+  "Македонию": {
+    "qid": "Q83958",
+    "difficulty": "yellow"
+  },
+  "Олимпиады": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "Филиппа": {
+    "qid": null,
+    "difficulty": "red"
+  },
+  "Эпир": {
+    "qid": "Q11266977",
+    "difficulty": "yellow"
+  },
+  "иллирийцев": {
+    "qid": "Q146715",
+    "difficulty": "green"
+  },
+  "Гая": {
+    "qid": "Q313439",
+    "difficulty": "green"
+  },
+  "преторы": {
+    "qid": "Q172907",
+    "difficulty": "green"
+  },
+  "принципате": {
+    "qid": "Q206414",
+    "difficulty": "green"
+  }
+}

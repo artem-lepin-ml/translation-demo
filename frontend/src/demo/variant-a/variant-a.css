@@ -1,0 +1,1765 @@
+/* ─── Variant A — Reader / Grammarly-like dark theme ─────────────────────── */
+
+:root {
+  --va-bg: #1a1b26;
+  --va-surface: #1f2035;
+  --va-surface2: #24253a;
+  --va-border: #2d2e4a;
+  --va-border2: #3b3c5c;
+  --va-text: #c0caf5;
+  --va-text-muted: #6272a4;
+  --va-text-dim: #414868;
+  --va-accent: #7aa2f7;
+  --va-accent2: #bb9af7;
+  --va-green: #3ddc84;
+  --va-yellow: #e0af68;
+  --va-red: #f7768e;
+  --va-radius: 8px;
+  --va-radius-sm: 4px;
+  --va-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --va-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.va-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--va-bg);
+  color: var(--va-text);
+  font-family: var(--va-font);
+  overflow: hidden;
+}
+
+/* ─── Top chrome ────────────────────────────────────────────────────────────── */
+
+.va-chrome {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 24px;
+  height: 52px;
+  background: var(--va-surface);
+  border-bottom: 1px solid var(--va-border);
+  flex-shrink: 0;
+  gap: 16px;
+  z-index: 20;
+}
+
+.va-brand {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--va-accent);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.va-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.va-tab {
+  padding: 6px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--va-text-muted);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.va-tab:hover {
+  color: var(--va-text);
+  background: var(--va-surface2);
+}
+
+.va-tab.active {
+  color: var(--va-accent);
+  background: rgba(122, 162, 247, 0.12);
+}
+
+/* Document switcher (top bar) */
+.va-doc-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.va-doc-switcher select {
+  background: var(--va-surface2);
+  color: var(--va-text);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  padding: 5px 8px;
+  font-size: 12px;
+  max-width: 260px;
+}
+
+.va-doc-switcher select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.va-icon-btn {
+  background: transparent;
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 8px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.va-icon-btn:hover {
+  color: var(--va-red);
+  border-color: var(--va-red);
+}
+
+.va-precompute-badge {
+  color: var(--va-text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.va-precompute-failed-notice {
+  color: var(--va-text-muted);
+  font-size: 12px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+}
+
+/* Chrome right section (Accept all + score) */
+.va-chrome-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* Doc-level Accept all */
+.va-accept-all-doc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--va-green);
+  background: rgba(61, 220, 132, 0.10);
+  color: var(--va-green);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.va-accept-all-doc:hover:not(:disabled) {
+  background: rgba(61, 220, 132, 0.22);
+}
+
+.va-accept-all-doc:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.va-accept-all-badge {
+  background: var(--va-green);
+  color: #1a1b26;
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.va-doc-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.va-doc-score-label {
+  font-size: 11px;
+  color: var(--va-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.va-doc-score-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--va-green);
+  transition: color 0.3s;
+}
+
+.va-doc-score-value.yellow { color: var(--va-yellow); }
+.va-doc-score-value.red    { color: var(--va-red); }
+
+.va-doc-score-loading {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--va-text-dim);
+  animation: va-pulse 1s ease-in-out infinite;
+}
+
+/* ─── Sub-toolbar (filter chips row) ────────────────────────────────────────── */
+
+.va-subtoolbar {
+  display: flex;
+  align-items: center;
+  padding: 10px 24px;
+  gap: 8px;
+  background: var(--va-surface);
+  border-bottom: 1px solid var(--va-border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  z-index: 19;
+}
+
+.va-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 1.5px solid transparent;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--va-text);
+  user-select: none;
+}
+
+.va-chip .chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.va-chip.off {
+  opacity: 0.4;
+}
+
+.va-chip.terms-chip {
+  border-color: var(--va-border2);
+  color: var(--va-text-muted);
+}
+
+.va-chip.terms-chip.on {
+  color: var(--va-text);
+  border-color: var(--va-accent2);
+  background: rgba(187, 154, 247, 0.1);
+}
+
+/* ─── Main body ───────────────────────────────────────────────────────────── */
+
+.va-body {
+  display: flex;
+  flex: 1 1 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── Document tab ──────────────────────────────────────────────────────────── */
+
+.va-doc-wrapper {
+  flex: 1 1 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Column headers row */
+.va-col-headers {
+  display: flex;
+  padding: 20px 24px 8px 24px;
+  gap: 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  background: var(--va-bg);
+  z-index: 5;
+  border-bottom: 1px solid var(--va-border);
+}
+
+.va-col-header {
+  flex: 1 1 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--va-text-dim);
+  padding: 0 16px 8px 16px;
+}
+
+/* Paragraphs area */
+.va-paragraphs-area {
+  padding: 16px 24px 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ─── Paragraph row ──────────────────────────────────────────────────────────── */
+
+.va-para-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: var(--va-radius);
+  padding: 8px 0 12px;
+  border: 1.5px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+  cursor: default;
+  position: relative;
+}
+
+.va-para-row + .va-para-row {
+  border-top: 1px solid var(--va-border);
+}
+
+.va-para-row:hover {
+  background: rgba(122, 162, 247, 0.03);
+}
+
+.va-para-row.selected {
+  background: rgba(122, 162, 247, 0.06);
+  border-color: rgba(122, 162, 247, 0.25);
+}
+
+.va-para-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+/* Meta strip: §N + horizontal score chip (replaces the 72px gutter) */
+.va-para-meta {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 16px;
+  cursor: pointer;
+}
+
+/* Score chip */
+.va-score-chip {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  transition: background 0.3s;
+}
+
+.va-score-chip-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--va-text-dim);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+
+.va-para-row.selected .va-score-chip-label { color: var(--va-accent); }
+
+.va-score-chip-val {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Band colours — the missing .green/.yellow/.red fix (spec §1) */
+.va-score-chip.green  .va-score-chip-val { color: var(--va-green); }
+.va-score-chip.yellow .va-score-chip-val { color: var(--va-yellow); }
+.va-score-chip.red    .va-score-chip-val { color: var(--va-red); }
+
+.va-score-chip-none {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--va-text-dim);
+  min-width: 1.5ch;          /* stable width — no layout shift on first score */
+  display: inline-block;
+  text-align: center;
+}
+
+.va-score-chip-delta {
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  animation: va-pop-in 0.3s ease-out;
+}
+.va-score-chip-delta.up   { color: var(--va-green); }
+.va-score-chip-delta.down { color: var(--va-red); }
+
+.va-score-chip-loading {
+  font-size: 12px;
+  color: var(--va-text-dim);
+  animation: va-pulse 1s ease-in-out infinite;
+  line-height: 1;
+  min-width: 1.5ch;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Stale-score badge — mirrors .va-cached-badge but amber: scores are for an
+   earlier version of the paragraph text (accept / accept-all / manual edit). */
+.va-stale-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: var(--va-radius-sm);
+  color: var(--va-yellow);
+  border: 1px solid var(--va-yellow);
+  background: rgba(224, 175, 104, 0.12);
+}
+
+/* Source (RU) */
+.va-para-source {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--va-text-muted);
+  font-style: italic;
+  padding: 0 16px;
+  cursor: pointer;
+  user-select: text;
+}
+
+/* Target (EN) */
+.va-para-target {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 16px;
+  position: relative;
+}
+
+/* ─── TipTap editor paragraph ─────────────────────────────────────────────── */
+
+.va-para-target .ProseMirror {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--va-text);
+  outline: none;
+  cursor: text;
+  position: relative;
+}
+
+.va-para-target .ProseMirror p {
+  margin: 0;
+}
+
+.va-para-target .ProseMirror {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* ─── Stacked underlines via decoration spans ─────────────────────────────── */
+
+.va-underline-seg {
+  cursor: pointer;
+  position: relative;
+}
+
+/* ─── Terminology spans — BOTH sides ─────────────────────────────────────────
+   Target side: .va-term-span (injected into TipTap DOM via TermOverlay)
+   Source side: .va-term-span-source (rendered as React spans)
+   Both share the same visual style but need different class names.
+──────────────────────────────────────────────────────────────────────────── */
+
+/* CONVENTION (emergent — do not "unify" away in a refactor):
+   terminology spans use a 1px DOTTED border (this block);
+   judge/issue underlines use a SOLID box-shadow (.va-underline-seg /
+   stackedUnderlineStyle in review-extension.ts). The two signals must stay
+   visually distinct on a paragraph that carries both at once. */
+.va-term-span,
+.va-term-span-source {
+  display: inline;
+  border: 1px dotted;
+  border-radius: 3px;
+  padding: 0 2px;
+  cursor: pointer;
+  position: relative;
+  transition: box-shadow 0.15s;
+}
+
+.va-term-span.verdict-green {
+  border-color: var(--va-green);
+  background: rgba(61, 220, 132, 0.07);
+}
+.va-term-span.verdict-yellow {
+  border-color: var(--va-yellow);
+  background: rgba(224, 175, 104, 0.08);
+}
+.va-term-span.verdict-red {
+  border-color: var(--va-red);
+  background: rgba(247, 118, 142, 0.08);
+}
+
+/* Cross-highlight: when hovered on the other side.
+   Uses outline (not box-shadow) because judge underlines already occupy
+   box-shadow via stackedUnderlineStyle (review-extension.ts) — an outline
+   composes independently and stays visible when both signals coincide. */
+.va-term-span.term-cross-highlight,
+.va-term-span-source.term-cross-highlight {
+  outline: 2px solid rgba(122, 162, 247, 0.5);
+  outline-offset: 1px;
+}
+
+.va-term-span-source.difficulty-green {
+  border-color: var(--va-green);
+  background: rgba(61, 220, 132, 0.07);
+}
+.va-term-span-source.difficulty-yellow {
+  border-color: var(--va-yellow);
+  background: rgba(224, 175, 104, 0.08);
+}
+.va-term-span-source.difficulty-red {
+  border-color: var(--va-red);
+  background: rgba(247, 118, 142, 0.08);
+}
+
+/* Pair index badge (source side — real <sup> element) */
+.va-term-pair-idx {
+  font-size: 8px;
+  color: var(--va-text-muted);
+  vertical-align: super;
+  margin-left: 1px;
+  font-style: normal;
+}
+
+/* EN side: terms are ProseMirror decorations, so the pair index is rendered
+   via a pseudo-element on the span. */
+.va-term-span::before {
+  content: attr(data-pair-idx);
+  font-size: 8px;
+  color: var(--va-text-muted);
+  vertical-align: super;
+  margin-right: 1px;
+  font-style: normal;
+}
+
+/* ─── Inspector panel ─────────────────────────────────────────────────────── */
+
+.va-inspector {
+  width: 320px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--va-border);
+  background: var(--va-surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+
+.va-inspector.collapsed {
+  width: 44px;
+}
+
+.va-inspector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--va-border);
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.va-inspector-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.va-inspector-para-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--va-accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.va-inspector-issue-count {
+  font-size: 11px;
+  color: var(--va-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.va-inspector.collapsed .va-inspector-issue-count {
+  display: none;
+}
+
+.va-inspector-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.va-btn-accept-all {
+  padding: 4px 10px;
+  border-radius: var(--va-radius-sm);
+  background: rgba(61, 220, 132, 0.12);
+  border: 1px solid var(--va-green);
+  color: var(--va-green);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.va-btn-accept-all:hover:not(:disabled) { background: rgba(61, 220, 132, 0.26); }
+.va-btn-accept-all:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.va-inspector-collapse-btn {
+  background: none;
+  border: none;
+  color: var(--va-text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: var(--va-radius-sm);
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.va-inspector-collapse-btn:hover {
+  color: var(--va-text);
+  background: var(--va-surface2);
+}
+
+/* Failure / error banner — reused for evaluate failures, dismiss failures, and
+   settings remove-conflict errors (SettingsTab's EvaluatorEditor). */
+.va-inspector-warning {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 14px 10px;
+  padding: 8px 12px;
+  background: rgba(247, 118, 142, 0.12);
+  border: 1px solid var(--va-red);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-red);
+  font-size: 12px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.va-retry-failed {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Accept-all outcome line — dim, informational; replaced the old window.alert. */
+.va-accept-summary {
+  margin: 0 14px 10px;
+  padding: 6px 12px;
+  color: var(--va-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+/* Stale-scores hint — dimmer amber variant of .va-inspector-warning; not an
+   error, just a nudge that the visible scores predate the last edit. */
+.va-inspector-stale-hint {
+  margin: 0 14px 10px;
+  padding: 8px 12px;
+  background: rgba(224, 175, 104, 0.08);
+  border: 1px solid var(--va-yellow);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-yellow);
+  font-size: 12px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+/* Inspector tabs */
+.va-inspector-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--va-border);
+  flex-shrink: 0;
+}
+
+.va-inspector-tab {
+  flex: 1;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--va-text-muted);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.va-inspector-tab.active {
+  color: var(--va-accent);
+  border-bottom-color: var(--va-accent);
+}
+
+.va-inspector-tab:hover:not(.active) {
+  color: var(--va-text);
+}
+
+/* Inspector body */
+.va-inspector-body {
+  flex: 1 1 0;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.va-inspector-body::-webkit-scrollbar { width: 4px; }
+.va-inspector-body::-webkit-scrollbar-track { background: var(--va-surface); }
+.va-inspector-body::-webkit-scrollbar-thumb { background: var(--va-border2); border-radius: 2px; }
+
+/* Inspector empty state */
+.va-insp-empty {
+  color: var(--va-text-dim);
+  font-size: 12px;
+  text-align: center;
+  padding: 24px 16px;
+  font-style: italic;
+}
+
+/* Issue cards in inspector */
+.va-insp-issues-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.va-insp-issue-card {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--va-border);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.va-insp-issue-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.va-insp-crit-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid;
+}
+
+.va-insp-model-name {
+  font-size: 10px;
+  color: var(--va-text-dim);
+  font-family: var(--va-font-mono);
+}
+
+.va-insp-issue-expl {
+  font-size: 12px;
+  color: var(--va-text);
+  line-height: 1.55;
+}
+
+.va-insp-issue-suggest {
+  font-size: 11px;
+  color: var(--va-accent);
+  line-height: 1.4;
+  padding: 5px 8px;
+  background: rgba(122, 162, 247, 0.07);
+  border-left: 2px solid var(--va-accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.va-insp-issue-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Passive note — issue with no concrete suggestion; read-only, no Accept/Dismiss */
+.va-insp-issue-note {
+  opacity: 0.7;
+}
+
+/* Scores view */
+.va-insp-scores {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.va-insp-score-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.va-insp-score-label-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.va-insp-score-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.va-insp-score-label {
+  flex: 1;
+  font-size: 12px;
+  color: var(--va-text);
+}
+
+.va-insp-score-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.va-insp-score-val {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 24px;
+  text-align: right;
+}
+
+.va-score-delta {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--va-green);
+  animation: va-pop-in 0.4s ease-out;
+  white-space: nowrap;
+}
+
+.va-score-loading {
+  font-size: 12px;
+  color: var(--va-text-dim);
+  animation: va-pulse 1s ease-in-out infinite;
+  min-width: 24px;
+  text-align: right;
+}
+
+.va-insp-score-bar-wrap {
+  height: 4px;
+  background: var(--va-border);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+.va-insp-score-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease-out;
+}
+
+.va-score-bar-shimmer {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--va-border) 0%,
+    var(--va-border2) 50%,
+    var(--va-border) 100%
+  );
+  background-size: 200% 100%;
+  animation: va-shimmer 1.2s ease-in-out infinite;
+}
+
+.va-insp-agg-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid var(--va-border);
+  padding-top: 10px;
+  margin-top: 2px;
+}
+
+.va-insp-agg-label {
+  flex: 1;
+  font-size: 12px;
+  color: var(--va-text-muted);
+  font-weight: 600;
+}
+
+.va-insp-agg-val {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.va-insp-scores-note {
+  font-size: 10px;
+  color: var(--va-text-dim);
+  text-align: right;
+}
+
+/* ─── Common buttons ──────────────────────────────────────────────────────── */
+
+.va-btn-accept {
+  padding: 4px 12px;
+  border-radius: var(--va-radius-sm);
+  background: rgba(61, 220, 132, 0.15);
+  border: 1px solid var(--va-green);
+  color: var(--va-green);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.va-btn-accept:hover:not(:disabled) { background: rgba(61, 220, 132, 0.28); }
+.va-btn-accept:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.va-btn-dismiss {
+  padding: 4px 12px;
+  border-radius: var(--va-radius-sm);
+  background: transparent;
+  border: 1px solid var(--va-border2);
+  color: var(--va-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.va-btn-dismiss:hover:not(:disabled) {
+  background: var(--va-surface);
+  color: var(--va-text);
+}
+.va-btn-dismiss:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ─── Popovers ────────────────────────────────────────────────────────────── */
+
+.va-popover-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.va-popover {
+  position: fixed;
+  z-index: 101;
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  min-width: 320px;
+  max-width: 460px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.va-popover-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--va-text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: var(--va-radius-sm);
+}
+
+.va-popover-close:hover { color: var(--va-text); }
+
+.va-issue-card {
+  background: var(--va-surface);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.va-issue-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.va-issue-criterion-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.va-issue-explanation {
+  font-size: 13px;
+  color: var(--va-text);
+  line-height: 1.6;
+}
+
+.va-issue-suggestion {
+  font-size: 12px;
+  color: var(--va-text-muted);
+  background: rgba(122, 162, 247, 0.07);
+  border-left: 2px solid var(--va-accent);
+  padding: 6px 10px;
+  border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+
+.va-issue-suggestion strong {
+  color: var(--va-accent);
+}
+
+/* Passive note — issue with no concrete suggestion; read-only, no Accept/Dismiss */
+.va-issue-note-tag {
+  font-size: 11px;
+  color: var(--va-text-muted);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.va-issue-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* ─── Term popover ────────────────────────────────────────────────────────── */
+
+.va-term-popover-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.va-term-popover-row {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.va-term-popover-label {
+  color: var(--va-text-muted);
+  flex: 0 0 80px;
+  font-weight: 500;
+}
+
+.va-term-popover-val {
+  color: var(--va-text);
+}
+
+/* ─── Glossary tab ────────────────────────────────────────────────────────── */
+
+.va-tab-content {
+  flex: 1 1 0;
+  overflow-y: auto;
+  padding: 32px 48px;
+}
+
+.va-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--va-text);
+  margin-bottom: 20px;
+}
+
+.va-empty-note {
+  color: var(--va-text-muted);
+  font-size: 13px;
+  max-width: 480px;
+}
+
+.va-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.va-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--va-text-muted);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--va-border2);
+}
+
+.va-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--va-border);
+  color: var(--va-text);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.va-table tr:hover td {
+  background: var(--va-surface2);
+}
+
+.va-ranking-row-clickable {
+  cursor: pointer;
+}
+
+.va-verdict-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.va-verdict-dot.green  { background: var(--va-green); }
+.va-verdict-dot.yellow { background: var(--va-yellow); }
+.va-verdict-dot.red    { background: var(--va-red); }
+
+.va-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 1px;
+}
+
+/* ─── Ranking tab ─────────────────────────────────────────────────────────── */
+
+.va-sortable-th {
+  cursor: pointer;
+  user-select: none;
+}
+
+.va-sortable-th:hover {
+  color: var(--va-text);
+}
+
+.va-sort-arrow {
+  margin-left: 4px;
+  opacity: 0.7;
+}
+
+.va-score-cell {
+  font-weight: 600;
+}
+
+.va-score-cell.green  { color: var(--va-green); }
+.va-score-cell.yellow { color: var(--va-yellow); }
+.va-score-cell.red    { color: var(--va-red); }
+
+.va-snippet {
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--va-text-muted);
+  font-size: 12px;
+}
+
+/* ─── Settings tab ────────────────────────────────────────────────────────── */
+
+.va-settings-section {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.va-settings-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--va-text);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--va-border);
+}
+
+.va-budget-line {
+  font-size: 12px;
+  font-family: var(--va-font-mono);
+  color: var(--va-text-muted);
+  margin-bottom: 16px;
+}
+
+.va-budget-line.yellow {
+  color: var(--va-yellow);
+}
+
+.va-budget-line.red {
+  color: var(--va-red);
+}
+
+.va-evaluator-color-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  /* the swatch now lives in a table cell (not a flex row) — needs a box */
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Evaluators as full-width table rows (Model Registry pattern) */
+.va-eval-row { cursor: pointer; }
+.va-eval-row:hover td { background: var(--va-surface2); }
+.va-eval-row.disabled td { opacity: 0.55; }
+
+.va-eval-chevron {
+  display: inline-block;
+  font-size: 10px;
+  color: var(--va-text-muted);
+  transition: transform 0.15s;
+}
+.va-eval-chevron.open { transform: rotate(90deg); }
+
+.va-evaluator-detail {
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.va-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--va-text-muted);
+  margin-bottom: 5px;
+}
+
+.va-field-input {
+  width: 100%;
+  background: var(--va-surface);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-text);
+  font-size: 13px;
+  padding: 7px 10px;
+  box-sizing: border-box;
+  outline: none;
+  font-family: var(--va-font);
+  transition: border-color 0.15s;
+}
+
+.va-field-input:focus {
+  border-color: var(--va-accent);
+}
+
+.va-field-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236272a4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+  cursor: pointer;
+}
+
+.va-prompt-preview {
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--va-surface);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius-sm);
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--va-text-muted);
+}
+
+.va-prompt-preview p { margin: 0 0 6px 0; }
+.va-prompt-preview h1,
+.va-prompt-preview h2,
+.va-prompt-preview h3 {
+  color: var(--va-text);
+  margin: 8px 0 4px;
+  font-size: 13px;
+}
+
+.va-prompt-preview code {
+  background: var(--va-surface2);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: var(--va-font-mono);
+  font-size: 11px;
+}
+
+.va-prompt-preview ul, .va-prompt-preview ol {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+.va-prompt-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 6px 0;
+}
+
+.va-prompt-preview th,
+.va-prompt-preview td {
+  border: 1px solid var(--va-border);
+  padding: 3px 6px;
+  font-size: 11px;
+}
+
+.va-weight-input {
+  width: 70px;
+}
+
+.va-add-eval-btn {
+  margin-top: 6px;
+  padding: 7px 14px;
+  border-radius: var(--va-radius-sm);
+  border: 1px dashed var(--va-border2);
+  background: transparent;
+  color: var(--va-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  width: 100%;
+  text-align: center;
+}
+
+.va-add-eval-btn:hover {
+  color: var(--va-text);
+  border-color: var(--va-accent);
+}
+
+.va-model-registry-section {
+  margin-top: 32px;
+}
+
+.va-model-registry-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.va-btn-secondary {
+  padding: 5px 12px;
+  border-radius: var(--va-radius-sm);
+  background: transparent;
+  border: 1px solid var(--va-border2);
+  color: var(--va-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.va-btn-secondary:hover {
+  color: var(--va-text);
+  border-color: var(--va-accent);
+}
+
+.va-btn-secondary:focus-visible,
+.va-modal-actions button:focus-visible {
+  outline: 2px solid var(--va-accent);
+  outline-offset: 1px;
+}
+
+/* ─── Params badge (collapse "N params" into an expandable row) ───────────── */
+
+.va-params-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--va-border2);
+  background: var(--va-surface2);
+  color: var(--va-text-muted);
+  font-size: 11px;
+  font-family: var(--va-font-mono);
+  cursor: pointer;
+}
+
+.va-params-badge:hover {
+  color: var(--va-text);
+  border-color: var(--va-accent);
+}
+
+.va-params-badge .chev {
+  font-size: 9px;
+  transition: transform 0.15s;
+}
+
+.va-params-badge.open .chev {
+  transform: rotate(90deg);
+}
+
+.va-params-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: var(--va-bg);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius-sm);
+}
+
+.va-params-expanded div {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+  font-family: var(--va-font-mono);
+}
+
+.va-params-expanded .k {
+  color: var(--va-text-muted);
+}
+
+.va-params-expanded .v {
+  color: var(--va-text);
+}
+
+/* ─── Add Evaluator / Add Model modal fields ───────────────────────────────── */
+
+.va-color-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.va-color-swatch-preview {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--va-border2);
+  flex-shrink: 0;
+}
+
+textarea.va-prompt-textarea {
+  font-family: var(--va-font);
+  font-size: 12px;
+  min-height: 90px;
+  resize: vertical;
+}
+
+.va-inline-error {
+  color: var(--va-red);
+  font-size: 12px;
+  padding: 8px 10px;
+  background: rgba(247, 118, 142, 0.12);
+  border: 1px solid var(--va-red);
+  border-radius: var(--va-radius-sm);
+  line-height: 1.5;
+}
+
+/* ─── Empty / loading states ──────────────────────────────────────────────── */
+
+.va-empty {
+  color: var(--va-text-dim);
+  font-size: 13px;
+  font-style: italic;
+  padding: 20px 0;
+}
+
+/* ─── Upload modal (pair upload, spec §5.5) ───────────────────────────────── */
+
+/* Modifier on .va-popover-backdrop: dim + center the wide modal (M9). */
+.va-modal-backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* .va-popover nested directly inside .va-modal-backdrop (Add Evaluator / Add
+   Model): drop the fixed positioning so the flex-center above applies instead
+   of the static-flow fallback (bug: modal rendered below the viewport). */
+.va-modal-backdrop > .va-popover {
+  position: static;
+}
+
+.va-modal-wide {
+  width: min(920px, 90vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius, 10px);
+  box-shadow: var(--va-shadow, 0 12px 40px rgba(0, 0, 0, 0.5));
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.va-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--va-text);
+}
+
+.va-modal-title-input {
+  box-sizing: border-box;
+  background: var(--va-bg);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-text);
+  font-family: var(--va-font);
+  font-size: 13px;
+  padding: 8px 10px;
+}
+
+.va-modal-title-input:focus {
+  outline: none;
+  border-color: var(--va-accent);
+}
+
+.va-upload-panels { display: flex; gap: 16px; }
+
+.va-upload-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--va-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.va-upload-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--va-surface);
+  border-bottom: 1px solid var(--va-border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--va-text);
+}
+
+.va-lang-input {
+  box-sizing: border-box;
+  width: 110px;
+  background: var(--va-bg);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-text);
+  font-family: var(--va-font);
+  font-size: 12px;
+  font-weight: 400;
+  padding: 4px 8px;
+}
+
+.va-lang-input:focus {
+  outline: none;
+  border-color: var(--va-accent);
+}
+
+.va-upload-panel textarea {
+  min-height: 220px;
+  resize: vertical;
+  background: var(--va-bg);
+  border: none;
+  color: var(--va-text);
+  font-family: var(--va-font);
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 10px;
+}
+
+.va-upload-panel textarea:focus { outline: none; }
+.va-upload-panel textarea:disabled { opacity: 0.5; }
+
+.va-upload-busy {
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--va-accent);
+}
+
+.va-upload-panel-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--va-surface);
+  border-top: 1px solid var(--va-border);
+}
+
+.va-upload-error {
+  color: var(--va-red, #f7768e);
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.va-upload-file-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--va-radius-sm);
+  background: var(--va-surface2);
+  border: 1px dashed var(--va-border2);
+  color: var(--va-text);
+  font-family: var(--va-font);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.va-upload-file-btn:hover {
+  color: var(--va-accent);
+  border-color: var(--va-accent);
+  background: var(--va-surface);
+}
+
+.va-upload-file-hint {
+  color: var(--va-text-dim);
+  font-size: 11px;
+}
+
+.va-upload-hint {
+  color: var(--va-text-muted);
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.va-upload-counter { margin-left: auto; opacity: 0.7; font-size: 12px; }
+
+/* Step 2 — alignment preview */
+.va-step2-counts {
+  font-size: 13px;
+  color: var(--va-text);
+}
+
+.va-step2-counts .va-upload-error { padding: 0 0 0 8px; }
+
+.va-step2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.va-step2-table td {
+  border: 1px solid var(--va-border);
+  padding: 8px 10px;
+  vertical-align: top;
+  color: var(--va-text);
+}
+
+.va-step2-table td:first-child {
+  width: 32px;
+  text-align: center;
+  color: var(--va-text-muted);
+}
+
+.va-step2-table tr.orphan td {
+  background: color-mix(in srgb, var(--va-red, #f7768e) 12%, transparent);
+}
+
+.va-step2-table button {
+  display: block;
+  margin-top: 6px;
+  margin-left: auto;
+}
+
+.va-step2-precompute {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--va-text);
+  cursor: pointer;
+}
+
+.va-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.va-modal-actions button {
+  background: transparent;
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px 14px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.va-modal-actions button:hover:not(:disabled) {
+  color: var(--va-text);
+  border-color: var(--va-accent);
+}
+
+.va-modal-actions button.va-primary {
+  background: rgba(122, 162, 247, 0.15);
+  border-color: var(--va-accent);
+  color: var(--va-accent);
+  font-weight: 600;
+}
+
+.va-modal-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Animations ──────────────────────────────────────────────────────────── */
+
+@keyframes va-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes va-pop-in {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes va-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

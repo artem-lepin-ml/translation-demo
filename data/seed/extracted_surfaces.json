@@ -1,0 +1,801 @@
+[
+ {
+  "paragraph_id": 1,
+  "surfaces": [
+   {
+    "surface": "Месопотамия",
+    "category": "place"
+   },
+   {
+    "surface": "Междуречье",
+    "category": "place"
+   },
+   {
+    "surface": "Тигра",
+    "category": "place"
+   },
+   {
+    "surface": "Евфрата",
+    "category": "place"
+   },
+   {
+    "surface": "Персидского залива",
+    "category": "place"
+   },
+   {
+    "surface": "Верхнего Евфрата",
+    "category": "place"
+   },
+   {
+    "surface": "Ирака",
+    "category": "place"
+   },
+   {
+    "surface": "Нижнюю Месопотамию",
+    "category": "place"
+   },
+   {
+    "surface": "Верхнюю",
+    "category": "place"
+   },
+   {
+    "surface": "Евфрат",
+    "category": "place"
+   },
+   {
+    "surface": "Тигр",
+    "category": "place"
+   },
+   {
+    "surface": "Шатт-эль-Араб",
+    "category": "place"
+   },
+   {
+    "surface": "Шумером",
+    "category": "place"
+   },
+   {
+    "surface": "Приморьем",
+    "category": "place"
+   },
+   {
+    "surface": "Ки-Ури",
+    "category": "place"
+   },
+   {
+    "surface": "Аккад",
+    "category": "place"
+   },
+   {
+    "surface": "Аккаде",
+    "category": "place"
+   },
+   {
+    "surface": "Шумер и Аккад",
+    "category": "place"
+   },
+   {
+    "surface": "Вавилонией",
+    "category": "place"
+   },
+   {
+    "surface": "Вавилону",
+    "category": "place"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 2,
+  "surfaces": [
+   {
+    "surface": "Нижняя Месопотамия",
+    "category": "place"
+   },
+   {
+    "surface": "Плодородного Полумесяца",
+    "category": "place"
+   },
+   {
+    "surface": "Верхняя Месопотамия",
+    "category": "place"
+   },
+   {
+    "surface": "Ассирия",
+    "category": "place"
+   },
+   {
+    "surface": "Ашшур",
+    "category": "place"
+   },
+   {
+    "surface": "Среднем Тигре",
+    "category": "place"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 3,
+  "surfaces": [
+   {
+    "surface": "Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "Междуречья",
+    "category": "place"
+   },
+   {
+    "surface": "Аравийским плато",
+    "category": "place"
+   },
+   {
+    "surface": "Месопотамцы",
+    "category": "people"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 4,
+  "surfaces": [
+   {
+    "surface": "Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "Убейд",
+    "category": "culture"
+   },
+   {
+    "surface": "Урук",
+    "category": "culture"
+   },
+   {
+    "surface": "Джемдет-Наср",
+    "category": "culture"
+   },
+   {
+    "surface": "Раннединастический период",
+    "category": "culture"
+   },
+   {
+    "surface": "Аккадской",
+    "category": "culture"
+   },
+   {
+    "surface": "Урской",
+    "category": "culture"
+   },
+   {
+    "surface": "Старовавилонский",
+    "category": "culture"
+   },
+   {
+    "surface": "Староассирийский",
+    "category": "culture"
+   },
+   {
+    "surface": "Средневавилонский",
+    "category": "culture"
+   },
+   {
+    "surface": "Среднеассирийский",
+    "category": "culture"
+   },
+   {
+    "surface": "Новоассирийский",
+    "category": "culture"
+   },
+   {
+    "surface": "Нововавилонский",
+    "category": "culture"
+   },
+   {
+    "surface": "Вавилонии",
+    "category": "place"
+   },
+   {
+    "surface": "Ассирии",
+    "category": "place"
+   },
+   {
+    "surface": "Младовавилонский период",
+    "category": "culture"
+   },
+   {
+    "surface": "Месопотамия",
+    "category": "place"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 5,
+  "surfaces": [
+   {
+    "surface": "Нижней Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "IV тысячелетия до н.э.",
+    "category": "culture"
+   },
+   {
+    "surface": "убейдской археологической культуры",
+    "category": "culture"
+   },
+   {
+    "surface": "эль-Убейд",
+    "category": "place"
+   },
+   {
+    "surface": "Ираке",
+    "category": "place"
+   },
+   {
+    "surface": "Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "Убейдская культура",
+    "category": "culture"
+   },
+   {
+    "surface": "убейдцев",
+    "category": "people"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 6,
+  "surfaces": [
+   {
+    "surface": "культуры Урук",
+    "category": "culture"
+   },
+   {
+    "surface": "городище Урук",
+    "category": "place"
+   },
+   {
+    "surface": "убейдской культуры",
+    "category": "culture"
+   },
+   {
+    "surface": "месопотамской письменности",
+    "category": "institution"
+   },
+   {
+    "surface": "шумерском языке",
+    "category": "culture"
+   },
+   {
+    "surface": "шумерами",
+    "category": "people"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 7,
+  "surfaces": [
+   {
+    "surface": "убейдской культуры",
+    "category": "culture"
+   },
+   {
+    "surface": "шумерами",
+    "category": "people"
+   },
+   {
+    "surface": "шумерском языке",
+    "category": "culture"
+   },
+   {
+    "surface": "Алалу",
+    "category": "person"
+   },
+   {
+    "surface": "Кубаба",
+    "category": "person"
+   },
+   {
+    "surface": "Забаба",
+    "category": "person"
+   },
+   {
+    "surface": "Шумера",
+    "category": "place"
+   },
+   {
+    "surface": "Субир",
+    "category": "place"
+   },
+   {
+    "surface": "Субар",
+    "category": "place"
+   },
+   {
+    "surface": "убейдская культура",
+    "category": "culture"
+   },
+   {
+    "surface": "дошумерскому народу",
+    "category": "people"
+   },
+   {
+    "surface": "Шумеры",
+    "category": "people"
+   },
+   {
+    "surface": "Нижней Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "эпоха Урук",
+    "category": "culture"
+   },
+   {
+    "surface": "шумерской истории",
+    "category": "culture"
+   },
+   {
+    "surface": "дошумерского этнического ареала",
+    "category": "people"
+   },
+   {
+    "surface": "людьми субар",
+    "category": "people"
+   },
+   {
+    "surface": "Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "Эреду",
+    "category": "place"
+   },
+   {
+    "surface": "Субара",
+    "category": "place"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 8,
+  "surfaces": [
+   {
+    "surface": "Месопотамию",
+    "category": "place"
+   },
+   {
+    "surface": "Северной Аравии",
+    "category": "place"
+   },
+   {
+    "surface": "восточные семиты",
+    "category": "people"
+   },
+   {
+    "surface": "аккадцев",
+    "category": "people"
+   },
+   {
+    "surface": "шумерами",
+    "category": "people"
+   },
+   {
+    "surface": "Ки-Ури",
+    "category": "place"
+   },
+   {
+    "surface": "Среднем Тигре",
+    "category": "place"
+   },
+   {
+    "surface": "вавилонян",
+    "category": "people"
+   },
+   {
+    "surface": "ассирийцев",
+    "category": "people"
+   },
+   {
+    "surface": "восточносемитского",
+    "category": "culture"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 9,
+  "surfaces": [
+   {
+    "surface": "эпоху Джемдет-Наср",
+    "category": "culture"
+   },
+   {
+    "surface": "Джемдет-Наср",
+    "category": "place"
+   },
+   {
+    "surface": "Протописьменный период",
+    "category": "culture"
+   },
+   {
+    "surface": "Раннединастический период",
+    "category": "culture"
+   },
+   {
+    "surface": "Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "шумерских",
+    "category": "people"
+   },
+   {
+    "surface": "Нижней Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "шумерами",
+    "category": "people"
+   },
+   {
+    "surface": "аккадцы",
+    "category": "people"
+   },
+   {
+    "surface": "великий потоп",
+    "category": "event"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 10,
+  "surfaces": [
+   {
+    "surface": "Нижняя Месопотамия",
+    "category": "place"
+   },
+   {
+    "surface": "империю",
+    "category": "institution"
+   },
+   {
+    "surface": "династией Аккада",
+    "category": "dynasty"
+   },
+   {
+    "surface": "III династией Ура",
+    "category": "dynasty"
+   },
+   {
+    "surface": "Державу Ура",
+    "category": "place"
+   },
+   {
+    "surface": "амореев",
+    "category": "people"
+   },
+   {
+    "surface": "I династия Иссина",
+    "category": "dynasty"
+   },
+   {
+    "surface": "Месопотамия",
+    "category": "place"
+   },
+   {
+    "surface": "царств",
+    "category": "place"
+   },
+   {
+    "surface": "династий Аккада",
+    "category": "dynasty"
+   },
+   {
+    "surface": "Ура",
+    "category": "place"
+   },
+   {
+    "surface": "период первых централизованных деспотий",
+    "category": "culture"
+   },
+   {
+    "surface": "Двуречье",
+    "category": "place"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 11,
+  "surfaces": [
+   {
+    "surface": "Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "Хаммурапи",
+    "category": "person"
+   },
+   {
+    "surface": "вавилонский",
+    "category": "culture"
+   },
+   {
+    "surface": "царь",
+    "category": "title"
+   },
+   {
+    "surface": "аморейской",
+    "category": "people"
+   },
+   {
+    "surface": "династии",
+    "category": "dynasty"
+   },
+   {
+    "surface": "Вавилоне",
+    "category": "place"
+   },
+   {
+    "surface": "Старовавилонский период",
+    "category": "culture"
+   },
+   {
+    "surface": "Вавилонии",
+    "category": "place"
+   },
+   {
+    "surface": "касситов",
+    "category": "people"
+   },
+   {
+    "surface": "Средневавилонский период",
+    "category": "culture"
+   },
+   {
+    "surface": "Касситскую династию",
+    "category": "dynasty"
+   },
+   {
+    "surface": "эламитов",
+    "category": "people"
+   },
+   {
+    "surface": "Юго-Западного Ирана",
+    "category": "place"
+   },
+   {
+    "surface": "Нововавилонский период",
+    "category": "culture"
+   },
+   {
+    "surface": "Нижней Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "шумеров",
+    "category": "people"
+   },
+   {
+    "surface": "династии Приморья",
+    "category": "dynasty"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 12,
+  "surfaces": [
+   {
+    "surface": "Вавилоне",
+    "category": "place"
+   },
+   {
+    "surface": "касситов",
+    "category": "people"
+   },
+   {
+    "surface": "Ашшур",
+    "category": "place"
+   },
+   {
+    "surface": "шумеро-аккадского",
+    "category": "culture"
+   },
+   {
+    "surface": "Ассирийскую державу",
+    "category": "place"
+   },
+   {
+    "surface": "Вавилоном",
+    "category": "place"
+   },
+   {
+    "surface": "Среднеассирийский период",
+    "category": "culture"
+   },
+   {
+    "surface": "Новоассирийский период",
+    "category": "culture"
+   },
+   {
+    "surface": "Месопотамию",
+    "category": "place"
+   },
+   {
+    "surface": "арамеев",
+    "category": "people"
+   },
+   {
+    "surface": "Ашшура",
+    "category": "place"
+   },
+   {
+    "surface": "Староассирийский период",
+    "category": "culture"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 13,
+  "surfaces": [
+   {
+    "surface": "Тигра",
+    "category": "place"
+   },
+   {
+    "surface": "Евфрата",
+    "category": "place"
+   },
+   {
+    "surface": "неолита",
+    "category": "culture"
+   },
+   {
+    "surface": "Южного Двуречья",
+    "category": "place"
+   },
+   {
+    "surface": "субареи",
+    "category": "people"
+   },
+   {
+    "surface": "Загросского хребта",
+    "category": "place"
+   },
+   {
+    "surface": "Горького моря",
+    "category": "place"
+   },
+   {
+    "surface": "Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "протогорода",
+    "category": "place"
+   },
+   {
+    "surface": "Нижнемесопотамские",
+    "category": "place"
+   },
+   {
+    "surface": "убейдскую археологическую культуру",
+    "category": "culture"
+   },
+   {
+    "surface": "убейдское тысячелетие",
+    "category": "culture"
+   },
+   {
+    "surface": "убейдцев",
+    "category": "people"
+   },
+   {
+    "surface": "шумерами",
+    "category": "people"
+   },
+   {
+    "surface": "Загроса",
+    "category": "place"
+   },
+   {
+    "surface": "Верхнюю Месопотамию",
+    "category": "place"
+   },
+   {
+    "surface": "Сирию",
+    "category": "place"
+   },
+   {
+    "surface": "Средиземному морю",
+    "category": "place"
+   },
+   {
+    "surface": "Северо-Восточной Аравии",
+    "category": "place"
+   },
+   {
+    "surface": "Бахрейн",
+    "category": "place"
+   },
+   {
+    "surface": "Нижней Месопотамией",
+    "category": "place"
+   },
+   {
+    "surface": "убейдской культуры",
+    "category": "culture"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 14,
+  "surfaces": [
+   {
+    "surface": "Нижней Месопотамии",
+    "category": "place"
+   },
+   {
+    "surface": "шумеры",
+    "category": "people"
+   },
+   {
+    "surface": "Убейд",
+    "category": "culture"
+   },
+   {
+    "surface": "Урук",
+    "category": "culture"
+   },
+   {
+    "surface": "Эреду",
+    "category": "place"
+   },
+   {
+    "surface": "Евфрата",
+    "category": "place"
+   }
+  ]
+ },
+ {
+  "paragraph_id": 15,
+  "surfaces": [
+   {
+    "surface": "шумеров",
+    "category": "people"
+   },
+   {
+    "surface": "шумеры",
+    "category": "people"
+   },
+   {
+    "surface": "Иран",
+    "category": "place"
+   },
+   {
+    "surface": "шумерским",
+    "category": "culture"
+   },
+   {
+    "surface": "III тысячелетия до н.э.",
+    "category": "culture"
+   },
+   {
+    "surface": "Аратта",
+    "category": "place"
+   },
+   {
+    "surface": "Йезда",
+    "category": "place"
+   },
+   {
+    "surface": "Аратте",
+    "category": "place"
+   },
+   {
+    "surface": "Месопотамию",
+    "category": "place"
+   }
+  ]
+ }
+]

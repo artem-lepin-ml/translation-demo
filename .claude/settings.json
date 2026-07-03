@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv sync)",
+      "Bash(uv sync *)",
+      "Bash(uv venv *)",
+      "Bash(uv pip install *)",
+      "Bash(uv run *)",
+      "Bash(pip install *)",
+      "Bash(pip3 install *)",
+      "Bash(npm ci)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npx vitest *)",
+      "Bash(npx tsc *)",
+      "Bash(npx playwright *)",
+      "Bash(mkdir *)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git switch *)",
+      "Bash(git worktree *)"
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@superpowers-dev": true,
+    "github@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-dev": { "source": { "source": "git", "url": "https://github.com/obra/superpowers.git" } }
+  },
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/graphify-freshness.mjs\"" } ] }
+    ]
+  }
+}

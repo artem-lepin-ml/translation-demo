@@ -1,0 +1,550 @@
+{
+ "III тысячелетия до н.э.": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "IV тысячелетия до н.э.": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Аккад": {
+  "qid": "Q150996",
+  "difficulty": "yellow"
+ },
+ "Аккадской": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Алалу": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Аратта": {
+  "qid": "Q626512",
+  "difficulty": "green"
+ },
+ "Ассирии": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Ассирия": {
+  "qid": "Q41137",
+  "difficulty": "yellow"
+ },
+ "Ашшур": {
+  "qid": "Q200200",
+  "difficulty": "yellow"
+ },
+ "Ашшура": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Бахрейн": {
+  "qid": "Q398",
+  "difficulty": "yellow"
+ },
+ "Вавилоне": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Вавилония": {
+  "qid": "Q47690",
+  "difficulty": "green"
+ },
+ "Вавилоном": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Вавилону": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Верхнюю": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Верхняя Месопотамия": {
+  "qid": "Q311819",
+  "difficulty": "green"
+ },
+ "Двуречье": {
+  "qid": "Q11767",
+  "difficulty": "green"
+ },
+ "Джемдет-Наср": {
+  "qid": "Q342799",
+  "difficulty": "green"
+ },
+ "Евфрат": {
+  "qid": "Q34589",
+  "difficulty": "green"
+ },
+ "Евфрата": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Забаба": {
+  "qid": "Q147461",
+  "difficulty": "green"
+ },
+ "Ирака": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Ираке": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Иран": {
+  "qid": "Q794",
+  "difficulty": "green"
+ },
+ "Йезда": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Ки-Ури": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Кубаба": {
+  "qid": "Q107474864",
+  "difficulty": "yellow"
+ },
+ "Междуречье": {
+  "qid": "Q11767",
+  "difficulty": "green"
+ },
+ "Месопотамию": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Месопотамия": {
+  "qid": "Q11767",
+  "difficulty": "yellow"
+ },
+ "Нижняя Месопотамия": {
+  "qid": "Q11767",
+  "difficulty": "green"
+ },
+ "Новоассирийский": {
+  "qid": "Q114869081",
+  "difficulty": "green"
+ },
+ "Новоассирийский период": {
+  "qid": "Q114869081",
+  "difficulty": "green"
+ },
+ "Нововавилонский": {
+  "qid": "Q114869307",
+  "difficulty": "green"
+ },
+ "Нововавилонский период": {
+  "qid": "Q114869307",
+  "difficulty": "green"
+ },
+ "Персидский залив": {
+  "qid": "Q34675",
+  "difficulty": "green"
+ },
+ "Плодородный Полумесяц": {
+  "qid": "Q170526",
+  "difficulty": "green"
+ },
+ "Приморьем": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Протописьменный период": {
+  "qid": "Q97663118",
+  "difficulty": "green"
+ },
+ "Раннединастический период": {
+  "qid": "Q716742",
+  "difficulty": "green"
+ },
+ "Северной Аравии": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Северо-Восточной Аравии": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Сирию": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Средиземному морю": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Среднеассирийский": {
+  "qid": "Q114868919",
+  "difficulty": "green"
+ },
+ "Среднеассирийский период": {
+  "qid": "Q114868919",
+  "difficulty": "green"
+ },
+ "Средневавилонский": {
+  "qid": "Q16530848",
+  "difficulty": "green"
+ },
+ "Средневавилонский период": {
+  "qid": "Q16530848",
+  "difficulty": "green"
+ },
+ "Староассирийский": {
+  "qid": "Q15782728",
+  "difficulty": "green"
+ },
+ "Староассирийский период": {
+  "qid": "Q15782728",
+  "difficulty": "green"
+ },
+ "Старовавилонский": {
+  "qid": "Q733897",
+  "difficulty": "green"
+ },
+ "Старовавилонский период": {
+  "qid": "Q733897",
+  "difficulty": "green"
+ },
+ "Субар": {
+  "qid": "Q2096441",
+  "difficulty": "yellow"
+ },
+ "Субара": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Субир": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Тигр": {
+  "qid": "Q35591",
+  "difficulty": "yellow"
+ },
+ "Тигра": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Убейд": {
+  "qid": "Q245156",
+  "difficulty": "green"
+ },
+ "Убейдская культура": {
+  "qid": "Q245156",
+  "difficulty": "green"
+ },
+ "Ур": {
+  "qid": "Q5699",
+  "difficulty": "green"
+ },
+ "Урук": {
+  "qid": "Q168518",
+  "difficulty": "yellow"
+ },
+ "Хаммурапи": {
+  "qid": "Q36359",
+  "difficulty": "green"
+ },
+ "Шатт-эль-Араб": {
+  "qid": "Q166966",
+  "difficulty": "green"
+ },
+ "Шумер": {
+  "qid": "Q35355",
+  "difficulty": "yellow"
+ },
+ "Шумер и Аккад": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Шумером": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Шумеры": {
+  "qid": "Q656043",
+  "difficulty": "green"
+ },
+ "Эреду": {
+  "qid": "Q210065",
+  "difficulty": "green"
+ },
+ "аккадцы": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "амореи": {
+  "qid": "Q203507",
+  "difficulty": "yellow"
+ },
+ "аморейской": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "ассирийцев": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "вавилонский": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "вавилонян": {
+  "qid": "Q797930",
+  "difficulty": "green"
+ },
+ "великий потоп": {
+  "qid": "Q134052",
+  "difficulty": "yellow"
+ },
+ "восточные семиты": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "династии": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "династий Аккада": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "империю": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "касситов": {
+  "qid": "Q7988016",
+  "difficulty": "yellow"
+ },
+ "неолита": {
+  "qid": "Q36422",
+  "difficulty": "green"
+ },
+ "субареи": {
+  "qid": "Q12158499",
+  "difficulty": "yellow"
+ },
+ "убейдская культура": {
+  "qid": "Q245156",
+  "difficulty": "green"
+ },
+ "царств": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "царь": {
+  "qid": "Q12097",
+  "difficulty": "green"
+ },
+ "шумеро-аккадского": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "шумеров": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "шумерском языке": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "шумеры": {
+  "qid": "Q656043",
+  "difficulty": "green"
+ },
+ "эламитов": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "эль-Убейд": {
+  "qid": "Q1317854",
+  "difficulty": "green"
+ },
+ "эпоха Урук": {
+  "qid": "Q731494",
+  "difficulty": "green"
+ },
+ "I династия Иссина": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "III династией Ура": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Аравийским плато": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Аратте": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Ассирийскую державу": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Вавилонией": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Верхнего Евфрата": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Верхнюю Месопотамию": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Горького моря": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Державу Ура": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Загроса": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Загросского хребта": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Касситскую династию": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Месопотамцы": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Младовавилонский период": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Нижней Месопотамией": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Нижнемесопотамские": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Среднем Тигре": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Урской": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Юго-Западного Ирана": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "Южного Двуречья": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "аккадцев": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "арамеев": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "восточносемитского": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "городище Урук": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "династией Аккада": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "династии Приморья": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "дошумерского этнического ареала": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "дошумерскому народу": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "культуры Урук": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "людьми субар": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "месопотамской письменности": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "период первых централизованных деспотий": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "протогорода": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "убейдское тысячелетие": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "убейдской археологической культуры": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "убейдской культуры": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "убейдскую археологическую культуру": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "убейдцев": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "шумерами": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "шумерским": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "шумерских": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "шумерской истории": {
+  "qid": null,
+  "difficulty": "red"
+ },
+ "эпоху Джемдет-Наср": {
+  "qid": null,
+  "difficulty": "red"
+ }
+}

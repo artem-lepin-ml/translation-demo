@@ -1,0 +1,390 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import SettingsTab from './SettingsTab';
+import * as apiClient from '../api-client';
+import type { BudgetSnapshot, Criterion, ModelRegistryEntryPublic } from '../api-client';
+
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
+
+const criterion: Criterion = {
+  id: 'accuracy',
+  name: 'Accuracy',
+  modelName: 'openai/gpt-5.4-mini',
+  prompt: '',
+  scaleMin: 1,
+  scaleMax: 10,
+  weight: 0.3,
+  color: '#4d8dff',
+  enabled: true,
+};
+
+const model: ModelRegistryEntryPublic = {
+  name: 'openai/gpt-5.4-mini',
+  baseUrl: '',
+  apiKeyMasked: '****',
+  params: {},
+};
+
+function renderSettings(overrides: Partial<React.ComponentProps<typeof SettingsTab>> = {}) {
+  const props = {
+    criteria: [criterion],
+    models: [model],
+    onUpdateCriterion: vi.fn(),
+    onAddCriterion: vi.fn(),
+    onRemoveCriterion: vi.fn(),
+    onSaveModel: vi.fn(),
+    onAddModel: vi.fn(),
+    onRemoveModel: vi.fn(),
+    onTestModel: vi.fn(),
+    ...overrides,
+  };
+  render(<SettingsTab {...props} />);
+  return props;
+}
+
+describe('SettingsTab Remove confirm guard (LOW-b)', () => {
+  it('does not remove the model when the confirm dialog is declined', () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const props = renderSettings();
+
+    fireEvent.click(screen.getByText('Remove'));
+
+    expect(window.confirm).toHaveBeenCalledWith(`Delete “${model.name}”?`);
+    expect(props.onRemoveModel).not.toHaveBeenCalled();
+  });
+
+  it('removes the model when the confirm dialog is accepted', () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const props = renderSettings();
+
+    fireEvent.click(screen.getByText('Remove'));
+
+    expect(props.onRemoveModel).toHaveBeenCalledWith(model.name);
+  });
+
+  it('does not remove the evaluator when the confirm dialog is declined', () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const props = renderSettings();
+
+    // Expand the criterion row to reveal its Remove button (the evaluator's
+    // editor renders before the Model Registry table, so it is the first
+    // "Remove" button in the DOM once expanded).
+    fireEvent.click(screen.getByText('Accuracy'));
+    const [evaluatorRemove] = screen.getAllByText('Remove');
+    fireEvent.click(evaluatorRemove);
+
+    expect(window.confirm).toHaveBeenCalledWith(`Delete “${criterion.name}”?`);
+    expect(props.onRemoveCriterion).not.toHaveBeenCalled();
+  });
+});
+
+describe('SettingsTab budget line', () => {
+  function mockBudget(snapshot: BudgetSnapshot) {
+    vi.spyOn(apiClient, 'getBudget').mockResolvedValue(snapshot);
+  }
+
+  it('renders the spend and call counts from a fetched snapshot', async () => {
+    mockBudget({ spentUsd: 0.18, capUsd: 2.0, calls: 51, callCap: 200 });
+    renderSettings();
+
+    const line = await screen.findByTestId('budget-line');
+    expect(line.textContent).toBe('Budget: $0.18 / $2.00 · 51/200 calls');
+  });
+
+  it('applies the muted band under 50% of cap', async () => {
+    mockBudget({ spentUsd: 0.18, capUsd: 2.0, calls: 51, callCap: 200 });
+    renderSettings();
+
+    const line = await screen.findByTestId('budget-line');
+    expect(line.className).toContain('muted');
+  });
+
+  it('applies the yellow band above 50% of cap', async () => {
+    mockBudget({ spentUsd: 1.2, capUsd: 2.0, calls: 51, callCap: 200 });
+    renderSettings();
+
+    const line = await screen.findByTestId('budget-line');
+    expect(line.className).toContain('yellow');
+  });
+
+  it('applies the red band above 80% of cap', async () => {
+    mockBudget({ spentUsd: 1.8, capUsd: 2.0, calls: 51, callCap: 200 });
+    renderSettings();
+
+    const line = await screen.findByTestId('budget-line');
+    expect(line.className).toContain('red');
+  });
+
+  it('applies the red band above 80% of the call cap even when spend is low', async () => {
+    mockBudget({ spentUsd: 0.01, capUsd: 2.0, calls: 190, callCap: 200 });
+    renderSettings();
+
+    const line = await screen.findByTestId('budget-line');
+    expect(line.className).toContain('red');
+  });
+
+  it('does not render the budget line when the fetch fails', async () => {
+    let rejectFetch!: (e: Error) => void;
+    vi.spyOn(apiClient, 'getBudget').mockReturnValue(
+      new Promise((_resolve, reject) => { rejectFetch = reject; }),
+    );
+    renderSettings();
+    rejectFetch(new Error('network error'));
+
+    // let the rejected promise's .catch(() => setBudget(null)) flush
+    await new Promise((r) => setTimeout(r, 0));
+    expect(screen.queryByTestId('budget-line')).toBeNull();
+  });
+});
+
+describe('SettingsTab Add Evaluator modal', () => {
+  async function openAddEvaluator(overrides: Partial<React.ComponentProps<typeof SettingsTab>> = {}) {
+    const props = renderSettings(overrides);
+    fireEvent.click(await screen.findByText('+ Add evaluator'));
+    return props;
+  }
+
+  it('opens the modal with expected fields', async () => {
+    await openAddEvaluator();
+    expect(await screen.findByTestId('add-evaluator-modal')).toBeTruthy();
+  });
+
+  it('centers via the same backdrop modifier as UploadModal (regression: modal rendered below viewport)', async () => {
+    await openAddEvaluator();
+    const modal = await screen.findByTestId('add-evaluator-modal');
+
+    // The centering mechanism is: .va-popover nested inside a
+    // .va-popover-backdrop.va-modal-backdrop (flex-center), with the CSS rule
+    // `.va-modal-backdrop > .va-popover { position: static }` dropping the
+    // fixed-without-top/left positioning that stranded the modal at the end
+    // of the static-flow SettingsTab container. jsdom can't measure real
+    // layout, so we assert the structural contract instead.
+    expect(modal.parentElement?.classList.contains('va-modal-backdrop')).toBe(true);
+    expect(modal.parentElement?.classList.contains('va-popover-backdrop')).toBe(true);
+  });
+
+  it('blocks Save and shows inline error when weight is out of [0,1]', async () => {
+    const props = await openAddEvaluator();
+    fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'New eval' } });
+    fireEvent.change(screen.getByTestId('add-evaluator-prompt'), { target: { value: 'Evaluate this.' } });
+    const weightInput = screen.getByLabelText(/weight/i, { selector: 'input' });
+    fireEvent.change(weightInput, { target: { value: '1.5' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect((await screen.findByTestId('add-evaluator-error')).textContent).toContain('Weight must be between 0 and 1');
+    expect(props.onAddCriterion).not.toHaveBeenCalled();
+  });
+
+  it('saves via onAddCriterion with enabled:false on valid input', async () => {
+    const props = await openAddEvaluator();
+    fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'New eval' } });
+    fireEvent.change(screen.getByTestId('add-evaluator-prompt'), { target: { value: 'Evaluate this.' } });
+    const weightInput = screen.getByLabelText(/weight/i, { selector: 'input' });
+    fireEvent.change(weightInput, { target: { value: '0.2' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    await waitFor(() => expect(props.onAddCriterion).toHaveBeenCalled());
+    const arg = (props.onAddCriterion as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.enabled).toBe(false);
+    expect(arg.name).toBe('New eval');
+  });
+
+  it('shows inline error on server rejection', async () => {
+    const onAddCriterion = vi.fn().mockRejectedValue(new Error('POST /criteria → 422'));
+    const props = await openAddEvaluator({ onAddCriterion });
+    fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'New eval' } });
+    fireEvent.change(screen.getByTestId('add-evaluator-prompt'), { target: { value: 'Evaluate this.' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect((await screen.findByTestId('add-evaluator-error')).textContent).toContain('422');
+    void props;
+  });
+
+  it('blocks Save and shows "Name is required" when name is empty', async () => {
+    const props = await openAddEvaluator();
+    fireEvent.change(screen.getByTestId('add-evaluator-prompt'), { target: { value: 'Evaluate this.' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect((await screen.findByTestId('add-evaluator-name-error')).textContent).toContain('Name is required');
+    expect(props.onAddCriterion).not.toHaveBeenCalled();
+  });
+
+  it('blocks Save and shows "Prompt is required" when prompt is empty', async () => {
+    const props = await openAddEvaluator();
+    fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'New eval' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect((await screen.findByTestId('add-evaluator-prompt-error')).textContent).toContain('Prompt is required');
+    expect(props.onAddCriterion).not.toHaveBeenCalled();
+  });
+
+  it('blocks Save when name/prompt are whitespace-only', async () => {
+    const props = await openAddEvaluator();
+    fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: '   ' } });
+    fireEvent.change(screen.getByTestId('add-evaluator-prompt'), { target: { value: '   ' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect((await screen.findByTestId('add-evaluator-name-error')).textContent).toContain('Name is required');
+    expect((await screen.findByTestId('add-evaluator-prompt-error')).textContent).toContain('Prompt is required');
+    expect(props.onAddCriterion).not.toHaveBeenCalled();
+  });
+});
+
+describe('SettingsTab Add Model modal', () => {
+  async function openAddModel(overrides: Partial<React.ComponentProps<typeof SettingsTab>> = {}) {
+    const props = renderSettings(overrides);
+    fireEvent.click(await screen.findByText('+ Add model'));
+    return props;
+  }
+
+  it('opens the modal with a default openrouter base URL', async () => {
+    await openAddModel();
+    expect(await screen.findByTestId('add-model-modal')).toBeTruthy();
+    expect(screen.getByDisplayValue('https://openrouter.ai/api/v1')).toBeTruthy();
+  });
+
+  it('centers via the same backdrop modifier as UploadModal (regression: modal rendered below viewport)', async () => {
+    await openAddModel();
+    const modal = await screen.findByTestId('add-model-modal');
+
+    expect(modal.parentElement?.classList.contains('va-modal-backdrop')).toBe(true);
+    expect(modal.parentElement?.classList.contains('va-popover-backdrop')).toBe(true);
+  });
+
+  it('shows inline error on invalid params JSON and does not save', async () => {
+    const props = await openAddModel();
+    fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: 'foo/bar' } });
+    fireEvent.change(screen.getByPlaceholderText('{"max_tokens": 1536}'), { target: { value: '{not json' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect(await screen.findByTestId('add-model-error')).toBeTruthy();
+    expect(props.onAddModel).not.toHaveBeenCalled();
+  });
+
+  it('saves via onAddModel replacing window.prompt entirely', async () => {
+    const props = await openAddModel();
+    fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: 'foo/bar' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    await waitFor(() => expect(props.onAddModel).toHaveBeenCalled());
+    const arg = (props.onAddModel as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.name).toBe('foo/bar');
+    expect(arg.baseUrl).toBe('https://openrouter.ai/api/v1');
+  });
+});
+
+describe('SettingsTab silent mutation failures (fix wave commit 1)', () => {
+  it('a rejected field edit (e.g. Name) shows an inline error in EvaluatorEditor', async () => {
+    const onUpdateCriterion = vi.fn().mockRejectedValue(new Error('PUT /criteria/accuracy → 500'));
+    renderSettings({ onUpdateCriterion });
+
+    fireEvent.click(await screen.findByText('Accuracy'));
+    const nameInput = screen.getByDisplayValue('Accuracy');
+    fireEvent.change(nameInput, { target: { value: 'Accuracy2' } });
+
+    expect((await screen.findByTestId('evaluator-field-error')).textContent).toContain('500');
+  });
+
+  it('EditModelModal shows an inline error when the save is rejected', async () => {
+    const onSaveModel = vi.fn().mockRejectedValue(new Error('PUT /models/x → 500'));
+    renderSettings({ onSaveModel });
+
+    fireEvent.click(await screen.findByText('Edit'));
+    fireEvent.click(screen.getByText('Save'));
+
+    expect((await screen.findByTestId('edit-model-error')).textContent).toContain('500');
+  });
+});
+
+describe('SettingsTab rapid double-click guards (fix wave commit 2, BUG-4)', () => {
+
+  it('Add-Evaluator Save: triple-click fires onAddCriterion exactly once', async () => {
+    let resolveSave!: () => void;
+    const onAddCriterion = vi.fn().mockReturnValue(new Promise<void>((r) => { resolveSave = r; }));
+    const props = renderSettings({ onAddCriterion });
+    fireEvent.click(await screen.findByText('+ Add evaluator'));
+    fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'New eval' } });
+    fireEvent.change(screen.getByTestId('add-evaluator-prompt'), { target: { value: 'Evaluate this.' } });
+
+    const saveBtn = screen.getByText('Save');
+    fireEvent.click(saveBtn);
+    fireEvent.click(saveBtn);
+    fireEvent.click(saveBtn);
+    resolveSave();
+
+    await waitFor(() => expect(props.onAddCriterion).toHaveBeenCalledTimes(1));
+  });
+
+  it('Add-Model Save: triple-click fires onAddModel exactly once', async () => {
+    let resolveSave!: () => void;
+    const onAddModel = vi.fn().mockReturnValue(new Promise<void>((r) => { resolveSave = r; }));
+    const props = renderSettings({ onAddModel });
+    fireEvent.click(await screen.findByText('+ Add model'));
+    fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: 'foo/bar' } });
+
+    const saveBtn = screen.getByText('Save');
+    fireEvent.click(saveBtn);
+    fireEvent.click(saveBtn);
+    fireEvent.click(saveBtn);
+    resolveSave();
+
+    await waitFor(() => expect(props.onAddModel).toHaveBeenCalledTimes(1));
+  });
+
+  it('EditModel Save: triple-click fires onSaveModel exactly once', async () => {
+    let resolveSave!: () => void;
+    const onSaveModel = vi.fn().mockReturnValue(new Promise<void>((r) => { resolveSave = r; }));
+    const props = renderSettings({ onSaveModel });
+    fireEvent.click(await screen.findByText('Edit'));
+
+    const saveBtn = screen.getByText('Save');
+    fireEvent.click(saveBtn);
+    fireEvent.click(saveBtn);
+    fireEvent.click(saveBtn);
+    resolveSave();
+
+    await waitFor(() => expect(props.onSaveModel).toHaveBeenCalledTimes(1));
+  });
+
+  it('Save buttons disable while saving is in flight', async () => {
+    let resolveSave!: () => void;
+    const onAddModel = vi.fn().mockReturnValue(new Promise<void>((r) => { resolveSave = r; }));
+    renderSettings({ onAddModel });
+    fireEvent.click(await screen.findByText('+ Add model'));
+    fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: 'foo/bar' } });
+
+    const saveBtn = screen.getByText('Save') as HTMLButtonElement;
+    fireEvent.click(saveBtn);
+
+    await waitFor(() => expect(saveBtn.disabled).toBe(true));
+    resolveSave();
+  });
+});
+
+describe('SettingsTab params badge', () => {
+  const paramsModel: ModelRegistryEntryPublic = {
+    name: 'openai/gpt-5.4-mini',
+    baseUrl: 'https://openrouter.ai/api/v1',
+    apiKeyMasked: '****',
+    params: { max_tokens: 1536, temperature: 0.2 },
+  };
+
+  it('renders an "N params" badge collapsed by default', async () => {
+    renderSettings({ models: [paramsModel] });
+    const badge = await screen.findByTestId(`params-badge-${paramsModel.name}`);
+    expect(badge.textContent).toContain('2 params');
+    expect(screen.queryByTestId(`params-expanded-${paramsModel.name}`)).toBeNull();
+  });
+
+  it('toggles expansion independently on click', async () => {
+    renderSettings({ models: [paramsModel] });
+    const badge = await screen.findByTestId(`params-badge-${paramsModel.name}`);
+    fireEvent.click(badge);
+    expect(await screen.findByTestId(`params-expanded-${paramsModel.name}`)).toBeTruthy();
+    fireEvent.click(badge);
+    expect(screen.queryByTestId(`params-expanded-${paramsModel.name}`)).toBeNull();
+  });
+});

@@ -1,0 +1,2162 @@
+[
+ {
+  "lemma": "Месопотамия",
+  "surface": "Месопотамия",
+  "context": "Месопотамия (Междуречье) – равнина в бассейне Тигра",
+  "candidates": [
+   {
+    "qid": "Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   {
+    "qid": "Q146720",
+    "label": "Mandatory Iraq",
+    "description": "former country"
+   },
+   {
+    "qid": "Q765845",
+    "label": "Mesopotamia",
+    "description": "Province of the Roman Empire"
+   },
+   {
+    "qid": "Q1056116",
+    "label": "Mesopotamia",
+    "description": "region in Argentina"
+   },
+   {
+    "qid": "Q164395",
+    "label": "Mesopotamia",
+    "description": "Byzantine district (theme)"
+   }
+  ]
+ },
+ {
+  "lemma": "Междуречье",
+  "surface": "Междуречье",
+  "context": "Месопотамия (Междуречье) – равнина в бассейне Тигра и Евфрата,",
+  "candidates": [
+   {
+    "qid": "Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   {
+    "qid": "Q1056116",
+    "label": "Mesopotamia",
+    "description": "region in Argentina"
+   },
+   {
+    "qid": "Q4288649",
+    "label": "Ay-Serez",
+    "description": "human settlement in near Sudak, Crimea"
+   },
+   {
+    "qid": "Q25745163",
+    "label": "Mezhdurechye, Loktevsky District, Altai Krai",
+    "description": "human settlement in Loktevsky District, Altai Krai, Russia"
+   },
+   {
+    "qid": "Q4288648",
+    "label": "Mizhrichchia",
+    "description": "село на Украине, Ивано-Франковская область, Болеховский городской совет"
+   }
+  ]
+ },
+ {
+  "lemma": "Тигра",
+  "surface": "Тигра",
+  "context": "тамия (Междуречье) – равнина в бассейне Тигра и Евфрата, протянувшаяся на северо-запа",
+  "candidates": [
+   {
+    "qid": "Q4446039",
+    "label": "Tigger",
+    "description": "fictional tiger-like character"
+   },
+   {
+    "qid": "Q27303579",
+    "label": "Tigger",
+    "description": "fictional plush tiger character from Disney's Winnie the Pooh franchise"
+   },
+   {
+    "qid": "Q2532716",
+    "label": "Tigra",
+    "description": "fictional character in Marvel Comics"
+   },
+   {
+    "qid": "Q7801684",
+    "label": "Tigra",
+    "description": "DC Comics character"
+   },
+   {
+    "qid": "Q96339906",
+    "label": "Tygra",
+    "description": "fictional character from the ThunderCats franchise"
+   }
+  ]
+ },
+ {
+  "lemma": "Евфрата",
+  "surface": "Евфрата",
+  "context": "еждуречье) – равнина в бассейне Тигра и Евфрата, протянувшаяся на северо-запад от Перси",
+  "candidates": [
+   {
+    "qid": "Q26690015",
+    "label": "Operation Euphrates Shield",
+    "description": "2016 military operation"
+   },
+   {
+    "qid": "Q1728989",
+    "label": "Karasu River",
+    "description": "river in Erzincan, eastern Turkey"
+   },
+   {
+    "qid": "Q77339931",
+    "label": "The shores of the Euphrates (In the waves of the Euphrates)",
+    "description": ""
+   },
+   {
+    "qid": "Q19284585",
+    "label": "Göksu (Fırat)",
+    "description": "river in Kahramanmaraş, southern Turkey"
+   },
+   {
+    "qid": "Q25330224",
+    "label": "Category:Tributaries of the Euphrates River",
+    "description": "Wikimedia category"
+   }
+  ]
+ },
+ {
+  "lemma": "Персидский залив",
+  "surface": "Персидского залива",
+  "context": "фрата, протянувшаяся на северо-запад от Персидского залива до Верхнего Евфрата. Сейчас она в основ",
+  "candidates": [
+   {
+    "qid": "Q34675",
+    "label": "Persian Gulf",
+    "description": "extension of the Indian Ocean"
+   },
+   {
+    "qid": "Q14204002",
+    "label": "Gulf Region (Iran)",
+    "description": ""
+   },
+   {
+    "qid": "Q87333470",
+    "label": "ЭСГ/Персидский залив",
+    "description": "entry in Granat Encyclopedic Dictionary"
+   },
+   {
+    "qid": "Q56385",
+    "label": "Gulf Arabic",
+    "description": "variety of the Arabic language spoken in Eastern Arabia around the coasts of the Persian Gulf"
+   }
+  ]
+ },
+ {
+  "lemma": "Верхнего Евфрата",
+  "surface": "Верхнего Евфрата",
+  "context": "а северо-запад от Персидского залива до Верхнего Евфрата. Сейчас она в основном входит в состав",
+  "candidates": []
+ },
+ {
+  "lemma": "Ирака",
+  "surface": "Ирака",
+  "context": ". Сейчас она в основном входит в состав Ирака. Весь этот обширный регион делится на д",
+  "candidates": [
+   {
+    "qid": "Q5920079",
+    "label": "Iraca",
+    "description": "ruler and high priest of Sugamuxi"
+   },
+   {
+    "qid": "Q1795271",
+    "label": "Iraquara",
+    "description": "municipality of Bahia State, Brazil"
+   },
+   {
+    "qid": "Q4070689",
+    "label": "Archaeology Museum",
+    "description": "museum in Colombia"
+   },
+   {
+    "qid": "Q49953237",
+    "label": "Ирака",
+    "description": ""
+   }
+  ]
+ },
+ {
+  "lemma": "Нижняя Месопотамия",
+  "surface": "Нижнюю Месопотамию",
+  "context": "т обширный регион делится на две части: Нижнюю Месопотамию, лежащую в нижнем течении Тигра и Евфра",
+  "candidates": [
+   {
+    "qid": "Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   }
+  ]
+ },
+ {
+  "lemma": "Шатт-эль-Араб",
+  "surface": "Шатт-эль-Араб",
+  "context": "сейчас они даже сливаются в единую реку Шатт-эль-Араб; в древности они впадали в залив самост",
+  "candidates": [
+   {
+    "qid": "Q166966",
+    "label": "Shatt al-Arab",
+    "description": "river in Southwest Asia, formed by the confluence of the Euphrates and the Tigris in the town of al-Qurnah in the Basra Governorate of southern Iraq"
+   },
+   {
+    "qid": "Q7490674",
+    "label": "Shatt Al-Arab District",
+    "description": "district in Basra, Iraq"
+   }
+  ]
+ },
+ {
+  "lemma": "Верхнюю",
+  "surface": "Верхнюю",
+  "context": "али в залив самостоятельными руслами) и Верхнюю (Северную) Месопотамию, где Евфрат и Ти",
+  "candidates": [
+   {
+    "qid": "Q842813",
+    "label": "snus",
+    "description": "moist tobacco product placed under the upper lip, used in the Nordic countries"
+   },
+   {
+    "qid": "Q1435365",
+    "label": "top",
+    "description": "clothing worn on the upper body"
+   },
+   {
+    "qid": "Q595364",
+    "label": "lattice",
+    "description": "partially ordered set that admits greatest lower and least upper bounds of any two elements"
+   },
+   {
+    "qid": "Q932587",
+    "label": "levator labii superioris",
+    "description": "also known by the Latin term quadratus labii superioris"
+   },
+   {
+    "qid": "Q301876",
+    "label": "levator labii superioris alaeque nasi muscle",
+    "description": "muscle"
+   }
+  ]
+ },
+ {
+  "lemma": "Евфрат",
+  "surface": "Евфрат",
+  "context": ") и Верхнюю (Северную) Месопотамию, где Евфрат и Тигр далеко отстоят друг от друга. Ни",
+  "candidates": [
+   {
+    "qid": "Q34589",
+    "label": "Euphrates",
+    "description": "river in Asia"
+   },
+   {
+    "qid": "Q2666131",
+    "label": "Euphrates the Stoic",
+    "description": "Roman Stoic philosopher (c.35 – c.118)"
+   },
+   {
+    "qid": "Q4172703",
+    "label": "ЕВФРАТ",
+    "description": ""
+   },
+   {
+    "qid": "Q1989799",
+    "label": "Euphrates softshell turtle",
+    "description": "species of reptile"
+   },
+   {
+    "qid": "Q3060427",
+    "label": "Euphratensis",
+    "description": "Roman then Byzantine province (c. 341–7th Century) in the diocese of the East in Syria"
+   }
+  ]
+ },
+ {
+  "lemma": "Тигр",
+  "surface": "Тигр",
+  "context": "юю (Северную) Месопотамию, где Евфрат и Тигр далеко отстоят друг от друга. Нижнюю Ме",
+  "candidates": [
+   {
+    "qid": "Q19939",
+    "label": "tiger",
+    "description": "species of big cat"
+   },
+   {
+    "qid": "Q35591",
+    "label": "Tigris",
+    "description": "river flowing from Turkey through Iraq and Syria"
+   },
+   {
+    "qid": "Q151221",
+    "label": "Tiger I",
+    "description": "1942 heavy tank family"
+   },
+   {
+    "qid": "Q740762",
+    "label": "Tiger",
+    "description": "3rd sign of Chinese zodiac"
+   },
+   {
+    "qid": "Q2424775",
+    "label": "Tigr",
+    "description": "Russian infantry vehicle"
+   }
+  ]
+ },
+ {
+  "lemma": "Шумером",
+  "surface": "Шумером",
+  "context": "Нижнюю Месопотамию в древности называли Шумером (в наиболее широком смысле этого слова)",
+  "candidates": [
+   {
+    "qid": "Q113677759",
+    "label": "Sumer–Elam War",
+    "description": "war between Sumer and Elam in circa 2700 BCE"
+   }
+  ]
+ },
+ {
+  "lemma": "Приморьем",
+  "surface": "Приморьем",
+  "context": "части. Юг Нижней Месопотамии именовался Приморьем, или Шумером «в узком смысле слова», а",
+  "candidates": [
+   {
+    "qid": "Q137480991",
+    "label": "Khasan-Tumangang Bridge",
+    "description": "bridge in Khasan, Tumangang"
+   }
+  ]
+ },
+ {
+  "lemma": "Ки-Ури",
+  "surface": "Ки-Ури",
+  "context": "», а север первоначально носил название Ки-Ури, а позднее – Аккад (по названию распола",
+  "candidates": [
+   {
+    "qid": "Q4461035",
+    "label": "Akkadian Empire",
+    "description": "ancient empire in the Mesopotamia (2334–2154 BC)"
+   }
+  ]
+ },
+ {
+  "lemma": "Аккад",
+  "surface": "Аккад",
+  "context": "льно носил название Ки-Ури, а позднее – Аккад (по названию располагавшегося здесь гор",
+  "candidates": [
+   {
+    "qid": "Q4461035",
+    "label": "Akkadian Empire",
+    "description": "ancient empire in the Mesopotamia (2334–2154 BC)"
+   },
+   {
+    "qid": "Q35518",
+    "label": "Akkadian",
+    "description": "extinct Semitic language of Mesopotamia"
+   },
+   {
+    "qid": "Q150996",
+    "label": "Akkad",
+    "description": "ancient Mesopotamian city"
+   },
+   {
+    "qid": "Q419594",
+    "label": "Akkad period",
+    "description": "archaeological and historical period in Mesopotamia, c. 2350-2200 BC"
+   },
+   {
+    "qid": "Q51887",
+    "label": "Accadia",
+    "description": "Italian comune"
+   }
+  ]
+ },
+ {
+  "lemma": "Шумер и Аккад",
+  "surface": "Шумер и Аккад",
+  "context": "еся с исхода III тысячелетия до н.э. – «Шумер и Аккад». Еще позже Нижнюю Месопотамию стали на",
+  "candidates": [
+   {
+    "qid": "Q270860",
+    "label": "Sumerian King List",
+    "description": "Mesopotamian literary composition"
+   },
+   {
+    "qid": "Q275051",
+    "label": "Sumerian religion",
+    "description": "first religion of Mesopotamia region which is tangible by writing"
+   }
+  ]
+ },
+ {
+  "lemma": "Вавилонией",
+  "surface": "Вавилонией",
+  "context": "позже Нижнюю Месопотамию стали называть Вавилонией, по ее новому главному центру – Вавилон",
+  "candidates": []
+ },
+ {
+  "lemma": "Вавилону",
+  "surface": "Вавилону",
+  "context": "илонией, по ее новому главному центру – Вавилону.",
+  "candidates": [
+   {
+    "qid": "Q16120770",
+    "label": "Lion of Babylon",
+    "description": "sculpture"
+   },
+   {
+    "qid": "Q5068659",
+    "label": "Chaldean Catholic Patriarchate of Babylon",
+    "description": "patriarchate of the Catholic Church established after the 1552 schism, based in Baghdad"
+   },
+   {
+    "qid": "Q28132899",
+    "label": "King of Babylon",
+    "description": ""
+   },
+   {
+    "qid": "Q22074947",
+    "label": "Babylon's Ashes",
+    "description": "science fiction novel by James S. A. Corey"
+   },
+   {
+    "qid": "Q519005",
+    "label": "Apil-Sin",
+    "description": "Amorite King of the First Dynasty of Babylon"
+   }
+  ]
+ },
+ {
+  "lemma": "Плодородный Полумесяц",
+  "surface": "Плодородного Полумесяца",
+  "context": "была наиболее изобильным регионом всего Плодородного Полумесяца, но скудна минеральными ресурсами и дер",
+  "candidates": [
+   {
+    "qid": "Q170526",
+    "label": "Fertile Crescent",
+    "description": "crescent-shaped geographic region of the Middle-East, containing the moist and fertile land of Western Asia, and the Nile Valley and Nile Delta of northeast Africa"
+   }
+  ]
+ },
+ {
+  "lemma": "Верхняя Месопотамия",
+  "surface": "Верхняя Месопотамия",
+  "context": "кудна минеральными ресурсами и деревом. Верхняя Месопотамия представляла собой холмистую степь. В е",
+  "candidates": [
+   {
+    "qid": "Q311819",
+    "label": "Upper Mesopotamia",
+    "description": "northern portion of region between Tigris and Euphrates rivers, now part of Iraq, Syria and Turkey"
+   }
+  ]
+ },
+ {
+  "lemma": "Ассирия",
+  "surface": "Ассирия",
+  "context": ". В ее восточной части была расположена Ассирия (греч. термин, принятый в науке для обо",
+  "candidates": [
+   {
+    "qid": "Q41137",
+    "label": "Assyrian Empire",
+    "description": "major Mesopotamian East Semitic kingdom"
+   },
+   {
+    "qid": "Q40169",
+    "label": "Assyria",
+    "description": "Roman province (116–118 AD)"
+   },
+   {
+    "qid": "Q3625641",
+    "label": "Achaemenid Assyria",
+    "description": "aspect of history"
+   },
+   {
+    "qid": "Q377085",
+    "label": "Assyrians",
+    "description": "ethnic group native to Mesopotamia"
+   },
+   {
+    "qid": "Q29440",
+    "label": "Assyrian Neo-Aramaic",
+    "description": "Neo-Aramaic dialect"
+   }
+  ]
+ },
+ {
+  "lemma": "Ашшур",
+  "surface": "Ашшур",
+  "context": "обозначения области с центром в городе Ашшур на Среднем Тигре).",
+  "candidates": [
+   {
+    "qid": "Q200200",
+    "label": "Assur",
+    "description": "archaeological site in Iraq"
+   },
+   {
+    "qid": "Q685878",
+    "label": "Ashur",
+    "description": "Mesopotamian diety of the Assyrians"
+   },
+   {
+    "qid": "Q171191",
+    "label": "Ashurbanipal",
+    "description": "Assyrian ruler"
+   },
+   {
+    "qid": "Q193912",
+    "label": "Асархаддон",
+    "description": "King of Assyria (8th cenutury BCE – 669 BCE)"
+   },
+   {
+    "qid": "Q193290",
+    "label": "Ashurnasirpal II",
+    "description": "Assyrian king"
+   }
+  ]
+ },
+ {
+  "lemma": "Среднем Тигре",
+  "surface": "Среднем Тигре",
+  "context": "ния области с центром в городе Ашшур на Среднем Тигре).",
+  "candidates": []
+ },
+ {
+  "lemma": "Аравийским плато",
+  "surface": "Аравийским плато",
+  "context": "и на западе и юго-западе, на границе с Аравийским плато (откуда в регион волна за волной вторга",
+  "candidates": []
+ },
+ {
+  "lemma": "Месопотамцы",
+  "surface": "Месопотамцы",
+  "context": "орговой и военной экспансии ее жителей. Месопотамцы вывозили в иные страны ткани, зерно и р",
+  "candidates": []
+ },
+ {
+  "lemma": "Убейд",
+  "surface": "Убейд",
+  "context": "я в науке на ряд эпох – доисторических: Убейд (VI–IV тысячелетия до н.э.); Урук (IV т",
+  "candidates": [
+   {
+    "qid": "Q245156",
+    "label": "Ubaid period",
+    "description": "archaeological culture"
+   },
+   {
+    "qid": "Q307629",
+    "label": "Abdullah al-Mahdi Billah",
+    "description": "Isma'ili Imam and Fatimid Caliph from 909 to 934"
+   },
+   {
+    "qid": "Q2018948",
+    "label": "Ubayd Zakani",
+    "description": "Persian poet"
+   },
+   {
+    "qid": "Q2776731",
+    "label": "Abd al-Karim Ubeid",
+    "description": "Lebanese imam"
+   },
+   {
+    "qid": "Q1381051",
+    "label": "Obeid Al-Dosari",
+    "description": "Saudi Arabian footballer"
+   }
+  ]
+ },
+ {
+  "lemma": "Урук",
+  "surface": "Урук",
+  "context": "ких: Убейд (VI–IV тысячелетия до н.э.); Урук (IV тысячелетие до н.э.); Джемдет-Наср",
+  "candidates": [
+   {
+    "qid": "Q168518",
+    "label": "Uruk",
+    "description": "ancient city of Sumer and Babylonia"
+   },
+   {
+    "qid": "Q147701",
+    "label": "Bixa orellana",
+    "description": "species of South American plant"
+   },
+   {
+    "qid": "Q270860",
+    "label": "Sumerian King List",
+    "description": "Mesopotamian literary composition"
+   },
+   {
+    "qid": "Q731494",
+    "label": "Uruk period",
+    "description": "archaeological culture"
+   },
+   {
+    "qid": "Q1816370",
+    "label": "Urucará",
+    "description": "municipality of Amazonas state, Brazil"
+   }
+  ]
+ },
+ {
+  "lemma": "Джемдет-Наср",
+  "surface": "Джемдет-Наср",
+  "context": "о н.э.); Урук (IV тысячелетие до н.э.); Джемдет-Наср (рубеж IV–III тысячелетий до н.э.); и и",
+  "candidates": [
+   {
+    "qid": "Q342799",
+    "label": "Jemdet Nasr",
+    "description": "archaeological site in Iraq"
+   }
+  ]
+ },
+ {
+  "lemma": "Раннединастический период",
+  "surface": "Раннединастический период",
+  "context": "I тысячелетий до н.э.); и исторических: Раннединастический период с тремя подпериодами (XXX–XXIV вв. до н",
+  "candidates": [
+   {
+    "qid": "Q716742",
+    "label": "Early Dynastic period",
+    "description": "archaeological culture of Mesopotamia"
+   }
+  ]
+ },
+ {
+  "lemma": "Аккадской",
+  "surface": "Аккадской",
+  "context": "V вв. до н.э.); эпоха первых деспотий – Аккадской и Урской (XXIV–XXI вв. до н.э.); Старов",
+  "candidates": [
+   {
+    "qid": "Q188536",
+    "label": "Anu",
+    "description": "Sumerian deity, Sky Father, King of the Gods"
+   },
+   {
+    "qid": "Q726282",
+    "label": "Ninurta",
+    "description": "mesopotamian deity"
+   },
+   {
+    "qid": "Q214672",
+    "label": "Enlil",
+    "description": "ancient Mesopotamian god"
+   },
+   {
+    "qid": "Q468912",
+    "label": "Nergal",
+    "description": "underworld deity worshipped throughout Mesopotamia"
+   },
+   {
+    "qid": "Q190123",
+    "label": "Marduk",
+    "description": "national god of the Babylonians"
+   }
+  ]
+ },
+ {
+  "lemma": "Урской",
+  "surface": "Урской",
+  "context": ".); эпоха первых деспотий – Аккадской и Урской (XXIV–XXI вв. до н.э.); Старовавилонски",
+  "candidates": []
+ },
+ {
+  "lemma": "Старовавилонский",
+  "surface": "Старовавилонский",
+  "context": "адской и Урской (XXIV–XXI вв. до н.э.); Старовавилонский–Староассирийский (XX–XVI вв. до н.э.),",
+  "candidates": [
+   {
+    "qid": "Q733897",
+    "label": "Old Babylonian Empire",
+    "description": "c. 1894 BC – c. 1595 BC dynasty of Babylonia"
+   }
+  ]
+ },
+ {
+  "lemma": "Староассирийский",
+  "surface": "Староассирийский",
+  "context": "XXIV–XXI вв. до н.э.); Старовавилонский–Староассирийский (XX–XVI вв. до н.э.), Средневавилонский",
+  "candidates": [
+   {
+    "qid": "Q15782728",
+    "label": "Old-Assyrian period",
+    "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1950–1750 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "Средневавилонский",
+  "surface": "Средневавилонский",
+  "context": "–Староассирийский (XX–XVI вв. до н.э.), Средневавилонский–Среднеассирийский (XVI/XV–XII/XI вв. до",
+  "candidates": [
+   {
+    "qid": "Q16530848",
+    "label": "Middle Babylonian period",
+    "description": "period of the Babylonian civilization in Mesopotamia (ca 1595–1155 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "Среднеассирийский",
+  "surface": "Среднеассирийский",
+  "context": "(XX–XVI вв. до н.э.), Средневавилонский–Среднеассирийский (XVI/XV–XII/XI вв. до н.э.) и Новоассир",
+  "candidates": [
+   {
+    "qid": "Q114868919",
+    "label": "Middle Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1400–1000 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "Новоассирийский",
+  "surface": "Новоассирийский",
+  "context": "сирийский (XVI/XV–XII/XI вв. до н.э.) и Новоассирийский (X–VII вв. до н.э.) – Нововавилонский (",
+  "candidates": [
+   {
+    "qid": "Q114869081",
+    "label": "Neo Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia (ca 911–612 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "Нововавилонский",
+  "surface": "Нововавилонский",
+  "context": "и Новоассирийский (X–VII вв. до н.э.) – Нововавилонский (XII–VI вв. до н.э.) периоды, с некотор",
+  "candidates": [
+   {
+    "qid": "Q114869307",
+    "label": "Neo Babylonian Period",
+    "description": "period of the Babylonian civilization in Mesopotamia (ca 626–539 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "Вавилония",
+  "surface": "Вавилонии",
+  "context": "екоторыми несовпадениями в периодизации Вавилонии и Ассирии; наконец, Младовавилонский пе",
+  "candidates": [
+   {
+    "qid": "Q47690",
+    "label": "Babylonia",
+    "description": "historical country"
+   },
+   {
+    "qid": "Q56046846",
+    "label": "Babylon",
+    "description": "mythological Greek character, mother of Arabus"
+   }
+  ]
+ },
+ {
+  "lemma": "Ассирии",
+  "surface": "Ассирии",
+  "context": "совпадениями в периодизации Вавилонии и Ассирии; наконец, Младовавилонский период (VI/V",
+  "candidates": [
+   {
+    "qid": "Q35518",
+    "label": "Akkadian",
+    "description": "extinct Semitic language of Mesopotamia"
+   },
+   {
+    "qid": "Q377085",
+    "label": "Assyrians",
+    "description": "ethnic group native to Mesopotamia"
+   },
+   {
+    "qid": "Q852236",
+    "label": "Sayfo",
+    "description": "genocide of Syriac Christians in the Ottoman Empire"
+   },
+   {
+    "qid": "Q29440",
+    "label": "Assyrian Neo-Aramaic",
+    "description": "Neo-Aramaic dialect"
+   },
+   {
+    "qid": "Q203179",
+    "label": "Assyrian Church of the East",
+    "description": "ancient Christian religious branch originated in Assyria"
+   }
+  ]
+ },
+ {
+  "lemma": "Младовавилонский период",
+  "surface": "Младовавилонский период",
+  "context": "иодизации Вавилонии и Ассирии; наконец, Младовавилонский период (VI/V в. до н.э. – рубеж эр), когда Мес",
+  "candidates": []
+ },
+ {
+  "lemma": "IV тысячелетия до н.э.",
+  "surface": "IV тысячелетия до н.э.",
+  "context": "аселения Нижней Месопотамии и до начала IV тысячелетия до н.э. выделяется сейчас как время становления",
+  "candidates": [
+   {
+    "qid": "Q46995307",
+    "label": "Category:4th-millennium BC works",
+    "description": "Wikimedia category"
+   }
+  ]
+ },
+ {
+  "lemma": "убейдской археологической культуры",
+  "surface": "убейдской археологической культуры",
+  "context": "я становления и развития так называемой убейдской археологической культуры (названной по поселению эль-Убейд в Ира",
+  "candidates": []
+ },
+ {
+  "lemma": "эль-Убейд",
+  "surface": "эль-Убейд",
+  "context": "ческой культуры (названной по поселению эль-Убейд в Ираке). Ее носители вплотную подошли",
+  "candidates": [
+   {
+    "qid": "Q1317854",
+    "label": "Tell al-'Ubaid",
+    "description": "archaeological site in Iraq"
+   },
+   {
+    "qid": "Q2776731",
+    "label": "Abd al-Karim Ubeid",
+    "description": "Lebanese imam"
+   }
+  ]
+ },
+ {
+  "lemma": "Ираке",
+  "surface": "Ираке",
+  "context": "уры (названной по поселению эль-Убейд в Ираке). Ее носители вплотную подошли к создан",
+  "candidates": [
+   {
+    "qid": "Q545449",
+    "label": "Iraq War",
+    "description": "2003–2011 war after an American-led invasion"
+   },
+   {
+    "qid": "Q48195",
+    "label": "Basra",
+    "description": "capital of Basra Governorate, in southern Iraq"
+   },
+   {
+    "qid": "Q17984356",
+    "label": "Iraqi Civil War of 2014–2017",
+    "description": "Armed conflict in the Middle East"
+   },
+   {
+    "qid": "Q186234",
+    "label": "Kufa",
+    "description": "city in Iraq"
+   },
+   {
+    "qid": "Q191204",
+    "label": "Sulaymaniyah",
+    "description": "city in Iraq"
+   }
+  ]
+ },
+ {
+  "lemma": "Убейдская культура",
+  "surface": "Убейдская культура",
+  "context": "рамы, но так и не открыли письменности. Убейдская культура охватывала всю Месопотамию и ее восточн",
+  "candidates": [
+   {
+    "qid": "Q245156",
+    "label": "Ubaid period",
+    "description": "archaeological culture"
+   }
+  ]
+ },
+ {
+  "lemma": "убейдцев",
+  "surface": "убейдцев",
+  "context": "ее восточную окраину. Вопрос об этносе убейдцев не решен до конца.",
+  "candidates": []
+ },
+ {
+  "lemma": "культуры Урук",
+  "surface": "культуры Урук",
+  "context": "я до н.э. образует эпоху так называемой культуры Урук (характерные для нее памятники обнаруже",
+  "candidates": []
+ },
+ {
+  "lemma": "городище Урук",
+  "surface": "городище Урук",
+  "context": "актерные для нее памятники обнаружены в городище Урук), отличающейся от убейдской культуры и",
+  "candidates": []
+ },
+ {
+  "lemma": "убейдской культуры",
+  "surface": "убейдской культуры",
+  "context": "ужены в городище Урук), отличающейся от убейдской культуры и керамикой, и погребениями. Кроме того",
+  "candidates": []
+ },
+ {
+  "lemma": "месопотамской письменности",
+  "surface": "месопотамской письменности",
+  "context": "льтуры Урук характерны первые памятники месопотамской письменности – это глиняные хозяйственные документы,",
+  "candidates": []
+ },
+ {
+  "lemma": "шумерском языке",
+  "surface": "шумерском языке",
+  "context": "афическую (рисуночную) стадию письма на шумерском языке. Архив этих документов найден на самом",
+  "candidates": [
+   {
+    "qid": "Q2720217",
+    "label": "Sumerian literature",
+    "description": "literature in Sumerian language"
+   },
+   {
+    "qid": "Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity"
+   }
+  ]
+ },
+ {
+  "lemma": "шумерами",
+  "surface": "шумерами",
+  "context": "им образом, носители культуры Урук были шумерами.",
+  "candidates": []
+ },
+ {
+  "lemma": "Алалу",
+  "surface": "Алалу",
+  "context": "мена (в том числе имена богов, например Алалу, Кубаба, Забаба и др.). Такие имена был",
+  "candidates": [
+   {
+    "qid": "Q6747307",
+    "label": "Eli Alaluf",
+    "description": "Israeli politician"
+   },
+   {
+    "qid": "Q5492742",
+    "label": "Алалуостари",
+    "description": ""
+   }
+  ]
+ },
+ {
+  "lemma": "Кубаба",
+  "surface": "Кубаба",
+  "context": "том числе имена богов, например Алалу, Кубаба, Забаба и др.). Такие имена были распро",
+  "candidates": [
+   {
+    "qid": "Q107474864",
+    "label": "Kubaba",
+    "description": "hurro-Hittite goddess"
+   },
+   {
+    "qid": "Q948742",
+    "label": "Kubaba",
+    "description": "Queen of Sumer"
+   }
+  ]
+ },
+ {
+  "lemma": "Забаба",
+  "surface": "Забаба",
+  "context": "ле имена богов, например Алалу, Кубаба, Забаба и др.). Такие имена были распространены",
+  "candidates": [
+   {
+    "qid": "Q147461",
+    "label": "Zababa",
+    "description": "war god"
+   },
+   {
+    "qid": "Q136691",
+    "label": "Zababa-shuma-iddina",
+    "description": "Babylonian king"
+   },
+   {
+    "qid": "Q4182313",
+    "label": "Yevgeny Zababakhin",
+    "description": "Soviet physicist and nuclear weapon designer (1917–1984)"
+   }
+  ]
+ },
+ {
+  "lemma": "Шумер",
+  "surface": "Шумера",
+  "context": "пространены у людей, живших к северу от Шумера, в стране, именовавшейся «Субир, «Субар",
+  "candidates": [
+   {
+    "qid": "Q35355",
+    "label": "Sumer",
+    "description": "ancient Mesopotamian civilization from 5500 to 1800 BC"
+   },
+   {
+    "qid": "Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity"
+   },
+   {
+    "qid": "Q36790",
+    "label": "Sumerian",
+    "description": "language of ancient Sumer"
+   },
+   {
+    "qid": "Q275051",
+    "label": "Sumerian religion",
+    "description": "first religion of Mesopotamia region which is tangible by writing"
+   },
+   {
+    "qid": "Q270860",
+    "label": "Sumerian King List",
+    "description": "Mesopotamian literary composition"
+   }
+  ]
+ },
+ {
+  "lemma": "Субир",
+  "surface": "Субир",
+  "context": "еру от Шумера, в стране, именовавшейся «Субир, «Субар» (где тоже была распространена",
+  "candidates": [
+   {
+    "qid": "Q782758",
+    "label": "Subirats",
+    "description": "municipality of Spain"
+   },
+   {
+    "qid": "Q55398",
+    "label": "Bernadette Soubirous",
+    "description": "French saint (1844–1879)"
+   },
+   {
+    "qid": "Q7631351",
+    "label": "Subir Sachdev",
+    "description": "Indian physicist"
+   },
+   {
+    "qid": "Q182136",
+    "label": "Josep Maria Subirachs",
+    "description": "Catalan sculptor and painter (1927-2014)"
+   },
+   {
+    "qid": "Q680632",
+    "label": "Xavier Zubiri",
+    "description": "Spanish philosopher (1898-1983)"
+   }
+  ]
+ },
+ {
+  "lemma": "Субар",
+  "surface": "Субар",
+  "context": "умера, в стране, именовавшейся «Субир, «Субар» (где тоже была распространена убейдска",
+  "candidates": [
+   {
+    "qid": "Q2096441",
+    "label": "Subartu",
+    "description": "Bronze age city-state mentioned in the Armana Letters"
+   },
+   {
+    "qid": "Q693442",
+    "label": "subarachnoid hemorrhage",
+    "description": "bleeding into the subarachnoid space"
+   },
+   {
+    "qid": "Q172741",
+    "label": "Subaru",
+    "description": "Japanese automobile manufacturer"
+   },
+   {
+    "qid": "Q1473957",
+    "label": "Subarnapur district",
+    "description": "district of Odisha, India"
+   },
+   {
+    "qid": "Q5967371",
+    "label": "subarctic climate",
+    "description": "subtype of the Köppen classification, further subdivided as Dfc, Dwc, Dsc, Dfd, Dwd and Dsd."
+   }
+  ]
+ },
+ {
+  "lemma": "убейдская культура",
+  "surface": "убейдская культура",
+  "context": ", «Субар» (где тоже была распространена убейдская культура), а сами шумеры считали, что их история",
+  "candidates": [
+   {
+    "qid": "Q245156",
+    "label": "Ubaid period",
+    "description": "archaeological culture"
+   }
+  ]
+ },
+ {
+  "lemma": "Эреду",
+  "surface": "Эреду",
+  "context": "некогда началась с двух общин – одна в «Эреду» (город, который шумеры полагали своим",
+  "candidates": [
+   {
+    "qid": "Q210065",
+    "label": "Eridu",
+    "description": "archaeological site in Iraq"
+   }
+  ]
+ },
+ {
+  "lemma": "дошумерскому народу",
+  "surface": "дошумерскому народу",
+  "context": "убейдская культура принадлежала особому дошумерскому народу, к языку которого относились упомянутые",
+  "candidates": []
+ },
+ {
+  "lemma": "Шумеры",
+  "surface": "Шумеры",
+  "context": "относились упомянутые имена и термины. Шумеры же появились здесь лишь в начале IV тыс",
+  "candidates": [
+   {
+    "qid": "Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity"
+   },
+   {
+    "qid": "Q105486083",
+    "label": "БСЭ1/Шумеры",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)"
+   }
+  ]
+ },
+ {
+  "lemma": "эпоха Урук",
+  "surface": "эпоха Урук",
+  "context": "езультате в Нижней Месопотамии началась эпоха Урук – первая эпоха шумерской истории, а к с",
+  "candidates": [
+   {
+    "qid": "Q731494",
+    "label": "Uruk period",
+    "description": "archaeological culture"
+   }
+  ]
+ },
+ {
+  "lemma": "шумерской истории",
+  "surface": "шумерской истории",
+  "context": "амии началась эпоха Урук – первая эпоха шумерской истории, а к северу от нее продолжали существов",
+  "candidates": []
+ },
+ {
+  "lemma": "дошумерского этнического ареала",
+  "surface": "дошумерского этнического ареала",
+  "context": "продолжали существовать племена того же дошумерского этнического ареала. Шумеры называли их северный край «Суба",
+  "candidates": []
+ },
+ {
+  "lemma": "людьми субар",
+  "surface": "людьми субар",
+  "context": "х северный край «Субар», а население – «людьми субар»; а поскольку шумеры сохранили какую-то",
+  "candidates": []
+ },
+ {
+  "lemma": "Субара",
+  "surface": "Субара",
+  "context": "симбиоза собственно шумерского Эреду и «Субара», представлявшего аборигенов.",
+  "candidates": [
+   {
+    "qid": "Q172741",
+    "label": "Subaru",
+    "description": "Japanese automobile manufacturer"
+   },
+   {
+    "qid": "Q693442",
+    "label": "subarachnoid hemorrhage",
+    "description": "bleeding into the subarachnoid space"
+   },
+   {
+    "qid": "Q2361541",
+    "label": "subarachnoid space",
+    "description": "anatomical structure; space of compartment of head"
+   },
+   {
+    "qid": "Q1442272",
+    "label": "subarachnoid cistern",
+    "description": "opening in the brain filled with cerebrospinal fluid"
+   },
+   {
+    "qid": "Q66590377",
+    "label": "subarachnoid fossa",
+    "description": ""
+   }
+  ]
+ },
+ {
+  "lemma": "Месопотамию",
+  "surface": "Месопотамию",
+  "context": "сячелетия до н.э. или несколько позже в Месопотамию переселилась из Северной Аравии особая",
+  "candidates": [
+   {
+    "qid": "Q113151289",
+    "label": "Mongol invasion of Persia and Mesopotamia",
+    "description": "конфликты 1219-1258 гг."
+   }
+  ]
+ },
+ {
+  "lemma": "Северной Аравии",
+  "surface": "Северной Аравии",
+  "context": "ько позже в Месопотамию переселилась из Северной Аравии особая ветвь семитов – восточные семиты",
+  "candidates": [
+   {
+    "qid": "Q119875",
+    "label": "Apostolic Vicariate of Northern Arabia",
+    "description": "Catholic missionary jurisdiction"
+   }
+  ]
+ },
+ {
+  "lemma": "восточные семиты",
+  "surface": "восточные семиты",
+  "context": "Северной Аравии особая ветвь семитов – восточные семиты, получившие в науке название «аккадцев»",
+  "candidates": [
+   {
+    "qid": "Q2481441",
+    "label": "history of Mesopotamia",
+    "description": "aspect of history"
+   }
+  ]
+ },
+ {
+  "lemma": "аккадцев",
+  "surface": "аккадцев",
+  "context": "ые семиты, получившие в науке название «аккадцев». Часть восточных семитов расселилась в",
+  "candidates": []
+ },
+ {
+  "lemma": "вавилонян",
+  "surface": "вавилонян",
+  "context": "имилировавшей их всех, происходит народ вавилонян, а от второй – народ ассирийцев. Вавило",
+  "candidates": [
+   {
+    "qid": "Q797930",
+    "label": "Babylonians",
+    "description": "people of antiquity"
+   },
+   {
+    "qid": "Q1211189",
+    "label": "The Babylonians",
+    "description": "comedy by Aristophanes"
+   }
+  ]
+ },
+ {
+  "lemma": "ассирийцев",
+  "surface": "ассирийцев",
+  "context": "ит народ вавилонян, а от второй – народ ассирийцев. Вавилонский и ассирийский языки – это",
+  "candidates": [
+   {
+    "qid": "Q852236",
+    "label": "Sayfo",
+    "description": "genocide of Syriac Christians in the Ottoman Empire"
+   },
+   {
+    "qid": "Q26454627",
+    "label": "Judith",
+    "description": "biblical character of the Book of Judith"
+   },
+   {
+    "qid": "Q1073859",
+    "label": "Assyrian flag",
+    "description": "flag representing the Assyrian nation"
+   },
+   {
+    "qid": "Q17514348",
+    "label": "persecution of Christians by the Islamic State",
+    "description": "overview of the systematic genocide of Christians by the Islamic State"
+   },
+   {
+    "qid": "Q99003075",
+    "label": "В Ереване открылся памятник невинным жертвам геноцида ассирийцев 1915 года",
+    "description": ""
+   }
+  ]
+ },
+ {
+  "lemma": "восточносемитского",
+  "surface": "восточносемитского",
+  "context": "ассирийский языки – это разные диалекты восточносемитского (аккадского) языка, которые на рубеже I",
+  "candidates": []
+ },
+ {
+  "lemma": "эпоху Джемдет-Наср",
+  "surface": "эпоху Джемдет-Наср",
+  "context": "После эпохи Урук археологи выделяют эпоху Джемдет-Наср (конец IV тысячелетия до н.э.), названн",
+  "candidates": []
+ },
+ {
+  "lemma": "Протописьменный период",
+  "surface": "Протописьменный период",
+  "context": "эпохи Урук и Джемдет-Наср объединяют в «Протописьменный период». С переходом от пиктографии к полноцен",
+  "candidates": [
+   {
+    "qid": "Q97663118",
+    "label": "Протописьменный период",
+    "description": ""
+   }
+  ]
+ },
+ {
+  "lemma": "шумерских",
+  "surface": "шумерских",
+  "context": "до н.э.). Это было время существования шумерских городов-государств. Именно в Раннединас",
+  "candidates": []
+ },
+ {
+  "lemma": "аккадцы",
+  "surface": "аккадцы",
+  "context": "симбиозе с шумерами восточные семиты – аккадцы. По археологическим критериям Раннедина",
+  "candidates": [
+   {
+    "qid": "Q2481441",
+    "label": "history of Mesopotamia",
+    "description": "aspect of history"
+   }
+  ]
+ },
+ {
+  "lemma": "великий потоп",
+  "surface": "великий потоп",
+  "context": "памяти месопотамцев, – так называемый «великий потоп» (ок. 2950 г. до н.э.).",
+  "candidates": [
+   {
+    "qid": "Q134052",
+    "label": "deluge myth",
+    "description": "narrative in which a great flood destroys a civilization, commonly as divine retribution"
+   },
+   {
+    "qid": "Q993582",
+    "label": "Great Flood",
+    "description": "major flood in ancient Chinese legends during the reign of Emperor Yao"
+   },
+   {
+    "qid": "Q3115081",
+    "label": "1957 Valencia flood",
+    "description": "1957 natural disaster in Valencia, Spain"
+   }
+  ]
+ },
+ {
+  "lemma": "империю",
+  "surface": "империю",
+  "context": "впервые объединяется в централизованную империю с неограниченной властью царя, созданну",
+  "candidates": [
+   {
+    "qid": "Q148499",
+    "label": "Margraviate of Brandenburg",
+    "description": "Holy Roman Empire principality (1157–1806)"
+   },
+   {
+    "qid": "Q133805840",
+    "label": "Переселение грузин в Османскую империю",
+    "description": ""
+   },
+   {
+    "qid": "Q700633",
+    "label": "Jewish settlement in the Japanese Empire",
+    "description": "event that occurred around World War II"
+   },
+   {
+    "qid": "Q124920569",
+    "label": "Category:British emigrants to the Russian Empire",
+    "description": "Wikimedia category"
+   },
+   {
+    "qid": "Q49001520",
+    "label": "Mongol incursions in the Holy Roman Empire",
+    "description": "Part of the first great Mongol invasion of Europe"
+   }
+  ]
+ },
+ {
+  "lemma": "династией Аккада",
+  "surface": "династией Аккада",
+  "context": "неограниченной властью царя, созданную династией Аккада (XXIV–XXII вв.) и восстановленную так н",
+  "candidates": []
+ },
+ {
+  "lemma": "III династией Ура",
+  "surface": "III династией Ура",
+  "context": "I вв.) и восстановленную так называемой III династией Ура (конец XX–XXI в.). Державу Ура сокрушил",
+  "candidates": []
+ },
+ {
+  "lemma": "Державу Ура",
+  "surface": "Державу Ура",
+  "context": "ой III династией Ура (конец XX–XXI в.). Державу Ура сокрушило ок. 2003 г. до н.э. нашествие",
+  "candidates": []
+ },
+ {
+  "lemma": "амореи",
+  "surface": "амореев",
+  "context": "нашествие новых семитских кочевников – амореев. Ее государственность пыталась продолжа",
+  "candidates": [
+   {
+    "qid": "Q203507",
+    "label": "Amorites",
+    "description": "ancient Northwest Semitic-speaking people from the Levant"
+   },
+   {
+    "qid": "Q35941",
+    "label": "Amorite",
+    "description": "extinct Northwest Semitic language, spoken by the Amorite tribes"
+   },
+   {
+    "qid": "Q1368637",
+    "label": "Amorian dynasty",
+    "description": "Byzantine dynasty"
+   },
+   {
+    "qid": "Q474083",
+    "label": "Amoreira",
+    "description": "civil parish in Óbidos"
+   },
+   {
+    "qid": "Q2256903",
+    "label": "Freguesia de Amoreira da Gândara",
+    "description": "former civil parish in Portugal"
+   }
+  ]
+ },
+ {
+  "lemma": "I династия Иссина",
+  "surface": "I династия Иссина",
+  "context": "е государственность пыталась продолжать I династия Иссина (2017–1794), однако бóльшая часть стран",
+  "candidates": []
+ },
+ {
+  "lemma": "царств",
+  "surface": "царств",
+  "context": "я, и Месопотамия распалась на множество царств. Времена правления «имперских» династий",
+  "candidates": [
+   {
+    "qid": "Q181620",
+    "label": "Books of Samuel",
+    "description": "a book in the Hebrew Bible, found as two books in the Christian Old Testament"
+   },
+   {
+    "qid": "Q729",
+    "label": "animal",
+    "description": "kingdom of multicellular eukaryotic organisms"
+   },
+   {
+    "qid": "Q186096",
+    "label": "Tsardom of Russia",
+    "description": "Russian state from 1547 to 1721"
+   },
+   {
+    "qid": "Q147909",
+    "label": "Kingdom of Bulgaria",
+    "description": "state on the Balkan Peninsula between 1908 and 1946"
+   },
+   {
+    "qid": "Q221457",
+    "label": "Congress Poland",
+    "description": "territory in Eastern Europe in Russian empire (1815–1915)"
+   }
+  ]
+ },
+ {
+  "lemma": "династий Аккада",
+  "surface": "династий Аккада",
+  "context": "о царств. Времена правления «имперских» династий Аккада и Ура объединяют в период первых центра",
+  "candidates": [
+   {
+    "qid": "Q315893",
+    "label": "Shulgi",
+    "description": "Sumerian King of Ur"
+   }
+  ]
+ },
+ {
+  "lemma": "Ур",
+  "surface": "Ура",
+  "context": "правления «имперских» династий Аккада и Ура объединяют в период первых централизова",
+  "candidates": [
+   {
+    "qid": "Q5699",
+    "label": "Ur",
+    "description": "ancient Mesopotamian city-state"
+   },
+   {
+    "qid": "Q1058612",
+    "label": "Hours",
+    "description": "commune in Pyrénées-Atlantiques, France"
+   },
+   {
+    "qid": "Q747022",
+    "label": "Ur",
+    "description": "former supercontinent"
+   },
+   {
+    "qid": "Q1121572",
+    "label": "(22260) Ур",
+    "description": "asteroid"
+   },
+   {
+    "qid": "Q4476479",
+    "label": "Ur",
+    "description": "river in Kemerovo Oblast, Russia"
+   }
+  ]
+ },
+ {
+  "lemma": "период первых централизованных деспотий",
+  "surface": "период первых централизованных деспотий",
+  "context": "ких» династий Аккада и Ура объединяют в период первых централизованных деспотий в Двуречье (ок. 2316–2003 гг. до н.э.).",
+  "candidates": []
+ },
+ {
+  "lemma": "Двуречье",
+  "surface": "Двуречье",
+  "context": "риод первых централизованных деспотий в Двуречье (ок. 2316–2003 гг. до н.э.).",
+  "candidates": [
+   {
+    "qid": "Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   {
+    "qid": "Q4156158",
+    "label": "Dvorichchia",
+    "description": "village in Mykulyntsi Hromada, Ternopil Raion, Ternopil Oblast, Ukraine"
+   },
+   {
+    "qid": "Q4156153",
+    "label": "Dvorichchia",
+    "description": "human settlement in Nyzhnohirskyi Raion, Autonomous Republic of Crimea, Ukraine"
+   },
+   {
+    "qid": "Q17629126",
+    "label": "Dvurechye",
+    "description": "village in Obluchensky District, Russia"
+   },
+   {
+    "qid": "Q27559967",
+    "label": "Двуречье",
+    "description": "human settlement in Yelizovsky District, Kamchatka Krai, Russia"
+   }
+  ]
+ },
+ {
+  "lemma": "вавилонский",
+  "surface": "вавилонский",
+  "context": "к середине XVIII в. до н.э. знаменитый вавилонский царь Хаммурапи, сам из аморейской динас",
+  "candidates": [
+   {
+    "qid": "Q4102149",
+    "label": "Вавилонский",
+    "description": "human settlement in Pospelikhinsky District, Altai Krai, Russia"
+   },
+   {
+    "qid": "Q2747862",
+    "label": "Babylonian Talmud",
+    "description": "Talmud written in Babylonia"
+   },
+   {
+    "qid": "Q726847",
+    "label": "Babylonian calendar",
+    "description": "lunisolar calendar"
+   },
+   {
+    "qid": "Q33407",
+    "label": "Jewish Babylonian Aramaic",
+    "description": "Middle Aramaic language once used by Jewish writers in Lower Mesopotamia"
+   },
+   {
+    "qid": "Q175447",
+    "label": "Babylonian captivity",
+    "description": "period in Jewish history during which a number of people from the ancient Kingdom of Judah were captives in Babylon"
+   }
+  ]
+ },
+ {
+  "lemma": "царь",
+  "surface": "царь",
+  "context": "XVIII в. до н.э. знаменитый вавилонский царь Хаммурапи, сам из аморейской династии.",
+  "candidates": [
+   {
+    "qid": "Q12097",
+    "label": "king",
+    "description": "title given to the name of a male monarch"
+   },
+   {
+    "qid": "Q44356",
+    "label": "tsar",
+    "description": "Slavic title given to a male or female monarch"
+   },
+   {
+    "qid": "Q17605491",
+    "label": "Vladimir Kononov",
+    "description": "Defence Minister of the self-proclaimed Donetsk People's Republic"
+   },
+   {
+    "qid": "Q302",
+    "label": "Jesus Christ",
+    "description": "central figure of Christianity (c. 6 or 4 BC – AD 30 or 33)"
+   }
+  ]
+ },
+ {
+  "lemma": "Хаммурапи",
+  "surface": "Хаммурапи",
+  "context": "в. до н.э. знаменитый вавилонский царь Хаммурапи, сам из аморейской династии. Время прав",
+  "candidates": [
+   {
+    "qid": "Q36359",
+    "label": "Hammurabi",
+    "description": "sixth king of Babylon (r. 1792–1750 BCE)"
+   },
+   {
+    "qid": "Q93304",
+    "label": "Code of Hammurabi",
+    "description": "Babylonian code of law or conduct"
+   },
+   {
+    "qid": "Q288650",
+    "label": "Hammurabi I",
+    "description": "politician"
+   }
+  ]
+ },
+ {
+  "lemma": "аморейской",
+  "surface": "аморейской",
+  "context": "итый вавилонский царь Хаммурапи, сам из аморейской династии. Время правления этой династии",
+  "candidates": [
+   {
+    "qid": "Q115982860",
+    "label": "West Semitic mythology",
+    "description": "mythology of the northwestern Semitic peoples"
+   }
+  ]
+ },
+ {
+  "lemma": "династии",
+  "surface": "династии",
+  "context": "нский царь Хаммурапи, сам из аморейской династии. Время правления этой династии в Вавило",
+  "candidates": [
+   {
+    "qid": "Q59767331",
+    "label": "Dynasties",
+    "description": "2018 television series"
+   },
+   {
+    "qid": "Q175077",
+    "label": "Twenty-Four Histories",
+    "description": "twenty-four Chinese official historical books"
+   },
+   {
+    "qid": "Q11876947",
+    "label": "Egyptian dynasty",
+    "description": "dynasties of Ancient Egypt"
+   },
+   {
+    "qid": "Q5754274",
+    "label": "list of noble houses in the World of Ice and Fire",
+    "description": "Wikimedia list article"
+   }
+  ]
+ },
+ {
+  "lemma": "Вавилоне",
+  "surface": "Вавилоне",
+  "context": "настии. Время правления этой династии в Вавилоне рассматривается как особый Старовавилон",
+  "candidates": [
+   {
+    "qid": "Q30892186",
+    "label": "Образование в Древнем Вавилоне",
+    "description": ""
+   },
+   {
+    "qid": "Q4115108",
+    "label": "The Richest Man in Babylon",
+    "description": "1926 parable"
+   },
+   {
+    "qid": "Q4386857",
+    "label": "Рабство в Вавилоне и Ассирии",
+    "description": ""
+   },
+   {
+    "qid": "Q787931",
+    "label": "Babylonian mathematics",
+    "description": "mathematical system of Babylonia"
+   },
+   {
+    "qid": "Q1200843",
+    "label": "Zahhak",
+    "description": "evil figure in Iranian mythology"
+   }
+  ]
+ },
+ {
+  "lemma": "Старовавилонский период",
+  "surface": "Старовавилонский период",
+  "context": "и в Вавилоне рассматривается как особый Старовавилонский период в истории Месопотамии (1895–1595 гг. до",
+  "candidates": [
+   {
+    "qid": "Q733897",
+    "label": "Old Babylonian Empire",
+    "description": "c. 1894 BC – c. 1595 BC dynasty of Babylonia"
+   }
+  ]
+ },
+ {
+  "lemma": "касситов",
+  "surface": "касситов",
+  "context": "ла к династии из пришлого народа горцев-касситов, ее правление образует следующий, Средн",
+  "candidates": [
+   {
+    "qid": "Q7988016",
+    "label": "Category:Kassite kings",
+    "description": "Wikimedia category"
+   }
+  ]
+ },
+ {
+  "lemma": "Средневавилонский период",
+  "surface": "Средневавилонский период",
+  "context": "ситов, ее правление образует следующий, Средневавилонский период (ок. 1595–1150 гг. до н.э.). Касситскую",
+  "candidates": [
+   {
+    "qid": "Q16530848",
+    "label": "Middle Babylonian period",
+    "description": "period of the Babylonian civilization in Mesopotamia (ca 1595–1155 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "Касситскую династию",
+  "surface": "Касситскую династию",
+  "context": "кий период (ок. 1595–1150 гг. до н.э.). Касситскую династию низвергло нашествие других горцев – эла",
+  "candidates": []
+ },
+ {
+  "lemma": "эламитов",
+  "surface": "эламитов",
+  "context": "тию низвергло нашествие других горцев – эламитов, жителей Юго-Западного Ирана, и дальней",
+  "candidates": [
+   {
+    "qid": "Q113884135",
+    "label": "Elamite mythology",
+    "description": "мифология древнего народа эламитов"
+   }
+  ]
+ },
+ {
+  "lemma": "Юго-Западного Ирана",
+  "surface": "Юго-Западного Ирана",
+  "context": "ствие других горцев – эламитов, жителей Юго-Западного Ирана, и дальнейшее течение событий c конца I",
+  "candidates": []
+ },
+ {
+  "lemma": "Нововавилонский период",
+  "surface": "Нововавилонский период",
+  "context": "лонии в 539 г. ученые рассматривают как Нововавилонский период. Стоит отметить, что крайний юг Нижней",
+  "candidates": [
+   {
+    "qid": "Q114869307",
+    "label": "Neo Babylonian Period",
+    "description": "period of the Babylonian civilization in Mesopotamia (ca 626–539 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "шумеров",
+  "surface": "шумеров",
+  "context": ", заселенный потомками аккадизированных шумеров, нередко обособлялся от правителей в Ва",
+  "candidates": [
+   {
+    "qid": "Q275051",
+    "label": "Sumerian religion",
+    "description": "first religion of Mesopotamia region which is tangible by writing"
+   },
+   {
+    "qid": "Q1992723",
+    "label": "Nina",
+    "description": "ancient Sumerian city"
+   }
+  ]
+ },
+ {
+  "lemma": "династии Приморья",
+  "surface": "династии Приморья",
+  "context": "авилоне (в частности при так называемой династии Приморья – 1722 – ок. 1460 гг. до н.э.).",
+  "candidates": []
+ },
+ {
+  "lemma": "шумеро-аккадского",
+  "surface": "шумеро-аккадского",
+  "context": "лежавшее на крайней северной периферии шумеро-аккадского ареала, подчинило обширные окрестные те",
+  "candidates": [
+   {
+    "qid": "Q189726",
+    "label": "Enki",
+    "description": "god in Sumerian mythology; god of ritual wisdom"
+   },
+   {
+    "qid": "Q159709",
+    "label": "Gilgamesh",
+    "description": "Sumerian ruler and protagonist of the Epic of Gilgamesh"
+   }
+  ]
+ },
+ {
+  "lemma": "Ассирийскую державу",
+  "surface": "Ассирийскую державу",
+  "context": "ритории и превратилось в могущественную Ассирийскую державу. Дальнейшую историю этого царства, впло",
+  "candidates": []
+ },
+ {
+  "lemma": "Вавилоном",
+  "surface": "Вавилоном",
+  "context": "того царства, вплоть до его уничтожения Вавилоном и его союзниками в конце VII в. до н.э.",
+  "candidates": [
+   {
+    "qid": "Q633560",
+    "label": "Battle of Carchemish",
+    "description": "ancient battle between Egypt and Babylon"
+   }
+  ]
+ },
+ {
+  "lemma": "Новоассирийский период",
+  "surface": "Новоассирийский период",
+  "context": ". до н.э., делят на Среднеассирийский и Новоассирийский периоды, гранью которых служит нашествие на Ме",
+  "candidates": [
+   {
+    "qid": "Q114869081",
+    "label": "Neo Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia (ca 911–612 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "арамеев",
+  "surface": "арамеев",
+  "context": "очередной волны семитских кочевников – арамеев на рубеже XI–X вв. до н.э. При этом Сре",
+  "candidates": []
+ },
+ {
+  "lemma": "Среднеассирийский период",
+  "surface": "Среднеассирийский период",
+  "context": "еев на рубеже XI–X вв. до н.э. При этом Среднеассирийский период условно ведут с рубежа XVI–XV вв., а пр",
+  "candidates": [
+   {
+    "qid": "Q114868919",
+    "label": "Middle Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1400–1000 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "Ашшура",
+  "surface": "Ашшура",
+  "context": "VI–XV вв., а предыдущие времена истории Ашшура не менее условно объединяются в Староас",
+  "candidates": [
+   {
+    "qid": "Q193912",
+    "label": "Асархаддон",
+    "description": "King of Assyria (8th cenutury BCE – 669 BCE)"
+   },
+   {
+    "qid": "Q466990",
+    "label": "Ashur-dan II",
+    "description": "Assyrian king"
+   }
+  ]
+ },
+ {
+  "lemma": "Староассирийский период",
+  "surface": "Староассирийский период",
+  "context": "Ашшура не менее условно объединяются в Староассирийский период (XX–XVI вв. до н.э.).",
+  "candidates": [
+   {
+    "qid": "Q15782728",
+    "label": "Old-Assyrian period",
+    "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1950–1750 BCE)"
+   }
+  ]
+ },
+ {
+  "lemma": "неолита",
+  "surface": "неолита",
+  "context": "ник довольно поздно – в эпоху развитого неолита (VI тысячелетие до н.э.). Первыми насел",
+  "candidates": [
+   {
+    "qid": "Q36422",
+    "label": "Neolithic",
+    "description": "prehistoric period when agriculture is adopted"
+   }
+  ]
+ },
+ {
+  "lemma": "Южного Двуречья",
+  "surface": "Южного Двуречья",
+  "context": "ячелетие до н.э.). Первыми насельниками Южного Двуречья были, как мы уже видели, субареи – выхо",
+  "candidates": []
+ },
+ {
+  "lemma": "субареи",
+  "surface": "субареи",
+  "context": "жного Двуречья были, как мы уже видели, субареи – выходцы с северо-востока, от предгорь",
+  "candidates": [
+   {
+    "qid": "Q12158499",
+    "label": "Subarians",
+    "description": "hypothetical Ancient Mesopotamian people"
+   },
+   {
+    "qid": "Q35740",
+    "label": "Hurrian",
+    "description": "extinct ancient Hurro-Urartian language spoken in Mesopotamia in the 2nd millenium BC"
+   }
+  ]
+ },
+ {
+  "lemma": "Загросского хребта",
+  "surface": "Загросского хребта",
+  "context": "выходцы с северо-востока, от предгорьев Загросского хребта. К концу VI тысячелетия до н.э. они осв",
+  "candidates": []
+ },
+ {
+  "lemma": "Горького моря",
+  "surface": "Горького моря",
+  "context": "они освоили болотистый край вплоть до «Горького моря» и построили здесь древнейшие известные",
+  "candidates": []
+ },
+ {
+  "lemma": "протогорода",
+  "surface": "протогорода",
+  "context": "нам огороженные поселения Месопотамии – протогорода. Нижнемесопотамские субареи создали осо",
+  "candidates": []
+ },
+ {
+  "lemma": "Нижнемесопотамские",
+  "surface": "Нижнемесопотамские",
+  "context": "ые поселения Месопотамии – протогорода. Нижнемесопотамские субареи создали особую, убейдскую архео",
+  "candidates": []
+ },
+ {
+  "lemma": "убейдскую археологическую культуру",
+  "surface": "убейдскую археологическую культуру",
+  "context": "немесопотамские субареи создали особую, убейдскую археологическую культуру (V – начало IV тысячелетия до н.э., или",
+  "candidates": []
+ },
+ {
+  "lemma": "убейдское тысячелетие",
+  "surface": "убейдское тысячелетие",
+  "context": "V – начало IV тысячелетия до н.э., или «убейдское тысячелетие»). Вскоре ее носители-субареи овладели",
+  "candidates": []
+ },
+ {
+  "lemma": "Загроса",
+  "surface": "Загроса",
+  "context": "обширных пространствах от Центрального Загроса через Верхнюю Месопотамию и Сирию к Сре",
+  "candidates": []
+ },
+ {
+  "lemma": "Верхнюю Месопотамию",
+  "surface": "Верхнюю Месопотамию",
+  "context": "транствах от Центрального Загроса через Верхнюю Месопотамию и Сирию к Средиземному морю, а также в",
+  "candidates": []
+ },
+ {
+  "lemma": "Сирию",
+  "surface": "Сирию",
+  "context": "ого Загроса через Верхнюю Месопотамию и Сирию к Средиземному морю, а также в Северо-В",
+  "candidates": [
+   {
+    "qid": "Q3038314",
+    "label": "FK Sirijus Klaipėda",
+    "description": "defunct Lithuanian association football club"
+   }
+  ]
+ },
+ {
+  "lemma": "Средиземному морю",
+  "surface": "Средиземному морю",
+  "context": "оса через Верхнюю Месопотамию и Сирию к Средиземному морю, а также в Северо-Восточной Аравии, вкл",
+  "candidates": [
+   {
+    "qid": "Q99267974",
+    "label": "Каддафи отдал приказ взорвать нефтепроводы, ведущие к Средиземному морю",
+    "description": "Wikinews article"
+   }
+  ]
+ },
+ {
+  "lemma": "Северо-Восточной Аравии",
+  "surface": "Северо-Восточной Аравии",
+  "context": "и Сирию к Средиземному морю, а также в Северо-Восточной Аравии, включая Бахрейн. Вся эта огромная терр",
+  "candidates": [
+   {
+    "qid": "Q111143175",
+    "label": "Beth Qatraye",
+    "description": "христианское название северо-восточной Аравии в I тыс."
+   }
+  ]
+ },
+ {
+  "lemma": "Бахрейн",
+  "surface": "Бахрейн",
+  "context": "акже в Северо-Восточной Аравии, включая Бахрейн. Вся эта огромная территория вместе с Н",
+  "candidates": [
+   {
+    "qid": "Q398",
+    "label": "Bahrain",
+    "description": "country in the Persian Gulf"
+   },
+   {
+    "qid": "Q637639",
+    "label": "Bahrain International Airport",
+    "description": "airport"
+   },
+   {
+    "qid": "Q2074118",
+    "label": "Gulf of Bahrain",
+    "description": "inlet in the Persian Gulf"
+   },
+   {
+    "qid": "Q2740693",
+    "label": "Bahrain Island",
+    "description": "largest island within the archipelago of Bahrain"
+   },
+   {
+    "qid": "Q4165357",
+    "label": "Eastern Arabia",
+    "description": "historical region encompassing the entire coastal strip of Eastern Arabian Peninsula"
+   }
+  ]
+ },
+ {
+  "lemma": "Нижней Месопотамией",
+  "surface": "Нижней Месопотамией",
+  "context": "н. Вся эта огромная территория вместе с Нижней Месопотамией составила относительно однородную этнок",
+  "candidates": []
+ },
+ {
+  "lemma": "шумеры",
+  "surface": "шумеры",
+  "context": "опотамии расселяется новая народность – шумеры, с приходом которых археологическая кул",
+  "candidates": [
+   {
+    "qid": "Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity"
+   },
+   {
+    "qid": "Q105486083",
+    "label": "БСЭ1/Шумеры",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)"
+   }
+  ]
+ },
+ {
+  "lemma": "Иран",
+  "surface": "Иран",
+  "context": "е всего, шумеры пришли с востока, через Иран. Согласно шумерским текстам III тысячел",
+  "candidates": [
+   {
+    "qid": "Q794",
+    "label": "Iran",
+    "description": "country in Western Asia"
+   },
+   {
+    "qid": "Q21286079",
+    "label": "Iran",
+    "description": "male given name"
+   },
+   {
+    "qid": "Q2043606",
+    "label": "Iran",
+    "description": "village in North Ossetia, Russia"
+   },
+   {
+    "qid": "Q119084242",
+    "label": "Иран",
+    "description": "азиатский гепард"
+   },
+   {
+    "qid": "Q82664",
+    "label": "Iran–Iraq War",
+    "description": "1980-1988 war between Iran and Iraq"
+   }
+  ]
+ },
+ {
+  "lemma": "шумерским",
+  "surface": "шумерским",
+  "context": "пришли с востока, через Иран. Согласно шумерским текстам III тысячелетия до н.э., повест",
+  "candidates": []
+ },
+ {
+  "lemma": "III тысячелетия до н.э.",
+  "surface": "III тысячелетия до н.э.",
+  "context": "через Иран. Согласно шумерским текстам III тысячелетия до н.э., повествующим о контактах этого народа",
+  "candidates": [
+   {
+    "qid": "Q11772",
+    "label": "Ancient Greece",
+    "description": "Greek civilization from 1200 BC to 600 AD"
+   },
+   {
+    "qid": "Q8007009",
+    "label": "Category:3rd-millennium BC works",
+    "description": "Wikimedia category"
+   },
+   {
+    "qid": "Q32775874",
+    "label": "Category:3rd-millennium BC books",
+    "description": "Wikimedia category"
+   }
+  ]
+ },
+ {
+  "lemma": "Аратта",
+  "surface": "Аратта",
+  "context": "да с далекой центральноиранской страной Аратта (в районе совр. Йезда), в Аратте почита",
+  "candidates": [
+   {
+    "qid": "Q626512",
+    "label": "Aratta",
+    "description": "land that appears in Sumerian myths"
+   },
+   {
+    "qid": "Q11686605",
+    "label": "arats",
+    "description": "Mongolian term for farmer"
+   }
+  ]
+ },
+ {
+  "lemma": "Йезда",
+  "surface": "Йезда",
+  "context": "иранской страной Аратта (в районе совр. Йезда), в Аратте почитают шумерских богов и н",
+  "candidates": [
+   {
+    "qid": "Q56306813",
+    "label": "Технопарк Йезда",
+    "description": ""
+   },
+   {
+    "qid": "Q7705228",
+    "label": "Category:Cities in Yazd province",
+    "description": "Wikimedia category"
+   }
+  ]
+ },
+ {
+  "lemma": "Аратте",
+  "surface": "Аратте",
+  "context": "траной Аратта (в районе совр. Йезда), в Аратте почитают шумерских богов и носят шумерс",
+  "candidates": []
+ }
+]

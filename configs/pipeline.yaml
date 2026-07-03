@@ -1,0 +1,24 @@
+# Pipeline configuration — one chapter run at a time.
+# Models referenced here must exist in models.yaml.
+
+volume: 1
+chapters: [1]
+
+# Stages are applied in order. Comment out to skip a stage.
+stages:
+
+
+# Number of neighbour paragraphs (already translated) passed as context to each stage.
+context_window: 1
+
+# Which models run at each stage. For the first iteration we pick one model per stage;
+# the cascade can be extended here once the blind-eval matrix (see palimpsets_summary §10)
+# is populated.
+draft_model: grok-3
+terminology_model: grok-3
+factcheck_model: grok-3
+polish_model: gemma-3-4b
+
+# Judges used in evaluation (scripts/03_run_judge.py).
+judge_models:
+

@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Settings rework — mockup</title>
+<style>
+/* ─── Real Variant-A design tokens (copied from frontend/src/demo/variant-a/variant-a.css) ─── */
+:root {
+  --va-bg: #1a1b26;
+  --va-surface: #1f2035;
+  --va-surface2: #24253a;
+  --va-border: #2d2e4a;
+  --va-border2: #3b3c5c;
+  --va-text: #c0caf5;
+  --va-text-muted: #6272a4;
+  --va-text-dim: #414868;
+  --va-accent: #7aa2f7;
+  --va-accent2: #bb9af7;
+  --va-green: #3ddc84;
+  --va-yellow: #e0af68;
+  --va-red: #f7768e;
+  --va-radius: 8px;
+  --va-radius-sm: 4px;
+  --va-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --va-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--va-bg);
+  color: var(--va-text);
+  font-family: var(--va-font);
+}
+
+/* ─── Mockup chrome (not part of the real app — annotation/state-switcher only) ─── */
+
+.mockup-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  background: #14151f;
+  border-bottom: 1px solid var(--va-border2);
+  flex-wrap: wrap;
+}
+
+.mockup-topbar .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--va-text-muted);
+  margin-right: 4px;
+}
+
+.state-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--va-border2);
+  background: transparent;
+  color: var(--va-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--va-font);
+}
+
+.state-btn:hover { color: var(--va-text); border-color: var(--va-accent); }
+
+.state-btn.active {
+  color: var(--va-accent);
+  border-color: var(--va-accent);
+  background: rgba(122, 162, 247, 0.12);
+}
+
+.mockup-topbar .spec-link {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--va-text-dim);
+}
+
+/* ─── Simplified app chrome around the Settings tab (visual context only) ─── */
+
+.va-chrome {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 24px;
+  height: 52px;
+  background: var(--va-surface);
+  border-bottom: 1px solid var(--va-border);
+  gap: 16px;
+}
+
+.va-brand { font-size: 15px; font-weight: 700; letter-spacing: 0.04em; color: var(--va-accent); }
+
+.va-tabs { display: flex; align-items: center; gap: 2px; flex: 1 1 auto; justify-content: center; }
+
+.va-tab {
+  padding: 6px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--va-text-muted);
+  border: none;
+  background: transparent;
+}
+
+.va-tab.active { color: var(--va-accent); background: rgba(122, 162, 247, 0.12); }
+
+/* ─── Unlock row (new — spec §1) ─── */
+
+.va-unlock-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  background: rgba(224, 175, 104, 0.08);
+  border-bottom: 1px solid var(--va-border);
+  font-size: 13px;
+  color: var(--va-yellow);
+}
+
+.va-unlock-row.unlocked {
+  background: rgba(61, 220, 132, 0.08);
+  color: var(--va-green);
+}
+
+.va-lock-icon { font-size: 14px; }
+
+.va-unlock-text { flex: 0 0 auto; white-space: nowrap; }
+
+.va-unlock-row input[type="password"] {
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-text);
+  font-size: 12px;
+  padding: 6px 10px;
+  width: 220px;
+  font-family: var(--va-font-mono);
+}
+
+.va-unlock-row input[type="password"]:focus { outline: none; border-color: var(--va-accent); }
+
+.va-unlock-btn {
+  padding: 6px 14px;
+  border-radius: var(--va-radius-sm);
+  background: rgba(224, 175, 104, 0.15);
+  border: 1px solid var(--va-yellow);
+  color: var(--va-yellow);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--va-font);
+}
+
+.va-unlock-btn:hover { background: rgba(224, 175, 104, 0.28); }
+
+.va-unlock-error {
+  font-size: 12px;
+  color: var(--va-red);
+}
+
+.va-admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1.5px solid var(--va-green);
+  background: rgba(61, 220, 132, 0.1);
+  color: var(--va-green);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.va-lock-btn-relock {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--va-border2);
+  color: var(--va-text-muted);
+  border-radius: var(--va-radius-sm);
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--va-font);
+}
+.va-lock-btn-relock:hover { color: var(--va-text); border-color: var(--va-accent); }
+
+/* ─── Disabled-with-tooltip pattern for read-only mode ─── */
+
+.va-disabled-tt {
+  position: relative;
+  display: inline-flex;
+}
+
+.va-disabled-tt[data-tt]:hover::after {
+  content: attr(data-tt);
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0e0f18;
+  border: 1px solid var(--va-border2);
+  color: var(--va-text);
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: var(--va-radius-sm);
+  white-space: nowrap;
+  z-index: 50;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.va-disabled-tt button:disabled,
+.va-disabled-tt.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ─── Tab content / settings (verbatim structure from variant-a.css) ─── */
+
+.va-tab-content { padding: 32px 48px; }
+
+.va-settings-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--va-text);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--va-border);
+}
+
+.va-budget-line {
+  font-size: 12px;
+  font-family: var(--va-font-mono);
+  color: var(--va-text-muted);
+  margin-bottom: 16px;
+}
+
+.va-evaluator-color-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.va-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px; }
+.va-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--va-text-muted);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--va-border2);
+}
+.va-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--va-border);
+  color: var(--va-text);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.va-eval-row { cursor: pointer; }
+.va-eval-row:hover td { background: var(--va-surface2); }
+.va-eval-row.disabled td { opacity: 0.55; }
+
+.va-eval-chevron { display: inline-block; font-size: 10px; color: var(--va-text-muted); }
+
+.va-verdict-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.va-verdict-dot.green { background: var(--va-green); }
+.va-verdict-dot.red { background: var(--va-red); }
+
+.va-btn-secondary {
+  padding: 5px 12px;
+  border-radius: var(--va-radius-sm);
+  background: transparent;
+  border: 1px solid var(--va-border2);
+  color: var(--va-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--va-font);
+}
+.va-btn-secondary:hover:not(:disabled) { color: var(--va-text); border-color: var(--va-accent); }
+
+.va-add-eval-btn {
+  margin-top: 6px;
+  padding: 7px 14px;
+  border-radius: var(--va-radius-sm);
+  border: 1px dashed var(--va-border2);
+  background: transparent;
+  color: var(--va-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  font-family: var(--va-font);
+}
+.va-add-eval-btn:hover:not(:disabled) { color: var(--va-text); border-color: var(--va-accent); }
+
+.va-model-registry-section { margin-top: 32px; }
+.va-model-registry-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+/* Params badge (new — spec §4, collapse into "N params") */
+.va-params-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--va-border2);
+  background: var(--va-surface2);
+  color: var(--va-text-muted);
+  font-size: 11px;
+  font-family: var(--va-font-mono);
+  cursor: pointer;
+}
+.va-params-badge:hover { color: var(--va-text); border-color: var(--va-accent); }
+.va-params-badge .chev { font-size: 9px; transition: transform 0.15s; }
+.va-params-badge.open .chev { transform: rotate(90deg); }
+
+.va-params-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: var(--va-bg);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius-sm);
+}
+.va-params-expanded div { display: flex; gap: 6px; font-size: 11px; font-family: var(--va-font-mono); }
+.va-params-expanded .k { color: var(--va-text-muted); }
+.va-params-expanded .v { color: var(--va-text); }
+
+/* ─── Modals (popover pattern, verbatim from variant-a.css) ─── */
+
+.va-popover-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.55); }
+
+.va-popover {
+  position: fixed;
+  z-index: 101;
+  top: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  min-width: 380px;
+  max-width: 480px;
+  max-height: 74vh;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.va-popover-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--va-text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: var(--va-radius-sm);
+}
+.va-popover-close:hover { color: var(--va-text); }
+
+.va-modal-title { font-size: 16px; font-weight: 700; color: var(--va-text); margin-bottom: 2px; }
+
+.va-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--va-text-muted);
+  margin-bottom: 5px;
+}
+
+.va-field-input {
+  width: 100%;
+  background: var(--va-surface);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-text);
+  font-size: 13px;
+  padding: 7px 10px;
+  outline: none;
+  font-family: var(--va-font);
+}
+.va-field-input:focus { border-color: var(--va-accent); }
+
+.va-field-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236272a4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+  cursor: pointer;
+}
+
+.va-weight-input { width: 90px; }
+
+textarea.va-field-input {
+  font-family: var(--va-font-mono);
+  font-size: 11px;
+  min-height: 100px;
+  resize: vertical;
+}
+
+textarea.va-prompt-textarea {
+  font-family: var(--va-font);
+  font-size: 12px;
+  min-height: 90px;
+  resize: vertical;
+}
+
+.va-inline-error {
+  color: var(--va-red);
+  font-size: 12px;
+  padding: 8px 10px;
+  background: rgba(247, 118, 142, 0.12);
+  border: 1px solid var(--va-red);
+  border-radius: var(--va-radius-sm);
+  line-height: 1.5;
+}
+
+.va-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.va-modal-actions button {
+  background: transparent;
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px 14px;
+  font-family: var(--va-font);
+}
+.va-modal-actions button:hover:not(:disabled) { color: var(--va-text); border-color: var(--va-accent); }
+.va-modal-actions button.va-primary {
+  background: rgba(122, 162, 247, 0.15);
+  border-color: var(--va-accent);
+  color: var(--va-accent);
+  font-weight: 600;
+}
+
+.va-color-row { display: flex; align-items: center; gap: 8px; }
+.va-color-swatch-preview {
+  width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--va-border2); flex-shrink: 0;
+}
+
+/* ─── State panels (mockup mechanism) ─── */
+
+.state-panel { display: none; }
+.state-panel.visible { display: block; }
+
+/* ─── Design notes (Russian, owner-facing) ─── */
+
+.notes-section {
+  padding: 40px 48px 60px;
+  border-top: 1px solid var(--va-border2);
+  background: #14151f;
+}
+
+.notes-section h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--va-accent2);
+  margin: 0 0 18px;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.note-card {
+  background: var(--va-surface);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius);
+  padding: 16px 18px;
+}
+
+.note-card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--va-text);
+  margin: 0 0 8px;
+}
+
+.note-card p {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--va-text-muted);
+  margin: 0 0 8px;
+}
+
+.note-card p:last-child { margin-bottom: 0; }
+
+.note-card code {
+  font-family: var(--va-font-mono);
+  font-size: 11px;
+  background: var(--va-surface2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--va-accent);
+}
+
+.badge-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.badge-tag.decision { color: var(--va-yellow); border: 1px solid var(--va-yellow); background: rgba(224,175,104,0.1); }
+.badge-tag.scope { color: var(--va-accent); border: 1px solid var(--va-accent); background: rgba(122,162,247,0.1); }
+.badge-tag.risk { color: var(--va-red); border: 1px solid var(--va-red); background: rgba(247,118,142,0.1); }
+</style>
+</head>
+<body>
+
+<div class="mockup-topbar">
+  <span class="label">Состояние мокапа:</span>
+  <button class="state-btn active" data-state="visitor" onclick="setState('visitor')">1 · Visitor (read-only)</button>
+  <button class="state-btn" data-state="admin" onclick="setState('admin')">2 · Admin mode + Add evaluator</button>
+  <button class="state-btn" data-state="addmodel" onclick="setState('addmodel')">3 · Add model</button>
+  <span class="spec-link">docs/superpowers/specs/2026-07-02-settings-rework.md</span>
+</div>
+
+<!-- ═══════════════════════ App chrome (shared visual context) ═══════════════════════ -->
+<div class="va-chrome">
+  <div class="va-brand">PALIMPSEST</div>
+  <div class="va-tabs">
+    <button class="va-tab">Document</button>
+    <button class="va-tab">Glossary</button>
+    <button class="va-tab">Ranking</button>
+    <button class="va-tab active">Settings</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ STATE 1: Visitor (read-only) ═══════════════════════ -->
+<div class="state-panel visible" id="panel-visitor">
+
+  <div class="va-unlock-row">
+    <span class="va-lock-icon">🔒</span>
+    <span class="va-unlock-text">Settings are read-only. Unlock with admin token</span>
+    <input type="password" placeholder="Admin token" id="visitor-token-input" />
+    <button class="va-unlock-btn" onclick="tryUnlock()">Unlock</button>
+    <span class="va-unlock-error" id="visitor-unlock-error"></span>
+  </div>
+
+  <div class="va-tab-content">
+    <div class="va-budget-line">Budget: $4.82 / $25.00 · 312/2000 calls</div>
+
+    <div class="va-settings-section-title">Evaluators</div>
+    <table class="va-table">
+      <thead>
+        <tr><th style="width:24px"></th><th>Name</th><th>Model</th><th>Weight</th><th>Enabled</th><th style="width:24px"></th></tr>
+      </thead>
+      <tbody>
+        <tr class="va-eval-row">
+          <td><span class="va-evaluator-color-swatch" style="background:#4d8dff"></span></td>
+          <td style="font-weight:600">Accuracy</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">anthropic/claude-sonnet-5</td>
+          <td>0.4</td>
+          <td><input type="checkbox" checked disabled /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+        <tr class="va-eval-row">
+          <td><span class="va-evaluator-color-swatch" style="background:#2ad4c8"></span></td>
+          <td style="font-weight:600">Fluency</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">google/gemini-3.5-flash</td>
+          <td>0.3</td>
+          <td><input type="checkbox" checked disabled /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+        <tr class="va-eval-row disabled">
+          <td><span class="va-evaluator-color-swatch" style="background:#b072ff"></span></td>
+          <td style="font-weight:600">Terminology</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">openai/gpt-5.4-mini</td>
+          <td>0.3</td>
+          <td><input type="checkbox" disabled /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <span class="va-disabled-tt is-disabled" data-tt="Unlock with admin token to edit">
+      <button class="va-add-eval-btn" disabled>+ Add evaluator</button>
+    </span>
+
+    <div class="va-model-registry-section">
+      <div class="va-settings-section-title" style="margin-top:32px">Model Registry</div>
+      <table class="va-table">
+        <thead>
+          <tr><th>Name</th><th>Base URL</th><th>API Key</th><th>Params</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="visitor-registry-body"><!-- injected by JS: shared 5-row registry --></tbody>
+      </table>
+      <div class="va-model-registry-actions">
+        <span class="va-disabled-tt is-disabled" data-tt="Unlock with admin token to edit">
+          <button class="va-btn-secondary" disabled>+ Add model</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ STATE 2: Admin mode + Add evaluator modal ═══════════════════════ -->
+<div class="state-panel" id="panel-admin">
+
+  <div class="va-unlock-row unlocked">
+    <span class="va-admin-badge">🔓 Admin mode</span>
+    <button class="va-lock-btn-relock">Lock</button>
+  </div>
+
+  <div class="va-tab-content">
+    <div class="va-budget-line">Budget: $4.82 / $25.00 · 312/2000 calls</div>
+
+    <div class="va-settings-section-title">Evaluators</div>
+    <table class="va-table">
+      <thead>
+        <tr><th style="width:24px"></th><th>Name</th><th>Model</th><th>Weight</th><th>Enabled</th><th style="width:24px"></th></tr>
+      </thead>
+      <tbody>
+        <tr class="va-eval-row">
+          <td><span class="va-evaluator-color-swatch" style="background:#4d8dff"></span></td>
+          <td style="font-weight:600">Accuracy</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">anthropic/claude-sonnet-5</td>
+          <td>0.4</td>
+          <td><input type="checkbox" checked /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+        <tr class="va-eval-row">
+          <td><span class="va-evaluator-color-swatch" style="background:#2ad4c8"></span></td>
+          <td style="font-weight:600">Fluency</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">google/gemini-3.5-flash</td>
+          <td>0.3</td>
+          <td><input type="checkbox" checked /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+        <tr class="va-eval-row disabled">
+          <td><span class="va-evaluator-color-swatch" style="background:#b072ff"></span></td>
+          <td style="font-weight:600">Terminology</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">openai/gpt-5.4-mini</td>
+          <td>0.3</td>
+          <td><input type="checkbox" /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="va-add-eval-btn">+ Add evaluator</button>
+
+    <div class="va-model-registry-section">
+      <div class="va-settings-section-title" style="margin-top:32px">Model Registry</div>
+      <table class="va-table">
+        <thead>
+          <tr><th>Name</th><th>Base URL</th><th>API Key</th><th>Params</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="admin-registry-body"><!-- injected by JS --></tbody>
+      </table>
+      <div class="va-model-registry-actions">
+        <button class="va-btn-secondary">+ Add model</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Evaluator modal, open by default in this state -->
+  <div class="va-popover-backdrop"></div>
+  <div class="va-popover">
+    <button class="va-popover-close">✕</button>
+    <div class="va-modal-title">Add evaluator</div>
+
+    <div>
+      <div class="va-field-label">Name</div>
+      <input class="va-field-input" value="Register accuracy" />
+    </div>
+
+    <div>
+      <div class="va-field-label">Model</div>
+      <select class="va-field-input va-field-select">
+        <option>anthropic/claude-haiku-4.5</option>
+        <option selected>anthropic/claude-sonnet-5</option>
+        <option>google/gemini-3.5-flash</option>
+        <option>openai/gpt-5.4-mini</option>
+        <option>qwen/qwen3.6-plus</option>
+      </select>
+    </div>
+
+    <div>
+      <div class="va-field-label">Weight (0–1)</div>
+      <input type="number" lang="en" class="va-field-input va-weight-input" min="0" max="1" step="0.05" value="0.20" />
+    </div>
+
+    <div>
+      <div class="va-field-label">Color (auto)</div>
+      <div class="va-color-row">
+        <span class="va-color-swatch-preview" style="background:#fb923c"></span>
+        <input class="va-field-input" style="max-width:120px" value="#fb923c" />
+      </div>
+    </div>
+
+    <div>
+      <div class="va-field-label">Prompt</div>
+      <textarea class="va-field-input va-prompt-textarea">Evaluate whether every terminology register (formal/informal address, historical titles) in the translation matches the source. Score 1–10...</textarea>
+    </div>
+
+    <div class="va-inline-error">Server error: weight must be between 0 and 1. Nothing was saved — fix the field and press Save again.</div>
+
+    <div class="va-modal-actions">
+      <button>Cancel</button>
+      <button class="va-primary">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ STATE 3: Add model modal ═══════════════════════ -->
+<div class="state-panel" id="panel-addmodel">
+
+  <div class="va-unlock-row unlocked">
+    <span class="va-admin-badge">🔓 Admin mode</span>
+    <button class="va-lock-btn-relock">Lock</button>
+  </div>
+
+  <div class="va-tab-content">
+    <div class="va-budget-line">Budget: $4.82 / $25.00 · 312/2000 calls</div>
+
+    <div class="va-settings-section-title">Evaluators</div>
+    <table class="va-table">
+      <thead>
+        <tr><th style="width:24px"></th><th>Name</th><th>Model</th><th>Weight</th><th>Enabled</th><th style="width:24px"></th></tr>
+      </thead>
+      <tbody>
+        <tr class="va-eval-row">
+          <td><span class="va-evaluator-color-swatch" style="background:#4d8dff"></span></td>
+          <td style="font-weight:600">Accuracy</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">anthropic/claude-sonnet-5</td>
+          <td>0.4</td>
+          <td><input type="checkbox" checked /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+        <tr class="va-eval-row">
+          <td><span class="va-evaluator-color-swatch" style="background:#2ad4c8"></span></td>
+          <td style="font-weight:600">Fluency</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">google/gemini-3.5-flash</td>
+          <td>0.3</td>
+          <td><input type="checkbox" checked /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+        <tr class="va-eval-row disabled">
+          <td><span class="va-evaluator-color-swatch" style="background:#b072ff"></span></td>
+          <td style="font-weight:600">Terminology</td>
+          <td style="font-family:var(--va-font-mono);font-size:12px;color:var(--va-text-dim)">openai/gpt-5.4-mini</td>
+          <td>0.3</td>
+          <td><input type="checkbox" /></td>
+          <td><span class="va-eval-chevron">▶</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="va-add-eval-btn">+ Add evaluator</button>
+
+    <div class="va-model-registry-section">
+      <div class="va-settings-section-title" style="margin-top:32px">Model Registry</div>
+      <table class="va-table">
+        <thead>
+          <tr><th>Name</th><th>Base URL</th><th>API Key</th><th>Params</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="addmodel-registry-body"><!-- injected by JS --></tbody>
+      </table>
+      <div class="va-model-registry-actions">
+        <button class="va-btn-secondary">+ Add model</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Model modal -->
+  <div class="va-popover-backdrop"></div>
+  <div class="va-popover">
+    <button class="va-popover-close">✕</button>
+    <div class="va-modal-title">Add model</div>
+
+    <div>
+      <div class="va-field-label">Name</div>
+      <input class="va-field-input" placeholder="provider/model-id, e.g. mistralai/mistral-large" />
+    </div>
+
+    <div>
+      <div class="va-field-label">Base URL</div>
+      <input class="va-field-input" value="https://openrouter.ai/api/v1" />
+    </div>
+
+    <div>
+      <div class="va-field-label">API Key</div>
+      <input class="va-field-input" type="password" placeholder="sk-or-v1-..." />
+    </div>
+
+    <div>
+      <div class="va-field-label">Params (JSON)</div>
+      <textarea class="va-field-input" placeholder='{"max_tokens": 1536}'></textarea>
+    </div>
+
+    <div class="va-modal-actions">
+      <button>Cancel</button>
+      <button class="va-primary">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ Design notes (Russian, owner-facing) ═══════════════════════ -->
+<div class="notes-section">
+  <h2>Дизайн-заметки и трейдофы</h2>
+  <div class="notes-grid">
+
+    <div class="note-card">
+      <span class="badge-tag decision">Решение</span>
+      <h3>sessionStorage, а не localStorage</h3>
+      <p>Admin-токен живёт в <code>sessionStorage</code> — умирает вместе с вкладкой. localStorage пережил бы закрытие браузера и остался бы на публичном/шаренном устройстве. Цена — токен вводится заново в каждой новой вкладке/сессии; это осознанный компромисс в пользу безопасности демо-стенда, а не полноценной auth-системы (её мы сознательно не строим, см. YAGNI в спеке).</p>
+    </div>
+
+    <div class="note-card">
+      <span class="badge-tag scope">Контракт</span>
+      <h3>Новый эндпоинт GET /api/admin/check</h3>
+      <p>Дешёвая (без мутации) проверка токена: с валидным Bearer → 204, без токена — тоже 204 (значит бэкенд не требует admin вообще, локальная разработка), с неверным токеном → 401 → инлайн «Invalid token». Это чище, чем пробовать unlock через реальный PUT /api/criteria/&lt;id&gt; без изменений — не тратит вызов на «настоящую» ручку и не рискует side-эффектом.</p>
+    </div>
+
+    <div class="note-card">
+      <span class="badge-tag risk">Влияние на прод</span>
+      <h3>Прод нужно пересеять после деплоя</h3>
+      <p>Курация реестра (5 живых OpenRouter-моделей вместо экспериментальной pilot-матрицы с мёртвыми vLLM-строками на localhost:8001) — это изменение сида, а не миграция данных. На проде таблица model уже содержит старые записи; после деплоя ветки нужен явный re-seed (drop + reseed model-таблицы), иначе будет смесь старых и новых строк. Документ и критерии судейства эта операция не трогает.</p>
+    </div>
+
+    <div class="note-card">
+      <span class="badge-tag scope">Что остаётся read-only</span>
+      <h3>Prompt preview у критериев не редактируется</h3>
+      <p>В этой итерации промпт оценщика — просмотр (rendered markdown), даже в Admin mode. Редактирование промпта — отдельное решение владельца (см. «Не делаем» в спеке): слишком велик риск случайно сломать судейскую логику через UI без ревью. Показываем это явно на мокапе, чтобы не создавать ложных ожиданий «всё редактируется».</p>
+    </div>
+
+    <div class="note-card">
+      <span class="badge-tag decision">UX модалок</span>
+      <h3>Ошибки — инлайн в модалке, не молчание</h3>
+      <p>Сейчас `void handleAddEvaluator()` без catch — 401 на проде выглядит как «кнопка не работает». Новый паттерн: та же визуальная форма, что и `va-inspector-warning` (красная рамка + текст), рендерится прямо в теле модалки над кнопками Save/Cancel — в состоянии 2 показан пример инлайн-ошибки сервера (конфликт весов оценщиков).</p>
+    </div>
+
+    <div class="note-card">
+      <span class="badge-tag scope">Params-бейдж</span>
+      <h3>«N params» вместо простыни key:value</h3>
+      <p>Таблица Model Registry раньше рендерила все параметры построчно прямо в ячейке — для моделей с 5-7 полями (temperature, top_k, min_p, enable_thinking...) это разрывало таблицу. Теперь — компактный бейдж с числом параметров, разворачивается по клику в том же месте (без модалки, без перехода).</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const REGISTRY = [
+  { name: 'anthropic/claude-haiku-4.5', baseUrl: 'https://openrouter.ai/api/v1', key: 'sk-or-****3f2a', params: { max_tokens: 1024, temperature: 0.2 }, testOk: true },
+  { name: 'anthropic/claude-sonnet-5', baseUrl: 'https://openrouter.ai/api/v1', key: 'sk-or-****3f2a', params: { max_tokens: 2048, temperature: 0.2 }, testOk: true },
+  { name: 'google/gemini-3.5-flash', baseUrl: 'https://openrouter.ai/api/v1', key: 'sk-or-****3f2a', params: { max_tokens: 1536, temperature: 0.3 }, testOk: null },
+  { name: 'openai/gpt-5.4-mini', baseUrl: 'https://openrouter.ai/api/v1', key: 'sk-or-****3f2a', params: { max_tokens: 1536, temperature: 0.2, top_p: 0.9 }, testOk: null },
+  { name: 'qwen/qwen3.6-plus', baseUrl: 'https://openrouter.ai/api/v1', key: 'sk-or-****3f2a', params: { max_tokens: 1024, temperature: 0.25 }, testOk: false },
+];
+
+function paramsBadgeHtml(params, uid) {
+  const entries = Object.entries(params);
+  const rows = entries.map(([k, v]) => `<div><span class="k">${k}:</span><span class="v">${JSON.stringify(v)}</span></div>`).join('');
+  return `
+    <span class="va-params-badge" id="badge-${uid}" onclick="toggleParams('${uid}')">
+      <span class="chev">▶</span>${entries.length} params
+    </span>
+    <div class="va-params-expanded" id="expanded-${uid}" style="display:none">${rows}</div>
+  `;
+}
+
+function toggleParams(uid) {
+  const badge = document.getElementById('badge-' + uid);
+  const expanded = document.getElementById('expanded-' + uid);
+  const open = expanded.style.display !== 'none';
+  expanded.style.display = open ? 'none' : 'flex';
+  badge.classList.toggle('open', !open);
+}
+
+function renderRegistry(tbodyId, readOnly) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  tbody.innerHTML = REGISTRY.map((m, i) => {
+    const uid = tbodyId + '-' + i;
+    const dot = m.testOk === null ? '' : `<span class="va-verdict-dot ${m.testOk ? 'green' : 'red'}"></span>`;
+    const actionsDisabled = readOnly ? 'disabled' : '';
+    const actionsWrap = (inner) => readOnly
+      ? `<span class="va-disabled-tt is-disabled" data-tt="Unlock with admin token to edit">${inner}</span>`
+      : inner;
+    return `
+      <tr>
+        <td style="font-weight:600;font-family:var(--va-font-mono);font-size:12px">
+          <span style="display:flex;align-items:center;gap:7px">${dot}${m.name}</span>
+        </td>
+        <td style="font-family:var(--va-font-mono);font-size:11px;color:var(--va-text-dim)">${m.baseUrl}</td>
+        <td style="font-family:var(--va-font-mono);font-size:11px;color:var(--va-text-dim)">${m.key}</td>
+        <td>${paramsBadgeHtml(m.params, uid)}</td>
+        <td>
+          <div style="display:flex;gap:4px">
+            ${actionsWrap(`<button class="va-btn-secondary" ${actionsDisabled}>Test</button>`)}
+            ${actionsWrap(`<button class="va-btn-secondary" ${actionsDisabled}>Edit</button>`)}
+            ${actionsWrap(`<button class="va-btn-secondary" ${actionsDisabled}>Remove</button>`)}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+renderRegistry('visitor-registry-body', true);
+renderRegistry('admin-registry-body', false);
+renderRegistry('addmodel-registry-body', false);
+
+function setState(state) {
+  document.querySelectorAll('.state-btn').forEach(b => b.classList.toggle('active', b.dataset.state === state));
+  document.querySelectorAll('.state-panel').forEach(p => p.classList.remove('visible'));
+  document.getElementById('panel-' + state).classList.add('visible');
+}
+
+function tryUnlock() {
+  const input = document.getElementById('visitor-token-input');
+  const err = document.getElementById('visitor-unlock-error');
+  if (!input.value.trim()) {
+    err.textContent = 'Invalid token';
+  } else {
+    err.textContent = '';
+    setState('admin');
+  }
+}
+</script>
+</body>
+</html>

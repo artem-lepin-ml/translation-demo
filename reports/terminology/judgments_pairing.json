@@ -1,0 +1,297 @@
+{
+ "Месопотамия": {
+  "verdict": "green",
+  "target_surface": "Mesopotamia",
+  "recommended": null
+ },
+ "Междуречье": {
+  "verdict": "yellow",
+  "target_surface": "the Inter-River",
+  "recommended": "Two Rivers"
+ },
+ "Персидского залива": {
+  "verdict": "green",
+  "target_surface": "Persian Gulf",
+  "recommended": null
+ },
+ "Нижнюю Месопотамию": {
+  "verdict": "green",
+  "target_surface": "Lower Mesopotamia",
+  "recommended": null
+ },
+ "Шатт-эль-Араб": {
+  "verdict": "green",
+  "target_surface": "Shatt al-Arab",
+  "recommended": null
+ },
+ "Евфрат": {
+  "verdict": "green",
+  "target_surface": "Euphrates",
+  "recommended": null
+ },
+ "Тигр": {
+  "verdict": "green",
+  "target_surface": "Tigris",
+  "recommended": null
+ },
+ "Аккад": {
+  "verdict": "green",
+  "target_surface": "Akkad",
+  "recommended": null
+ },
+ "Аккаде": {
+  "verdict": "green",
+  "target_surface": "Akkad",
+  "recommended": null
+ },
+ "Нижняя Месопотамия": {
+  "verdict": "green",
+  "target_surface": "Lower Mesopotamia",
+  "recommended": null
+ },
+ "Плодородного Полумесяца": {
+  "verdict": "green",
+  "target_surface": "Fertile Crescent",
+  "recommended": null
+ },
+ "Верхняя Месопотамия": {
+  "verdict": "green",
+  "target_surface": "Upper Mesopotamia",
+  "recommended": null
+ },
+ "Ассирия": {
+  "verdict": "green",
+  "target_surface": "Assyria",
+  "recommended": null
+ },
+ "Ашшур": {
+  "verdict": "green",
+  "target_surface": "Ashur",
+  "recommended": null
+ },
+ "Месопотамии": {
+  "verdict": "green",
+  "target_surface": "Mesopotamia’s",
+  "recommended": null
+ },
+ "Междуречья": {
+  "verdict": "yellow",
+  "target_surface": "the region’s",
+  "recommended": "Mesopotamia"
+ },
+ "Убейд": {
+  "verdict": "green",
+  "target_surface": "Ubaid period",
+  "recommended": null
+ },
+ "Урук": {
+  "verdict": "green",
+  "target_surface": "Uruk period",
+  "recommended": null
+ },
+ "Джемдет-Наср": {
+  "verdict": "green",
+  "target_surface": "Jemdet Nasr period",
+  "recommended": null
+ },
+ "Раннединастический период": {
+  "verdict": "green",
+  "target_surface": "Early Dynastic period",
+  "recommended": null
+ },
+ "Старовавилонский": {
+  "verdict": "green",
+  "target_surface": "Old Babylonian",
+  "recommended": null
+ },
+ "Староассирийский": {
+  "verdict": "green",
+  "target_surface": "Old Assyrian",
+  "recommended": null
+ },
+ "Средневавилонский": {
+  "verdict": "green",
+  "target_surface": "Middle Babylonian",
+  "recommended": null
+ },
+ "Среднеассирийский": {
+  "verdict": "green",
+  "target_surface": "Middle Assyrian",
+  "recommended": null
+ },
+ "Новоассирийский": {
+  "verdict": "green",
+  "target_surface": "Neo-Assyrian period",
+  "recommended": null
+ },
+ "Нововавилонский": {
+  "verdict": "green",
+  "target_surface": "Neo-Babylonian period",
+  "recommended": null
+ },
+ "Вавилонии": {
+  "verdict": "green",
+  "target_surface": "Babylonia",
+  "recommended": null
+ },
+ "Нижней Месопотамии": {
+  "verdict": "green",
+  "target_surface": "Lower Mesopotamia",
+  "recommended": null
+ },
+ "эль-Убейд": {
+  "verdict": "yellow",
+  "target_surface": "al-Ubaid",
+  "recommended": "Tell al-'Ubaid"
+ },
+ "Убейдская культура": {
+  "verdict": "green",
+  "target_surface": "Ubaid archaeological culture",
+  "recommended": null
+ },
+ "Кубаба": {
+  "verdict": "green",
+  "target_surface": "Kubaba",
+  "recommended": null
+ },
+ "Забаба": {
+  "verdict": "green",
+  "target_surface": "Zababa",
+  "recommended": null
+ },
+ "Шумера": {
+  "verdict": "green",
+  "target_surface": "Sumer",
+  "recommended": null
+ },
+ "Субар": {
+  "verdict": "yellow",
+  "target_surface": "Subar",
+  "recommended": "Subartu"
+ },
+ "убейдская культура": {
+  "verdict": "green",
+  "target_surface": "Ubaid culture",
+  "recommended": null
+ },
+ "Эреду": {
+  "verdict": "green",
+  "target_surface": "Eridu",
+  "recommended": null
+ },
+ "Шумеры": {
+  "verdict": "green",
+  "target_surface": "The Sumerians",
+  "recommended": null
+ },
+ "эпоха Урук": {
+  "verdict": "green",
+  "target_surface": "Uruk period",
+  "recommended": null
+ },
+ "вавилонян": {
+  "verdict": "green",
+  "target_surface": "Babylonian people",
+  "recommended": null
+ },
+ "Протописьменный период": {
+  "verdict": "yellow",
+  "target_surface": "Proto-cuneiform period",
+  "recommended": "Proto-literate period"
+ },
+ "великий потоп": {
+  "verdict": "yellow",
+  "target_surface": "Great Flood",
+  "recommended": "deluge myth"
+ },
+ "амореев": {
+  "verdict": "green",
+  "target_surface": "Amorites",
+  "recommended": null
+ },
+ "Ура": {
+  "verdict": "green",
+  "target_surface": "Ur",
+  "recommended": null
+ },
+ "Двуречье": {
+  "verdict": "green",
+  "target_surface": "Mesopotamia",
+  "recommended": null
+ },
+ "царь": {
+  "verdict": "green",
+  "target_surface": "king",
+  "recommended": null
+ },
+ "Хаммурапи": {
+  "verdict": "green",
+  "target_surface": "Hammurabi",
+  "recommended": null
+ },
+ "Старовавилонский период": {
+  "verdict": "green",
+  "target_surface": "Old Babylonian period",
+  "recommended": null
+ },
+ "касситов": {
+  "verdict": "green",
+  "target_surface": "Kassite",
+  "recommended": null
+ },
+ "Средневавилонский период": {
+  "verdict": "green",
+  "target_surface": "Middle Babylonian period",
+  "recommended": null
+ },
+ "Нововавилонский период": {
+  "verdict": "green",
+  "target_surface": "Neo-Babylonian period",
+  "recommended": null
+ },
+ "Новоассирийский период": {
+  "verdict": "green",
+  "target_surface": "Neo-Assyrian",
+  "recommended": null
+ },
+ "Среднеассирийский период": {
+  "verdict": "green",
+  "target_surface": "Middle Assyrian period",
+  "recommended": null
+ },
+ "Староассирийский период": {
+  "verdict": "green",
+  "target_surface": "Old Assyrian period",
+  "recommended": null
+ },
+ "неолита": {
+  "verdict": "green",
+  "target_surface": "Neolithic period",
+  "recommended": null
+ },
+ "субареи": {
+  "verdict": "green",
+  "target_surface": "Subarians",
+  "recommended": null
+ },
+ "Бахрейн": {
+  "verdict": "green",
+  "target_surface": "Bahrain",
+  "recommended": null
+ },
+ "шумеры": {
+  "verdict": "green",
+  "target_surface": "Sumerians",
+  "recommended": null
+ },
+ "Иран": {
+  "verdict": "green",
+  "target_surface": "Iran",
+  "recommended": null
+ },
+ "Аратта": {
+  "verdict": "green",
+  "target_surface": "Aratta",
+  "recommended": null
+ }
+}

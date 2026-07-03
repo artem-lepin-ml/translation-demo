@@ -1,0 +1,6 @@
+{
+  "mcpServers": {
+    "playwright":       { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--isolated"] },
+    "chrome-devtools":  { "command": "npx", "args": ["-y", "chrome-devtools-mcp@latest"] }
+  }
+}

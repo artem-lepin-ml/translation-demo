@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Env
+.venv/
+.env
+
+# Build
+dist/
+build/
+
+# OS
+.DS_Store
+
+# Heavy corpora (data/raw, data/interim, data/pilot) are NOT in this mirror —
+# they stay in the GitLab origin. Keep this repo LFS-free and light.
+
+# Root-level PDFs that predate data/raw/
+/*.pdf
+
+# Nested upstream clones kept locally for reference only
+/factowl/
+/ru2en-enciclopedia-translation/
+
+# Generated demo DB (regenerate via `python -m palimpsest.webapp.seed`)
+data/demo.db
+# Browser e2e session scratch
+.playwright-cli/
+.playwright-mcp/
+
+# Terminology: live Wikidata response cache (35 MB, regenerable, warms itself)
+reports/terminology/wikidata_cache.jsonl
+# Duplicate of the report shots kept under docs/reports/shots/ (committed there)
+reports/terminology/shots/
+.superpowers/
+
+# Budget guard call log (real-API cost artifact; regenerated per run)
+budget_calls.jsonl
+
+# Generated / scratch (never commit)
+graphify-out/
+graphify_out/
+.graphifyignore
+_screenshots_staging/
+data/e2e.db
+data/e2e-budget_calls.jsonl

@@ -1,0 +1,2487 @@
+{
+ "Кадашман-Харбе": {
+  "context": " н.э. вспыхнул ожесточенный конфликт между касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморейскими племенами – он",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q879879",
+    "label": "Kadashman-harbe I",
+    "description": "king of Babylon",
+    "notable": true
+   },
+   {
+    "qid": "Q887027",
+    "label": "Kadashman-Harbe II",
+    "description": "king of Babylon",
+    "notable": true
+   }
+  ]
+ },
+ "Вавилония": {
+  "context": "ежду касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморейскими племенами – они подняли мятеж и разгромили ряд ",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q47690",
+    "label": "Babylonia",
+    "description": "historical country",
+    "notable": true
+   },
+   {
+    "qid": "Q56046846",
+    "label": "Babylon",
+    "description": "mythological Greek character, mother of Arabus",
+    "notable": false
+   }
+  ]
+ },
+ "Вавилон": {
+  "context": "вых центров. Одновременно против царя восстал сам столичный Вавилон. Кадашман-Харбе подавил восстание, залив город кровью, а за",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q5684",
+    "label": "Babylon",
+    "description": "capital city of Babylonia and an archaeological site in modern-day Ira",
+    "notable": true
+   },
+   {
+    "qid": "Q19367400",
+    "label": "Babilônia",
+    "description": "Brazilian telenovela",
+    "notable": true
+   },
+   {
+    "qid": "Q24239683",
+    "label": "Vavilon",
+    "description": "human settlement in Aleysky District, Altai Krai, Russia",
+    "notable": true
+   }
+  ]
+ },
+ "Евфрат": {
+  "context": "залив город кровью, а затем изгнал из Вавилонии на запад за Евфрат «многочисленных сутиев (амореев) от восхода до заката солнц",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q34589",
+    "label": "Euphrates",
+    "description": "river in Asia",
+    "notable": true
+   },
+   {
+    "qid": "Q2666131",
+    "label": "Euphrates the Stoic",
+    "description": "Roman Stoic philosopher (c.35 – c.118)",
+    "notable": true
+   },
+   {
+    "qid": "Q4172703",
+    "label": "ЕВФРАТ",
+    "description": "",
+    "notable": false
+   },
+   {
+    "qid": "Q1989799",
+    "label": "Euphrates softshell turtle",
+    "description": "species of reptile",
+    "notable": true
+   },
+   {
+    "qid": "Q3060427",
+    "label": "Euphratensis",
+    "description": "Roman then Byzantine province (c. 341–7th Century) in the diocese of t",
+    "notable": true
+   }
+  ]
+ },
+ "сутии": {
+  "context": "атем изгнал из Вавилонии на запад за Евфрат «многочисленных сутиев (амореев) от восхода до заката солнца и привел их воинскую ",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q203507",
+    "label": "Amorites",
+    "description": "ancient Northwest Semitic-speaking people from the Levant",
+    "notable": true
+   },
+   {
+    "qid": "Q1970450",
+    "label": "Sąsiadka",
+    "description": "village in Lublin, Poland",
+    "notable": true
+   },
+   {
+    "qid": "Q109747192",
+    "label": "Сутейск древнерусский город",
+    "description": "",
+    "notable": false
+   }
+  ]
+ },
+ "амореи": {
+  "context": "нал из Вавилонии на запад за Евфрат «многочисленных сутиев (амореев) от восхода до заката солнца и привел их воинскую силу к не",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q203507",
+    "label": "Amorites",
+    "description": "ancient Northwest Semitic-speaking people from the Levant",
+    "notable": true
+   },
+   {
+    "qid": "Q35941",
+    "label": "Amorite",
+    "description": "extinct Northwest Semitic language, spoken by the Amorite tribes",
+    "notable": true
+   },
+   {
+    "qid": "Q1368637",
+    "label": "Amorian dynasty",
+    "description": "Byzantine dynasty",
+    "notable": false
+   },
+   {
+    "qid": "Q474083",
+    "label": "Amoreira",
+    "description": "civil parish in Óbidos",
+    "notable": false
+   },
+   {
+    "qid": "Q2256903",
+    "label": "Freguesia de Amoreira da Gândara",
+    "description": "former civil parish in Portugal",
+    "notable": false
+   }
+  ]
+ },
+ "Сирийская степь": {
+  "context": "того, преследуя отступающих амореев, Кадашман-Харбе пересек Сирийскую степь и подчинил вавилонской власти ее обширные пространства с це",
+  "category": "place",
+  "candidates": []
+ },
+ "Тадмор": {
+  "context": "нил вавилонской власти ее обширные пространства с центром в Тадморе, установив общую границу с египетскими владениями в Южной С",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q938457",
+    "label": "Tadmur",
+    "description": "modern city of Palmyra near its ancient ruins",
+    "notable": true
+   },
+   {
+    "qid": "Q4120562",
+    "label": "Tadmur District",
+    "description": "district in Homs, Syria",
+    "notable": true
+   },
+   {
+    "qid": "Q6632450",
+    "label": "Tadmor Hotel",
+    "description": "",
+    "notable": false
+   },
+   {
+    "qid": "Q4166609",
+    "label": "Tadmor Prison",
+    "description": "former prison in Syria",
+    "notable": true
+   },
+   {
+    "qid": "Q2909659",
+    "label": "Hayim Tadmor",
+    "description": "Israeli assyriologist (1923–2005)",
+    "notable": true
+   }
+  ]
+ },
+ "Южная Сирия": {
+  "context": "Тадморе, установив общую границу с египетскими владениями в Южной Сирии и Заиорданье. Оттесненные касситами через всю Сирийскую сте",
+  "category": "place",
+  "candidates": []
+ },
+ "Заиорданье": {
+  "context": "овив общую границу с египетскими владениями в Южной Сирии и Заиорданье. Оттесненные касситами через всю Сирийскую степь на ее край",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q2006572",
+    "label": "Oultrejordain",
+    "description": "vassal state of the Crusader Kingdom of Jerusalem (1118-87)",
+    "notable": true
+   },
+   {
+    "qid": "Q7834494",
+    "label": "Transjordan (Bible)",
+    "description": "Biblical area of land in the Southern Levant lying east of the Jordan ",
+    "notable": true
+   }
+  ]
+ },
+ "касситы": {
+  "context": "петскими владениями в Южной Сирии и Заиорданье. Оттесненные касситами через всю Сирийскую степь на ее крайний запад, к оазису Дам",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q243312",
+    "label": "Kassites",
+    "description": "people of the ancient Near East",
+    "notable": true
+   }
+  ]
+ },
+ "Дамаск": {
+  "context": "ами через всю Сирийскую степь на ее крайний запад, к оазису Дамаска, сутии-амореи составили ядро древнееврейской этнической общ",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q3766",
+    "label": "Damascus",
+    "description": "capital and largest city of Syria",
+    "notable": true
+   },
+   {
+    "qid": "Q232399",
+    "label": "Rif Dimashq Governorate",
+    "description": "governorate in Syria",
+    "notable": true
+   },
+   {
+    "qid": "Q2007044",
+    "label": "Damascus Governorate",
+    "description": "governorate of Syria",
+    "notable": true
+   },
+   {
+    "qid": "Q475736",
+    "label": "Damascus steel",
+    "description": "type of steel used in Middle Eastern swordmaking",
+    "notable": true
+   },
+   {
+    "qid": "Q570873",
+    "label": "Damascus International Airport",
+    "description": "international airport serving Damascus, Syria",
+    "notable": true
+   }
+  ]
+ },
+ "сутии-амореи": {
+  "context": " всю Сирийскую степь на ее крайний запад, к оазису Дамаска, сутии-амореи составили ядро древнееврейской этнической общности. А обшир",
+  "category": "people",
+  "candidates": []
+ },
+ "древнееврейский": {
+  "context": "райний запад, к оазису Дамаска, сутии-амореи составили ядро древнееврейской этнической общности. А обширные земельные угодья, занимавши",
+  "category": "culture",
+  "candidates": [
+   {
+    "qid": "Q1982248",
+    "label": "Biblical Hebrew",
+    "description": "archaic form of the Hebrew language",
+    "notable": true
+   }
+  ]
+ },
+ "Ашшур": {
+  "context": " вавилонским вассалом успел побывать (хотя и недолго) также Ашшур.",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q200200",
+    "label": "Assur",
+    "description": "archaeological site in Iraq",
+    "notable": true
+   },
+   {
+    "qid": "Q685878",
+    "label": "Ashur",
+    "description": "Mesopotamian diety of the Assyrians",
+    "notable": true
+   },
+   {
+    "qid": "Q171191",
+    "label": "Ashurbanipal",
+    "description": "Assyrian ruler",
+    "notable": true
+   },
+   {
+    "qid": "Q193912",
+    "label": "Асархаддон",
+    "description": "King of Assyria (8th cenutury BCE – 669 BCE)",
+    "notable": true
+   },
+   {
+    "qid": "Q193290",
+    "label": "Ashurnasirpal II",
+    "description": "Assyrian king",
+    "notable": true
+   }
+  ]
+ },
+ "III династия Ура": {
+  "context": "Конец III династии Ура наступил внезапно. Западносемитские племена сутиев (к этому",
+  "category": "dynasty",
+  "candidates": [
+   {
+    "qid": "Q723587",
+    "label": "Third Dynasty of Ur",
+    "description": "royal dynasty in Mesopotamia",
+    "notable": true
+   }
+  ]
+ },
+ "марту": {
+  "context": "(к этому времени месопотамцы перенесли на них наименование «марту/амурру», так что в науке они известны как сутии-амореи или ",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q1000844",
+    "label": "Khojavend",
+    "description": "city in Azerbaijan, administrative centre of the Khojavend District",
+    "notable": true
+   },
+   {
+    "qid": "Q39603",
+    "label": "Martuni",
+    "description": "town in Armenia",
+    "notable": true
+   },
+   {
+    "qid": "Q363836",
+    "label": "Joanot Martorell",
+    "description": "Valencian knight",
+    "notable": true
+   },
+   {
+    "qid": "Q2550413",
+    "label": "Martuk District",
+    "description": "district in Aktobe Region, Kazakhstan",
+    "notable": true
+   },
+   {
+    "qid": "Q157902",
+    "label": "Martuni Province",
+    "description": "province of the unrecognised Republic of Artsakh",
+    "notable": true
+   }
+  ]
+ },
+ "амурру": {
+  "context": "му времени месопотамцы перенесли на них наименование «марту/амурру», так что в науке они известны как сутии-амореи или просто ",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q481766",
+    "label": "Amurru kingdom",
+    "description": "former country",
+    "notable": true
+   },
+   {
+    "qid": "Q697530",
+    "label": "Amurru",
+    "description": "Mesopotamian deity",
+    "notable": true
+   }
+  ]
+ },
+ "Средний Евфрат": {
+  "context": "вестны как сутии-амореи или просто амореи) Сирийской степи, Среднего Евфрата и Верхней Месопотамии, и раньше иногда вступавшие в конфлик",
+  "category": "place",
+  "candidates": []
+ },
+ "Верхняя Месопотамия": {
+  "context": "ореи или просто амореи) Сирийской степи, Среднего Евфрата и Верхней Месопотамии, и раньше иногда вступавшие в конфликт с правителями держав",
+  "category": "place",
+  "candidates": []
+ },
+ "Ур": {
+  "context": "ьные районы ок. 2025 г. до н.э. Тем временем последний царь Ура Ибби-Суэн бесконечными походами пытался привести к покорнос",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q5699",
+    "label": "Ur",
+    "description": "ancient Mesopotamian city-state",
+    "notable": true
+   },
+   {
+    "qid": "Q1058612",
+    "label": "Hours",
+    "description": "commune in Pyrénées-Atlantiques, France",
+    "notable": true
+   },
+   {
+    "qid": "Q747022",
+    "label": "Ur",
+    "description": "former supercontinent",
+    "notable": true
+   },
+   {
+    "qid": "Q1121572",
+    "label": "(22260) Ур",
+    "description": "asteroid",
+    "notable": true
+   },
+   {
+    "qid": "Q4476479",
+    "label": "Ur",
+    "description": "river in Kemerovo Oblast, Russia",
+    "notable": false
+   }
+  ]
+ },
+ "Ибби-Суэн": {
+  "context": " районы ок. 2025 г. до н.э. Тем временем последний царь Ура Ибби-Суэн бесконечными походами пытался привести к покорности Элам; а",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q352752",
+    "label": "Ibbi-Sin",
+    "description": "King of Sumer and Akkad",
+    "notable": true
+   }
+  ]
+ },
+ "Элам": {
+  "context": "би-Суэн бесконечными походами пытался привести к покорности Элам; амореев рассчитывали сдержать укреплениями, но безуспешно.",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q128904",
+    "label": "Elam",
+    "description": "Ancient civilization of the Near East, centered in the Susiana plain a",
+    "notable": true
+   },
+   {
+    "qid": "Q1147704",
+    "label": "Elam",
+    "description": "Biblical character, son of Shem",
+    "notable": true
+   },
+   {
+    "qid": "Q86855322",
+    "label": "НЭСГ/Элам",
+    "description": "entry in Desktop Encyclopedic Dictionary",
+    "notable": false
+   },
+   {
+    "qid": "Q87029668",
+    "label": "ЭСГ/Элам",
+    "description": "entry in Granat Encyclopedic Dictionary",
+    "notable": false
+   },
+   {
+    "qid": "Q87328201",
+    "label": "МСЭ2/Элам",
+    "description": "entry in Small Soviet Encyclopedia, 2nd edition",
+    "notable": false
+   }
+  ]
+ },
+ "Ишби-Эрра": {
+  "context": "ореи окружали города, отрезая их от внешнего мира. Чиновник Ишби-Эрра объявил себя в Иссине царем (2017). Начался хаос: Ишби-Эрра",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q561153",
+    "label": "Ishbi-Erra",
+    "description": "Amorite king",
+    "notable": true
+   }
+  ]
+ },
+ "Иссин": {
+  "context": "езая их от внешнего мира. Чиновник Ишби-Эрра объявил себя в Иссине царем (2017). Начался хаос: Ишби-Эрра, Ибби-Суэн, эламиты с",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q501259",
+    "label": "Isin",
+    "description": "ancient city in Mesopotamia",
+    "notable": true
+   },
+   {
+    "qid": "Q1317635",
+    "label": "Isshin Chiba",
+    "description": "Japanese voice actor",
+    "notable": true
+   },
+   {
+    "qid": "Q1653265",
+    "label": "Issinsky District",
+    "description": "human settlement in Russia",
+    "notable": true
+   },
+   {
+    "qid": "Q333054",
+    "label": "Isshin Inudo",
+    "description": "Japanese film director and screenwriter",
+    "notable": true
+   },
+   {
+    "qid": "Q1943396",
+    "label": "Isshin-ryū",
+    "description": "style of karate",
+    "notable": true
+   }
+  ]
+ },
+ "эламиты": {
+  "context": " в Иссине царем (2017). Начался хаос: Ишби-Эрра, Ибби-Суэн, эламиты с союзными им восточными «людьми су» из региона «Стран Сима",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q9252262",
+    "label": "Elamites",
+    "description": "",
+    "notable": false
+   }
+  ]
+ },
+ "люди су": {
+  "context": "ос: Ишби-Эрра, Ибби-Суэн, эламиты с союзными им восточными «людьми су» из региона «Стран Симашки» (династия одной из стран Симашк",
+  "category": "people",
+  "candidates": []
+ },
+ "Страна Симашки": {
+  "context": "н, эламиты с союзными им восточными «людьми су» из региона «Стран Симашки» (династия одной из стран Симашки, видимо, связанной с ними",
+  "category": "place",
+  "candidates": []
+ },
+ "Нижняя Месопотамия": {
+  "context": ") и, наконец, амореи сталкивались друг с другом в борьбе за Нижнюю Месопотамию. К 2000 г. до н.э. все было кончено: амореи расселились на ",
+  "category": "place",
+  "candidates": []
+ },
+ "Персидский залив": {
+  "context": " было кончено: амореи расселились на пространстве вплоть до Персидского залива, признав номинальную власть Ишби-Эрры, эламиты и «люди су» ",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q34675",
+    "label": "Persian Gulf",
+    "description": "extension of the Indian Ocean",
+    "notable": true
+   },
+   {
+    "qid": "Q14204002",
+    "label": "Gulf Region (Iran)",
+    "description": "",
+    "notable": false
+   },
+   {
+    "qid": "Q87333470",
+    "label": "ЭСГ/Персидский залив",
+    "description": "entry in Granat Encyclopedic Dictionary",
+    "notable": false
+   }
+  ]
+ },
+ "Южная Месопотамия": {
+  "context": "и-Эрры, эламиты и «люди су» пленили Ибби-Суэна и разгромили Юг Месопотамии с Уром, но не стали закрепляться здесь. Ишби-Эрра объединил",
+  "category": "place",
+  "candidates": []
+ },
+ "Царство Шумера и Аккада": {
+  "context": "ом отношении, сохранив концепцию царской власти и название «Царство Шумера-и-Аккада». Но в общественном строе произошел переворот: крупные цент",
+  "category": "institution",
+  "candidates": []
+ },
+ "Лагаш": {
+  "context": "В Лагаше, одном из наиболее экономически развитых номов, дело дошло ",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q207330",
+    "label": "Lagash",
+    "description": "ancient Mesopotamian city-state",
+    "notable": true
+   },
+   {
+    "qid": "Q130140366",
+    "label": "БСЭ1/Лагаш",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)",
+    "notable": false
+   },
+   {
+    "qid": "Q270860",
+    "label": "Sumerian King List",
+    "description": "Mesopotamian literary composition",
+    "notable": true
+   },
+   {
+    "qid": "Q53970244",
+    "label": "Guilaine Lagache",
+    "description": "French astrophysicist",
+    "notable": false
+   },
+   {
+    "qid": "Q4252333",
+    "label": "Maksim Lagashkin",
+    "description": "Russian actor",
+    "notable": false
+   }
+  ]
+ },
+ "Уруинимгину": {
+  "context": "данина), а на его место народное собрание выдвинуло некоего Уруинимгину, наделив его титулом «лугаля» (конец XXIV в. до н. э.). Тот",
+  "category": "person",
+  "candidates": []
+ },
+ "Месопотамия": {
+  "context": " реформы иногда проводились и в других номовых государствах Месопотамии.",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system",
+    "notable": true
+   },
+   {
+    "qid": "Q146720",
+    "label": "Mandatory Iraq",
+    "description": "former country",
+    "notable": true
+   },
+   {
+    "qid": "Q765845",
+    "label": "Mesopotamia",
+    "description": "Province of the Roman Empire",
+    "notable": true
+   },
+   {
+    "qid": "Q1056116",
+    "label": "Mesopotamia",
+    "description": "region in Argentina",
+    "notable": true
+   },
+   {
+    "qid": "Q164395",
+    "label": "Mesopotamia",
+    "description": "Byzantine district (theme)",
+    "notable": true
+   }
+  ]
+ },
+ "авилумы": {
+  "context": "й Месопотамии различались три сословия: свободные общинники авилумы («люди»), «царские люди» мушкенумы («склоняющиеся под чье-т",
+  "category": "people",
+  "candidates": []
+ },
+ "мушкенумы": {
+  "context": "ловия: свободные общинники авилумы («люди»), «царские люди» мушкенумы («склоняющиеся под чье-то покровительство») и рабы по сосло",
+  "category": "people",
+  "candidates": []
+ },
+ "вардумы": {
+  "context": "клоняющиеся под чье-то покровительство») и рабы по сословию вардумы. Авилумы пользовались общинным самоуправлением, хотя и плат",
+  "category": "people",
+  "candidates": []
+ },
+ "Законы Хаммурапи": {
+  "context": " господин обычно распоряжался лишь его временем и трудом. В Законы Хаммурапи даже пришлось включать специальную статью, угрожавшую свобо",
+  "category": "event",
+  "candidates": [
+   {
+    "qid": "Q93304",
+    "label": "Code of Hammurabi",
+    "description": "Babylonian code of law or conduct",
+    "notable": true
+   }
+  ]
+ },
+ "Китай": {
+  "context": "Ранний неолит Юга. На юге совр. Китая (т.е. на землях исторического региона Юго-Восточная Азия) н",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q148",
+    "label": "People's Republic of China",
+    "description": "country in East Asia",
+    "notable": true
+   },
+   {
+    "qid": "Q29520",
+    "label": "China",
+    "description": "cultural region, ancient civilization, and nation in East Asia; mostly",
+    "notable": true
+   },
+   {
+    "qid": "Q13426199",
+    "label": "Republic of China",
+    "description": "1912–1949 country in Asia",
+    "notable": true
+   },
+   {
+    "qid": "Q12060881",
+    "label": "Chinese Empire",
+    "description": "imperial period of China from 220 BCE to 1912 CE",
+    "notable": true
+   },
+   {
+    "qid": "Q175379",
+    "label": "Empire of China",
+    "description": "1915–1916 country",
+    "notable": true
+   }
+  ]
+ },
+ "Юго-Восточная Азия": {
+  "context": "а. На юге совр. Китая (т.е. на землях исторического региона Юго-Восточная Азия) неолит возник раньше, чем на севере. Ряд стоянок, обнаруже",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q11708",
+    "label": "Southeast Asia",
+    "description": "south-eastern region of Asia",
+    "notable": true
+   },
+   {
+    "qid": "Q118324217",
+    "label": "Юго-Восточная Азия: актуальные проблемы развития",
+    "description": "",
+    "notable": false
+   }
+  ]
+ },
+ "Гуанси": {
+  "context": "ньше, чем на севере. Ряд стоянок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъ",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q149864",
+    "label": "(2655) Гуанси",
+    "description": "asteroid",
+    "notable": true
+   },
+   {
+    "qid": "Q15921507",
+    "label": "Guangxi",
+    "description": "Province (1649-1911) of the Qing dynasty, missing Guangxi's present co",
+    "notable": false
+   },
+   {
+    "qid": "Q11485720",
+    "label": "Kwangsi",
+    "description": "Province (1920-1950) of the Republic of China, replaced by a nearly id",
+    "notable": false
+   },
+   {
+    "qid": "Q15909788",
+    "label": "Guangxi",
+    "description": "Province (1950-1958) of the People's Republic of China, reorganized in",
+    "notable": false
+   },
+   {
+    "qid": "Q15176",
+    "label": "Guangxi",
+    "description": "Provincial area of China organized in 1958 as an autonomous region for",
+    "notable": true
+   }
+  ]
+ },
+ "Гуандун": {
+  "context": " на севере. Ряд стоянок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «р",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q15175",
+    "label": "Guangdong",
+    "description": "province of China",
+    "notable": true
+   },
+   {
+    "qid": "Q9574619",
+    "label": "Kuangtung",
+    "description": "former province (1912-1950) of the Republic of China, replaced by a ne",
+    "notable": true
+   },
+   {
+    "qid": "Q28411078",
+    "label": "Guangdong",
+    "description": "Province (1647-1911) of the Qing Empire, initially inclusive of modern",
+    "notable": false
+   },
+   {
+    "qid": "Q11061695",
+    "label": "Guangdong",
+    "description": "Province of the Ming Empire, inclusive of modern Guangdong, Hainan, Ma",
+    "notable": false
+   }
+  ]
+ },
+ "Байляньдун": {
+  "context": "е. Ряд стоянок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные ку",
+  "category": "place",
+  "candidates": []
+ },
+ "Цзэнпиянь": {
+  "context": "ок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнин",
+  "category": "place",
+  "candidates": []
+ },
+ "Баоцзытоу": {
+  "context": "енных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнина, Цинтана ",
+  "category": "place",
+  "candidates": []
+ },
+ "Душицзы": {
+  "context": "винциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнина, Цинтана и др.), д",
+  "category": "place",
+  "candidates": []
+ },
+ "Хуанъяньдун": {
+  "context": "уанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнина, Цинтана и др.), датируются XI–",
+  "category": "place",
+  "candidates": []
+ },
+ "Наньни": {
+  "context": "энпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнина, Цинтана и др.), датируются XI–VI тысячелетиями до н.э. Рад",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q179608",
+    "label": "Nanning",
+    "description": "capital of Guangxi, China",
+    "notable": true
+   },
+   {
+    "qid": "Q10907375",
+    "label": "Nanning Rail Transit",
+    "description": "rapid transit system in Nanning, China",
+    "notable": true
+   },
+   {
+    "qid": "Q3238350",
+    "label": "Nanning Wuxu International Airport",
+    "description": "airport in Wuxu, People's Republic of China",
+    "notable": true
+   }
+  ]
+ },
+ "Цинтана": {
+  "context": "аоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнина, Цинтана и др.), датируются XI–VI тысячелетиями до н.э. Радиокарбонн",
+  "category": "place",
+  "candidates": []
+ },
+ "Янцзы": {
+  "context": "емледельческие поселения известны на западе нижнего течения Янцзы (к югу от оз. Поянху – памятник Сяньжэньдун, 9000(?)–7000 г",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q5413",
+    "label": "Yangtze",
+    "description": "Longest river in Asia, and the third-longest in the world",
+    "notable": true
+   },
+   {
+    "qid": "Q149715",
+    "label": "2617 Jiangxi",
+    "description": "asteroid",
+    "notable": true
+   },
+   {
+    "qid": "Q87326066",
+    "label": "МСЭ2/Янцзыцзян",
+    "description": "entry in Small Soviet Encyclopedia, 2nd edition",
+    "notable": false
+   },
+   {
+    "qid": "Q1195076",
+    "label": "Yangtze Delta",
+    "description": "delta of the Yangtze River, China",
+    "notable": true
+   }
+  ]
+ },
+ "Поянху": {
+  "context": "ения известны на западе нижнего течения Янцзы (к югу от оз. Поянху – памятник Сяньжэньдун, 9000(?)–7000 гг. до н.э.) и на Сред",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q207690",
+    "label": "Poyang Lake",
+    "description": "Largest freshwater lake in China, located in Jiangxi Province",
+    "notable": true
+   }
+  ]
+ },
+ "Сяньжэньдун": {
+  "context": "ападе нижнего течения Янцзы (к югу от оз. Поянху – памятник Сяньжэньдун, 9000(?)–7000 гг. до н.э.) и на Средней Янцзы (на юго-запад",
+  "category": "place",
+  "candidates": []
+ },
+ "Средняя Янцзы": {
+  "context": "янху – памятник Сяньжэньдун, 9000(?)–7000 гг. до н.э.) и на Средней Янцзы (на юго-западе от оз. Дунтинху – Пэнтоушань, 7200–6500 гг. ",
+  "category": "place",
+  "candidates": []
+ },
+ "Дунтинху": {
+  "context": "–7000 гг. до н.э.) и на Средней Янцзы (на юго-западе от оз. Дунтинху – Пэнтоушань, 7200–6500 гг. до н.э.)┘.",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q216083",
+    "label": "Dongting Lake",
+    "description": "large, shallow lake in northeastern Hunan province, China",
+    "notable": true
+   }
+  ]
+ },
+ "Пэнтоушань": {
+  "context": "о н.э.) и на Средней Янцзы (на юго-западе от оз. Дунтинху – Пэнтоушань, 7200–6500 гг. до н.э.)┘.",
+  "category": "place",
+  "candidates": []
+ },
+ "Урская империя": {
+  "context": "иналось, цари Иссина продолжали считать себя продолжателями Урской империи: как и цари Ура, они обожествляли себя, сохраняли именовани",
+  "category": "dynasty",
+  "candidates": []
+ },
+ "Шумер и Аккад": {
+  "context": "обожествляли себя, сохраняли именование своего государства «Шумером-и-Аккадом», а падение Ура считали великой трагедией (при них даже сос",
+  "category": "place",
+  "candidates": []
+ },
+ "Плач о гибели Ура": {
+  "context": "и великой трагедией (при них даже составляются пространные «Плачи о гибели Ура») и составляли вслед владыкам Ура официальные тексты на шум",
+  "category": "event",
+  "candidates": []
+ },
+ "шумеры": {
+  "context": "ам Ура официальные тексты на шумерском, хотя именно при них шумеры оказались полностью ассимилированы аккадцами и шумерский яз",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity",
+    "notable": true
+   },
+   {
+    "qid": "Q105486083",
+    "label": "БСЭ1/Шумеры",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)",
+    "notable": false
+   }
+  ]
+ },
+ "аккадцы": {
+  "context": "тя именно при них шумеры оказались полностью ассимилированы аккадцами и шумерский язык стал мертвым языком учености – школ, храмо",
+  "category": "people",
+  "candidates": []
+ },
+ "шанъиньцы": {
+  "context": "Заимствование у шанъиньцев письменности привело к тому, что при дворах чжоуских ванов ",
+  "category": "people",
+  "candidates": []
+ },
+ "чжоуский ван": {
+  "context": "ие у шанъиньцев письменности привело к тому, что при дворах чжоуских ванов и местной знати начала развиваться литература – создавались",
+  "category": "person",
+  "candidates": []
+ },
+ "Чунь-цю": {
+  "context": "ршенномудрых» правителей прошлого. Позднее, в конце периода Чунь-цю на их основе началось составление двух важнейших памятников",
+  "category": "event",
+  "candidates": [
+   {
+    "qid": "Q747720",
+    "label": "Spring and Autumn Annals",
+    "description": "official chronicle of the State of Lu covering the period from 722 BCE",
+    "notable": true
+   }
+  ]
+ },
+ "Ши цзин": {
+  "context": "ние двух важнейших памятников древнекитайской литературы – «Ши цзина» («Книга песен и гимнов») и «Шан шу» («Записи о прошлом»), ",
+  "category": "institution",
+  "candidates": [
+   {
+    "qid": "Q465108",
+    "label": "Classic of Poetry",
+    "description": "collection of Chinese poetry, comprising works dating from the 11th to",
+    "notable": true
+   },
+   {
+    "qid": "Q18141857",
+    "label": "Shi Jinglin",
+    "description": "Chinese swimmer",
+    "notable": true
+   },
+   {
+    "qid": "Q15730178",
+    "label": "Shi Jingnan",
+    "description": "Chinese short track speed skater",
+    "notable": true
+   },
+   {
+    "qid": "Q948491",
+    "label": "Nicholas Shi Jin Xian",
+    "description": "priest (1921-2009)",
+    "notable": false
+   }
+  ]
+ },
+ "Шан шу": {
+  "context": "тайской литературы – «Ши цзина» («Книга песен и гимнов») и «Шан шу» («Записи о прошлом»), которые, кроме их художественных дос",
+  "category": "institution",
+  "candidates": [
+   {
+    "qid": "Q875313",
+    "label": "Book of Documents",
+    "description": "one of the Five Classics of ancient Chinese literature",
+    "notable": true
+   },
+   {
+    "qid": "Q1052078",
+    "label": "Shang Shu",
+    "description": "tenth ruler of the state of Jin",
+    "notable": true
+   }
+  ]
+ },
+ "Лугальзагеси": {
+  "context": "У убитого в ходе завоеваний Лугальзагеси царя Киша служил мелкий придворный, по происхождению аккаде",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q316241",
+    "label": "Lugal-zage-si",
+    "description": "Sumerian King from c. 2370 - 2316 BC",
+    "notable": true
+   }
+  ]
+ },
+ "Киш": {
+  "context": "У убитого в ходе завоеваний Лугальзагеси царя Киша служил мелкий придворный, по происхождению аккадец-простолю",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q10321288",
+    "label": "Kish",
+    "description": "city in Hormozgan Province, Iran",
+    "notable": true
+   },
+   {
+    "qid": "Q221883",
+    "label": "Kish Island",
+    "description": "island in Bandar Lengeh County, Iran",
+    "notable": true
+   },
+   {
+    "qid": "Q132272",
+    "label": "Kish",
+    "description": "Ancient Sumerian city",
+    "notable": true
+   },
+   {
+    "qid": "Q722595",
+    "label": "quiche",
+    "description": "savoury open pastry tart with a filling of egg, dairy and other ingred",
+    "notable": true
+   }
+  ]
+ },
+ "Аккад": {
+  "context": " и обосновался в принадлежавшем Кишу незначительном городке Аккаде. Здесь он объявил себя царем под именем Шаррум-кен (акк. «И",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q4461035",
+    "label": "Akkadian Empire",
+    "description": "ancient empire in the Mesopotamia (2334–2154 BC)",
+    "notable": true
+   },
+   {
+    "qid": "Q35518",
+    "label": "Akkadian",
+    "description": "extinct Semitic language of Mesopotamia",
+    "notable": true
+   },
+   {
+    "qid": "Q150996",
+    "label": "Akkad",
+    "description": "ancient Mesopotamian city",
+    "notable": true
+   },
+   {
+    "qid": "Q419594",
+    "label": "Akkad period",
+    "description": "archaeological and historical period in Mesopotamia, c. 2350-2200 BC",
+    "notable": false
+   },
+   {
+    "qid": "Q51887",
+    "label": "Accadia",
+    "description": "Italian comune",
+    "notable": true
+   }
+  ]
+ },
+ "Шаррум-кен": {
+  "context": "ьном городке Аккаде. Здесь он объявил себя царем под именем Шаррум-кен (акк. «Истинный царь», в со– временной передаче Саргон). Са",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q182749",
+    "label": "Šarru-kên I",
+    "description": "king of Assyria",
+    "notable": true
+   }
+  ]
+ },
+ "Саргон": {
+  "context": " Шаррум-кен (акк. «Истинный царь», в со– временной передаче Саргон). Саргон (ок. 2316–2261) властвовал вне рамок каких-либо тр",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q199461",
+    "label": "Sargon of Akkad",
+    "description": "founder of Akkadian Empire",
+    "notable": true
+   },
+   {
+    "qid": "Q21502232",
+    "label": "Sargon",
+    "description": "family name",
+    "notable": false
+   },
+   {
+    "qid": "Q208336",
+    "label": "Sargon II",
+    "description": "king of Assyria (722-705 B.C)",
+    "notable": true
+   },
+   {
+    "qid": "Q182749",
+    "label": "Šarru-kên I",
+    "description": "king of Assyria",
+    "notable": true
+   }
+  ]
+ },
+ "Шумер": {
+  "context": "повелевая ими. К нему во множестве стекались рядовые жители Шумера, увидев перспективу быстрого возвышения, в которой им отказ",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q35355",
+    "label": "Sumer",
+    "description": "ancient Mesopotamian civilization from 5500 to 1800 BC",
+    "notable": true
+   },
+   {
+    "qid": "Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity",
+    "notable": true
+   },
+   {
+    "qid": "Q36790",
+    "label": "Sumerian",
+    "description": "language of ancient Sumer",
+    "notable": true
+   },
+   {
+    "qid": "Q275051",
+    "label": "Sumerian religion",
+    "description": "first religion of Mesopotamia region which is tangible by writing",
+    "notable": true
+   },
+   {
+    "qid": "Q270860",
+    "label": "Sumerian King List",
+    "description": "Mesopotamian literary composition",
+    "notable": true
+   }
+  ]
+ },
+ "Никиев мир": {
+  "context": "Никиев мир не решил проблем, которые породили войну. Взаимное недовери",
+  "category": "event",
+  "candidates": [
+   {
+    "qid": "Q932202",
+    "label": "Peace of Nicias",
+    "description": "421 BC treaty between Athens and Sparta",
+    "notable": true
+   }
+  ]
+ },
+ "Сицилия": {
+  "context": " настоящие военные действия развернулись из-за экспедиции в Сицилию. Ориентируясь на обещание поддержки ряда сицилийских городо",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q1460",
+    "label": "Sicily",
+    "description": "island in the Mediterranean, region of Italy",
+    "notable": true
+   },
+   {
+    "qid": "Q188586",
+    "label": "Kingdom of Sicily",
+    "description": "former state in southern Italy, 1130–1816",
+    "notable": true
+   },
+   {
+    "qid": "Q4951156",
+    "label": "Sicily",
+    "description": "Italian island in the Mediterranean Sea",
+    "notable": true
+   },
+   {
+    "qid": "Q691321",
+    "label": "Sicilia",
+    "description": "Roman province",
+    "notable": true
+   },
+   {
+    "qid": "Q137377",
+    "label": "(1258) Сицилия",
+    "description": "asteroid",
+    "notable": true
+   }
+  ]
+ },
+ "афиняне": {
+  "context": "риентируясь на обещание поддержки ряда сицилийских городов, афиняне собрали огромную армию и флот. Идея похода встретила одобре",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q120096553",
+    "label": "Athenians",
+    "description": "people from or residents of Athens, Greece",
+    "notable": false
+   }
+  ]
+ },
+ "Спарта": {
+  "context": "ротив них. Не предусмотрели они и возможность вмешательства Спарты. Одним из руководителей похода был назначен Алкивиад, проис",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q5690",
+    "label": "Sparta",
+    "description": "city and city-state in ancient Greece",
+    "notable": true
+   },
+   {
+    "qid": "Q2308046",
+    "label": "Sparta",
+    "description": "modern town in Laconia, Greece, near the site of ancient Sparta",
+    "notable": true
+   }
+  ]
+ },
+ "Алкивиад": {
+  "context": "тельства Спарты. Одним из руководителей похода был назначен Алкивиад, происходивший из старинного аристократического рода, челов",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q187982",
+    "label": "Alcibiades",
+    "description": "Athenian statesman",
+    "notable": true
+   },
+   {
+    "qid": "Q19128072",
+    "label": "Алкивиад",
+    "description": "poem written by Yevgeny Baratynsky",
+    "notable": false
+   },
+   {
+    "qid": "Q1153509",
+    "label": "First Alcibiades",
+    "description": "work by Plato",
+    "notable": true
+   },
+   {
+    "qid": "Q1788674",
+    "label": "Second Alcibiades",
+    "description": "dialogue by Plato",
+    "notable": true
+   },
+   {
+    "qid": "Q15984269",
+    "label": "Alcibiades the Younger",
+    "description": "son of Alcibiades",
+    "notable": false
+   }
+  ]
+ },
+ "Гермес": {
+  "context": "на Сицилию в городе кто-то повредил гермы (изображения бога Гермеса), и подозрения пали на Алкивиада и его друзей. Вызванный из",
+  "category": "deity",
+  "candidates": [
+   {
+    "qid": "Q41484",
+    "label": "Hermes",
+    "description": "Olympian god in Greek religion and mythology; the emissary and messeng",
+    "notable": true
+   },
+   {
+    "qid": "Q144505",
+    "label": "69230 Hermes",
+    "description": "asteroid",
+    "notable": true
+   },
+   {
+    "qid": "Q1035642",
+    "label": "Hermes",
+    "description": "male given name",
+    "notable": true
+   },
+   {
+    "qid": "Q836081",
+    "label": "Hermes",
+    "description": "proposed spaceplane by the European Space Agency",
+    "notable": true
+   },
+   {
+    "qid": "Q30602573",
+    "label": "Hermes",
+    "description": "DC Comics character",
+    "notable": true
+   }
+  ]
+ },
+ "Афины": {
+  "context": "ения пали на Алкивиада и его друзей. Вызванный из Сицилии в Афины по «делу гермокопидов», Алкивиад, понимая, что его политиче",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q1524",
+    "label": "Athens",
+    "description": "capital and largest city of Greece",
+    "notable": true
+   },
+   {
+    "qid": "Q1224979",
+    "label": "Athens Municipality",
+    "description": "municipality of Greece in Attica, part of Central Athens district",
+    "notable": true
+   },
+   {
+    "qid": "Q79439",
+    "label": "Athens",
+    "description": "county seat of Limestone County, Alabama, United States",
+    "notable": true
+   },
+   {
+    "qid": "Q211734",
+    "label": "Athens International Airport \"Eleftherios Venizelos\"",
+    "description": "international airport serving Athens, Greece",
+    "notable": true
+   },
+   {
+    "qid": "Q509078",
+    "label": "Athens Prefecture",
+    "description": "prefecture of Greece",
+    "notable": true
+   }
+  ]
+ },
+ "Александр": {
+  "context": "Юность Александра отнюдь не была безоблачной. Между его родителями назревал к",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q8409",
+    "label": "Alexander the Great",
+    "description": "king of Macedonia and conqueror of Achaemenid Persia (356–323 BC)",
+    "notable": true
+   },
+   {
+    "qid": "Q923",
+    "label": "Alexander",
+    "description": "male given name",
+    "notable": true
+   },
+   {
+    "qid": "Q167646",
+    "label": "Paris",
+    "description": "mythological son of Priam, king of Troy",
+    "notable": true
+   },
+   {
+    "qid": "Q17501806",
+    "label": "Aleksandr",
+    "description": "male given name (Александр)",
+    "notable": false
+   },
+   {
+    "qid": "Q17520844",
+    "label": "Александр / Александер",
+    "description": "male given name",
+    "notable": true
+   }
+  ]
+ },
+ "Олимпиады": {
+  "context": " назревал конфликт, который в конце концов привел к отъезду Олимпиады в Эпир. Часть македонской знати не хотела видеть в Александ",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q2112179",
+    "label": "programming contest",
+    "description": "mind sport",
+    "notable": true
+   },
+   {
+    "qid": "Q2510454",
+    "label": "Knowledge Olympiad",
+    "description": "intellectual competition",
+    "notable": true
+   },
+   {
+    "qid": "Q1572106",
+    "label": "mathematics competition",
+    "description": "type of student competition",
+    "notable": true
+   },
+   {
+    "qid": "Q113408633",
+    "label": "олимпиады школьников в СССР",
+    "description": "",
+    "notable": false
+   }
+  ]
+ },
+ "Эпир": {
+  "context": "нфликт, который в конце концов привел к отъезду Олимпиады в Эпир. Часть македонской знати не хотела видеть в Александре насл",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q565751",
+    "label": "Epirus",
+    "description": "historical region of present-day Greece and Albania",
+    "notable": true
+   },
+   {
+    "qid": "Q180484",
+    "label": "Epirus Region",
+    "description": "one of the 13 regions of Greece",
+    "notable": true
+   },
+   {
+    "qid": "Q11266977",
+    "label": "Epirus",
+    "description": "ancient Greek state and kingdom, located in the geographical region of",
+    "notable": true
+   },
+   {
+    "qid": "Q1820754",
+    "label": "Epirus",
+    "description": "Roman province",
+    "notable": true
+   },
+   {
+    "qid": "Q87336078",
+    "label": "ЭСГ/Эпир",
+    "description": "entry in Granat Encyclopedic Dictionary",
+    "notable": false
+   }
+  ]
+ },
+ "македоняне": {
+  "context": "сандре наследника престола, поскольку он только по отцу был македонянином. Именно на этой почве произошел серьезный разлад между ",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q1401272",
+    "label": "Macedonians",
+    "description": "regional and historical population group of ethnic Greeks",
+    "notable": true
+   }
+  ]
+ },
+ "Филипп": {
+  "context": "зный разлад между отцом и сыном. Во время очередной свадьбы Филиппа, женившегося на этот раз на знатной македонской девушке по ",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q43675",
+    "label": "Philip the Apostle",
+    "description": "Christian saint and apostle",
+    "notable": true
+   },
+   {
+    "qid": "Q998338",
+    "label": "Filip",
+    "description": "male given name",
+    "notable": true
+   },
+   {
+    "qid": "Q827311",
+    "label": "Philip",
+    "description": "male given name",
+    "notable": true
+   },
+   {
+    "qid": "Q15727189",
+    "label": "Philippe",
+    "description": "male given name",
+    "notable": false
+   },
+   {
+    "qid": "Q155004",
+    "label": "Philippe of Belgium",
+    "description": "King of the Belgians since 2013",
+    "notable": true
+   }
+  ]
+ },
+ "Клеопатра": {
+  "context": "вшегося на этот раз на знатной македонской девушке по имени Клеопатра, ее дядя Аттал, подвыпивши, начал призывать македонян молит",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q635",
+    "label": "Cleopatra",
+    "description": "queen of the Ptolemaic Kingdom of Egypt from 51 to 30 BCE",
+    "notable": true
+   },
+   {
+    "qid": "Q147891",
+    "label": "(216) Клеопатра",
+    "description": "main-belt asteroid",
+    "notable": true
+   },
+   {
+    "qid": "Q230258",
+    "label": "Cleopatra of Macedon",
+    "description": "4th-century BC Macedonian princess and queen regent of Epirus",
+    "notable": true
+   },
+   {
+    "qid": "Q257526",
+    "label": "Cleopatra Eurydice",
+    "description": "4th-century BC Macedonian queen consort",
+    "notable": true
+   }
+  ]
+ },
+ "Аттал": {
+  "context": " на знатной македонской девушке по имени Клеопатра, ее дядя Аттал, подвыпивши, начал призывать македонян молиться богам о том",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q356050",
+    "label": "Attalus",
+    "description": "Ancient Macedonian courtier and general",
+    "notable": true
+   },
+   {
+    "qid": "Q29167056",
+    "label": "Attalus",
+    "description": "child of Attalus and Boa, father of Attalus and grandfather of Attalus",
+    "notable": false
+   },
+   {
+    "qid": "Q16172153",
+    "label": "Attalus",
+    "description": "ruler of the Agrianes",
+    "notable": false
+   },
+   {
+    "qid": "Q109485735",
+    "label": "Attalus",
+    "description": "father of Philetaerus of Tios",
+    "notable": false
+   },
+   {
+    "qid": "Q483862",
+    "label": "Attala County",
+    "description": "county in Mississippi, United States",
+    "notable": true
+   }
+  ]
+ },
+ "Азия": {
+  "context": "льски прокомментировал: «Этот человек хочет переправиться в Азию, но не может пройти от одного ложа до другого». Он немедлен",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q48",
+    "label": "Asia",
+    "description": "terrestrial continent, mainly in the northeastern quadrant",
+    "notable": true
+   },
+   {
+    "qid": "Q210718",
+    "label": "Asia",
+    "description": "Roman province",
+    "notable": true
+   },
+   {
+    "qid": "Q3625042",
+    "label": "Asia",
+    "description": "female given name",
+    "notable": false
+   },
+   {
+    "qid": "Q334",
+    "label": "Singapore",
+    "description": "sovereign island country and city-state in maritime Southeast Asia",
+    "notable": true
+   },
+   {
+    "qid": "Q99288947",
+    "label": "Asia",
+    "description": "continent of Asia as depicted in Star Trek",
+    "notable": false
+   }
+  ]
+ },
+ "иллирийцы": {
+  "context": "другого». Он немедленно покинул пир и некоторое время жил у иллирийцев. Конфликт удалось погасить, и Александр вернулся в Македони",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q146715",
+    "label": "Illyrians",
+    "description": "ancient Western Balkanic tribes",
+    "notable": true
+   },
+   {
+    "qid": "Q116813899",
+    "label": "ЭСГ/Иллирийцы",
+    "description": "entry in Granat Encyclopedic Dictionary",
+    "notable": false
+   }
+  ]
+ },
+ "Македония": {
+  "context": "лирийцев. Конфликт удалось погасить, и Александр вернулся в Македонию.",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q221",
+    "label": "North Macedonia",
+    "description": "country in southeastern Europe",
+    "notable": true
+   },
+   {
+    "qid": "Q240592",
+    "label": "Socialist Republic of Macedonia",
+    "description": "the official name of the Macedonian state within federated Yugoslavia ",
+    "notable": true
+   },
+   {
+    "qid": "Q83958",
+    "label": "Macedonia",
+    "description": "ancient Hellenic kingdom",
+    "notable": true
+   },
+   {
+    "qid": "Q103251",
+    "label": "Macedonia",
+    "description": "geographical and historical region in southeastern Europe, today formi",
+    "notable": true
+   },
+   {
+    "qid": "Q81734",
+    "label": "Macedonia",
+    "description": "geographic and administrative region of Greece",
+    "notable": true
+   }
+  ]
+ },
+ "Плодородный Полумесяц": {
+  "context": "я (аграрные очаги). Зоны могут быть сопоставлены с районами Плодородного Полумесяца, т.е. с классическим Востоком. Согласно исследованиям геоло",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q170526",
+    "label": "Fertile Crescent",
+    "description": "crescent-shaped geographic region of the Middle-East, containing the m",
+    "notable": true
+   }
+  ]
+ },
+ "Великая равнина": {
+  "context": ". с классическим Востоком. Согласно исследованиям геологов, Великая равнина в постледниковый период была в значительной степени затопле",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q3555010",
+    "label": "vastitas",
+    "description": "extensive plain",
+    "notable": false
+   }
+  ]
+ },
+ "Мировой океан": {
+  "context": "д была в значительной степени затоплена поднявшимися водами Мирового океана, начав «высвобождаться» лишь с середины VI тысячелетия до н",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q715269",
+    "label": "World Ocean",
+    "description": "Earth's interconnected water system",
+    "notable": true
+   },
+   {
+    "qid": "Q5174141",
+    "label": "cosmic ocean",
+    "description": "mythological motif representing the world or cosmos as enveloped by pr",
+    "notable": true
+   }
+  ]
+ },
+ "Хуанхэ": {
+  "context": "ередины VI тысячелетия до н.э. (за счет интенсивных наносов Хуанхэ и рек шаньдунского архипелага). Как отдельная зона Великая ",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q7355",
+    "label": "Yellow River",
+    "description": "major river in China",
+    "notable": true
+   },
+   {
+    "qid": "Q2468778",
+    "label": "Arctic Yellow River Station",
+    "description": "Chinese research station in Ny-Ålesund, on Svalbard",
+    "notable": true
+   }
+  ]
+ },
+ "шаньдунский архипелаг": {
+  "context": "сячелетия до н.э. (за счет интенсивных наносов Хуанхэ и рек шаньдунского архипелага). Как отдельная зона Великая равнина сформировалась лишь к ",
+  "category": "place",
+  "candidates": []
+ },
+ "хуася": {
+  "context": "я, определив возможности бурного развития государственности хуася во второй половине I тысячелетия до н.э. и создания империи",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q2673403",
+    "label": "Huaxia",
+    "description": "historical concept of Zhonghua (China), political entity emerging from",
+    "notable": true
+   },
+   {
+    "qid": "Q386212",
+    "label": "Hua County",
+    "description": "county",
+    "notable": true
+   }
+  ]
+ },
+ "ханьский этнос": {
+  "context": "е I тысячелетия до н.э. и создания империи с доминированием ханьского этноса в конце эпохи древности (III в. до н.э. – III в. н.э.). Дан",
+  "category": "people",
+  "candidates": []
+ },
+ "Старый Свет": {
+  "context": "ет новое понимание исторического процесса в восточной части Старого Света. В мировую науку представления о палеогеологической истории",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q174807",
+    "label": "Old World",
+    "description": "collectively Africa, Asia and Europe",
+    "notable": true
+   }
+  ]
+ },
+ "Чжан Гуан-жи": {
+  "context": "логической истории Великой равнины ввел в 1986 г. профессор Чжан Гуан-жи (Гарвард); она принята научным сообществом ┘.",
+  "category": "person",
+  "candidates": []
+ },
+ "Гарвард": {
+  "context": "ории Великой равнины ввел в 1986 г. профессор Чжан Гуан-жи (Гарвард); она принята научным сообществом ┘.",
+  "category": "institution",
+  "candidates": [
+   {
+    "qid": "Q13371",
+    "label": "Harvard University",
+    "description": "private university in Cambridge, Massachusetts",
+    "notable": true
+   },
+   {
+    "qid": "Q114631",
+    "label": "(736) Гарвард",
+    "description": "main-belt asteroid",
+    "notable": true
+   },
+   {
+    "qid": "Q49126",
+    "label": "Harvard Business School",
+    "description": "business school in Boston, Massachusetts, USA",
+    "notable": true
+   },
+   {
+    "qid": "Q49122",
+    "label": "Harvard Law School",
+    "description": "law school of Harvard University in Cambridge, Massachusetts",
+    "notable": true
+   },
+   {
+    "qid": "Q49121",
+    "label": "Harvard Medical School",
+    "description": "medical school in Boston, Massachusetts",
+    "notable": true
+   }
+  ]
+ },
+ "шумеро-аккадский": {
+  "context": " отличие от прежних завоевателей Саргон просто аннексировал шумеро-аккадские номы, создав первую в истории Междуречья централизованную д",
+  "category": "culture",
+  "candidates": [
+   {
+    "qid": "Q105468833",
+    "label": "БСЭ1/Шумеро-аккадский язык",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)",
+    "notable": false
+   }
+  ]
+ },
+ "Междуречье": {
+  "context": "аннексировал шумеро-аккадские номы, создав первую в истории Междуречья централизованную державу. Храмовые и государственные хозяйс",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system",
+    "notable": true
+   },
+   {
+    "qid": "Q1056116",
+    "label": "Mesopotamia",
+    "description": "region in Argentina",
+    "notable": true
+   },
+   {
+    "qid": "Q4288649",
+    "label": "Ay-Serez",
+    "description": "human settlement in near Sudak, Crimea",
+    "notable": true
+   },
+   {
+    "qid": "Q25745163",
+    "label": "Mezhdurechye, Loktevsky District, Altai Krai",
+    "description": "human settlement in Loktevsky District, Altai Krai, Russia",
+    "notable": true
+   },
+   {
+    "qid": "Q4288648",
+    "label": "Mizhrichchia",
+    "description": "",
+    "notable": false
+   }
+  ]
+ },
+ "энси": {
+  "context": "ых автономий, и их правители (титуловавшиеся отныне только «энси» – единственным лугалем теперь являлся Саргон) превратились",
+  "category": "institution",
+  "candidates": [
+   {
+    "qid": "Q932495",
+    "label": "ensí",
+    "description": "local title designating the ruler or prince of a city-state",
+    "notable": true
+   },
+   {
+    "qid": "Q532711",
+    "label": "Encinitas",
+    "description": "city in San Diego County, California, United States",
+    "notable": true
+   },
+   {
+    "qid": "Q1190590",
+    "label": "Encino",
+    "description": "neighborhood in the San Fernando Valley region of Los Angeles, Califor",
+    "notable": true
+   },
+   {
+    "qid": "Q14595679",
+    "label": "ensign",
+    "description": "lowest ranking commissioned officer, etymologically the carrier of the",
+    "notable": true
+   },
+   {
+    "qid": "Q1445340",
+    "label": "Encinasola",
+    "description": "municipality of Spain",
+    "notable": true
+   }
+  ]
+ },
+ "лугаль": {
+  "context": "авители (титуловавшиеся отныне только «энси» – единственным лугалем теперь являлся Саргон) превратились фактически в чиновников",
+  "category": "institution",
+  "candidates": [
+   {
+    "qid": "Q854642",
+    "label": "Lugal",
+    "description": "Sumerian equivalent of king",
+    "notable": true
+   },
+   {
+    "qid": "Q79997506",
+    "label": "Rugal",
+    "description": "2020 South Korean sci-fi television series",
+    "notable": true
+   },
+   {
+    "qid": "Q126490747",
+    "label": "БСЭ1/Лугаль",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)",
+    "notable": false
+   },
+   {
+    "qid": "Q755755",
+    "label": "Lugalbanda",
+    "description": "Sumerian king",
+    "notable": true
+   },
+   {
+    "qid": "Q316241",
+    "label": "Lugal-zage-si",
+    "description": "Sumerian King from c. 2370 - 2316 BC",
+    "notable": true
+   }
+  ]
+ },
+ "шумерский": {
+  "context": "о. Государственным языком династии Саргона служил не только шумерский, но и аккадский. Население в целом (кроме тех, кто успел по",
+  "category": "culture",
+  "candidates": [
+   {
+    "qid": "Q36790",
+    "label": "Sumerian",
+    "description": "language of ancient Sumer",
+    "notable": true
+   },
+   {
+    "qid": "Q270860",
+    "label": "Sumerian King List",
+    "description": "Mesopotamian literary composition",
+    "notable": true
+   },
+   {
+    "qid": "Q10436112",
+    "label": "Sumerian creation myth",
+    "description": "creation myth",
+    "notable": true
+   },
+   {
+    "qid": "Q4527726",
+    "label": "Sumerian calendar",
+    "description": "",
+    "notable": false
+   },
+   {
+    "qid": "Q130443067",
+    "label": "Sumerian Lexicon",
+    "description": "Dictionary Guide to the Ancient Sumerian Language",
+    "notable": false
+   }
+  ]
+ },
+ "аккадский": {
+  "context": "ым языком династии Саргона служил не только шумерский, но и аккадский. Население в целом (кроме тех, кто успел попасть в военно-с",
+  "category": "culture",
+  "candidates": [
+   {
+    "qid": "Q35518",
+    "label": "Akkadian",
+    "description": "extinct Semitic language of Mesopotamia",
+    "notable": true
+   },
+   {
+    "qid": "Q419594",
+    "label": "Akkad period",
+    "description": "archaeological and historical period in Mesopotamia, c. 2350-2200 BC",
+    "notable": false
+   },
+   {
+    "qid": "Q419590",
+    "label": "Akkadisches Handwörterbuch",
+    "description": "dictionary of the Akkadian language",
+    "notable": true
+   },
+   {
+    "qid": "Q131145637",
+    "label": "Akkadisches Glossar",
+    "description": "Akkadian glossary",
+    "notable": false
+   },
+   {
+    "qid": "Q135642501",
+    "label": "The Akkadian of Alalah",
+    "description": "Dictionary of the Akkadian language",
+    "notable": false
+   }
+  ]
+ },
+ "Гай": {
+  "context": "ми дорогами, акведуками, реками и т.д. Таким образом, слова Гая о чрезвычайной широте преторского права находят свое подтве",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q1159023",
+    "label": "Гай / Ги",
+    "description": "male given name",
+    "notable": true
+   },
+   {
+    "qid": "Q5517401",
+    "label": "Gaius",
+    "description": "ancient Roman praenomen",
+    "notable": true
+   },
+   {
+    "qid": "Q160882",
+    "label": "Caius",
+    "description": "pope of the Catholic Church from 283 to 296",
+    "notable": true
+   },
+   {
+    "qid": "Q313439",
+    "label": "Gaius",
+    "description": "Roman jurist (2nd century AD)",
+    "notable": true
+   },
+   {
+    "qid": "Q134371",
+    "label": "Gai",
+    "description": "town in Orenburg Oblast, Russia",
+    "notable": true
+   }
+  ]
+ },
+ "фиванцы": {
+  "context": "Между тем Спарта объявила фиванцев нарушителями Анталкидова мира, призвала другие государства ",
+  "category": "people",
+  "candidates": []
+ },
+ "Анталкидов мир": {
+  "context": "Между тем Спарта объявила фиванцев нарушителями Анталкидова мира, призвала другие государства заставить их распустить Б",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q1132922",
+    "label": "Peace of Antalcidas",
+    "description": "Greek-Persian treaty of 387 BCE",
+    "notable": true
+   }
+  ]
+ },
+ "Беотийский союз": {
+  "context": "а мира, призвала другие государства заставить их распустить Беотийский союз и направила в Беотию войско. К этому времени в Фивах была п",
+  "category": "institution",
+  "candidates": [
+   {
+    "qid": "Q833665",
+    "label": "Boeotian confederation",
+    "description": "federal organization of Boeotian city-states",
+    "notable": true
+   }
+  ]
+ },
+ "Беотия": {
+  "context": "рства заставить их распустить Беотийский союз и направила в Беотию войско. К этому времени в Фивах была проведена военная рефо",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q8257871",
+    "label": "Boeotia Regional Unit",
+    "description": "regional unit in Central Greece, Greece",
+    "notable": true
+   },
+   {
+    "qid": "Q187570",
+    "label": "Boeotia",
+    "description": "historical region in Central Greece",
+    "notable": false
+   },
+   {
+    "qid": "Q12748856",
+    "label": "Boeotia",
+    "description": "mythical wife of Hyas",
+    "notable": false
+   }
+  ]
+ },
+ "Фивы": {
+  "context": "тийский союз и направила в Беотию войско. К этому времени в Фивах была проведена военная реформа, превратившая беотийскую арм",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q101583",
+    "label": "Thebes",
+    "description": "ancient Egyptian city",
+    "notable": true
+   },
+   {
+    "qid": "Q12875678",
+    "label": "Thiva Municipality",
+    "description": "municipality of Greece",
+    "notable": false
+   },
+   {
+    "qid": "Q11225429",
+    "label": "Thebes",
+    "description": "ancient Greek city-state",
+    "notable": false
+   },
+   {
+    "qid": "Q490583",
+    "label": "Phthiotic Thebes",
+    "description": "ancient city in Magnesia, Thessaly, Greece",
+    "notable": true
+   },
+   {
+    "qid": "Q2723626",
+    "label": "Thebe",
+    "description": "ancient city of Mysia, in modern-day Turkey",
+    "notable": true
+   }
+  ]
+ },
+ "Левктры": {
+  "context": "беотийскую армию в одну из самых боеспособных. В битвах при Левктрах и Мантинее (372 и 371 гг. до н.э.) беотийцы под руководство",
+  "category": "event",
+  "candidates": [
+   {
+    "qid": "Q11931805",
+    "label": "Leuctra (Arcadia)",
+    "description": "town of Aegytis on the confines of Arcadia and Laconia",
+    "notable": true
+   },
+   {
+    "qid": "Q117195691",
+    "label": "БСЭ1/Левктры",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)",
+    "notable": false
+   }
+  ]
+ },
+ "Мантинея": {
+  "context": "армию в одну из самых боеспособных. В битвах при Левктрах и Мантинее (372 и 371 гг. до н.э.) беотийцы под руководством блестящег",
+  "category": "event",
+  "candidates": [
+   {
+    "qid": "Q1160195",
+    "label": "Mantineia",
+    "description": "ruined ancient city in Arcadia, Greece",
+    "notable": true
+   }
+  ]
+ },
+ "Эпаминонд": {
+  "context": "д руководством блестящего полководца и военного реформатора Эпаминонда нанесли Спарте такие сокрушительные поражения, что распался",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q190436",
+    "label": "Epaminondas",
+    "description": "Theban general and statesman (419/411–362 BC)",
+    "notable": true
+   },
+   {
+    "qid": "Q86854217",
+    "label": "НЭСГ/Эпаминонд",
+    "description": "entry in Desktop Encyclopedic Dictionary",
+    "notable": false
+   },
+   {
+    "qid": "Q107409947",
+    "label": "БСЭ1/Эпаминонд",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)",
+    "notable": false
+   },
+   {
+    "qid": "Q87327251",
+    "label": "МСЭ2/Эпаминонд",
+    "description": "entry in Small Soviet Encyclopedia, 2nd edition",
+    "notable": false
+   },
+   {
+    "qid": "Q630181",
+    "label": "Epameinondas Deligiorgis",
+    "description": "Greek politician, lawyer and journalist (1829-1879)",
+    "notable": true
+   }
+  ]
+ },
+ "Пелопоннесский союз": {
+  "context": "нанесли Спарте такие сокрушительные поражения, что распался Пелопоннесский союз и Спарта утратила возможность претендовать на гегемонию в Э",
+  "category": "institution",
+  "candidates": [
+   {
+    "qid": "Q208742",
+    "label": "Peloponnesian League",
+    "description": "military alliance in Ancient Greece",
+    "notable": true
+   }
+  ]
+ },
+ "Эллада": {
+  "context": "з и Спарта утратила возможность претендовать на гегемонию в Элладе. Но успехи фиванцев положили конец их дружеским отношениям ",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q41",
+    "label": "Greece",
+    "description": "country in Southeast Europe",
+    "notable": true
+   },
+   {
+    "qid": "Q12103805",
+    "label": "Hellas",
+    "description": "Greek word for \"Greece\"",
+    "notable": false
+   },
+   {
+    "qid": "Q5601946",
+    "label": "Hellas",
+    "description": "Greek frigate",
+    "notable": true
+   },
+   {
+    "qid": "Q106827524",
+    "label": "БСЭ1/Эллада",
+    "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)",
+    "notable": false
+   },
+   {
+    "qid": "Q87083421",
+    "label": "ЭСГ/Эллада",
+    "description": "entry in Granat Encyclopedic Dictionary",
+    "notable": false
+   }
+  ]
+ },
+ "Второй морской союз": {
+  "context": "еперь воспрепятствовать усилению Фив. Между тем союзники по Второму морскому союзу уже открыто выражали недовольство постепенным возвращением ",
+  "category": "institution",
+  "candidates": []
+ },
+ "Союзнический договор": {
+  "context": "я достигли такого накала, что разразилась настоящая война – Союзническая (357–356 гг. до н.э.), закончившаяся победой бывших союзник",
+  "category": "event",
+  "candidates": []
+ },
+ "Второй Афинский морской союз": {
+  "context": " гг. до н.э.), закончившаяся победой бывших союзников Афин. Второй Афинский морской союз распался, Афины, подобно Спарте и Фивам, утратили лидерство",
+  "category": "institution",
+  "candidates": [
+   {
+    "qid": "Q2338980",
+    "label": "Second Athenian League",
+    "description": "4th-century BC maritime confederation of Aegean city-states",
+    "notable": true
+   }
+  ]
+ },
+ "Нарам-Суэн": {
+  "context": " сдавшихся, так и в дальних зависимых странах. Внук Саргона Нарам-Суэн (2236–2200) поначалу столкнулся с массовым восстанием по вс",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q297506",
+    "label": "Naram-Sin of Akkad",
+    "description": "ruler of the Akkadian Empire (c. 2254–2218 BC)",
+    "notable": true
+   }
+  ]
+ },
+ "Энлиль": {
+  "context": "амым он вступил в конфронтацию с храмами, особенно с храмом Энлиля в Ниппуре. Вскоре на Аккад с севера обрушились неизвестные ",
+  "category": "deity",
+  "candidates": [
+   {
+    "qid": "Q214672",
+    "label": "Enlil",
+    "description": "ancient Mesopotamian god",
+    "notable": true
+   },
+   {
+    "qid": "Q442885",
+    "label": "Enlil-kudurri-usur",
+    "description": "king of Assyria",
+    "notable": true
+   },
+   {
+    "qid": "Q2619561",
+    "label": "Enlil-nadin-apli",
+    "description": "Babylonian king",
+    "notable": true
+   },
+   {
+    "qid": "Q721199",
+    "label": "Enlil-nasir I",
+    "description": "Assyrian king",
+    "notable": true
+   },
+   {
+    "qid": "Q887290",
+    "label": "Enlil-bani",
+    "description": "king of Isin",
+    "notable": true
+   }
+  ]
+ },
+ "Ниппур": {
+  "context": "ступил в конфронтацию с храмами, особенно с храмом Энлиля в Ниппуре. Вскоре на Аккад с севера обрушились неизвестные до того се",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q188395",
+    "label": "Nippur",
+    "description": "ancient city in modern day Iraq",
+    "notable": true
+   },
+   {
+    "qid": "Q3225321",
+    "label": "Poor Man of Nippur",
+    "description": "Akkadian story",
+    "notable": true
+   },
+   {
+    "qid": "Q4527726",
+    "label": "Sumerian calendar",
+    "description": "",
+    "notable": false
+   }
+  ]
+ },
+ "Кавказ": {
+  "context": "северные варвары (возможно, полукочевые индоевропейцы из-за Кавказа), известные впоследствии в месопотамской традиции под назва",
+  "category": "place",
+  "candidates": [
+   {
+    "qid": "Q18869",
+    "label": "Caucasus",
+    "description": "region in Eurasia bordered on the south by Iran, on the southwest by T",
+    "notable": true
+   },
+   {
+    "qid": "Q5477",
+    "label": "Caucasus Mountains",
+    "description": "mountain system spanning Eastern Europe and Western Asia",
+    "notable": true
+   },
+   {
+    "qid": "Q499340",
+    "label": "Montes Caucasus",
+    "description": "mountain range on the Moon",
+    "notable": true
+   },
+   {
+    "qid": "Q2104749",
+    "label": "Port Kavkaz",
+    "description": "Port in Russia",
+    "notable": true
+   },
+   {
+    "qid": "Q4206969",
+    "label": "Kavkaz",
+    "description": "human settlement in Chekmagushevsky District, Republic of Bashkortosta",
+    "notable": true
+   }
+  ]
+ },
+ "умман-манда": {
+  "context": "естные впоследствии в месопотамской традиции под названием «умман-манда» («воинство манда»), вслед за этим последовали нападения го",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q7881701",
+    "label": "Umman Manda",
+    "description": "ancient Middle East people group",
+    "notable": true
+   }
+  ]
+ },
+ "манда": {
+  "context": "сопотамской традиции под названием «умман-манда» («воинство манда»), вслед за этим последовали нападения горцев-кутиев. Внешн",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q1422538",
+    "label": "Manda Island",
+    "description": "island of the Lamu Archipelago of Kenya",
+    "notable": true
+   },
+   {
+    "qid": "Q56760",
+    "label": "Manda",
+    "description": "Dravidian language",
+    "notable": true
+   },
+   {
+    "qid": "Q9192",
+    "label": "Mandarin",
+    "description": "major branch of Chinese spoken across most of northern and southwester",
+    "notable": true
+   },
+   {
+    "qid": "Q16939267",
+    "label": "Manda",
+    "description": "Bantu language",
+    "notable": true
+   },
+   {
+    "qid": "Q727694",
+    "label": "Standard Chinese",
+    "description": "standard form of the Chinese language",
+    "notable": true
+   }
+  ]
+ },
+ "кутии": {
+  "context": "оинство манда»), вслед за этим последовали нападения горцев-кутиев. Внешние владения Аккада оказались утрачены. Нарам-Суэн и е",
+  "category": "people",
+  "candidates": [
+   {
+    "qid": "Q5621802",
+    "label": "Gutian",
+    "description": "extinct unclassified language of the Near East",
+    "notable": true
+   },
+   {
+    "qid": "Q11410743",
+    "label": "Masahiro Kuchii",
+    "description": "",
+    "notable": false
+   },
+   {
+    "qid": "Q41777909",
+    "label": "Ryūzō Kuchiishi",
+    "description": "Japanese candidate",
+    "notable": false
+   },
+   {
+    "qid": "Q734870",
+    "label": "box turtle",
+    "description": "genus of reptiles",
+    "notable": true
+   }
+  ]
+ },
+ "Шаркалишарри": {
+  "context": "адения Аккада оказались утрачены. Нарам-Суэн и его преемник Шаркалишарри вели с кутиями борьбу, окончившуюся катастрофой: под их уда",
+  "category": "person",
+  "candidates": [
+   {
+    "qid": "Q349653",
+    "label": "Shar-Kali-Sharri",
+    "description": "Akkadian king",
+    "notable": true
+   }
+  ]
+ }
+}

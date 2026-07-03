@@ -1,0 +1,2739 @@
+{
+ "grounding": [
+  {
+   "surface": "Лагаше",
+   "lemma": "Лагаш",
+   "context": "В Лагаше, одном из наиболее экономически развитых номов, дело дошло ",
+   "candidates": [
+    {
+     "qid": "Q207330",
+     "label": "Lagash",
+     "description": "ancient Mesopotamian city-state"
+    },
+    {
+     "qid": "Q130140366",
+     "label": "БСЭ1/Лагаш",
+     "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)"
+    },
+    {
+     "qid": "Q270860",
+     "label": "Sumerian King List",
+     "description": "Mesopotamian literary composition"
+    },
+    {
+     "qid": "Q53970244",
+     "label": "Guilaine Lagache",
+     "description": "French astrophysicist"
+    },
+    {
+     "qid": "Q4252333",
+     "label": "Maksim Lagashkin",
+     "description": "Russian actor"
+    }
+   ]
+  },
+  {
+   "surface": "Месопотамии",
+   "lemma": "Месопотамия",
+   "context": " реформы иногда проводились и в других номовых государствах Месопотамии.",
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    },
+    {
+     "qid": "Q146720",
+     "label": "Mandatory Iraq",
+     "description": "former country"
+    },
+    {
+     "qid": "Q765845",
+     "label": "Mesopotamia",
+     "description": "Province of the Roman Empire"
+    },
+    {
+     "qid": "Q1056116",
+     "label": "Mesopotamia",
+     "description": "region in Argentina"
+    },
+    {
+     "qid": "Q164395",
+     "label": "Mesopotamia",
+     "description": "Byzantine district (theme)"
+    }
+   ]
+  },
+  {
+   "surface": "Уруинимгину",
+   "lemma": "Урукагина",
+   "context": "данина), а на его место народное собрание выдвинуло некоего Уруинимгину, наделив его титулом «лугаля» (конец XXIV в. до н. э.). Тот",
+   "candidates": [
+    {
+     "qid": "Q315698",
+     "label": "Urukagina",
+     "description": "last ruler of the 1st Dynasty of Lagash"
+    }
+   ]
+  },
+  {
+   "surface": "лугаля",
+   "lemma": "лугаль",
+   "context": "обрание выдвинуло некоего Уруинимгину, наделив его титулом «лугаля» (конец XXIV в. до н. э.). Тот упразднил чрезмерные поборы ",
+   "candidates": [
+    {
+     "qid": "Q854642",
+     "label": "Lugal",
+     "description": "Sumerian equivalent of king"
+    },
+    {
+     "qid": "Q79997506",
+     "label": "Rugal",
+     "description": "2020 South Korean sci-fi television series"
+    },
+    {
+     "qid": "Q126490747",
+     "label": "БСЭ1/Лугаль",
+     "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)"
+    },
+    {
+     "qid": "Q755755",
+     "label": "Lugalbanda",
+     "description": "Sumerian king"
+    },
+    {
+     "qid": "Q316241",
+     "label": "Lugal-zage-si",
+     "description": "Sumerian King from c. 2370 - 2316 BC"
+    }
+   ]
+  },
+  {
+   "surface": "номов",
+   "lemma": "ном",
+   "context": "В Лагаше, одном из наиболее экономически развитых номов, дело дошло до переворота: тамошний правитель сосредоточил ",
+   "candidates": [
+    {
+     "qid": "Q503023",
+     "label": "Nome Census Area",
+     "description": "census area in Alaska, United States"
+    },
+    {
+     "qid": "Q202595",
+     "label": "prefecture of Greece",
+     "description": "former administrative division of Greece"
+    },
+    {
+     "qid": "Q79996",
+     "label": "Nome",
+     "description": "city in Alaska, USA"
+    },
+    {
+     "qid": "Q223706",
+     "label": "nome",
+     "description": "subnational administrative division of ancient Egypt"
+    },
+    {
+     "qid": "Q28413",
+     "label": "Nome",
+     "description": "city in North Dakota, United States"
+    }
+   ]
+  },
+  {
+   "surface": "Аккаде",
+   "lemma": "Аккад",
+   "context": " и обосновался в принадлежавшем Кишу незначительном городке Аккаде. Здесь он объявил себя царем под именем Шаррум-кен (акк. «И",
+   "candidates": [
+    {
+     "qid": "Q4461035",
+     "label": "Akkadian Empire",
+     "description": "ancient empire in the Mesopotamia (2334–2154 BC)"
+    },
+    {
+     "qid": "Q35518",
+     "label": "Akkadian",
+     "description": "extinct Semitic language of Mesopotamia"
+    },
+    {
+     "qid": "Q150996",
+     "label": "Akkad",
+     "description": "ancient Mesopotamian city"
+    },
+    {
+     "qid": "Q419594",
+     "label": "Akkad period",
+     "description": "archaeological and historical period in Mesopotamia, c. 2350-2200 BC"
+    },
+    {
+     "qid": "Q51887",
+     "label": "Accadia",
+     "description": "Italian comune"
+    }
+   ]
+  },
+  {
+   "surface": "Киша",
+   "lemma": "Киш",
+   "context": "У убитого в ходе завоеваний Лугальзагеси царя Киша служил мелкий придворный, по происхождению аккадец-простолю",
+   "candidates": [
+    {
+     "qid": "Q10321288",
+     "label": "Kish",
+     "description": "city in Hormozgan Province, Iran"
+    },
+    {
+     "qid": "Q221883",
+     "label": "Kish Island",
+     "description": "island in Bandar Lengeh County, Iran"
+    },
+    {
+     "qid": "Q132272",
+     "label": "Kish",
+     "description": "Ancient Sumerian city"
+    },
+    {
+     "qid": "Q722595",
+     "label": "quiche",
+     "description": "savoury open pastry tart with a filling of egg, dairy and other ingredients"
+    }
+   ]
+  },
+  {
+   "surface": "Лугальзагеси",
+   "lemma": "Лугальзагеси",
+   "context": "У убитого в ходе завоеваний Лугальзагеси царя Киша служил мелкий придворный, по происхождению аккаде",
+   "candidates": [
+    {
+     "qid": "Q316241",
+     "label": "Lugal-zage-si",
+     "description": "Sumerian King from c. 2370 - 2316 BC"
+    }
+   ]
+  },
+  {
+   "surface": "Саргон",
+   "lemma": "Саргон",
+   "context": " Шаррум-кен (акк. «Истинный царь», в со– временной передаче Саргон). Саргон (ок. 2316–2261) властвовал вне рамок каких-либо тр",
+   "candidates": [
+    {
+     "qid": "Q199461",
+     "label": "Sargon of Akkad",
+     "description": "founder of Akkadian Empire"
+    },
+    {
+     "qid": "Q21502232",
+     "label": "Sargon",
+     "description": "family name"
+    },
+    {
+     "qid": "Q208336",
+     "label": "Sargon II",
+     "description": "king of Assyria (722-705 B.C)"
+    },
+    {
+     "qid": "Q182749",
+     "label": "Šarru-kên I",
+     "description": "king of Assyria"
+    }
+   ]
+  },
+  {
+   "surface": "Шумера",
+   "lemma": "Шумер",
+   "context": "повелевая ими. К нему во множестве стекались рядовые жители Шумера, увидев перспективу быстрого возвышения, в которой им отказ",
+   "candidates": [
+    {
+     "qid": "Q35355",
+     "label": "Sumer",
+     "description": "ancient Mesopotamian civilization from 5500 to 1800 BC"
+    },
+    {
+     "qid": "Q656043",
+     "label": "Sumerians",
+     "description": "people of antiquity"
+    },
+    {
+     "qid": "Q36790",
+     "label": "Sumerian",
+     "description": "language of ancient Sumer"
+    },
+    {
+     "qid": "Q275051",
+     "label": "Sumerian religion",
+     "description": "first religion of Mesopotamia region which is tangible by writing"
+    },
+    {
+     "qid": "Q270860",
+     "label": "Sumerian King List",
+     "description": "Mesopotamian literary composition"
+    }
+   ]
+  },
+  {
+   "surface": "энси",
+   "lemma": "энси",
+   "context": "ых автономий, и их правители (титуловавшиеся отныне только «энси» – единственным лугалем теперь являлся Саргон) превратились",
+   "candidates": [
+    {
+     "qid": "Q932495",
+     "label": "ensí",
+     "description": "local title designating the ruler or prince of a city-state"
+    },
+    {
+     "qid": "Q532711",
+     "label": "Encinitas",
+     "description": "city in San Diego County, California, United States"
+    },
+    {
+     "qid": "Q1190590",
+     "label": "Encino",
+     "description": "neighborhood in the San Fernando Valley region of Los Angeles, California, United States"
+    },
+    {
+     "qid": "Q14595679",
+     "label": "ensign",
+     "description": "lowest ranking commissioned officer, etymologically the carrier of the ensign flag"
+    },
+    {
+     "qid": "Q1445340",
+     "label": "Encinasola",
+     "description": "municipality of Spain"
+    }
+   ]
+  },
+  {
+   "surface": "Кавказ",
+   "lemma": "Кавказ",
+   "context": "северные варвары (возможно, полукочевые индоевропейцы из-за Кавказа), известные впоследствии в месопотамской традиции под назв",
+   "candidates": [
+    {
+     "qid": "Q18869",
+     "label": "Caucasus",
+     "description": "region in Eurasia bordered on the south by Iran, on the southwest by Türkiye, on the west by the Black Sea, on the east by the Caspian Sea, and on the north by Russia"
+    },
+    {
+     "qid": "Q5477",
+     "label": "Caucasus Mountains",
+     "description": "mountain system spanning Eastern Europe and Western Asia"
+    },
+    {
+     "qid": "Q499340",
+     "label": "Montes Caucasus",
+     "description": "mountain range on the Moon"
+    },
+    {
+     "qid": "Q2104749",
+     "label": "Port Kavkaz",
+     "description": "Port in Russia"
+    },
+    {
+     "qid": "Q4206969",
+     "label": "Kavkaz",
+     "description": "human settlement in Chekmagushevsky District, Republic of Bashkortostan, Russia"
+    }
+   ]
+  },
+  {
+   "surface": "Нарам-Суэн",
+   "lemma": "Нарам-Суэн",
+   "context": " сдавшихся, так и в дальних зависимых странах. Внук Саргона Нарам-Суэн (2236–2200) поначалу столкнулся с массовым восстанием по вс",
+   "candidates": [
+    {
+     "qid": "Q297506",
+     "label": "Naram-Sin of Akkad",
+     "description": "ruler of the Akkadian Empire (c. 2254–2218 BC)"
+    }
+   ]
+  },
+  {
+   "surface": "Ниппуре",
+   "lemma": "Ниппур",
+   "context": "ступил в конфронтацию с храмами, особенно с храмом Энлиля в Ниппуре. Вскоре на Аккад с севера обрушились неизвестные до того се",
+   "candidates": [
+    {
+     "qid": "Q188395",
+     "label": "Nippur",
+     "description": "ancient city in modern day Iraq"
+    },
+    {
+     "qid": "Q3225321",
+     "label": "Poor Man of Nippur",
+     "description": "Akkadian story"
+    },
+    {
+     "qid": "Q4527726",
+     "label": "Sumerian calendar",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "surface": "Шаркалишарри",
+   "lemma": "Шаркалишарри",
+   "context": "адения Аккада оказались утрачены. Нарам-Суэн и его преемник Шаркалишарри вели с кутиями борьбу, окончившуюся катастрофой: под их уда",
+   "candidates": [
+    {
+     "qid": "Q349653",
+     "label": "Shar-Kali-Sharri",
+     "description": "Akkadian king"
+    }
+   ]
+  },
+  {
+   "surface": "Энлиля",
+   "lemma": "Энлиль",
+   "context": "амым он вступил в конфронтацию с храмами, особенно с храмом Энлиля в Ниппуре. Вскоре на Аккад с севера обрушились неизвестные ",
+   "candidates": [
+    {
+     "qid": "Q214672",
+     "label": "Enlil",
+     "description": "ancient Mesopotamian god"
+    },
+    {
+     "qid": "Q442885",
+     "label": "Enlil-kudurri-usur",
+     "description": "king of Assyria"
+    },
+    {
+     "qid": "Q2619561",
+     "label": "Enlil-nadin-apli",
+     "description": "Babylonian king"
+    },
+    {
+     "qid": "Q721199",
+     "label": "Enlil-nasir I",
+     "description": "Assyrian king"
+    },
+    {
+     "qid": "Q887290",
+     "label": "Enlil-bani",
+     "description": "king of Isin"
+    }
+   ]
+  },
+  {
+   "surface": "кутиев",
+   "lemma": "кутии",
+   "context": "оинство манда»), вслед за этим последовали нападения горцев-кутиев. Внешние владения Аккада оказались утрачены. Нарам-Суэн и е",
+   "candidates": [
+    {
+     "qid": "Q5621802",
+     "label": "Gutian",
+     "description": "extinct unclassified language of the Near East"
+    },
+    {
+     "qid": "Q11410743",
+     "label": "Masahiro Kuchii",
+     "description": ""
+    },
+    {
+     "qid": "Q41777909",
+     "label": "Ryūzō Kuchiishi",
+     "description": "Japanese candidate"
+    },
+    {
+     "qid": "Q734870",
+     "label": "box turtle",
+     "description": "genus of reptiles"
+    }
+   ]
+  },
+  {
+   "surface": "умман-манда",
+   "lemma": "умман-манда",
+   "context": "естные впоследствии в месопотамской традиции под названием «умман-манда» («воинство манда»), вслед за этим последовали нападения го",
+   "candidates": [
+    {
+     "qid": "Q7881701",
+     "label": "Umman Manda",
+     "description": "ancient Middle East people group"
+    }
+   ]
+  },
+  {
+   "surface": "III династии Ура",
+   "lemma": "III династия Ура",
+   "context": "Конец III династии Ура наступил внезапно. Западносемитские племена сутиев (к этому",
+   "candidates": [
+    {
+     "qid": "Q723587",
+     "label": "Third Dynasty of Ur",
+     "description": "royal dynasty in Mesopotamia"
+    }
+   ]
+  },
+  {
+   "surface": "Ибби-Суэн",
+   "lemma": "Ибби-Суэн",
+   "context": " районы ок. 2025 г. до н.э. Тем временем последний царь Ура Ибби-Суэн бесконечными походами пытался привести к покорности Элам; а",
+   "candidates": [
+    {
+     "qid": "Q352752",
+     "label": "Ibbi-Sin",
+     "description": "King of Sumer and Akkad"
+    }
+   ]
+  },
+  {
+   "surface": "Иссине",
+   "lemma": "Иссин",
+   "context": "езая их от внешнего мира. Чиновник Ишби-Эрра объявил себя в Иссине царем (2017). Начался хаос: Ишби-Эрра, Ибби-Суэн, эламиты с",
+   "candidates": [
+    {
+     "qid": "Q501259",
+     "label": "Isin",
+     "description": "ancient city in Mesopotamia"
+    },
+    {
+     "qid": "Q1317635",
+     "label": "Isshin Chiba",
+     "description": "Japanese voice actor"
+    },
+    {
+     "qid": "Q1653265",
+     "label": "Issinsky District",
+     "description": "human settlement in Russia"
+    },
+    {
+     "qid": "Q333054",
+     "label": "Isshin Inudo",
+     "description": "Japanese film director and screenwriter"
+    },
+    {
+     "qid": "Q1943396",
+     "label": "Isshin-ryū",
+     "description": "style of karate"
+    }
+   ]
+  },
+  {
+   "surface": "Ишби-Эрра",
+   "lemma": "Ишби-Эрра",
+   "context": "ореи окружали города, отрезая их от внешнего мира. Чиновник Ишби-Эрра объявил себя в Иссине царем (2017). Начался хаос: Ишби-Эрра",
+   "candidates": [
+    {
+     "qid": "Q561153",
+     "label": "Ishbi-Erra",
+     "description": "Amorite king"
+    }
+   ]
+  },
+  {
+   "surface": "Симашки",
+   "lemma": "Симашки",
+   "context": "миты с союзными им восточными «людьми су» из региона «Стран Симашки» (династия одной из стран Симашки, видимо, связанной с ними",
+   "candidates": [
+    {
+     "qid": "Q3396376",
+     "label": "Simashki",
+     "description": "dynasty of Elam"
+    }
+   ]
+  },
+  {
+   "surface": "Ура",
+   "lemma": "Ур",
+   "context": "Конец III династии Ура наступил внезапно. Западносемитские племена сутиев (к этому",
+   "candidates": [
+    {
+     "qid": "Q5699",
+     "label": "Ur",
+     "description": "ancient Mesopotamian city-state"
+    },
+    {
+     "qid": "Q1058612",
+     "label": "Hours",
+     "description": "commune in Pyrénées-Atlantiques, France"
+    },
+    {
+     "qid": "Q747022",
+     "label": "Ur",
+     "description": "former supercontinent"
+    },
+    {
+     "qid": "Q1121572",
+     "label": "(22260) Ур",
+     "description": "asteroid"
+    },
+    {
+     "qid": "Q4476479",
+     "label": "Ur",
+     "description": "river in Kemerovo Oblast, Russia"
+    }
+   ]
+  },
+  {
+   "surface": "Элам",
+   "lemma": "Элам",
+   "context": "би-Суэн бесконечными походами пытался привести к покорности Элам; амореев рассчитывали сдержать укреплениями, но безуспешно.",
+   "candidates": [
+    {
+     "qid": "Q128904",
+     "label": "Elam",
+     "description": "Ancient civilization of the Near East, centered in the Susiana plain and the Elamite highlands"
+    },
+    {
+     "qid": "Q1147704",
+     "label": "Elam",
+     "description": "Biblical character, son of Shem"
+    },
+    {
+     "qid": "Q86855322",
+     "label": "НЭСГ/Элам",
+     "description": "entry in Desktop Encyclopedic Dictionary"
+    },
+    {
+     "qid": "Q87029668",
+     "label": "ЭСГ/Элам",
+     "description": "entry in Granat Encyclopedic Dictionary"
+    },
+    {
+     "qid": "Q87328201",
+     "label": "МСЭ2/Элам",
+     "description": "entry in Small Soviet Encyclopedia, 2nd edition"
+    }
+   ]
+  },
+  {
+   "surface": "людьми су",
+   "lemma": "люди су",
+   "context": "ос: Ишби-Эрра, Ибби-Суэн, эламиты с союзными им восточными «людьми су» из региона «Стран Симашки» (династия одной из стран Симашк",
+   "candidates": [
+    {
+     "qid": "Q7828057",
+     "label": "Category:People who have walked on the Moon",
+     "description": "Wikimedia category"
+    },
+    {
+     "qid": "Q13164301",
+     "label": "Wikipedia:IPs are human too",
+     "description": "Wikimedia project page"
+    },
+    {
+     "qid": "Q134313",
+     "label": "barbarian",
+     "description": "person perceived to be either uncivilized or primitive based on stereotypes"
+    },
+    {
+     "qid": "Q8463",
+     "label": "slavery",
+     "description": "system under which people are treated as property to be bought and sold, and are forced to work"
+    }
+   ]
+  },
+  {
+   "surface": "аккадцами",
+   "lemma": "аккадцы",
+   "context": "тя именно при них шумеры оказались полностью ассимилированы аккадцами и шумерский язык стал мертвым языком учености – школ, храмо",
+   "candidates": [
+    {
+     "qid": "Q2481441",
+     "label": "history of Mesopotamia",
+     "description": "aspect of history"
+    }
+   ]
+  },
+  {
+   "surface": "шумерский",
+   "lemma": "шумерский",
+   "context": "и них шумеры оказались полностью ассимилированы аккадцами и шумерский язык стал мертвым языком учености – школ, храмовых писцов и",
+   "candidates": [
+    {
+     "qid": "Q36790",
+     "label": "Sumerian",
+     "description": "language of ancient Sumer"
+    },
+    {
+     "qid": "Q270860",
+     "label": "Sumerian King List",
+     "description": "Mesopotamian literary composition"
+    },
+    {
+     "qid": "Q10436112",
+     "label": "Sumerian creation myth",
+     "description": "creation myth"
+    },
+    {
+     "qid": "Q4527726",
+     "label": "Sumerian calendar",
+     "description": ""
+    },
+    {
+     "qid": "Q130443067",
+     "label": "Sumerian Lexicon",
+     "description": "Dictionary Guide to the Ancient Sumerian Language"
+    }
+   ]
+  },
+  {
+   "surface": "шумеры",
+   "lemma": "шумеры",
+   "context": "ам Ура официальные тексты на шумерском, хотя именно при них шумеры оказались полностью ассимилированы аккадцами и шумерский яз",
+   "candidates": [
+    {
+     "qid": "Q656043",
+     "label": "Sumerians",
+     "description": "people of antiquity"
+    },
+    {
+     "qid": "Q105486083",
+     "label": "БСЭ1/Шумеры",
+     "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)"
+    }
+   ]
+  },
+  {
+   "surface": "Законы Хаммурапи",
+   "lemma": "Законы Хаммурапи",
+   "context": " господин обычно распоряжался лишь его временем и трудом. В Законы Хаммурапи даже пришлось включать специальную статью, угрожавшую свобо",
+   "candidates": [
+    {
+     "qid": "Q93304",
+     "label": "Code of Hammurabi",
+     "description": "Babylonian code of law or conduct"
+    }
+   ]
+  },
+  {
+   "surface": "Хаммурапи",
+   "lemma": "Хаммурапи",
+   "context": "ин обычно распоряжался лишь его временем и трудом. В Законы Хаммурапи даже пришлось включать специальную статью, угрожавшую свобо",
+   "candidates": [
+    {
+     "qid": "Q36359",
+     "label": "Hammurabi",
+     "description": "sixth king of Babylon (r. 1792–1750 BCE)"
+    },
+    {
+     "qid": "Q93304",
+     "label": "Code of Hammurabi",
+     "description": "Babylonian code of law or conduct"
+    },
+    {
+     "qid": "Q288650",
+     "label": "Hammurabi I",
+     "description": "politician"
+    }
+   ]
+  },
+  {
+   "surface": "авилумы",
+   "lemma": "авилум",
+   "context": "й Месопотамии различались три сословия: свободные общинники авилумы («люди»), «царские люди» мушкенумы («склоняющиеся под чье-т",
+   "candidates": []
+  },
+  {
+   "surface": "вардумы",
+   "lemma": "вардум",
+   "context": "клоняющиеся под чье-то покровительство») и рабы по сословию вардумы. Авилумы пользовались общинным самоуправлением, хотя и плат",
+   "candidates": [
+    {
+     "qid": "Q1156074",
+     "label": "Hovik Vardoumian",
+     "description": "Armenian short story writer and novelist"
+    },
+    {
+     "qid": "Q20511599",
+     "label": "Derenik Vardumyan",
+     "description": "actor"
+    },
+    {
+     "qid": "Q20511586",
+     "label": "Гоар Вардумян",
+     "description": "Armenian historian"
+    },
+    {
+     "qid": "Q22665487",
+     "label": "Derenik Vardumyan",
+     "description": "Armenian historian"
+    },
+    {
+     "qid": "Q4103736",
+     "label": "Artur Vardumyan",
+     "description": "Russian association football player"
+    }
+   ]
+  },
+  {
+   "surface": "мушкенумы",
+   "lemma": "мушкенум",
+   "context": "ловия: свободные общинники авилумы («люди»), «царские люди» мушкенумы («склоняющиеся под чье-то покровительство») и рабы по сосло",
+   "candidates": []
+  },
+  {
+   "surface": "наши бильтим",
+   "lemma": "наши бильтим",
+   "context": "словием выплаты части урожая (источники знают их под именем наши бильтим – «плательщики дохода»; в подавляющем своем большинстве это",
+   "candidates": []
+  },
+  {
+   "surface": "старовавилонской",
+   "lemma": "старовавилонский период",
+   "context": "В старовавилонской Месопотамии различались три сословия: свободные общинники а",
+   "candidates": [
+    {
+     "qid": "Q733897",
+     "label": "Old Babylonian Empire",
+     "description": "c. 1894 BC – c. 1595 BC dynasty of Babylonia"
+    }
+   ]
+  },
+  {
+   "surface": "Ашшур",
+   "lemma": "Ашшур",
+   "context": " вавилонским вассалом успел побывать (хотя и недолго) также Ашшур.",
+   "candidates": [
+    {
+     "qid": "Q200200",
+     "label": "Assur",
+     "description": "archaeological site in Iraq"
+    },
+    {
+     "qid": "Q685878",
+     "label": "Ashur",
+     "description": "Mesopotamian diety of the Assyrians"
+    },
+    {
+     "qid": "Q171191",
+     "label": "Ashurbanipal",
+     "description": "Assyrian ruler"
+    },
+    {
+     "qid": "Q193912",
+     "label": "Асархаддон",
+     "description": "King of Assyria (8th cenutury BCE – 669 BCE)"
+    },
+    {
+     "qid": "Q193290",
+     "label": "Ashurnasirpal II",
+     "description": "Assyrian king"
+    }
+   ]
+  },
+  {
+   "surface": "Вавилон",
+   "lemma": "Вавилон",
+   "context": "ежду касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморейскими племенами – они подняли мятеж и разгромили ря",
+   "candidates": [
+    {
+     "qid": "Q5684",
+     "label": "Babylon",
+     "description": "capital city of Babylonia and an archaeological site in modern-day Iraq"
+    },
+    {
+     "qid": "Q19367400",
+     "label": "Babilônia",
+     "description": "Brazilian telenovela"
+    },
+    {
+     "qid": "Q24239683",
+     "label": "Vavilon",
+     "description": "human settlement in Aleysky District, Altai Krai, Russia"
+    }
+   ]
+  },
+  {
+   "surface": "Вавилонии",
+   "lemma": "Вавилония",
+   "context": "ежду касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморейскими племенами – они подняли мятеж и разгромили ряд ",
+   "candidates": [
+    {
+     "qid": "Q47690",
+     "label": "Babylonia",
+     "description": "historical country"
+    },
+    {
+     "qid": "Q56046846",
+     "label": "Babylon",
+     "description": "mythological Greek character, mother of Arabus"
+    }
+   ]
+  },
+  {
+   "surface": "Дамаска",
+   "lemma": "Дамаск",
+   "context": "ами через всю Сирийскую степь на ее крайний запад, к оазису Дамаска, сутии-амореи составили ядро древнееврейской этнической общ",
+   "candidates": [
+    {
+     "qid": "Q3766",
+     "label": "Damascus",
+     "description": "capital and largest city of Syria"
+    },
+    {
+     "qid": "Q232399",
+     "label": "Rif Dimashq Governorate",
+     "description": "governorate in Syria"
+    },
+    {
+     "qid": "Q2007044",
+     "label": "Damascus Governorate",
+     "description": "governorate of Syria"
+    },
+    {
+     "qid": "Q475736",
+     "label": "Damascus steel",
+     "description": "type of steel used in Middle Eastern swordmaking"
+    },
+    {
+     "qid": "Q570873",
+     "label": "Damascus International Airport",
+     "description": "international airport serving Damascus, Syria"
+    }
+   ]
+  },
+  {
+   "surface": "Евфрат",
+   "lemma": "Евфрат",
+   "context": "залив город кровью, а затем изгнал из Вавилонии на запад за Евфрат «многочисленных сутиев (амореев) от восхода до заката солнц",
+   "candidates": [
+    {
+     "qid": "Q34589",
+     "label": "Euphrates",
+     "description": "river in Asia"
+    },
+    {
+     "qid": "Q2666131",
+     "label": "Euphrates the Stoic",
+     "description": "Roman Stoic philosopher (c.35 – c.118)"
+    },
+    {
+     "qid": "Q4172703",
+     "label": "ЕВФРАТ",
+     "description": ""
+    },
+    {
+     "qid": "Q1989799",
+     "label": "Euphrates softshell turtle",
+     "description": "species of reptile"
+    },
+    {
+     "qid": "Q3060427",
+     "label": "Euphratensis",
+     "description": "Roman then Byzantine province (c. 341–7th Century) in the diocese of the East in Syria"
+    }
+   ]
+  },
+  {
+   "surface": "Кадашман-Харбе",
+   "lemma": "Кадашман-Харбе",
+   "context": " н.э. вспыхнул ожесточенный конфликт между касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморейскими племенами – он",
+   "candidates": [
+    {
+     "qid": "Q879879",
+     "label": "Kadashman-harbe I",
+     "description": "king of Babylon"
+    },
+    {
+     "qid": "Q887027",
+     "label": "Kadashman-Harbe II",
+     "description": "king of Babylon"
+    }
+   ]
+  },
+  {
+   "surface": "Тадморе",
+   "lemma": "Тадмор",
+   "context": "нил вавилонской власти ее обширные пространства с центром в Тадморе, установив общую границу с египетскими владениями в Южной С",
+   "candidates": [
+    {
+     "qid": "Q938457",
+     "label": "Tadmur",
+     "description": "modern city of Palmyra near its ancient ruins"
+    },
+    {
+     "qid": "Q4120562",
+     "label": "Tadmur District",
+     "description": "district in Homs, Syria"
+    },
+    {
+     "qid": "Q6632450",
+     "label": "Tadmor Hotel",
+     "description": ""
+    },
+    {
+     "qid": "Q4166609",
+     "label": "Tadmor Prison",
+     "description": "former prison in Syria"
+    },
+    {
+     "qid": "Q2909659",
+     "label": "Hayim Tadmor",
+     "description": "Israeli assyriologist (1923–2005)"
+    }
+   ]
+  },
+  {
+   "surface": "амореев",
+   "lemma": "амореи",
+   "context": "нал из Вавилонии на запад за Евфрат «многочисленных сутиев (амореев) от восхода до заката солнца и привел их воинскую силу к не",
+   "candidates": [
+    {
+     "qid": "Q203507",
+     "label": "Amorites",
+     "description": "ancient Northwest Semitic-speaking people from the Levant"
+    },
+    {
+     "qid": "Q35941",
+     "label": "Amorite",
+     "description": "extinct Northwest Semitic language, spoken by the Amorite tribes"
+    },
+    {
+     "qid": "Q1368637",
+     "label": "Amorian dynasty",
+     "description": "Byzantine dynasty"
+    },
+    {
+     "qid": "Q474083",
+     "label": "Amoreira",
+     "description": "civil parish in Óbidos"
+    },
+    {
+     "qid": "Q2256903",
+     "label": "Freguesia de Amoreira da Gândara",
+     "description": "former civil parish in Portugal"
+    }
+   ]
+  },
+  {
+   "surface": "залива",
+   "lemma": "залива",
+   "context": "",
+   "candidates": [
+    {
+     "qid": "Q118105723",
+     "label": "Залыва",
+     "description": "human settlement in Holmogorskoe sel'skoe posolenie, Kholmogorsky District, Arkhangelsk Oblast, Russia"
+    },
+    {
+     "qid": "Q4185351",
+     "label": "Zalivanshchina",
+     "description": "village in Khmilnyk Raion, Vinnytsia Oblast, Ukraine"
+    },
+    {
+     "qid": "Q12105584",
+     "label": "Opanas Zalyvakha",
+     "description": "Ukrainian painter (1925-2007)"
+    },
+    {
+     "qid": "Q4185345",
+     "label": "Aleksey Zalivalov",
+     "description": "Soviet actor and composer (1957-2012)"
+    },
+    {
+     "qid": "Q15066822",
+     "label": "Заливако, Олег Валерьевич",
+     "description": "российский музыкант, композитор, один из основателей группы \"Белая Гвардия\""
+    }
+   ]
+  },
+  {
+   "surface": "касситским",
+   "lemma": "касситы",
+   "context": "Около 1400 г. до н.э. вспыхнул ожесточенный конфликт между касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморе",
+   "candidates": [
+    {
+     "qid": "Q243312",
+     "label": "Kassites",
+     "description": "people of the ancient Near East"
+    }
+   ]
+  },
+  {
+   "surface": "сутии-амореи",
+   "lemma": "сутии-амореи",
+   "context": " всю Сирийскую степь на ее крайний запад, к оазису Дамаска, сутии-амореи составили ядро древнееврейской этнической общности. А обшир",
+   "candidates": [
+    {
+     "qid": "Q203507",
+     "label": "Amorites",
+     "description": "ancient Northwest Semitic-speaking people from the Levant"
+    }
+   ]
+  },
+  {
+   "surface": "Гарвард",
+   "lemma": "Гарвард",
+   "context": "ории Великой равнины ввел в 1986 г. профессор Чжан Гуан-жи (Гарвард); она принята научным сообществом ┘.",
+   "candidates": [
+    {
+     "qid": "Q13371",
+     "label": "Harvard University",
+     "description": "private university in Cambridge, Massachusetts"
+    },
+    {
+     "qid": "Q114631",
+     "label": "(736) Гарвард",
+     "description": "main-belt asteroid"
+    },
+    {
+     "qid": "Q49126",
+     "label": "Harvard Business School",
+     "description": "business school in Boston, Massachusetts, USA"
+    },
+    {
+     "qid": "Q49122",
+     "label": "Harvard Law School",
+     "description": "law school of Harvard University in Cambridge, Massachusetts"
+    },
+    {
+     "qid": "Q49121",
+     "label": "Harvard Medical School",
+     "description": "medical school in Boston, Massachusetts"
+    }
+   ]
+  },
+  {
+   "surface": "Китая",
+   "lemma": "Китай",
+   "context": "ии, предложенной несколько десятилетий назад, на территории Китая развитие неолитических культур (а в последующем формировани",
+   "candidates": [
+    {
+     "qid": "Q148",
+     "label": "People's Republic of China",
+     "description": "country in East Asia"
+    },
+    {
+     "qid": "Q29520",
+     "label": "China",
+     "description": "cultural region, ancient civilization, and nation in East Asia; mostly refers to the People's Republic of China in political situation and rarely refers to the Republic of China"
+    },
+    {
+     "qid": "Q13426199",
+     "label": "Republic of China",
+     "description": "1912–1949 country in Asia"
+    },
+    {
+     "qid": "Q12060881",
+     "label": "Chinese Empire",
+     "description": "imperial period of China from 220 BCE to 1912 CE"
+    },
+    {
+     "qid": "Q175379",
+     "label": "Empire of China",
+     "description": "1915–1916 country"
+    }
+   ]
+  },
+  {
+   "surface": "Плодородного Полумесяца",
+   "lemma": "Плодородный Полумесяц",
+   "context": "я (аграрные очаги). Зоны могут быть сопоставлены с районами Плодородного Полумесяца, т.е. с классическим Востоком. Согласно исследованиям геоло",
+   "candidates": [
+    {
+     "qid": "Q170526",
+     "label": "Fertile Crescent",
+     "description": "crescent-shaped geographic region of the Middle-East, containing the moist and fertile land of Western Asia, and the Nile Valley and Nile Delta of northeast Africa"
+    }
+   ]
+  },
+  {
+   "surface": "Хуанхэ",
+   "lemma": "Хуанхэ",
+   "context": "ередины VI тысячелетия до н.э. (за счет интенсивных наносов Хуанхэ и рек шаньдунского архипелага). Как отдельная зона Великая ",
+   "candidates": [
+    {
+     "qid": "Q7355",
+     "label": "Yellow River",
+     "description": "major river in China"
+    },
+    {
+     "qid": "Q2468778",
+     "label": "Arctic Yellow River Station",
+     "description": "Chinese research station in Ny-Ålesund, on Svalbard"
+    }
+   ]
+  },
+  {
+   "surface": "Чжан Гуан-жи",
+   "lemma": "Чжан Гуан-жи",
+   "context": "логической истории Великой равнины ввел в 1986 г. профессор Чжан Гуан-жи (Гарвард); она принята научным сообществом ┘.",
+   "candidates": []
+  },
+  {
+   "surface": "хуася",
+   "lemma": "хуася",
+   "context": "я, определив возможности бурного развития государственности хуася во второй половине I тысячелетия до н.э. и создания империи",
+   "candidates": [
+    {
+     "qid": "Q2673403",
+     "label": "Huaxia",
+     "description": "historical concept of Zhonghua (China), political entity emerging from tribes living along Yellow River during the Three Sovereigns and Five Emperors (ca. 2852 BCE–ca. 2070 BCE)"
+    },
+    {
+     "qid": "Q386212",
+     "label": "Hua County",
+     "description": "county"
+    }
+   ]
+  },
+  {
+   "surface": "шаньдунского архипелага",
+   "lemma": "шаньдунский архипелаг",
+   "context": "сячелетия до н.э. (за счет интенсивных наносов Хуанхэ и рек шаньдунского архипелага). Как отдельная зона Великая равнина сформировалась лишь к ",
+   "candidates": []
+  },
+  {
+   "surface": "Байляньдун",
+   "lemma": "Байляньдун",
+   "context": "е. Ряд стоянок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные ку",
+   "candidates": []
+  },
+  {
+   "surface": "Гуандун",
+   "lemma": "Гуандун",
+   "context": " на севере. Ряд стоянок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «р",
+   "candidates": [
+    {
+     "qid": "Q15175",
+     "label": "Guangdong",
+     "description": "province of China"
+    },
+    {
+     "qid": "Q9574619",
+     "label": "Kuangtung",
+     "description": "former province (1912-1950) of the Republic of China, replaced by a nearly identical province of the same name under the PRC"
+    },
+    {
+     "qid": "Q28411078",
+     "label": "Guangdong",
+     "description": "Province (1647-1911) of the Qing Empire, initially inclusive of modern Guangdong, Hainan, Hong Kong, Guangxi's coastal strip, and (notionally) Macao"
+    },
+    {
+     "qid": "Q11061695",
+     "label": "Guangdong",
+     "description": "Province of the Ming Empire, inclusive of modern Guangdong, Hainan, Macao, Hong Kong, and Guangxi's coastal strip"
+    }
+   ]
+  },
+  {
+   "surface": "Гуанси",
+   "lemma": "Гуанси",
+   "context": "ньше, чем на севере. Ряд стоянок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъ",
+   "candidates": [
+    {
+     "qid": "Q149864",
+     "label": "(2655) Гуанси",
+     "description": "asteroid"
+    },
+    {
+     "qid": "Q15921507",
+     "label": "Guangxi",
+     "description": "Province (1649-1911) of the Qing dynasty, missing Guangxi's present coastal strip"
+    },
+    {
+     "qid": "Q11485720",
+     "label": "Kwangsi",
+     "description": "Province (1920-1950) of the Republic of China, replaced by a nearly identical province of the same name under the PRC"
+    },
+    {
+     "qid": "Q15909788",
+     "label": "Guangxi",
+     "description": "Province (1950-1958) of the People's Republic of China, reorganized into an autonomous region for the Zhuang people"
+    },
+    {
+     "qid": "Q15176",
+     "label": "Guangxi",
+     "description": "Provincial area of China organized in 1958 as an autonomous region for the Zhuang people"
+    }
+   ]
+  },
+  {
+   "surface": "Душицзы",
+   "lemma": "Душицзы",
+   "context": "винциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнина, Цинтана и др.), д",
+   "candidates": []
+  },
+  {
+   "surface": "Наньнина",
+   "lemma": "Наньни",
+   "context": "энпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнина, Цинтана и др.), датируются XI–VI тысячелетиями до н.э. Рад",
+   "candidates": [
+    {
+     "qid": "Q179608",
+     "label": "Nanning",
+     "description": "capital of Guangxi, China"
+    },
+    {
+     "qid": "Q10907375",
+     "label": "Nanning Rail Transit",
+     "description": "rapid transit system in Nanning, China"
+    },
+    {
+     "qid": "Q3238350",
+     "label": "Nanning Wuxu International Airport",
+     "description": "airport in Wuxu, People's Republic of China"
+    }
+   ]
+  },
+  {
+   "surface": "Пэнтоушань",
+   "lemma": "Пэнтоушань",
+   "context": "о н.э.) и на Средней Янцзы (на юго-западе от оз. Дунтинху – Пэнтоушань, 7200–6500 гг. до н.э.)┘.",
+   "candidates": [
+    {
+     "qid": "Q1205679",
+     "label": "Pengtoushan culture",
+     "description": "archaeological culture"
+    }
+   ]
+  },
+  {
+   "surface": "Сяньжэньдун",
+   "lemma": "Сяньжэньдун",
+   "context": "ападе нижнего течения Янцзы (к югу от оз. Поянху – памятник Сяньжэньдун, 9000(?)–7000 гг. до н.э.) и на Средней Янцзы (на юго-запад",
+   "candidates": [
+    {
+     "qid": "Q2812194",
+     "label": "Xianren Cave",
+     "description": "cave and archaeological site in China"
+    }
+   ]
+  },
+  {
+   "surface": "Цзэнпиянь",
+   "lemma": "Цзэнпиянь",
+   "context": "ок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнин",
+   "candidates": []
+  },
+  {
+   "surface": "Янцзы",
+   "lemma": "Янцзы",
+   "context": "емледельческие поселения известны на западе нижнего течения Янцзы (к югу от оз. Поянху – памятник Сяньжэньдун, 9000(?)–7000 г",
+   "candidates": [
+    {
+     "qid": "Q5413",
+     "label": "Yangtze",
+     "description": "Longest river in Asia, and the third-longest in the world"
+    },
+    {
+     "qid": "Q149715",
+     "label": "2617 Jiangxi",
+     "description": "asteroid"
+    },
+    {
+     "qid": "Q87326066",
+     "label": "МСЭ2/Янцзыцзян",
+     "description": "entry in Small Soviet Encyclopedia, 2nd edition"
+    },
+    {
+     "qid": "Q1195076",
+     "label": "Yangtze Delta",
+     "description": "delta of the Yangtze River, China"
+    }
+   ]
+  },
+  {
+   "surface": "Чунь-цю",
+   "lemma": "Чунь-цю",
+   "context": "ршенномудрых» правителей прошлого. Позднее, в конце периода Чунь-цю на их основе началось составление двух важнейших памятников",
+   "candidates": [
+    {
+     "qid": "Q747720",
+     "label": "Spring and Autumn Annals",
+     "description": "official chronicle of the State of Lu covering the period from 722 BCE to 481 BCE"
+    }
+   ]
+  },
+  {
+   "surface": "Шан шу",
+   "lemma": "Шан шу",
+   "context": "тайской литературы – «Ши цзина» («Книга песен и гимнов») и «Шан шу» («Записи о прошлом»), которые, кроме их художественных дос",
+   "candidates": [
+    {
+     "qid": "Q875313",
+     "label": "Book of Documents",
+     "description": "one of the Five Classics of ancient Chinese literature"
+    },
+    {
+     "qid": "Q1052078",
+     "label": "Shang Shu",
+     "description": "tenth ruler of the state of Jin"
+    }
+   ]
+  },
+  {
+   "surface": "Ши цзина",
+   "lemma": "Ши цзин",
+   "context": "ние двух важнейших памятников древнекитайской литературы – «Ши цзина» («Книга песен и гимнов») и «Шан шу» («Записи о прошлом»), ",
+   "candidates": [
+    {
+     "qid": "Q465108",
+     "label": "Classic of Poetry",
+     "description": "collection of Chinese poetry, comprising works dating from the 11th to 7th centuries BC"
+    },
+    {
+     "qid": "Q18141857",
+     "label": "Shi Jinglin",
+     "description": "Chinese swimmer"
+    },
+    {
+     "qid": "Q15730178",
+     "label": "Shi Jingnan",
+     "description": "Chinese short track speed skater"
+    },
+    {
+     "qid": "Q948491",
+     "label": "Nicholas Shi Jin Xian",
+     "description": "priest (1921-2009)"
+    }
+   ]
+  },
+  {
+   "surface": "чжоуских",
+   "lemma": "Чжоу",
+   "context": "ие у шанъиньцев письменности привело к тому, что при дворах чжоуских ванов и местной знати начала развиваться литература – созда",
+   "candidates": [
+    {
+     "qid": "Q845135",
+     "label": "Zhou",
+     "description": "Chinese family name (周)"
+    },
+    {
+     "qid": "Q35216",
+     "label": "Zhou dynasty",
+     "description": "dynasty of Ancient Chinese kings (王) lasting from c. 1046 to 256 BC"
+    },
+    {
+     "qid": "Q1070912",
+     "label": "zhou",
+     "description": "historical administrative and political division of China"
+    },
+    {
+     "qid": "Q37323941",
+     "label": "Zhou",
+     "description": "family name"
+    },
+    {
+     "qid": "Q10920088",
+     "label": "Zhou dynasty (1678–1681)",
+     "description": "Chinese state founded by Wu Sangui"
+    }
+   ]
+  },
+  {
+   "surface": "шанъиньцев",
+   "lemma": "шанъиньцы",
+   "context": "Заимствование у шанъиньцев письменности привело к тому, что при дворах чжоуских ванов ",
+   "candidates": []
+  },
+  {
+   "surface": "Алкивиад",
+   "lemma": "Алкивиад",
+   "context": "тельства Спарты. Одним из руководителей похода был назначен Алкивиад, происходивший из старинного аристократического рода, челов",
+   "candidates": [
+    {
+     "qid": "Q187982",
+     "label": "Alcibiades",
+     "description": "Athenian statesman"
+    },
+    {
+     "qid": "Q19128072",
+     "label": "Алкивиад",
+     "description": "poem written by Yevgeny Baratynsky"
+    },
+    {
+     "qid": "Q1153509",
+     "label": "First Alcibiades",
+     "description": "work by Plato"
+    },
+    {
+     "qid": "Q1788674",
+     "label": "Second Alcibiades",
+     "description": "dialogue by Plato"
+    },
+    {
+     "qid": "Q15984269",
+     "label": "Alcibiades the Younger",
+     "description": "son of Alcibiades"
+    }
+   ]
+  },
+  {
+   "surface": "Гермеса",
+   "lemma": "Гермес",
+   "context": "на Сицилию в городе кто-то повредил гермы (изображения бога Гермеса), и подозрения пали на Алкивиада и его друзей. Вызванный из",
+   "candidates": [
+    {
+     "qid": "Q41484",
+     "label": "Hermes",
+     "description": "Olympian god in Greek religion and mythology; the emissary and messenger of the gods; the god of trade, heraldry, merchants, commerce, roads, thieves, trickery, sports, travelers, and athletes; the son of Zeus and the Pleiad Maia"
+    },
+    {
+     "qid": "Q144505",
+     "label": "69230 Hermes",
+     "description": "asteroid"
+    },
+    {
+     "qid": "Q1035642",
+     "label": "Hermes",
+     "description": "male given name"
+    },
+    {
+     "qid": "Q836081",
+     "label": "Hermes",
+     "description": "proposed spaceplane by the European Space Agency"
+    },
+    {
+     "qid": "Q30602573",
+     "label": "Hermes",
+     "description": "DC Comics character"
+    }
+   ]
+  },
+  {
+   "surface": "Никиев мир",
+   "lemma": "Никиев мир",
+   "context": "Никиев мир не решил проблем, которые породили войну. Взаимное недовери",
+   "candidates": [
+    {
+     "qid": "Q932202",
+     "label": "Peace of Nicias",
+     "description": "421 BC treaty between Athens and Sparta"
+    }
+   ]
+  },
+  {
+   "surface": "Сицилию",
+   "lemma": "Сицилия",
+   "context": " настоящие военные действия развернулись из-за экспедиции в Сицилию. Ориентируясь на обещание поддержки ряда сицилийских городо",
+   "candidates": [
+    {
+     "qid": "Q1460",
+     "label": "Sicily",
+     "description": "island in the Mediterranean, region of Italy"
+    },
+    {
+     "qid": "Q188586",
+     "label": "Kingdom of Sicily",
+     "description": "former state in southern Italy, 1130–1816"
+    },
+    {
+     "qid": "Q4951156",
+     "label": "Sicily",
+     "description": "Italian island in the Mediterranean Sea"
+    },
+    {
+     "qid": "Q691321",
+     "label": "Sicilia",
+     "description": "Roman province"
+    },
+    {
+     "qid": "Q137377",
+     "label": "(1258) Сицилия",
+     "description": "asteroid"
+    }
+   ]
+  },
+  {
+   "surface": "Спарту",
+   "lemma": "Спарта",
+   "context": " что его политические противники расправятся с ним, бежал в Спарту, выдал все планы афинян и настоял на отправлении войска в С",
+   "candidates": [
+    {
+     "qid": "Q5690",
+     "label": "Sparta",
+     "description": "city and city-state in ancient Greece"
+    },
+    {
+     "qid": "Q2308046",
+     "label": "Sparta",
+     "description": "modern town in Laconia, Greece, near the site of ancient Sparta"
+    }
+   ]
+  },
+  {
+   "surface": "афиняне",
+   "lemma": "афиняне",
+   "context": "риентируясь на обещание поддержки ряда сицилийских городов, афиняне собрали огромную армию и флот. Идея похода встретила одобре",
+   "candidates": [
+    {
+     "qid": "Q120096553",
+     "label": "Athenians",
+     "description": "people from or residents of Athens, Greece"
+    }
+   ]
+  },
+  {
+   "surface": "гермокопидов",
+   "lemma": "гермокопидов",
+   "context": "кивиада и его друзей. Вызванный из Сицилии в Афины по «делу гермокопидов», Алкивиад, понимая, что его политические противники распра",
+   "candidates": [
+    {
+     "qid": "Q1097742",
+     "label": "Mutilation of the Hermai",
+     "description": "event in Ancient Athens"
+    },
+    {
+     "qid": "Q24400645",
+     "label": "ЭСБЕ / Гермокопидов процесс",
+     "description": "encyclopedic article"
+    }
+   ]
+  },
+  {
+   "surface": "Анталкидова мира",
+   "lemma": "Анталкидов мир",
+   "context": "Между тем Спарта объявила фиванцев нарушителями Анталкидова мира, призвала другие государства заставить их распустить Беотий",
+   "candidates": [
+    {
+     "qid": "Q1132922",
+     "label": "Peace of Antalcidas",
+     "description": "Greek-Persian treaty of 387 BCE"
+    }
+   ]
+  },
+  {
+   "surface": "Афины",
+   "lemma": "Афины",
+   "context": "вших союзников Афин. Второй Афинский морской союз распался, Афины, подобно Спарте и Фивам, утратили лидерство в Элладе, насту",
+   "candidates": [
+    {
+     "qid": "Q1524",
+     "label": "Athens",
+     "description": "capital and largest city of Greece"
+    },
+    {
+     "qid": "Q1224979",
+     "label": "Athens Municipality",
+     "description": "municipality of Greece in Attica, part of Central Athens district"
+    },
+    {
+     "qid": "Q79439",
+     "label": "Athens",
+     "description": "county seat of Limestone County, Alabama, United States"
+    },
+    {
+     "qid": "Q211734",
+     "label": "Athens International Airport \"Eleftherios Venizelos\"",
+     "description": "international airport serving Athens, Greece"
+    },
+    {
+     "qid": "Q509078",
+     "label": "Athens Prefecture",
+     "description": "prefecture of Greece"
+    }
+   ]
+  },
+  {
+   "surface": "Беотийский союз",
+   "lemma": "Беотийский союз",
+   "context": "а мира, призвала другие государства заставить их распустить Беотийский союз и направила в Беотию войско. К этому времени в Фивах была п",
+   "candidates": [
+    {
+     "qid": "Q833665",
+     "label": "Boeotian confederation",
+     "description": "federal organization of Boeotian city-states"
+    }
+   ]
+  },
+  {
+   "surface": "Беотию",
+   "lemma": "Беотия",
+   "context": "рства заставить их распустить Беотийский союз и направила в Беотию войско. К этому времени в Фивах была проведена военная рефо",
+   "candidates": [
+    {
+     "qid": "Q8257871",
+     "label": "Boeotia Regional Unit",
+     "description": "regional unit in Central Greece, Greece"
+    },
+    {
+     "qid": "Q187570",
+     "label": "Boeotia",
+     "description": "historical region in Central Greece"
+    },
+    {
+     "qid": "Q12748856",
+     "label": "Boeotia",
+     "description": "mythical wife of Hyas"
+    }
+   ]
+  },
+  {
+   "surface": "Второму морскому союзу",
+   "lemma": "Второй морской союз",
+   "context": "еперь воспрепятствовать усилению Фив. Между тем союзники по Второму морскому союзу уже открыто выражали недовольство постепенным возвращением ",
+   "candidates": [
+    {
+     "qid": "Q2338980",
+     "label": "Second Athenian League",
+     "description": "4th-century BC maritime confederation of Aegean city-states"
+    }
+   ]
+  },
+  {
+   "surface": "Фивах",
+   "lemma": "Фивы",
+   "context": "тийский союз и направила в Беотию войско. К этому времени в Фивах была проведена военная реформа, превратившая беотийскую арм",
+   "candidates": [
+    {
+     "qid": "Q101583",
+     "label": "Thebes",
+     "description": "ancient Egyptian city"
+    },
+    {
+     "qid": "Q12875678",
+     "label": "Thiva Municipality",
+     "description": "municipality of Greece"
+    },
+    {
+     "qid": "Q11225429",
+     "label": "Thebes",
+     "description": "ancient Greek city-state"
+    },
+    {
+     "qid": "Q490583",
+     "label": "Phthiotic Thebes",
+     "description": "ancient city in Magnesia, Thessaly, Greece"
+    },
+    {
+     "qid": "Q2723626",
+     "label": "Thebe",
+     "description": "ancient city of Mysia, in modern-day Turkey"
+    }
+   ]
+  },
+  {
+   "surface": "Элладе",
+   "lemma": "Эллада",
+   "context": "з и Спарта утратила возможность претендовать на гегемонию в Элладе. Но успехи фиванцев положили конец их дружеским отношениям ",
+   "candidates": [
+    {
+     "qid": "Q41",
+     "label": "Greece",
+     "description": "country in Southeast Europe"
+    },
+    {
+     "qid": "Q12103805",
+     "label": "Hellas",
+     "description": "Greek word for \"Greece\""
+    },
+    {
+     "qid": "Q5601946",
+     "label": "Hellas",
+     "description": "Greek frigate"
+    },
+    {
+     "qid": "Q106827524",
+     "label": "БСЭ1/Эллада",
+     "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)"
+    },
+    {
+     "qid": "Q87083421",
+     "label": "ЭСГ/Эллада",
+     "description": "entry in Granat Encyclopedic Dictionary"
+    }
+   ]
+  },
+  {
+   "surface": "Эпаминонда",
+   "lemma": "Эпаминонд",
+   "context": "д руководством блестящего полководца и военного реформатора Эпаминонда нанесли Спарте такие сокрушительные поражения, что распался",
+   "candidates": [
+    {
+     "qid": "Q190436",
+     "label": "Epaminondas",
+     "description": "Theban general and statesman (419/411–362 BC)"
+    },
+    {
+     "qid": "Q86854217",
+     "label": "НЭСГ/Эпаминонд",
+     "description": "entry in Desktop Encyclopedic Dictionary"
+    },
+    {
+     "qid": "Q107409947",
+     "label": "БСЭ1/Эпаминонд",
+     "description": "entry in Great Soviet Encyclopedia, 1st edition (1926–1947)"
+    },
+    {
+     "qid": "Q87327251",
+     "label": "МСЭ2/Эпаминонд",
+     "description": "entry in Small Soviet Encyclopedia, 2nd edition"
+    },
+    {
+     "qid": "Q630181",
+     "label": "Epameinondas Deligiorgis",
+     "description": "Greek politician, lawyer and journalist (1829-1879)"
+    }
+   ]
+  },
+  {
+   "surface": "клерухии",
+   "lemma": "клерухии",
+   "context": "стремлением Афин выкачивать у них деньги, попыткам выводить клерухии и другим методам архэ. Разногласия достигли такого накала, ",
+   "candidates": [
+    {
+     "qid": "Q1774212",
+     "label": "cleruchy",
+     "description": "type of colony established by Athens"
+    }
+   ]
+  },
+  {
+   "surface": "республики",
+   "lemma": "республики",
+   "context": "В эпоху расцвета республики малая семья раздвигает свои границы. У нее возникает обширн",
+   "candidates": [
+    {
+     "qid": "Q41162",
+     "label": "republic of Russia",
+     "description": "type of equal subjects of the Russian Federation"
+    }
+   ]
+  },
+  {
+   "surface": "римской гражданской общины",
+   "lemma": "римская гражданская община",
+   "context": "экономически крепкой семьи служило залогом процветания всей римской гражданской общины. И поэтому жизнь фамилии и деятельность ее главы находилась",
+   "candidates": []
+  },
+  {
+   "surface": "римской фамилии",
+   "lemma": "римская фамилия",
+   "context": "ти способствует все большей экономической самостоятельности римской фамилии. Ее отличает сложная структура, характеризующаяся переплете",
+   "candidates": [
+    {
+     "qid": "Q15281450",
+     "label": "familia",
+     "description": "family concept in ancient Rome"
+    }
+   ]
+  },
+  {
+   "surface": "фамилии",
+   "lemma": "фамилии",
+   "context": "бствует все большей экономической самостоятельности римской фамилии. Ее отличает сложная структура, характеризующаяся переплете",
+   "candidates": [
+    {
+     "qid": "Q101352",
+     "label": "family name",
+     "description": "part of a naming scheme for individuals, used in many cultures worldwide"
+    },
+    {
+     "qid": "Q4400681",
+     "label": "Russian family name",
+     "description": "type of family name"
+    },
+    {
+     "qid": "Q56226913",
+     "label": "surname prefixed with Fitz",
+     "description": "family name with this prefix, generally Norman patronymic surnames with the prefix meaning \"son of\""
+    },
+    {
+     "qid": "Q308541",
+     "label": "seminary surname",
+     "description": "type of family name"
+    },
+    {
+     "qid": "Q4481050",
+     "label": "family names of illegitimate children",
+     "description": "Wikimedia list article"
+    }
+   ]
+  },
+  {
+   "surface": "Александра",
+   "lemma": "Александр",
+   "context": "Юность Александра отнюдь не была безоблачной. Между его родителями назревал к",
+   "candidates": [
+    {
+     "qid": "Q8409",
+     "label": "Alexander the Great",
+     "description": "king of Macedonia and conqueror of Achaemenid Persia (356–323 BC)"
+    },
+    {
+     "qid": "Q923",
+     "label": "Alexander",
+     "description": "male given name"
+    },
+    {
+     "qid": "Q167646",
+     "label": "Paris",
+     "description": "mythological son of Priam, king of Troy"
+    },
+    {
+     "qid": "Q17501806",
+     "label": "Aleksandr",
+     "description": "male given name (Александр)"
+    },
+    {
+     "qid": "Q17520844",
+     "label": "Александр / Александер",
+     "description": "male given name"
+    }
+   ]
+  },
+  {
+   "surface": "Аттал",
+   "lemma": "Аттал",
+   "context": " на знатной македонской девушке по имени Клеопатра, ее дядя Аттал, подвыпивши, начал призывать македонян молиться богам о том",
+   "candidates": [
+    {
+     "qid": "Q356050",
+     "label": "Attalus",
+     "description": "Ancient Macedonian courtier and general"
+    },
+    {
+     "qid": "Q29167056",
+     "label": "Attalus",
+     "description": "child of Attalus and Boa, father of Attalus and grandfather of Attalus I"
+    },
+    {
+     "qid": "Q16172153",
+     "label": "Attalus",
+     "description": "ruler of the Agrianes"
+    },
+    {
+     "qid": "Q109485735",
+     "label": "Attalus",
+     "description": "father of Philetaerus of Tios"
+    },
+    {
+     "qid": "Q483862",
+     "label": "Attala County",
+     "description": "county in Mississippi, United States"
+    }
+   ]
+  },
+  {
+   "surface": "Клеопатра",
+   "lemma": "Клеопатра",
+   "context": "вшегося на этот раз на знатной македонской девушке по имени Клеопатра, ее дядя Аттал, подвыпивши, начал призывать македонян молит",
+   "candidates": [
+    {
+     "qid": "Q635",
+     "label": "Cleopatra",
+     "description": "queen of the Ptolemaic Kingdom of Egypt from 51 to 30 BCE"
+    },
+    {
+     "qid": "Q147891",
+     "label": "(216) Клеопатра",
+     "description": "main-belt asteroid"
+    },
+    {
+     "qid": "Q230258",
+     "label": "Cleopatra of Macedon",
+     "description": "4th-century BC Macedonian princess and queen regent of Epirus"
+    },
+    {
+     "qid": "Q257526",
+     "label": "Cleopatra Eurydice",
+     "description": "4th-century BC Macedonian queen consort"
+    }
+   ]
+  },
+  {
+   "surface": "Македонию",
+   "lemma": "Македония",
+   "context": "лирийцев. Конфликт удалось погасить, и Александр вернулся в Македонию.",
+   "candidates": [
+    {
+     "qid": "Q221",
+     "label": "North Macedonia",
+     "description": "country in southeastern Europe"
+    },
+    {
+     "qid": "Q240592",
+     "label": "Socialist Republic of Macedonia",
+     "description": "the official name of the Macedonian state within federated Yugoslavia during the period of 1963-1991."
+    },
+    {
+     "qid": "Q83958",
+     "label": "Macedonia",
+     "description": "ancient Hellenic kingdom"
+    },
+    {
+     "qid": "Q103251",
+     "label": "Macedonia",
+     "description": "geographical and historical region in southeastern Europe, today forming parts of the Republics of Greece, North Macedonia and Bulgaria"
+    },
+    {
+     "qid": "Q81734",
+     "label": "Macedonia",
+     "description": "geographic and administrative region of Greece"
+    }
+   ]
+  },
+  {
+   "surface": "Олимпиады",
+   "lemma": "Олимпиады",
+   "context": " назревал конфликт, который в конце концов привел к отъезду Олимпиады в Эпир. Часть македонской знати не хотела видеть в Александ",
+   "candidates": [
+    {
+     "qid": "Q2112179",
+     "label": "programming contest",
+     "description": "mind sport"
+    },
+    {
+     "qid": "Q2510454",
+     "label": "Knowledge Olympiad",
+     "description": "intellectual competition"
+    },
+    {
+     "qid": "Q1572106",
+     "label": "mathematics competition",
+     "description": "type of student competition"
+    },
+    {
+     "qid": "Q113408633",
+     "label": "олимпиады школьников в СССР",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "surface": "Филиппа",
+   "lemma": "Филипп",
+   "context": "зный разлад между отцом и сыном. Во время очередной свадьбы Филиппа, женившегося на этот раз на знатной македонской девушке по ",
+   "candidates": [
+    {
+     "qid": "Q43675",
+     "label": "Philip the Apostle",
+     "description": "Christian saint and apostle"
+    },
+    {
+     "qid": "Q998338",
+     "label": "Filip",
+     "description": "male given name"
+    },
+    {
+     "qid": "Q827311",
+     "label": "Philip",
+     "description": "male given name"
+    },
+    {
+     "qid": "Q15727189",
+     "label": "Philippe",
+     "description": "male given name"
+    },
+    {
+     "qid": "Q155004",
+     "label": "Philippe of Belgium",
+     "description": "King of the Belgians since 2013"
+    }
+   ]
+  },
+  {
+   "surface": "Эпир",
+   "lemma": "Эпир",
+   "context": "нфликт, который в конце концов привел к отъезду Олимпиады в Эпир. Часть македонской знати не хотела видеть в Александре насл",
+   "candidates": [
+    {
+     "qid": "Q565751",
+     "label": "Epirus",
+     "description": "historical region of present-day Greece and Albania"
+    },
+    {
+     "qid": "Q180484",
+     "label": "Epirus Region",
+     "description": "one of the 13 regions of Greece"
+    },
+    {
+     "qid": "Q11266977",
+     "label": "Epirus",
+     "description": "ancient Greek state and kingdom, located in the geographical region of Epirus"
+    },
+    {
+     "qid": "Q1820754",
+     "label": "Epirus",
+     "description": "Roman province"
+    },
+    {
+     "qid": "Q87336078",
+     "label": "ЭСГ/Эпир",
+     "description": "entry in Granat Encyclopedic Dictionary"
+    }
+   ]
+  },
+  {
+   "surface": "иллирийцев",
+   "lemma": "иллирийцы",
+   "context": "другого». Он немедленно покинул пир и некоторое время жил у иллирийцев. Конфликт удалось погасить, и Александр вернулся в Македони",
+   "candidates": [
+    {
+     "qid": "Q146715",
+     "label": "Illyrians",
+     "description": "ancient Western Balkanic tribes"
+    },
+    {
+     "qid": "Q116813899",
+     "label": "ЭСГ/Иллирийцы",
+     "description": "entry in Granat Encyclopedic Dictionary"
+    }
+   ]
+  },
+  {
+   "surface": "Гая",
+   "lemma": "Гай",
+   "context": "ми дорогами, акведуками, реками и т.д. Таким образом, слова Гая о чрезвычайной широте преторского права находят свое подтве",
+   "candidates": [
+    {
+     "qid": "Q1159023",
+     "label": "Гай / Ги",
+     "description": "male given name"
+    },
+    {
+     "qid": "Q5517401",
+     "label": "Gaius",
+     "description": "ancient Roman praenomen"
+    },
+    {
+     "qid": "Q160882",
+     "label": "Caius",
+     "description": "pope of the Catholic Church from 283 to 296"
+    },
+    {
+     "qid": "Q313439",
+     "label": "Gaius",
+     "description": "Roman jurist (2nd century AD)"
+    },
+    {
+     "qid": "Q134371",
+     "label": "Gai",
+     "description": "town in Orenburg Oblast, Russia"
+    }
+   ]
+  },
+  {
+   "surface": "преторы",
+   "lemma": "преторы",
+   "context": "преторскому эдикту. Хорошо известно, что в эпоху республики преторы, председательствуя в комиссиях публичных и уголовных судов,",
+   "candidates": [
+    {
+     "qid": "Q172907",
+     "label": "praetor",
+     "description": "official of the Roman Republic"
+    }
+   ]
+  },
+  {
+   "surface": "принципате",
+   "lemma": "принципат",
+   "context": "циями, руководили и системой государственных откупов, а при принципате и системой государственных поставок продовольствия, и делам",
+   "candidates": [
+    {
+     "qid": "Q206414",
+     "label": "Principate",
+     "description": "first period of the Roman Empire (ca. 27 BC to 284 AD)"
+    },
+    {
+     "qid": "Q87027264",
+     "label": "Principate",
+     "description": "entry in Granat Encyclopedic Dictionary"
+    },
+    {
+     "qid": "Q13706",
+     "label": "Principality of Sealand",
+     "description": "micronation in the North Sea"
+    },
+    {
+     "qid": "Q1083009",
+     "label": "Principality of Wy",
+     "description": "micronation based in the Sydney suburb of Mosman"
+    },
+    {
+     "qid": "Q21512318",
+     "label": "принципате",
+     "description": ""
+    }
+   ]
+  }
+ ],
+ "pairing": [
+  {
+   "surface": "Лагаше",
+   "context": "В Лагаше, одном из наиболее экономически развитых номов, дело дошло ",
+   "target": "In Lagash, one of the most economically developed nomes, matters came to a coup. The local ruler had concentrated in his own hands virtually full ownership of half of all the land of Lagash, had begun a massive redistribution of offices in favour of his personal servants, had increased exactions from dependent people and from commoners alike, and had brought debt enslavement of commoners by the nobility to its peak. As a result, the ruler’s house was overthrown by a mass uprising; however, he himself was allowed to keep his life and civic rights. In his place, the popular assembly put forward a certain Urukagina, granting him the title of “lugal” (late 24th century BCE). He abolished excessive exactions on the population, once again separated the temple economy from the ruler’s private estate, and отменил a number of debt transactions. Such reforms were sometimes carried out in other nomadic states of Mesopotamia.",
+   "canon_en": [
+    "Lagash"
+   ]
+  },
+  {
+   "surface": "Месопотамии",
+   "context": " реформы иногда проводились и в других номовых государствах Месопотамии.",
+   "target": "In Lagash, one of the most economically developed nomes, matters came to a coup. The local ruler had concentrated in his own hands virtually full ownership of half of all the land of Lagash, had begun a massive redistribution of offices in favour of his personal servants, had increased exactions from dependent people and from commoners alike, and had brought debt enslavement of commoners by the nobility to its peak. As a result, the ruler’s house was overthrown by a mass uprising; however, he himself was allowed to keep his life and civic rights. In his place, the popular assembly put forward a certain Urukagina, granting him the title of “lugal” (late 24th century BCE). He abolished excessive exactions on the population, once again separated the temple economy from the ruler’s private estate, and отменил a number of debt transactions. Such reforms were sometimes carried out in other nomadic states of Mesopotamia.",
+   "canon_en": [
+    "Mesopotamia"
+   ]
+  },
+  {
+   "surface": "Уруинимгину",
+   "context": "данина), а на его место народное собрание выдвинуло некоего Уруинимгину, наделив его титулом «лугаля» (конец XXIV в. до н. э.). Тот",
+   "target": "In Lagash, one of the most economically developed nomes, matters came to a coup. The local ruler had concentrated in his own hands virtually full ownership of half of all the land of Lagash, had begun a massive redistribution of offices in favour of his personal servants, had increased exactions from dependent people and from commoners alike, and had brought debt enslavement of commoners by the nobility to its peak. As a result, the ruler’s house was overthrown by a mass uprising; however, he himself was allowed to keep his life and civic rights. In his place, the popular assembly put forward a certain Urukagina, granting him the title of “lugal” (late 24th century BCE). He abolished excessive exactions on the population, once again separated the temple economy from the ruler’s private estate, and отменил a number of debt transactions. Such reforms were sometimes carried out in other nomadic states of Mesopotamia.",
+   "canon_en": [
+    "Urukagina"
+   ]
+  },
+  {
+   "surface": "лугаля",
+   "context": "обрание выдвинуло некоего Уруинимгину, наделив его титулом «лугаля» (конец XXIV в. до н. э.). Тот упразднил чрезмерные поборы ",
+   "target": "In Lagash, one of the most economically developed nomes, matters came to a coup. The local ruler had concentrated in his own hands virtually full ownership of half of all the land of Lagash, had begun a massive redistribution of offices in favour of his personal servants, had increased exactions from dependent people and from commoners alike, and had brought debt enslavement of commoners by the nobility to its peak. As a result, the ruler’s house was overthrown by a mass uprising; however, he himself was allowed to keep his life and civic rights. In his place, the popular assembly put forward a certain Urukagina, granting him the title of “lugal” (late 24th century BCE). He abolished excessive exactions on the population, once again separated the temple economy from the ruler’s private estate, and отменил a number of debt transactions. Such reforms were sometimes carried out in other nomadic states of Mesopotamia.",
+   "canon_en": [
+    "lugal"
+   ]
+  },
+  {
+   "surface": "номов",
+   "context": "В Лагаше, одном из наиболее экономически развитых номов, дело дошло до переворота: тамошний правитель сосредоточил ",
+   "target": "In Lagash, one of the most economically developed nomes, matters came to a coup. The local ruler had concentrated in his own hands virtually full ownership of half of all the land of Lagash, had begun a massive redistribution of offices in favour of his personal servants, had increased exactions from dependent people and from commoners alike, and had brought debt enslavement of commoners by the nobility to its peak. As a result, the ruler’s house was overthrown by a mass uprising; however, he himself was allowed to keep his life and civic rights. In his place, the popular assembly put forward a certain Urukagina, granting him the title of “lugal” (late 24th century BCE). He abolished excessive exactions on the population, once again separated the temple economy from the ruler’s private estate, and отменил a number of debt transactions. Such reforms were sometimes carried out in other nomadic states of Mesopotamia.",
+   "canon_en": [
+    "nome"
+   ]
+  },
+  {
+   "surface": "Аккаде",
+   "context": " и обосновался в принадлежавшем Кишу незначительном городке Аккаде. Здесь он объявил себя царем под именем Шаррум-кен (акк. «И",
+   "target": "At the court of the king of Kish whom Lugalzagesi killed during his conquests there served a minor courtier, an Akkadian by origin and a commoner. According to later tradition, he had been an abandoned child: his mother set him adrift as a newborn on the Euphrates in a reed basket, where he was picked up and raised at the court of Kish. After the defeat of Kish by Lugalzagesi’s forces, he led part of the population and settled in the insignificant town of Akkad, which belonged to Kish. There he proclaimed himself king under the name Šarru-ken, Akkadian for “true king,” rendered in modern usage as Sargon. Sargon (c. 2316–2261 BCE) ruled outside the framework of any traditional institutions, as a charismatic and powerful leader who relied on all who were prepared to serve him and exercised unlimited authority over them. Ordinary inhabitants of Sumer flocked to him in large numbers, seeing the prospect of rapid advancement that traditional aristocratic society denied them. Sargon created a mass, lightly armed, highly mobile “popular” army that surpassed the small and unwieldy heavy retinues of the Sumerian rulers. The ruling elite of Sargon’s kingdom was organized as a military-service pyramid beneath the ruler’s unlimited power.",
+   "canon_en": [
+    "Akkad"
+   ]
+  },
+  {
+   "surface": "Киша",
+   "context": "У убитого в ходе завоеваний Лугальзагеси царя Киша служил мелкий придворный, по происхождению аккадец-простолю",
+   "target": "At the court of the king of Kish whom Lugalzagesi killed during his conquests there served a minor courtier, an Akkadian by origin and a commoner. According to later tradition, he had been an abandoned child: his mother set him adrift as a newborn on the Euphrates in a reed basket, where he was picked up and raised at the court of Kish. After the defeat of Kish by Lugalzagesi’s forces, he led part of the population and settled in the insignificant town of Akkad, which belonged to Kish. There he proclaimed himself king under the name Šarru-ken, Akkadian for “true king,” rendered in modern usage as Sargon. Sargon (c. 2316–2261 BCE) ruled outside the framework of any traditional institutions, as a charismatic and powerful leader who relied on all who were prepared to serve him and exercised unlimited authority over them. Ordinary inhabitants of Sumer flocked to him in large numbers, seeing the prospect of rapid advancement that traditional aristocratic society denied them. Sargon created a mass, lightly armed, highly mobile “popular” army that surpassed the small and unwieldy heavy retinues of the Sumerian rulers. The ruling elite of Sargon’s kingdom was organized as a military-service pyramid beneath the ruler’s unlimited power.",
+   "canon_en": [
+    "Kish"
+   ]
+  },
+  {
+   "surface": "Лугальзагеси",
+   "context": "У убитого в ходе завоеваний Лугальзагеси царя Киша служил мелкий придворный, по происхождению аккаде",
+   "target": "At the court of the king of Kish whom Lugalzagesi killed during his conquests there served a minor courtier, an Akkadian by origin and a commoner. According to later tradition, he had been an abandoned child: his mother set him adrift as a newborn on the Euphrates in a reed basket, where he was picked up and raised at the court of Kish. After the defeat of Kish by Lugalzagesi’s forces, he led part of the population and settled in the insignificant town of Akkad, which belonged to Kish. There he proclaimed himself king under the name Šarru-ken, Akkadian for “true king,” rendered in modern usage as Sargon. Sargon (c. 2316–2261 BCE) ruled outside the framework of any traditional institutions, as a charismatic and powerful leader who relied on all who were prepared to serve him and exercised unlimited authority over them. Ordinary inhabitants of Sumer flocked to him in large numbers, seeing the prospect of rapid advancement that traditional aristocratic society denied them. Sargon created a mass, lightly armed, highly mobile “popular” army that surpassed the small and unwieldy heavy retinues of the Sumerian rulers. The ruling elite of Sargon’s kingdom was organized as a military-service pyramid beneath the ruler’s unlimited power.",
+   "canon_en": [
+    "Lugalzagesi"
+   ]
+  },
+  {
+   "surface": "Саргон",
+   "context": " Шаррум-кен (акк. «Истинный царь», в со– временной передаче Саргон). Саргон (ок. 2316–2261) властвовал вне рамок каких-либо тр",
+   "target": "At the court of the king of Kish whom Lugalzagesi killed during his conquests there served a minor courtier, an Akkadian by origin and a commoner. According to later tradition, he had been an abandoned child: his mother set him adrift as a newborn on the Euphrates in a reed basket, where he was picked up and raised at the court of Kish. After the defeat of Kish by Lugalzagesi’s forces, he led part of the population and settled in the insignificant town of Akkad, which belonged to Kish. There he proclaimed himself king under the name Šarru-ken, Akkadian for “true king,” rendered in modern usage as Sargon. Sargon (c. 2316–2261 BCE) ruled outside the framework of any traditional institutions, as a charismatic and powerful leader who relied on all who were prepared to serve him and exercised unlimited authority over them. Ordinary inhabitants of Sumer flocked to him in large numbers, seeing the prospect of rapid advancement that traditional aristocratic society denied them. Sargon created a mass, lightly armed, highly mobile “popular” army that surpassed the small and unwieldy heavy retinues of the Sumerian rulers. The ruling elite of Sargon’s kingdom was organized as a military-service pyramid beneath the ruler’s unlimited power.",
+   "canon_en": [
+    "Sargon"
+   ]
+  },
+  {
+   "surface": "Шумера",
+   "context": "повелевая ими. К нему во множестве стекались рядовые жители Шумера, увидев перспективу быстрого возвышения, в которой им отказ",
+   "target": "At the court of the king of Kish whom Lugalzagesi killed during his conquests there served a minor courtier, an Akkadian by origin and a commoner. According to later tradition, he had been an abandoned child: his mother set him adrift as a newborn on the Euphrates in a reed basket, where he was picked up and raised at the court of Kish. After the defeat of Kish by Lugalzagesi’s forces, he led part of the population and settled in the insignificant town of Akkad, which belonged to Kish. There he proclaimed himself king under the name Šarru-ken, Akkadian for “true king,” rendered in modern usage as Sargon. Sargon (c. 2316–2261 BCE) ruled outside the framework of any traditional institutions, as a charismatic and powerful leader who relied on all who were prepared to serve him and exercised unlimited authority over them. Ordinary inhabitants of Sumer flocked to him in large numbers, seeing the prospect of rapid advancement that traditional aristocratic society denied them. Sargon created a mass, lightly armed, highly mobile “popular” army that surpassed the small and unwieldy heavy retinues of the Sumerian rulers. The ruling elite of Sargon’s kingdom was organized as a military-service pyramid beneath the ruler’s unlimited power.",
+   "canon_en": [
+    "Sumer",
+    "Sumerian"
+   ]
+  },
+  {
+   "surface": "энси",
+   "context": "ых автономий, и их правители (титуловавшиеся отныне только «энси» – единственным лугалем теперь являлся Саргон) превратились",
+   "target": "Unlike earlier conquerors, Sargon simply annexed the Sumerian-Akkadian city-states, thereby creating the first centralized state in the history of Mesopotamia. Temple and state estates were entirely at the king’s disposal; the city-states were deprived of any traditional autonomy, and their rulers, henceforth styled only ensi, with Sargon now the sole lugal, effectively became royal officials. Councils of elders and popular assemblies ceased to function as governing bodies, although Sargon did convene assemblies of warriors, his supporters, and consulted them. Sargon’s successors even purchased land from the communities in a “voluntarily compulsory” manner at reduced prices, thereby expanding the state estate. The official language of Sargon’s dynasty was not only Sumerian but also Akkadian. The population as a whole, apart from those who had managed to enter the military-service stratum, gained little from Sargon’s victory because of state exploitation through corvée obligations and taxation.",
+   "canon_en": [
+    "ensi"
+   ]
+  },
+  {
+   "surface": "Кавказ",
+   "context": "северные варвары (возможно, полукочевые индоевропейцы из-за Кавказа), известные впоследствии в месопотамской традиции под назв",
+   "target": "Already in the final years of Sargon’s reign, rebellions by the nobility, supported by the population, began; according to tradition, Sargon himself was forced to hide from the insurgents in a sewer ditch. Sargon’s successors suppressed revolts both in Sumer itself, where they slaughtered entire cities and executed thousands of captives, and in distant dependent lands. Sargon’s grandson Naram-Sin (2236–2200) initially faced a mass uprising throughout the empire. After crushing it and undertaking new conquests, he abandoned the old traditional titles, and with them the need for priestly confirmation, and proclaimed himself “king of the four quarters of the world” (that is, of the whole world); he then went so far as to declare himself, while still alive, the chief tutelary god of his own empire. In so doing, he entered into conflict with the temples, especially the temple of Enlil at Nippur. Soon afterward, unknown northern barbarians, hitherto unfamiliar to Akkad, descended from the north; they were perhaps semi-nomadic Indo-Europeans from beyond the Caucasus and later became known in Mesopotamian tradition as the umman-manda (“host of the manda”). This was followed by attacks from the mountain peoples, the Gutians. Akkad lost its external possessions. Naram-Sin and his successor Sharkalisharri waged a struggle against the Gutians that ended in catastrophe: under their blows the Akkadian state disintegrated, and the tribal confederation of the Gutians established supreme authority over the nomoi of Lower Mesopotamia (c. 2175 BCE).",
+   "canon_en": [
+    "Caucasus"
+   ]
+  },
+  {
+   "surface": "Нарам-Суэн",
+   "context": " сдавшихся, так и в дальних зависимых странах. Внук Саргона Нарам-Суэн (2236–2200) поначалу столкнулся с массовым восстанием по вс",
+   "target": "Already in the final years of Sargon’s reign, rebellions by the nobility, supported by the population, began; according to tradition, Sargon himself was forced to hide from the insurgents in a sewer ditch. Sargon’s successors suppressed revolts both in Sumer itself, where they slaughtered entire cities and executed thousands of captives, and in distant dependent lands. Sargon’s grandson Naram-Sin (2236–2200) initially faced a mass uprising throughout the empire. After crushing it and undertaking new conquests, he abandoned the old traditional titles, and with them the need for priestly confirmation, and proclaimed himself “king of the four quarters of the world” (that is, of the whole world); he then went so far as to declare himself, while still alive, the chief tutelary god of his own empire. In so doing, he entered into conflict with the temples, especially the temple of Enlil at Nippur. Soon afterward, unknown northern barbarians, hitherto unfamiliar to Akkad, descended from the north; they were perhaps semi-nomadic Indo-Europeans from beyond the Caucasus and later became known in Mesopotamian tradition as the umman-manda (“host of the manda”). This was followed by attacks from the mountain peoples, the Gutians. Akkad lost its external possessions. Naram-Sin and his successor Sharkalisharri waged a struggle against the Gutians that ended in catastrophe: under their blows the Akkadian state disintegrated, and the tribal confederation of the Gutians established supreme authority over the nomoi of Lower Mesopotamia (c. 2175 BCE).",
+   "canon_en": [
+    "Naram-Sin",
+    "Naram-Suen"
+   ]
+  },
+  {
+   "surface": "Ниппуре",
+   "context": "ступил в конфронтацию с храмами, особенно с храмом Энлиля в Ниппуре. Вскоре на Аккад с севера обрушились неизвестные до того се",
+   "target": "Already in the final years of Sargon’s reign, rebellions by the nobility, supported by the population, began; according to tradition, Sargon himself was forced to hide from the insurgents in a sewer ditch. Sargon’s successors suppressed revolts both in Sumer itself, where they slaughtered entire cities and executed thousands of captives, and in distant dependent lands. Sargon’s grandson Naram-Sin (2236–2200) initially faced a mass uprising throughout the empire. After crushing it and undertaking new conquests, he abandoned the old traditional titles, and with them the need for priestly confirmation, and proclaimed himself “king of the four quarters of the world” (that is, of the whole world); he then went so far as to declare himself, while still alive, the chief tutelary god of his own empire. In so doing, he entered into conflict with the temples, especially the temple of Enlil at Nippur. Soon afterward, unknown northern barbarians, hitherto unfamiliar to Akkad, descended from the north; they were perhaps semi-nomadic Indo-Europeans from beyond the Caucasus and later became known in Mesopotamian tradition as the umman-manda (“host of the manda”). This was followed by attacks from the mountain peoples, the Gutians. Akkad lost its external possessions. Naram-Sin and his successor Sharkalisharri waged a struggle against the Gutians that ended in catastrophe: under their blows the Akkadian state disintegrated, and the tribal confederation of the Gutians established supreme authority over the nomoi of Lower Mesopotamia (c. 2175 BCE).",
+   "canon_en": [
+    "Nippur"
+   ]
+  },
+  {
+   "surface": "Энлиля",
+   "context": "амым он вступил в конфронтацию с храмами, особенно с храмом Энлиля в Ниппуре. Вскоре на Аккад с севера обрушились неизвестные ",
+   "target": "Already in the final years of Sargon’s reign, rebellions by the nobility, supported by the population, began; according to tradition, Sargon himself was forced to hide from the insurgents in a sewer ditch. Sargon’s successors suppressed revolts both in Sumer itself, where they slaughtered entire cities and executed thousands of captives, and in distant dependent lands. Sargon’s grandson Naram-Sin (2236–2200) initially faced a mass uprising throughout the empire. After crushing it and undertaking new conquests, he abandoned the old traditional titles, and with them the need for priestly confirmation, and proclaimed himself “king of the four quarters of the world” (that is, of the whole world); he then went so far as to declare himself, while still alive, the chief tutelary god of his own empire. In so doing, he entered into conflict with the temples, especially the temple of Enlil at Nippur. Soon afterward, unknown northern barbarians, hitherto unfamiliar to Akkad, descended from the north; they were perhaps semi-nomadic Indo-Europeans from beyond the Caucasus and later became known in Mesopotamian tradition as the umman-manda (“host of the manda”). This was followed by attacks from the mountain peoples, the Gutians. Akkad lost its external possessions. Naram-Sin and his successor Sharkalisharri waged a struggle against the Gutians that ended in catastrophe: under their blows the Akkadian state disintegrated, and the tribal confederation of the Gutians established supreme authority over the nomoi of Lower Mesopotamia (c. 2175 BCE).",
+   "canon_en": [
+    "Enlil"
+   ]
+  },
+  {
+   "surface": "кутиев",
+   "context": "оинство манда»), вслед за этим последовали нападения горцев-кутиев. Внешние владения Аккада оказались утрачены. Нарам-Суэн и е",
+   "target": "Already in the final years of Sargon’s reign, rebellions by the nobility, supported by the population, began; according to tradition, Sargon himself was forced to hide from the insurgents in a sewer ditch. Sargon’s successors suppressed revolts both in Sumer itself, where they slaughtered entire cities and executed thousands of captives, and in distant dependent lands. Sargon’s grandson Naram-Sin (2236–2200) initially faced a mass uprising throughout the empire. After crushing it and undertaking new conquests, he abandoned the old traditional titles, and with them the need for priestly confirmation, and proclaimed himself “king of the four quarters of the world” (that is, of the whole world); he then went so far as to declare himself, while still alive, the chief tutelary god of his own empire. In so doing, he entered into conflict with the temples, especially the temple of Enlil at Nippur. Soon afterward, unknown northern barbarians, hitherto unfamiliar to Akkad, descended from the north; they were perhaps semi-nomadic Indo-Europeans from beyond the Caucasus and later became known in Mesopotamian tradition as the umman-manda (“host of the manda”). This was followed by attacks from the mountain peoples, the Gutians. Akkad lost its external possessions. Naram-Sin and his successor Sharkalisharri waged a struggle against the Gutians that ended in catastrophe: under their blows the Akkadian state disintegrated, and the tribal confederation of the Gutians established supreme authority over the nomoi of Lower Mesopotamia (c. 2175 BCE).",
+   "canon_en": [
+    "Gutians"
+   ]
+  },
+  {
+   "surface": "Ибби-Суэн",
+   "context": " районы ок. 2025 г. до н.э. Тем временем последний царь Ура Ибби-Суэн бесконечными походами пытался привести к покорности Элам; а",
+   "target": "The end of the Third Dynasty of Ur came abruptly. The West Semitic tribes of the Sutians—at this time Mesopotamians had applied to them the name *Martu/Amurru*, so that in scholarship they are known as the Sutians-Amorites, or simply the Amorites—of the Syrian Steppe, the Middle Euphrates, and Upper Mesopotamia, which had sometimes already come into conflict with the rulers of the state, advanced into its central regions c. 2025 BCE. Meanwhile, the last king of Ur, Ibbi-Suen, attempted through endless campaigns to bring Elam to submission; the Amorites were to be contained by fortifications, but without success. Administration was disintegrating, the personnel of the state estates was fleeing and partitioning the land into plots, and the Amorites were encircling cities and cutting them off from the outside world. The official Ishbi-Erra proclaimed himself king in Isin in 2017. Chaos followed: Ishbi-Erra, Ibbi-Suen, the Elamites together with their eastern allies, the “people of Susa” from the region of the “lands of Simashki” (the dynasty of one of the lands of Simashki, apparently connected with them, headed Elam itself), and, finally, the Amorites confronted one another in the struggle for Lower Mesopotamia. By 2000 BCE it was all over: the Amorites had settled over an area extending to the Persian Gulf, acknowledging the nominal authority of Ishbi-Erra; the Elamites and the “people of Susa” captured Ibbi-Suen and devastated southern Mesopotamia, including Ur, but did not establish themselves there. Ishbi-Erra united Lower Mesopotamia and sought to continue the tradition of the Third Dynasty of Ur in ideological and political terms, preserving the concept of royal power and the name “Kingdom of Sumer and Akkad.” Yet social organization had been transformed: the large centralized estates that exploited corvée labor by work gangs disappeared forever. The sector of royal and temple land remained extensive, but it was now divided into small plots occupied by individual small households, which bore the corresponding obligations to the state. From this point on, Mesopotamia was worked almost exclusively by small land users and owners conducting their own хозяйства.",
+   "canon_en": [
+    "Ibbi-Sin"
+   ]
+  },
+  {
+   "surface": "Иссине",
+   "context": "езая их от внешнего мира. Чиновник Ишби-Эрра объявил себя в Иссине царем (2017). Начался хаос: Ишби-Эрра, Ибби-Суэн, эламиты с",
+   "target": "The end of the Third Dynasty of Ur came abruptly. The West Semitic tribes of the Sutians—at this time Mesopotamians had applied to them the name *Martu/Amurru*, so that in scholarship they are known as the Sutians-Amorites, or simply the Amorites—of the Syrian Steppe, the Middle Euphrates, and Upper Mesopotamia, which had sometimes already come into conflict with the rulers of the state, advanced into its central regions c. 2025 BCE. Meanwhile, the last king of Ur, Ibbi-Suen, attempted through endless campaigns to bring Elam to submission; the Amorites were to be contained by fortifications, but without success. Administration was disintegrating, the personnel of the state estates was fleeing and partitioning the land into plots, and the Amorites were encircling cities and cutting them off from the outside world. The official Ishbi-Erra proclaimed himself king in Isin in 2017. Chaos followed: Ishbi-Erra, Ibbi-Suen, the Elamites together with their eastern allies, the “people of Susa” from the region of the “lands of Simashki” (the dynasty of one of the lands of Simashki, apparently connected with them, headed Elam itself), and, finally, the Amorites confronted one another in the struggle for Lower Mesopotamia. By 2000 BCE it was all over: the Amorites had settled over an area extending to the Persian Gulf, acknowledging the nominal authority of Ishbi-Erra; the Elamites and the “people of Susa” captured Ibbi-Suen and devastated southern Mesopotamia, including Ur, but did not establish themselves there. Ishbi-Erra united Lower Mesopotamia and sought to continue the tradition of the Third Dynasty of Ur in ideological and political terms, preserving the concept of royal power and the name “Kingdom of Sumer and Akkad.” Yet social organization had been transformed: the large centralized estates that exploited corvée labor by work gangs disappeared forever. The sector of royal and temple land remained extensive, but it was now divided into small plots occupied by individual small households, which bore the corresponding obligations to the state. From this point on, Mesopotamia was worked almost exclusively by small land users and owners conducting their own хозяйства.",
+   "canon_en": [
+    "Isin"
+   ]
+  },
+  {
+   "surface": "Симашки",
+   "context": "миты с союзными им восточными «людьми су» из региона «Стран Симашки» (династия одной из стран Симашки, видимо, связанной с ними",
+   "target": "The end of the Third Dynasty of Ur came abruptly. The West Semitic tribes of the Sutians—at this time Mesopotamians had applied to them the name *Martu/Amurru*, so that in scholarship they are known as the Sutians-Amorites, or simply the Amorites—of the Syrian Steppe, the Middle Euphrates, and Upper Mesopotamia, which had sometimes already come into conflict with the rulers of the state, advanced into its central regions c. 2025 BCE. Meanwhile, the last king of Ur, Ibbi-Suen, attempted through endless campaigns to bring Elam to submission; the Amorites were to be contained by fortifications, but without success. Administration was disintegrating, the personnel of the state estates was fleeing and partitioning the land into plots, and the Amorites were encircling cities and cutting them off from the outside world. The official Ishbi-Erra proclaimed himself king in Isin in 2017. Chaos followed: Ishbi-Erra, Ibbi-Suen, the Elamites together with their eastern allies, the “people of Susa” from the region of the “lands of Simashki” (the dynasty of one of the lands of Simashki, apparently connected with them, headed Elam itself), and, finally, the Amorites confronted one another in the struggle for Lower Mesopotamia. By 2000 BCE it was all over: the Amorites had settled over an area extending to the Persian Gulf, acknowledging the nominal authority of Ishbi-Erra; the Elamites and the “people of Susa” captured Ibbi-Suen and devastated southern Mesopotamia, including Ur, but did not establish themselves there. Ishbi-Erra united Lower Mesopotamia and sought to continue the tradition of the Third Dynasty of Ur in ideological and political terms, preserving the concept of royal power and the name “Kingdom of Sumer and Akkad.” Yet social organization had been transformed: the large centralized estates that exploited corvée labor by work gangs disappeared forever. The sector of royal and temple land remained extensive, but it was now divided into small plots occupied by individual small households, which bore the corresponding obligations to the state. From this point on, Mesopotamia was worked almost exclusively by small land users and owners conducting their own хозяйства.",
+   "canon_en": [
+    "Shimashki"
+   ]
+  },
+  {
+   "surface": "Элам",
+   "context": "би-Суэн бесконечными походами пытался привести к покорности Элам; амореев рассчитывали сдержать укреплениями, но безуспешно.",
+   "target": "The end of the Third Dynasty of Ur came abruptly. The West Semitic tribes of the Sutians—at this time Mesopotamians had applied to them the name *Martu/Amurru*, so that in scholarship they are known as the Sutians-Amorites, or simply the Amorites—of the Syrian Steppe, the Middle Euphrates, and Upper Mesopotamia, which had sometimes already come into conflict with the rulers of the state, advanced into its central regions c. 2025 BCE. Meanwhile, the last king of Ur, Ibbi-Suen, attempted through endless campaigns to bring Elam to submission; the Amorites were to be contained by fortifications, but without success. Administration was disintegrating, the personnel of the state estates was fleeing and partitioning the land into plots, and the Amorites were encircling cities and cutting them off from the outside world. The official Ishbi-Erra proclaimed himself king in Isin in 2017. Chaos followed: Ishbi-Erra, Ibbi-Suen, the Elamites together with their eastern allies, the “people of Susa” from the region of the “lands of Simashki” (the dynasty of one of the lands of Simashki, apparently connected with them, headed Elam itself), and, finally, the Amorites confronted one another in the struggle for Lower Mesopotamia. By 2000 BCE it was all over: the Amorites had settled over an area extending to the Persian Gulf, acknowledging the nominal authority of Ishbi-Erra; the Elamites and the “people of Susa” captured Ibbi-Suen and devastated southern Mesopotamia, including Ur, but did not establish themselves there. Ishbi-Erra united Lower Mesopotamia and sought to continue the tradition of the Third Dynasty of Ur in ideological and political terms, preserving the concept of royal power and the name “Kingdom of Sumer and Akkad.” Yet social organization had been transformed: the large centralized estates that exploited corvée labor by work gangs disappeared forever. The sector of royal and temple land remained extensive, but it was now divided into small plots occupied by individual small households, which bore the corresponding obligations to the state. From this point on, Mesopotamia was worked almost exclusively by small land users and owners conducting their own хозяйства.",
+   "canon_en": [
+    "Elam"
+   ]
+  },
+  {
+   "surface": "аккадцами",
+   "context": "тя именно при них шумеры оказались полностью ассимилированы аккадцами и шумерский язык стал мертвым языком учености – школ, храмо",
+   "target": "As noted, the kings of Isin continued to regard themselves as the successors of the Ur Empire. Like the kings of Ur, they deified themselves, retained the designation of their state as “Sumer and Akkad,” and considered the fall of Ur a great tragedy; under them, lengthy “Laments for the Destruction of Ur” were even composed. They also continued, following the rulers of Ur, to produce official texts in Sumerian, although it was precisely under them that the Sumerians were fully assimilated by the Akkadians and Sumerian became a dead language of scholarship, used in schools, temple scribal offices, and chanceries. Yet if the fall of the Ur Empire was a tragedy for the capital’s population and administrative apparatus, for the vast mass of its ordinary workers it was rather a deliverance. Most of them now became small users of state allotments, running independent хозяйства, while self-governing communities of personally free people were restored in many lands. The craft and commercial funds that had belonged to the state under the Third Dynasty of Ur also passed largely into private hands, usually under greater or lesser state supervision: their owners were obliged to turn over a fixed share of the profits to the state and used the rest themselves.",
+   "canon_en": [
+    "Akkadians"
+   ]
+  },
+  {
+   "surface": "шумерский",
+   "context": "и них шумеры оказались полностью ассимилированы аккадцами и шумерский язык стал мертвым языком учености – школ, храмовых писцов и",
+   "target": "As noted, the kings of Isin continued to regard themselves as the successors of the Ur Empire. Like the kings of Ur, they deified themselves, retained the designation of their state as “Sumer and Akkad,” and considered the fall of Ur a great tragedy; under them, lengthy “Laments for the Destruction of Ur” were even composed. They also continued, following the rulers of Ur, to produce official texts in Sumerian, although it was precisely under them that the Sumerians were fully assimilated by the Akkadians and Sumerian became a dead language of scholarship, used in schools, temple scribal offices, and chanceries. Yet if the fall of the Ur Empire was a tragedy for the capital’s population and administrative apparatus, for the vast mass of its ordinary workers it was rather a deliverance. Most of them now became small users of state allotments, running independent хозяйства, while self-governing communities of personally free people were restored in many lands. The craft and commercial funds that had belonged to the state under the Third Dynasty of Ur also passed largely into private hands, usually under greater or lesser state supervision: their owners were obliged to turn over a fixed share of the profits to the state and used the rest themselves.",
+   "canon_en": [
+    "Sumerian"
+   ]
+  },
+  {
+   "surface": "шумеры",
+   "context": "ам Ура официальные тексты на шумерском, хотя именно при них шумеры оказались полностью ассимилированы аккадцами и шумерский яз",
+   "target": "As noted, the kings of Isin continued to regard themselves as the successors of the Ur Empire. Like the kings of Ur, they deified themselves, retained the designation of their state as “Sumer and Akkad,” and considered the fall of Ur a great tragedy; under them, lengthy “Laments for the Destruction of Ur” were even composed. They also continued, following the rulers of Ur, to produce official texts in Sumerian, although it was precisely under them that the Sumerians were fully assimilated by the Akkadians and Sumerian became a dead language of scholarship, used in schools, temple scribal offices, and chanceries. Yet if the fall of the Ur Empire was a tragedy for the capital’s population and administrative apparatus, for the vast mass of its ordinary workers it was rather a deliverance. Most of them now became small users of state allotments, running independent хозяйства, while self-governing communities of personally free people were restored in many lands. The craft and commercial funds that had belonged to the state under the Third Dynasty of Ur also passed largely into private hands, usually under greater or lesser state supervision: their owners were obliged to turn over a fixed share of the profits to the state and used the rest themselves.",
+   "canon_en": [
+    "Sumer"
+   ]
+  },
+  {
+   "surface": "Законы Хаммурапи",
+   "context": " господин обычно распоряжался лишь его временем и трудом. В Законы Хаммурапи даже пришлось включать специальную статью, угрожавшую свобо",
+   "target": "In Old Babylonian Mesopotamia, three estates were distinguished: the free commoners, the avilum (“men”); the “king’s men,” the muškenum (“those who bow under someone’s protection”); and slaves by estate, the wardum. The avilum enjoyed communal self-government, although they paid tribute to the king. The muškenum did not belong to the communities. They placed themselves under the king’s protection in order to receive a plot of land from him, and lived separately, as small holdings on royal land; on them lay the main burden of taxation. In addition, special groups of muškenum performed military service as military colonists or held other royal service. Their lives were regulated by the state. Unlike the avilum, the muškenum were, for the most part, unable to leave the land on which they lived without state permission. People settled on state land on condition that they surrender a share of the harvest (the sources know them by the name nāši biltim, “revenue payers”; overwhelmingly, these were muškenum) were the chief source of state income. The wardum were private slaves, bought and sold. The estates were unequal before the law: murder of an avilum was punishable by death, whereas one who killed a slave needed only to compensate the owner for the loss, and so on. Yet there were no rigid boundaries, including psychological ones, between the estates: in Mesopotamia it was always assumed that, despite differences in status, people were by nature little different from one another. A slave could possess property of his own and have a family; the master ordinarily controlled only his time and labor. For this reason, the Laws of Hammurabi even had to include a special article threatening a free person with severe punishment for helping a fugitive slave.",
+   "canon_en": [
+    "Code of Hammurabi"
+   ]
+  },
+  {
+   "surface": "Хаммурапи",
+   "context": "ин обычно распоряжался лишь его временем и трудом. В Законы Хаммурапи даже пришлось включать специальную статью, угрожавшую свобо",
+   "target": "In Old Babylonian Mesopotamia, three estates were distinguished: the free commoners, the avilum (“men”); the “king’s men,” the muškenum (“those who bow under someone’s protection”); and slaves by estate, the wardum. The avilum enjoyed communal self-government, although they paid tribute to the king. The muškenum did not belong to the communities. They placed themselves under the king’s protection in order to receive a plot of land from him, and lived separately, as small holdings on royal land; on them lay the main burden of taxation. In addition, special groups of muškenum performed military service as military colonists or held other royal service. Their lives were regulated by the state. Unlike the avilum, the muškenum were, for the most part, unable to leave the land on which they lived without state permission. People settled on state land on condition that they surrender a share of the harvest (the sources know them by the name nāši biltim, “revenue payers”; overwhelmingly, these were muškenum) were the chief source of state income. The wardum were private slaves, bought and sold. The estates were unequal before the law: murder of an avilum was punishable by death, whereas one who killed a slave needed only to compensate the owner for the loss, and so on. Yet there were no rigid boundaries, including psychological ones, between the estates: in Mesopotamia it was always assumed that, despite differences in status, people were by nature little different from one another. A slave could possess property of his own and have a family; the master ordinarily controlled only his time and labor. For this reason, the Laws of Hammurabi even had to include a special article threatening a free person with severe punishment for helping a fugitive slave.",
+   "canon_en": [
+    "Hammurabi"
+   ]
+  },
+  {
+   "surface": "авилумы",
+   "context": "й Месопотамии различались три сословия: свободные общинники авилумы («люди»), «царские люди» мушкенумы («склоняющиеся под чье-т",
+   "target": "In Old Babylonian Mesopotamia, three estates were distinguished: the free commoners, the avilum (“men”); the “king’s men,” the muškenum (“those who bow under someone’s protection”); and slaves by estate, the wardum. The avilum enjoyed communal self-government, although they paid tribute to the king. The muškenum did not belong to the communities. They placed themselves under the king’s protection in order to receive a plot of land from him, and lived separately, as small holdings on royal land; on them lay the main burden of taxation. In addition, special groups of muškenum performed military service as military colonists or held other royal service. Their lives were regulated by the state. Unlike the avilum, the muškenum were, for the most part, unable to leave the land on which they lived without state permission. People settled on state land on condition that they surrender a share of the harvest (the sources know them by the name nāši biltim, “revenue payers”; overwhelmingly, these were muškenum) were the chief source of state income. The wardum were private slaves, bought and sold. The estates were unequal before the law: murder of an avilum was punishable by death, whereas one who killed a slave needed only to compensate the owner for the loss, and so on. Yet there were no rigid boundaries, including psychological ones, between the estates: in Mesopotamia it was always assumed that, despite differences in status, people were by nature little different from one another. A slave could possess property of his own and have a family; the master ordinarily controlled only his time and labor. For this reason, the Laws of Hammurabi even had to include a special article threatening a free person with severe punishment for helping a fugitive slave.",
+   "canon_en": [
+    "awilum"
+   ]
+  },
+  {
+   "surface": "вардумы",
+   "context": "клоняющиеся под чье-то покровительство») и рабы по сословию вардумы. Авилумы пользовались общинным самоуправлением, хотя и плат",
+   "target": "In Old Babylonian Mesopotamia, three estates were distinguished: the free commoners, the avilum (“men”); the “king’s men,” the muškenum (“those who bow under someone’s protection”); and slaves by estate, the wardum. The avilum enjoyed communal self-government, although they paid tribute to the king. The muškenum did not belong to the communities. They placed themselves under the king’s protection in order to receive a plot of land from him, and lived separately, as small holdings on royal land; on them lay the main burden of taxation. In addition, special groups of muškenum performed military service as military colonists or held other royal service. Their lives were regulated by the state. Unlike the avilum, the muškenum were, for the most part, unable to leave the land on which they lived without state permission. People settled on state land on condition that they surrender a share of the harvest (the sources know them by the name nāši biltim, “revenue payers”; overwhelmingly, these were muškenum) were the chief source of state income. The wardum were private slaves, bought and sold. The estates were unequal before the law: murder of an avilum was punishable by death, whereas one who killed a slave needed only to compensate the owner for the loss, and so on. Yet there were no rigid boundaries, including psychological ones, between the estates: in Mesopotamia it was always assumed that, despite differences in status, people were by nature little different from one another. A slave could possess property of his own and have a family; the master ordinarily controlled only his time and labor. For this reason, the Laws of Hammurabi even had to include a special article threatening a free person with severe punishment for helping a fugitive slave.",
+   "canon_en": [
+    "wardum"
+   ]
+  },
+  {
+   "surface": "мушкенумы",
+   "context": "ловия: свободные общинники авилумы («люди»), «царские люди» мушкенумы («склоняющиеся под чье-то покровительство») и рабы по сосло",
+   "target": "In Old Babylonian Mesopotamia, three estates were distinguished: the free commoners, the avilum (“men”); the “king’s men,” the muškenum (“those who bow under someone’s protection”); and slaves by estate, the wardum. The avilum enjoyed communal self-government, although they paid tribute to the king. The muškenum did not belong to the communities. They placed themselves under the king’s protection in order to receive a plot of land from him, and lived separately, as small holdings on royal land; on them lay the main burden of taxation. In addition, special groups of muškenum performed military service as military colonists or held other royal service. Their lives were regulated by the state. Unlike the avilum, the muškenum were, for the most part, unable to leave the land on which they lived without state permission. People settled on state land on condition that they surrender a share of the harvest (the sources know them by the name nāši biltim, “revenue payers”; overwhelmingly, these were muškenum) were the chief source of state income. The wardum were private slaves, bought and sold. The estates were unequal before the law: murder of an avilum was punishable by death, whereas one who killed a slave needed only to compensate the owner for the loss, and so on. Yet there were no rigid boundaries, including psychological ones, between the estates: in Mesopotamia it was always assumed that, despite differences in status, people were by nature little different from one another. A slave could possess property of his own and have a family; the master ordinarily controlled only his time and labor. For this reason, the Laws of Hammurabi even had to include a special article threatening a free person with severe punishment for helping a fugitive slave.",
+   "canon_en": [
+    "mushkenum"
+   ]
+  },
+  {
+   "surface": "Ашшур",
+   "context": " вавилонским вассалом успел побывать (хотя и недолго) также Ашшур.",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Assur"
+   ]
+  },
+  {
+   "surface": "Вавилон",
+   "context": "ежду касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморейскими племенами – они подняли мятеж и разгромили ря",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Babylon"
+   ]
+  },
+  {
+   "surface": "Вавилонии",
+   "context": "ежду касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморейскими племенами – они подняли мятеж и разгромили ряд ",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Babylonia"
+   ]
+  },
+  {
+   "surface": "Дамаска",
+   "context": "ами через всю Сирийскую степь на ее крайний запад, к оазису Дамаска, сутии-амореи составили ядро древнееврейской этнической общ",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Damascus"
+   ]
+  },
+  {
+   "surface": "Евфрат",
+   "context": "залив город кровью, а затем изгнал из Вавилонии на запад за Евфрат «многочисленных сутиев (амореев) от восхода до заката солнц",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Euphrates"
+   ]
+  },
+  {
+   "surface": "Кадашман-Харбе",
+   "context": " н.э. вспыхнул ожесточенный конфликт между касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморейскими племенами – он",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Kadashman-Harbe"
+   ]
+  },
+  {
+   "surface": "Тадморе",
+   "context": "нил вавилонской власти ее обширные пространства с центром в Тадморе, установив общую границу с египетскими владениями в Южной С",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Palmyra"
+   ]
+  },
+  {
+   "surface": "амореев",
+   "context": "нал из Вавилонии на запад за Евфрат «многочисленных сутиев (амореев) от восхода до заката солнца и привел их воинскую силу к не",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Amorites"
+   ]
+  },
+  {
+   "surface": "залива",
+   "context": "",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Persian Gulf"
+   ]
+  },
+  {
+   "surface": "касситским",
+   "context": "Около 1400 г. до н.э. вспыхнул ожесточенный конфликт между касситским царем Кадашман-Харбе и все еще обитавшими в Вавилонии аморе",
+   "target": "Around 1400 BCE, a fierce conflict broke out between the Kassite king Kadashman-Harbe and the Amorite tribes still living in Babylonia: they rose in revolt and destroyed a number of temple centres. At the same time, the capital itself, Babylon, rebelled against the king. Kadashman-Harbe crushed the uprising, flooding the city with blood, and then expelled from Babylonia to the west beyond the Euphrates “the numerous Sutians (Amorites) from sunrise to sunset” and brought their military power to nothing. Moreover, in pursuit of the retreating Amorites, Kadashman-Harbe crossed the Syrian steppe and brought its vast expanse, centred on Tadmor, under Babylonian authority, establishing a common frontier with Egyptian possessions in southern Syria and Transjordan. Driven by the Kassites across the whole Syrian steppe to its far western edge, the Damascus oasis, the Sutians-Amorites formed the ядро of the ancient Hebrew ethnic community. The extensive tracts of land in Babylonia that had previously been occupied by Amorite pastoralists now passed to peasants and were partly drawn into buying and selling. This became one of the sources of the economic upsurge and sharp growth in internal trade that, as the abundance of business documentation shows, had taken place in Babylonia by the mid-14th century BCE. In the first half of that same century, Asshur too briefly became a Babylonian vassal.",
+   "canon_en": [
+    "Kassites"
+   ]
+  },
+  {
+   "surface": "Гарвард",
+   "context": "ории Великой равнины ввел в 1986 г. профессор Чжан Гуан-жи (Гарвард); она принята научным сообществом ┘.",
+   "target": "According to a concept proposed several decades ago, the development of Neolithic cultures on the territory of China, and later the formation of the early states, took place within six historical-cultural zones, that is, large geographic regions with well-defined landscape boundaries (see map). Within these zones, usually associated with the basins of major rivers, there were centers of intensive agriculture, or agrarian nuclei. These zones may be compared with the areas of the Fertile Crescent, that is, with the classical East. According to geological research, in the postglacial period the Great Plain was largely inundated by rising waters of the World Ocean and began to emerge only from the mid-6th millennium BCE, owing to the heavy alluviation of the Yellow River and the rivers of the Shandong archipelago. As a distinct zone, the Great Plain took shape only by the beginning of the 2nd millennium BCE, and its development lasted for centuries, determining the possibilities for the rapid rise of Hua-Xia statehood in the second half of the 1st millennium BCE and for the creation of an empire dominated by the Han ethnos at the end of antiquity (3rd century BCE–3rd century CE). This concept of the formation of the Great Plain offers a new understanding of the historical process in the eastern part of the Old World. Professor Zhang Guangzhi (Harvard) introduced into world scholarship in 1986 the ideas about the paleogeological history of the Great Plain; they have been accepted by the scholarly community.",
+   "canon_en": [
+    "Harvard"
+   ]
+  },
+  {
+   "surface": "Китая",
+   "context": "ии, предложенной несколько десятилетий назад, на территории Китая развитие неолитических культур (а в последующем формировани",
+   "target": "According to a concept proposed several decades ago, the development of Neolithic cultures on the territory of China, and later the formation of the early states, took place within six historical-cultural zones, that is, large geographic regions with well-defined landscape boundaries (see map). Within these zones, usually associated with the basins of major rivers, there were centers of intensive agriculture, or agrarian nuclei. These zones may be compared with the areas of the Fertile Crescent, that is, with the classical East. According to geological research, in the postglacial period the Great Plain was largely inundated by rising waters of the World Ocean and began to emerge only from the mid-6th millennium BCE, owing to the heavy alluviation of the Yellow River and the rivers of the Shandong archipelago. As a distinct zone, the Great Plain took shape only by the beginning of the 2nd millennium BCE, and its development lasted for centuries, determining the possibilities for the rapid rise of Hua-Xia statehood in the second half of the 1st millennium BCE and for the creation of an empire dominated by the Han ethnos at the end of antiquity (3rd century BCE–3rd century CE). This concept of the formation of the Great Plain offers a new understanding of the historical process in the eastern part of the Old World. Professor Zhang Guangzhi (Harvard) introduced into world scholarship in 1986 the ideas about the paleogeological history of the Great Plain; they have been accepted by the scholarly community.",
+   "canon_en": [
+    "China"
+   ]
+  },
+  {
+   "surface": "Плодородного Полумесяца",
+   "context": "я (аграрные очаги). Зоны могут быть сопоставлены с районами Плодородного Полумесяца, т.е. с классическим Востоком. Согласно исследованиям геоло",
+   "target": "According to a concept proposed several decades ago, the development of Neolithic cultures on the territory of China, and later the formation of the early states, took place within six historical-cultural zones, that is, large geographic regions with well-defined landscape boundaries (see map). Within these zones, usually associated with the basins of major rivers, there were centers of intensive agriculture, or agrarian nuclei. These zones may be compared with the areas of the Fertile Crescent, that is, with the classical East. According to geological research, in the postglacial period the Great Plain was largely inundated by rising waters of the World Ocean and began to emerge only from the mid-6th millennium BCE, owing to the heavy alluviation of the Yellow River and the rivers of the Shandong archipelago. As a distinct zone, the Great Plain took shape only by the beginning of the 2nd millennium BCE, and its development lasted for centuries, determining the possibilities for the rapid rise of Hua-Xia statehood in the second half of the 1st millennium BCE and for the creation of an empire dominated by the Han ethnos at the end of antiquity (3rd century BCE–3rd century CE). This concept of the formation of the Great Plain offers a new understanding of the historical process in the eastern part of the Old World. Professor Zhang Guangzhi (Harvard) introduced into world scholarship in 1986 the ideas about the paleogeological history of the Great Plain; they have been accepted by the scholarly community.",
+   "canon_en": [
+    "Fertile Crescent"
+   ]
+  },
+  {
+   "surface": "Хуанхэ",
+   "context": "ередины VI тысячелетия до н.э. (за счет интенсивных наносов Хуанхэ и рек шаньдунского архипелага). Как отдельная зона Великая ",
+   "target": "According to a concept proposed several decades ago, the development of Neolithic cultures on the territory of China, and later the formation of the early states, took place within six historical-cultural zones, that is, large geographic regions with well-defined landscape boundaries (see map). Within these zones, usually associated with the basins of major rivers, there were centers of intensive agriculture, or agrarian nuclei. These zones may be compared with the areas of the Fertile Crescent, that is, with the classical East. According to geological research, in the postglacial period the Great Plain was largely inundated by rising waters of the World Ocean and began to emerge only from the mid-6th millennium BCE, owing to the heavy alluviation of the Yellow River and the rivers of the Shandong archipelago. As a distinct zone, the Great Plain took shape only by the beginning of the 2nd millennium BCE, and its development lasted for centuries, determining the possibilities for the rapid rise of Hua-Xia statehood in the second half of the 1st millennium BCE and for the creation of an empire dominated by the Han ethnos at the end of antiquity (3rd century BCE–3rd century CE). This concept of the formation of the Great Plain offers a new understanding of the historical process in the eastern part of the Old World. Professor Zhang Guangzhi (Harvard) introduced into world scholarship in 1986 the ideas about the paleogeological history of the Great Plain; they have been accepted by the scholarly community.",
+   "canon_en": [
+    "Yellow River"
+   ]
+  },
+  {
+   "surface": "Гуандун",
+   "context": " на севере. Ряд стоянок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «р",
+   "target": "Early Neolithic of the South. In southern China today, that is, in the lands of the historical region of Southeast Asia, the Neolithic emerged earlier than in the north. A number of sites discovered in Guangxi and Guangdong provinces (Bailiandong, Zengpiyan, Baozitou, Dushizi, Huangyandong, the shell middens of Nanning, Qingtang, and others) are dated to the 11th–6th millennia BCE. The radiocarbon dates are consistent with the typology of the material: the absence of pottery (Dushizi) and of ground clearing or cultivation (Bailiandong, and possibly Huangyandong), the primitive character of the stone industry, and the poorly defined signs of domestication (the buffalo in Dushizi, buffalo and sheep in Bailiandong and Huangyandong, and pig in Zengpiyan). Thus, this area, which is oriented toward Southeast Asia, displays the characteristics of an early Neolithic phase before pottery and before agriculture. The Neolithic revolution there was accomplished through the development of stockbreeding, to a lesser extent agriculture, and perhaps also by another route, through the breeding of aquatic fauna. ┌The earliest farming settlements are known in the west of the lower Yangzi valley (south of Lake Poyang, the Xiangrendong site, 9000(?)–7000 BCE) and on the Middle Yangzi (southwest of Lake Dongting, Pengtoushan, 7200–6500 BCE)┘.",
+   "canon_en": [
+    "Guangdong"
+   ]
+  },
+  {
+   "surface": "Гуанси",
+   "context": "ньше, чем на севере. Ряд стоянок, обнаруженных в провинциях Гуанси и Гуандун (Байляньдун, Цзэнпиянь, Баоцзытоу, Душицзы, Хуанъ",
+   "target": "Early Neolithic of the South. In southern China today, that is, in the lands of the historical region of Southeast Asia, the Neolithic emerged earlier than in the north. A number of sites discovered in Guangxi and Guangdong provinces (Bailiandong, Zengpiyan, Baozitou, Dushizi, Huangyandong, the shell middens of Nanning, Qingtang, and others) are dated to the 11th–6th millennia BCE. The radiocarbon dates are consistent with the typology of the material: the absence of pottery (Dushizi) and of ground clearing or cultivation (Bailiandong, and possibly Huangyandong), the primitive character of the stone industry, and the poorly defined signs of domestication (the buffalo in Dushizi, buffalo and sheep in Bailiandong and Huangyandong, and pig in Zengpiyan). Thus, this area, which is oriented toward Southeast Asia, displays the characteristics of an early Neolithic phase before pottery and before agriculture. The Neolithic revolution there was accomplished through the development of stockbreeding, to a lesser extent agriculture, and perhaps also by another route, through the breeding of aquatic fauna. ┌The earliest farming settlements are known in the west of the lower Yangzi valley (south of Lake Poyang, the Xiangrendong site, 9000(?)–7000 BCE) and on the Middle Yangzi (southwest of Lake Dongting, Pengtoushan, 7200–6500 BCE)┘.",
+   "canon_en": [
+    "Guangxi"
+   ]
+  },
+  {
+   "surface": "Наньнина",
+   "context": "энпиянь, Баоцзытоу, Душицзы, Хуанъяньдун, «раковинные кучи» Наньнина, Цинтана и др.), датируются XI–VI тысячелетиями до н.э. Рад",
+   "target": "Early Neolithic of the South. In southern China today, that is, in the lands of the historical region of Southeast Asia, the Neolithic emerged earlier than in the north. A number of sites discovered in Guangxi and Guangdong provinces (Bailiandong, Zengpiyan, Baozitou, Dushizi, Huangyandong, the shell middens of Nanning, Qingtang, and others) are dated to the 11th–6th millennia BCE. The radiocarbon dates are consistent with the typology of the material: the absence of pottery (Dushizi) and of ground clearing or cultivation (Bailiandong, and possibly Huangyandong), the primitive character of the stone industry, and the poorly defined signs of domestication (the buffalo in Dushizi, buffalo and sheep in Bailiandong and Huangyandong, and pig in Zengpiyan). Thus, this area, which is oriented toward Southeast Asia, displays the characteristics of an early Neolithic phase before pottery and before agriculture. The Neolithic revolution there was accomplished through the development of stockbreeding, to a lesser extent agriculture, and perhaps also by another route, through the breeding of aquatic fauna. ┌The earliest farming settlements are known in the west of the lower Yangzi valley (south of Lake Poyang, the Xiangrendong site, 9000(?)–7000 BCE) and on the Middle Yangzi (southwest of Lake Dongting, Pengtoushan, 7200–6500 BCE)┘.",
+   "canon_en": [
+    "Nanning"
+   ]
+  },
+  {
+   "surface": "Янцзы",
+   "context": "емледельческие поселения известны на западе нижнего течения Янцзы (к югу от оз. Поянху – памятник Сяньжэньдун, 9000(?)–7000 г",
+   "target": "Early Neolithic of the South. In southern China today, that is, in the lands of the historical region of Southeast Asia, the Neolithic emerged earlier than in the north. A number of sites discovered in Guangxi and Guangdong provinces (Bailiandong, Zengpiyan, Baozitou, Dushizi, Huangyandong, the shell middens of Nanning, Qingtang, and others) are dated to the 11th–6th millennia BCE. The radiocarbon dates are consistent with the typology of the material: the absence of pottery (Dushizi) and of ground clearing or cultivation (Bailiandong, and possibly Huangyandong), the primitive character of the stone industry, and the poorly defined signs of domestication (the buffalo in Dushizi, buffalo and sheep in Bailiandong and Huangyandong, and pig in Zengpiyan). Thus, this area, which is oriented toward Southeast Asia, displays the characteristics of an early Neolithic phase before pottery and before agriculture. The Neolithic revolution there was accomplished through the development of stockbreeding, to a lesser extent agriculture, and perhaps also by another route, through the breeding of aquatic fauna. ┌The earliest farming settlements are known in the west of the lower Yangzi valley (south of Lake Poyang, the Xiangrendong site, 9000(?)–7000 BCE) and on the Middle Yangzi (southwest of Lake Dongting, Pengtoushan, 7200–6500 BCE)┘.",
+   "canon_en": [
+    "Yangtze"
+   ]
+  },
+  {
+   "surface": "Чунь-цю",
+   "context": "ршенномудрых» правителей прошлого. Позднее, в конце периода Чунь-цю на их основе началось составление двух важнейших памятников",
+   "target": "The borrowing of writing from the Shang and Yin led to the development of literature at the courts of the Zhou kings and the local aristocracy: hymns, odes, poetic works, and speeches were composed and put into the mouths of the “perfectly wise” rulers of the past. Later, at the end of the Chunqiu period, these materials were used to compile two of the most important monuments of ancient Chinese literature, the *Shi jing* (*Book of Songs and Hymns*) and the *Shang shu* (*Records of the Past*), which, in addition to their artistic value, are of enduring importance as historical sources without which the study of early Chinese history would be impossible.",
+   "canon_en": [
+    "Spring and Autumn period"
+   ]
+  },
+  {
+   "surface": "Шан шу",
+   "context": "тайской литературы – «Ши цзина» («Книга песен и гимнов») и «Шан шу» («Записи о прошлом»), которые, кроме их художественных дос",
+   "target": "The borrowing of writing from the Shang and Yin led to the development of literature at the courts of the Zhou kings and the local aristocracy: hymns, odes, poetic works, and speeches were composed and put into the mouths of the “perfectly wise” rulers of the past. Later, at the end of the Chunqiu period, these materials were used to compile two of the most important monuments of ancient Chinese literature, the *Shi jing* (*Book of Songs and Hymns*) and the *Shang shu* (*Records of the Past*), which, in addition to their artistic value, are of enduring importance as historical sources without which the study of early Chinese history would be impossible.",
+   "canon_en": [
+    "Book of Documents"
+   ]
+  },
+  {
+   "surface": "Ши цзина",
+   "context": "ние двух важнейших памятников древнекитайской литературы – «Ши цзина» («Книга песен и гимнов») и «Шан шу» («Записи о прошлом»), ",
+   "target": "The borrowing of writing from the Shang and Yin led to the development of literature at the courts of the Zhou kings and the local aristocracy: hymns, odes, poetic works, and speeches were composed and put into the mouths of the “perfectly wise” rulers of the past. Later, at the end of the Chunqiu period, these materials were used to compile two of the most important monuments of ancient Chinese literature, the *Shi jing* (*Book of Songs and Hymns*) and the *Shang shu* (*Records of the Past*), which, in addition to their artistic value, are of enduring importance as historical sources without which the study of early Chinese history would be impossible.",
+   "canon_en": [
+    "Classic of Poetry"
+   ]
+  },
+  {
+   "surface": "чжоуских",
+   "context": "ие у шанъиньцев письменности привело к тому, что при дворах чжоуских ванов и местной знати начала развиваться литература – созда",
+   "target": "The borrowing of writing from the Shang and Yin led to the development of literature at the courts of the Zhou kings and the local aristocracy: hymns, odes, poetic works, and speeches were composed and put into the mouths of the “perfectly wise” rulers of the past. Later, at the end of the Chunqiu period, these materials were used to compile two of the most important monuments of ancient Chinese literature, the *Shi jing* (*Book of Songs and Hymns*) and the *Shang shu* (*Records of the Past*), which, in addition to their artistic value, are of enduring importance as historical sources without which the study of early Chinese history would be impossible.",
+   "canon_en": [
+    "Zhou"
+   ]
+  },
+  {
+   "surface": "Алкивиад",
+   "context": "тельства Спарты. Одним из руководителей похода был назначен Алкивиад, происходивший из старинного аристократического рода, челов",
+   "target": "The Peace of Nicias did not resolve the problems that had caused the war. Mutual distrust between yesterday’s enemies, fuelled by supporters of a “war to a victorious end,” soon led to new clashes, but full-scale hostilities broke out as a result of the expedition to Sicily. Relying on promises of support from a number of Sicilian cities, the Athenians assembled a huge army and fleet. The project won the approval of many citizens, especially the young, who sketched maps of the island at public gatherings. In reality, however, the expedition was a purely adventurist undertaking. The Athenians had a poor understanding of conditions in Sicily, and most of its poleis sided against them. Nor did they anticipate Spartan intervention. One of the commanders of the expedition was Alcibiades, descended from an old aristocratic family, a gifted and highly educated man, but one of excessive ambition. On the eve of the squadron’s departure for Sicily, someone damaged the herms in the city, and suspicion fell on Alcibiades and his friends. Summoned from Sicily to Athens in connection with the “case of the hermocopids,” Alcibiades, realizing that his political opponents would make short work of him, fled to Sparta, revealed all the Athenians’ plans, and insisted on the dispatch of troops to Sicily.",
+   "canon_en": [
+    "Alcibiades"
+   ]
+  },
+  {
+   "surface": "Гермеса",
+   "context": "на Сицилию в городе кто-то повредил гермы (изображения бога Гермеса), и подозрения пали на Алкивиада и его друзей. Вызванный из",
+   "target": "The Peace of Nicias did not resolve the problems that had caused the war. Mutual distrust between yesterday’s enemies, fuelled by supporters of a “war to a victorious end,” soon led to new clashes, but full-scale hostilities broke out as a result of the expedition to Sicily. Relying on promises of support from a number of Sicilian cities, the Athenians assembled a huge army and fleet. The project won the approval of many citizens, especially the young, who sketched maps of the island at public gatherings. In reality, however, the expedition was a purely adventurist undertaking. The Athenians had a poor understanding of conditions in Sicily, and most of its poleis sided against them. Nor did they anticipate Spartan intervention. One of the commanders of the expedition was Alcibiades, descended from an old aristocratic family, a gifted and highly educated man, but one of excessive ambition. On the eve of the squadron’s departure for Sicily, someone damaged the herms in the city, and suspicion fell on Alcibiades and his friends. Summoned from Sicily to Athens in connection with the “case of the hermocopids,” Alcibiades, realizing that his political opponents would make short work of him, fled to Sparta, revealed all the Athenians’ plans, and insisted on the dispatch of troops to Sicily.",
+   "canon_en": [
+    "Hermes"
+   ]
+  },
+  {
+   "surface": "Никиев мир",
+   "context": "Никиев мир не решил проблем, которые породили войну. Взаимное недовери",
+   "target": "The Peace of Nicias did not resolve the problems that had caused the war. Mutual distrust between yesterday’s enemies, fuelled by supporters of a “war to a victorious end,” soon led to new clashes, but full-scale hostilities broke out as a result of the expedition to Sicily. Relying on promises of support from a number of Sicilian cities, the Athenians assembled a huge army and fleet. The project won the approval of many citizens, especially the young, who sketched maps of the island at public gatherings. In reality, however, the expedition was a purely adventurist undertaking. The Athenians had a poor understanding of conditions in Sicily, and most of its poleis sided against them. Nor did they anticipate Spartan intervention. One of the commanders of the expedition was Alcibiades, descended from an old aristocratic family, a gifted and highly educated man, but one of excessive ambition. On the eve of the squadron’s departure for Sicily, someone damaged the herms in the city, and suspicion fell on Alcibiades and his friends. Summoned from Sicily to Athens in connection with the “case of the hermocopids,” Alcibiades, realizing that his political opponents would make short work of him, fled to Sparta, revealed all the Athenians’ plans, and insisted on the dispatch of troops to Sicily.",
+   "canon_en": [
+    "Peace of Nicias"
+   ]
+  },
+  {
+   "surface": "Сицилию",
+   "context": " настоящие военные действия развернулись из-за экспедиции в Сицилию. Ориентируясь на обещание поддержки ряда сицилийских городо",
+   "target": "The Peace of Nicias did not resolve the problems that had caused the war. Mutual distrust between yesterday’s enemies, fuelled by supporters of a “war to a victorious end,” soon led to new clashes, but full-scale hostilities broke out as a result of the expedition to Sicily. Relying on promises of support from a number of Sicilian cities, the Athenians assembled a huge army and fleet. The project won the approval of many citizens, especially the young, who sketched maps of the island at public gatherings. In reality, however, the expedition was a purely adventurist undertaking. The Athenians had a poor understanding of conditions in Sicily, and most of its poleis sided against them. Nor did they anticipate Spartan intervention. One of the commanders of the expedition was Alcibiades, descended from an old aristocratic family, a gifted and highly educated man, but one of excessive ambition. On the eve of the squadron’s departure for Sicily, someone damaged the herms in the city, and suspicion fell on Alcibiades and his friends. Summoned from Sicily to Athens in connection with the “case of the hermocopids,” Alcibiades, realizing that his political opponents would make short work of him, fled to Sparta, revealed all the Athenians’ plans, and insisted on the dispatch of troops to Sicily.",
+   "canon_en": [
+    "Sicily"
+   ]
+  },
+  {
+   "surface": "Спарту",
+   "context": " что его политические противники расправятся с ним, бежал в Спарту, выдал все планы афинян и настоял на отправлении войска в С",
+   "target": "The Peace of Nicias did not resolve the problems that had caused the war. Mutual distrust between yesterday’s enemies, fuelled by supporters of a “war to a victorious end,” soon led to new clashes, but full-scale hostilities broke out as a result of the expedition to Sicily. Relying on promises of support from a number of Sicilian cities, the Athenians assembled a huge army and fleet. The project won the approval of many citizens, especially the young, who sketched maps of the island at public gatherings. In reality, however, the expedition was a purely adventurist undertaking. The Athenians had a poor understanding of conditions in Sicily, and most of its poleis sided against them. Nor did they anticipate Spartan intervention. One of the commanders of the expedition was Alcibiades, descended from an old aristocratic family, a gifted and highly educated man, but one of excessive ambition. On the eve of the squadron’s departure for Sicily, someone damaged the herms in the city, and suspicion fell on Alcibiades and his friends. Summoned from Sicily to Athens in connection with the “case of the hermocopids,” Alcibiades, realizing that his political opponents would make short work of him, fled to Sparta, revealed all the Athenians’ plans, and insisted on the dispatch of troops to Sicily.",
+   "canon_en": [
+    "Sparta"
+   ]
+  },
+  {
+   "surface": "Анталкидова мира",
+   "context": "Между тем Спарта объявила фиванцев нарушителями Анталкидова мира, призвала другие государства заставить их распустить Беотий",
+   "target": "Meanwhile, Sparta denounced the Thebans as violators of the Peace of Antalcidas, called on the other states to compel them to dissolve the Boeotian League, and sent an army into Boeotia. By this time, a military reform had been carried out at Thebes, transforming the Boeotian army into one of the most effective fighting forces of the age. In the battles of Leuctra and Mantinea (372 and 371 BCE), the Boeotians under the command of the brilliant general and military reformer Epaminondas inflicted such crushing defeats on Sparta that the Peloponnesian League broke apart and Sparta lost the ability to claim hegemony in Hellas. Yet Theban successes put an end to its friendly relations with the Athenians, who now sought to prevent Thebes from growing stronger. Meanwhile, the allies in the Second Athenian Maritime League were already openly expressing dissatisfaction with the gradual return to the past: Athens’ efforts to extract money from them, attempts to establish cleruchies, and other methods of rule characteristic of archē. The disagreement reached such intensity that outright war broke out—the Social War (357–356 BCE), which ended in victory for Athens’ former allies. The Second Athenian Maritime League collapsed; Athens, like Sparta and Thebes, lost its leadership in Hellas, and an unstable balance emerged, periodically disrupted by local military clashes.",
+   "canon_en": [
+    "King's Peace"
+   ]
+  },
+  {
+   "surface": "Афины",
+   "context": "вших союзников Афин. Второй Афинский морской союз распался, Афины, подобно Спарте и Фивам, утратили лидерство в Элладе, насту",
+   "target": "Meanwhile, Sparta denounced the Thebans as violators of the Peace of Antalcidas, called on the other states to compel them to dissolve the Boeotian League, and sent an army into Boeotia. By this time, a military reform had been carried out at Thebes, transforming the Boeotian army into one of the most effective fighting forces of the age. In the battles of Leuctra and Mantinea (372 and 371 BCE), the Boeotians under the command of the brilliant general and military reformer Epaminondas inflicted such crushing defeats on Sparta that the Peloponnesian League broke apart and Sparta lost the ability to claim hegemony in Hellas. Yet Theban successes put an end to its friendly relations with the Athenians, who now sought to prevent Thebes from growing stronger. Meanwhile, the allies in the Second Athenian Maritime League were already openly expressing dissatisfaction with the gradual return to the past: Athens’ efforts to extract money from them, attempts to establish cleruchies, and other methods of rule characteristic of archē. The disagreement reached such intensity that outright war broke out—the Social War (357–356 BCE), which ended in victory for Athens’ former allies. The Second Athenian Maritime League collapsed; Athens, like Sparta and Thebes, lost its leadership in Hellas, and an unstable balance emerged, periodically disrupted by local military clashes.",
+   "canon_en": [
+    "Athens"
+   ]
+  },
+  {
+   "surface": "Беотию",
+   "context": "рства заставить их распустить Беотийский союз и направила в Беотию войско. К этому времени в Фивах была проведена военная рефо",
+   "target": "Meanwhile, Sparta denounced the Thebans as violators of the Peace of Antalcidas, called on the other states to compel them to dissolve the Boeotian League, and sent an army into Boeotia. By this time, a military reform had been carried out at Thebes, transforming the Boeotian army into one of the most effective fighting forces of the age. In the battles of Leuctra and Mantinea (372 and 371 BCE), the Boeotians under the command of the brilliant general and military reformer Epaminondas inflicted such crushing defeats on Sparta that the Peloponnesian League broke apart and Sparta lost the ability to claim hegemony in Hellas. Yet Theban successes put an end to its friendly relations with the Athenians, who now sought to prevent Thebes from growing stronger. Meanwhile, the allies in the Second Athenian Maritime League were already openly expressing dissatisfaction with the gradual return to the past: Athens’ efforts to extract money from them, attempts to establish cleruchies, and other methods of rule characteristic of archē. The disagreement reached such intensity that outright war broke out—the Social War (357–356 BCE), which ended in victory for Athens’ former allies. The Second Athenian Maritime League collapsed; Athens, like Sparta and Thebes, lost its leadership in Hellas, and an unstable balance emerged, periodically disrupted by local military clashes.",
+   "canon_en": [
+    "Boeotia"
+   ]
+  },
+  {
+   "surface": "Фивах",
+   "context": "тийский союз и направила в Беотию войско. К этому времени в Фивах была проведена военная реформа, превратившая беотийскую арм",
+   "target": "Meanwhile, Sparta denounced the Thebans as violators of the Peace of Antalcidas, called on the other states to compel them to dissolve the Boeotian League, and sent an army into Boeotia. By this time, a military reform had been carried out at Thebes, transforming the Boeotian army into one of the most effective fighting forces of the age. In the battles of Leuctra and Mantinea (372 and 371 BCE), the Boeotians under the command of the brilliant general and military reformer Epaminondas inflicted such crushing defeats on Sparta that the Peloponnesian League broke apart and Sparta lost the ability to claim hegemony in Hellas. Yet Theban successes put an end to its friendly relations with the Athenians, who now sought to prevent Thebes from growing stronger. Meanwhile, the allies in the Second Athenian Maritime League were already openly expressing dissatisfaction with the gradual return to the past: Athens’ efforts to extract money from them, attempts to establish cleruchies, and other methods of rule characteristic of archē. The disagreement reached such intensity that outright war broke out—the Social War (357–356 BCE), which ended in victory for Athens’ former allies. The Second Athenian Maritime League collapsed; Athens, like Sparta and Thebes, lost its leadership in Hellas, and an unstable balance emerged, periodically disrupted by local military clashes.",
+   "canon_en": [
+    "Thebes"
+   ]
+  },
+  {
+   "surface": "Элладе",
+   "context": "з и Спарта утратила возможность претендовать на гегемонию в Элладе. Но успехи фиванцев положили конец их дружеским отношениям ",
+   "target": "Meanwhile, Sparta denounced the Thebans as violators of the Peace of Antalcidas, called on the other states to compel them to dissolve the Boeotian League, and sent an army into Boeotia. By this time, a military reform had been carried out at Thebes, transforming the Boeotian army into one of the most effective fighting forces of the age. In the battles of Leuctra and Mantinea (372 and 371 BCE), the Boeotians under the command of the brilliant general and military reformer Epaminondas inflicted such crushing defeats on Sparta that the Peloponnesian League broke apart and Sparta lost the ability to claim hegemony in Hellas. Yet Theban successes put an end to its friendly relations with the Athenians, who now sought to prevent Thebes from growing stronger. Meanwhile, the allies in the Second Athenian Maritime League were already openly expressing dissatisfaction with the gradual return to the past: Athens’ efforts to extract money from them, attempts to establish cleruchies, and other methods of rule characteristic of archē. The disagreement reached such intensity that outright war broke out—the Social War (357–356 BCE), which ended in victory for Athens’ former allies. The Second Athenian Maritime League collapsed; Athens, like Sparta and Thebes, lost its leadership in Hellas, and an unstable balance emerged, periodically disrupted by local military clashes.",
+   "canon_en": [
+    "Ancient Greece"
+   ]
+  },
+  {
+   "surface": "Эпаминонда",
+   "context": "д руководством блестящего полководца и военного реформатора Эпаминонда нанесли Спарте такие сокрушительные поражения, что распался",
+   "target": "Meanwhile, Sparta denounced the Thebans as violators of the Peace of Antalcidas, called on the other states to compel them to dissolve the Boeotian League, and sent an army into Boeotia. By this time, a military reform had been carried out at Thebes, transforming the Boeotian army into one of the most effective fighting forces of the age. In the battles of Leuctra and Mantinea (372 and 371 BCE), the Boeotians under the command of the brilliant general and military reformer Epaminondas inflicted such crushing defeats on Sparta that the Peloponnesian League broke apart and Sparta lost the ability to claim hegemony in Hellas. Yet Theban successes put an end to its friendly relations with the Athenians, who now sought to prevent Thebes from growing stronger. Meanwhile, the allies in the Second Athenian Maritime League were already openly expressing dissatisfaction with the gradual return to the past: Athens’ efforts to extract money from them, attempts to establish cleruchies, and other methods of rule characteristic of archē. The disagreement reached such intensity that outright war broke out—the Social War (357–356 BCE), which ended in victory for Athens’ former allies. The Second Athenian Maritime League collapsed; Athens, like Sparta and Thebes, lost its leadership in Hellas, and an unstable balance emerged, periodically disrupted by local military clashes.",
+   "canon_en": [
+    "Epaminondas"
+   ]
+  },
+  {
+   "surface": "клерухии",
+   "context": "стремлением Афин выкачивать у них деньги, попыткам выводить клерухии и другим методам архэ. Разногласия достигли такого накала, ",
+   "target": "Meanwhile, Sparta denounced the Thebans as violators of the Peace of Antalcidas, called on the other states to compel them to dissolve the Boeotian League, and sent an army into Boeotia. By this time, a military reform had been carried out at Thebes, transforming the Boeotian army into one of the most effective fighting forces of the age. In the battles of Leuctra and Mantinea (372 and 371 BCE), the Boeotians under the command of the brilliant general and military reformer Epaminondas inflicted such crushing defeats on Sparta that the Peloponnesian League broke apart and Sparta lost the ability to claim hegemony in Hellas. Yet Theban successes put an end to its friendly relations with the Athenians, who now sought to prevent Thebes from growing stronger. Meanwhile, the allies in the Second Athenian Maritime League were already openly expressing dissatisfaction with the gradual return to the past: Athens’ efforts to extract money from them, attempts to establish cleruchies, and other methods of rule characteristic of archē. The disagreement reached such intensity that outright war broke out—the Social War (357–356 BCE), which ended in victory for Athens’ former allies. The Second Athenian Maritime League collapsed; Athens, like Sparta and Thebes, lost its leadership in Hellas, and an unstable balance emerged, periodically disrupted by local military clashes.",
+   "canon_en": [
+    "cleruchy"
+   ]
+  },
+  {
+   "surface": "республики",
+   "context": "В эпоху расцвета республики малая семья раздвигает свои границы. У нее возникает обширн",
+   "target": "In the era of the republic’s flourishing, the small family expanded its boundaries. It acquired extensive and varied property, which, in addition to its social exclusiveness, fostered the growing economic independence of the Roman familia. It was distinguished by a complex structure characterized by the intertwining of potestary and blood kinship relations—that is, by a common condition of subordination to the paterfamilias and by shared descent. Within the sphere of influence of noble and wealthy families were significant strata of the free population: freedmen, clients, and others. Finally, each family group retained its own religious cult, derived from ancestor worship, with its own head. All these features effectively transformed the Roman familia into a kin-based family commune. The existence of a sacrosanct and economically strong family served as a guarantee of the prosperity of the Roman civic community as a whole. For that reason, the life of the familia and the activities of its head were subject to the control of the Roman body of citizens.",
+   "canon_en": [
+    "Roman Republic"
+   ]
+  },
+  {
+   "surface": "фамилии",
+   "context": "бствует все большей экономической самостоятельности римской фамилии. Ее отличает сложная структура, характеризующаяся переплете",
+   "target": "In the era of the republic’s flourishing, the small family expanded its boundaries. It acquired extensive and varied property, which, in addition to its social exclusiveness, fostered the growing economic independence of the Roman familia. It was distinguished by a complex structure characterized by the intertwining of potestary and blood kinship relations—that is, by a common condition of subordination to the paterfamilias and by shared descent. Within the sphere of influence of noble and wealthy families were significant strata of the free population: freedmen, clients, and others. Finally, each family group retained its own religious cult, derived from ancestor worship, with its own head. All these features effectively transformed the Roman familia into a kin-based family commune. The existence of a sacrosanct and economically strong family served as a guarantee of the prosperity of the Roman civic community as a whole. For that reason, the life of the familia and the activities of its head were subject to the control of the Roman body of citizens.",
+   "canon_en": [
+    "familia"
+   ]
+  },
+  {
+   "surface": "Александра",
+   "context": "Юность Александра отнюдь не была безоблачной. Между его родителями назревал к",
+   "target": "Alexander’s youth was by no means serene. A conflict was brewing between his parents, which eventually led Olympia to depart for Epirus. Some of the Macedonian nobility did not want to see Alexander as heir to the throne, since he was Macedonian only on his father’s side. It was on this ground that a serious estrangement arose between father and son. At one of Philip’s successive weddings, when he on this occasion married a noble Macedonian girl named Cleopatra, her uncle Attalus, already somewhat drunk, began urging the Macedonians to pray to the gods that Cleopatra might bear a legitimate heir. Enraged, Alexander hurled a wine cup at the offender. Philip rushed at his son with a sword, but, drunk, stumbled and fell. Alexander mockingly remarked: “This man wants to cross over to Asia, but cannot make his way from one couch to another.” He immediately left the banquet and lived for some time among the Illyrians. The conflict was eventually defused, and Alexander returned to Macedon.",
+   "canon_en": [
+    "Alexander"
+   ]
+  },
+  {
+   "surface": "Клеопатра",
+   "context": "вшегося на этот раз на знатной македонской девушке по имени Клеопатра, ее дядя Аттал, подвыпивши, начал призывать македонян молит",
+   "target": "Alexander’s youth was by no means serene. A conflict was brewing between his parents, which eventually led Olympia to depart for Epirus. Some of the Macedonian nobility did not want to see Alexander as heir to the throne, since he was Macedonian only on his father’s side. It was on this ground that a serious estrangement arose between father and son. At one of Philip’s successive weddings, when he on this occasion married a noble Macedonian girl named Cleopatra, her uncle Attalus, already somewhat drunk, began urging the Macedonians to pray to the gods that Cleopatra might bear a legitimate heir. Enraged, Alexander hurled a wine cup at the offender. Philip rushed at his son with a sword, but, drunk, stumbled and fell. Alexander mockingly remarked: “This man wants to cross over to Asia, but cannot make his way from one couch to another.” He immediately left the banquet and lived for some time among the Illyrians. The conflict was eventually defused, and Alexander returned to Macedon.",
+   "canon_en": [
+    "Cleopatra"
+   ]
+  },
+  {
+   "surface": "Македонию",
+   "context": "лирийцев. Конфликт удалось погасить, и Александр вернулся в Македонию.",
+   "target": "Alexander’s youth was by no means serene. A conflict was brewing between his parents, which eventually led Olympia to depart for Epirus. Some of the Macedonian nobility did not want to see Alexander as heir to the throne, since he was Macedonian only on his father’s side. It was on this ground that a serious estrangement arose between father and son. At one of Philip’s successive weddings, when he on this occasion married a noble Macedonian girl named Cleopatra, her uncle Attalus, already somewhat drunk, began urging the Macedonians to pray to the gods that Cleopatra might bear a legitimate heir. Enraged, Alexander hurled a wine cup at the offender. Philip rushed at his son with a sword, but, drunk, stumbled and fell. Alexander mockingly remarked: “This man wants to cross over to Asia, but cannot make his way from one couch to another.” He immediately left the banquet and lived for some time among the Illyrians. The conflict was eventually defused, and Alexander returned to Macedon.",
+   "canon_en": [
+    "Macedon",
+    "Macedonia"
+   ]
+  },
+  {
+   "surface": "Олимпиады",
+   "context": " назревал конфликт, который в конце концов привел к отъезду Олимпиады в Эпир. Часть македонской знати не хотела видеть в Александ",
+   "target": "Alexander’s youth was by no means serene. A conflict was brewing between his parents, which eventually led Olympia to depart for Epirus. Some of the Macedonian nobility did not want to see Alexander as heir to the throne, since he was Macedonian only on his father’s side. It was on this ground that a serious estrangement arose between father and son. At one of Philip’s successive weddings, when he on this occasion married a noble Macedonian girl named Cleopatra, her uncle Attalus, already somewhat drunk, began urging the Macedonians to pray to the gods that Cleopatra might bear a legitimate heir. Enraged, Alexander hurled a wine cup at the offender. Philip rushed at his son with a sword, but, drunk, stumbled and fell. Alexander mockingly remarked: “This man wants to cross over to Asia, but cannot make his way from one couch to another.” He immediately left the banquet and lived for some time among the Illyrians. The conflict was eventually defused, and Alexander returned to Macedon.",
+   "canon_en": [
+    "Olympias"
+   ]
+  },
+  {
+   "surface": "Филиппа",
+   "context": "зный разлад между отцом и сыном. Во время очередной свадьбы Филиппа, женившегося на этот раз на знатной македонской девушке по ",
+   "target": "Alexander’s youth was by no means serene. A conflict was brewing between his parents, which eventually led Olympia to depart for Epirus. Some of the Macedonian nobility did not want to see Alexander as heir to the throne, since he was Macedonian only on his father’s side. It was on this ground that a serious estrangement arose between father and son. At one of Philip’s successive weddings, when he on this occasion married a noble Macedonian girl named Cleopatra, her uncle Attalus, already somewhat drunk, began urging the Macedonians to pray to the gods that Cleopatra might bear a legitimate heir. Enraged, Alexander hurled a wine cup at the offender. Philip rushed at his son with a sword, but, drunk, stumbled and fell. Alexander mockingly remarked: “This man wants to cross over to Asia, but cannot make his way from one couch to another.” He immediately left the banquet and lived for some time among the Illyrians. The conflict was eventually defused, and Alexander returned to Macedon.",
+   "canon_en": [
+    "Philip"
+   ]
+  },
+  {
+   "surface": "Эпир",
+   "context": "нфликт, который в конце концов привел к отъезду Олимпиады в Эпир. Часть македонской знати не хотела видеть в Александре насл",
+   "target": "Alexander’s youth was by no means serene. A conflict was brewing between his parents, which eventually led Olympia to depart for Epirus. Some of the Macedonian nobility did not want to see Alexander as heir to the throne, since he was Macedonian only on his father’s side. It was on this ground that a serious estrangement arose between father and son. At one of Philip’s successive weddings, when he on this occasion married a noble Macedonian girl named Cleopatra, her uncle Attalus, already somewhat drunk, began urging the Macedonians to pray to the gods that Cleopatra might bear a legitimate heir. Enraged, Alexander hurled a wine cup at the offender. Philip rushed at his son with a sword, but, drunk, stumbled and fell. Alexander mockingly remarked: “This man wants to cross over to Asia, but cannot make his way from one couch to another.” He immediately left the banquet and lived for some time among the Illyrians. The conflict was eventually defused, and Alexander returned to Macedon.",
+   "canon_en": [
+    "Epirus"
+   ]
+  },
+  {
+   "surface": "иллирийцев",
+   "context": "другого». Он немедленно покинул пир и некоторое время жил у иллирийцев. Конфликт удалось погасить, и Александр вернулся в Македони",
+   "target": "Alexander’s youth was by no means serene. A conflict was brewing between his parents, which eventually led Olympia to depart for Epirus. Some of the Macedonian nobility did not want to see Alexander as heir to the throne, since he was Macedonian only on his father’s side. It was on this ground that a serious estrangement arose between father and son. At one of Philip’s successive weddings, when he on this occasion married a noble Macedonian girl named Cleopatra, her uncle Attalus, already somewhat drunk, began urging the Macedonians to pray to the gods that Cleopatra might bear a legitimate heir. Enraged, Alexander hurled a wine cup at the offender. Philip rushed at his son with a sword, but, drunk, stumbled and fell. Alexander mockingly remarked: “This man wants to cross over to Asia, but cannot make his way from one couch to another.” He immediately left the banquet and lived for some time among the Illyrians. The conflict was eventually defused, and Alexander returned to Macedon.",
+   "canon_en": [
+    "Illyrians"
+   ]
+  },
+  {
+   "surface": "Гая",
+   "context": "ми дорогами, акведуками, реками и т.д. Таким образом, слова Гая о чрезвычайной широте преторского права находят свое подтве",
+   "target": "Indeed, the first headings of the edict concerned the rights of citizenship, freedom, residence, family status, civic obligations, the senate and the status of senators, and the duties of municipal and other magistrates. These commentaries also deal with public trials, criminal offences, the administration of state property, public contracts and the rights of the fiscus, military matters, and sacred, religious, and public things. Finally, a substantial portion of the praetorian interdicts is devoted to the use of public roads, aqueducts, rivers, and so forth. Thus, Gaius’ remarks on the extraordinary breadth of praetorian law are borne out by the jurists’ commentaries on the praetorian edict. It is well known that in the republican period the praetors, while presiding over commissions of the public and criminal courts, dealt with the most varied criminal cases, governed entire provinces, and also directed the system of state contracting, and, under the Principate, the system of state food supply and the affairs of the imperial fiscus. This broad sphere of public law could not but be reflected in the praetorian edict as well.",
+   "canon_en": [
+    "Gaius"
+   ]
+  },
+  {
+   "surface": "преторы",
+   "context": "преторскому эдикту. Хорошо известно, что в эпоху республики преторы, председательствуя в комиссиях публичных и уголовных судов,",
+   "target": "Indeed, the first headings of the edict concerned the rights of citizenship, freedom, residence, family status, civic obligations, the senate and the status of senators, and the duties of municipal and other magistrates. These commentaries also deal with public trials, criminal offences, the administration of state property, public contracts and the rights of the fiscus, military matters, and sacred, religious, and public things. Finally, a substantial portion of the praetorian interdicts is devoted to the use of public roads, aqueducts, rivers, and so forth. Thus, Gaius’ remarks on the extraordinary breadth of praetorian law are borne out by the jurists’ commentaries on the praetorian edict. It is well known that in the republican period the praetors, while presiding over commissions of the public and criminal courts, dealt with the most varied criminal cases, governed entire provinces, and also directed the system of state contracting, and, under the Principate, the system of state food supply and the affairs of the imperial fiscus. This broad sphere of public law could not but be reflected in the praetorian edict as well.",
+   "canon_en": [
+    "praetor"
+   ]
+  },
+  {
+   "surface": "принципате",
+   "context": "циями, руководили и системой государственных откупов, а при принципате и системой государственных поставок продовольствия, и делам",
+   "target": "Indeed, the first headings of the edict concerned the rights of citizenship, freedom, residence, family status, civic obligations, the senate and the status of senators, and the duties of municipal and other magistrates. These commentaries also deal with public trials, criminal offences, the administration of state property, public contracts and the rights of the fiscus, military matters, and sacred, religious, and public things. Finally, a substantial portion of the praetorian interdicts is devoted to the use of public roads, aqueducts, rivers, and so forth. Thus, Gaius’ remarks on the extraordinary breadth of praetorian law are borne out by the jurists’ commentaries on the praetorian edict. It is well known that in the republican period the praetors, while presiding over commissions of the public and criminal courts, dealt with the most varied criminal cases, governed entire provinces, and also directed the system of state contracting, and, under the Principate, the system of state food supply and the affairs of the imperial fiscus. This broad sphere of public law could not but be reflected in the praetorian edict as well.",
+   "canon_en": [
+    "Principate"
+   ]
+  }
+ ]
+}

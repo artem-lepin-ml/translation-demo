@@ -1,0 +1,716 @@
+{
+  "meta": {
+    "golden_n": 99,
+    "golden_distribution": {
+      "green": 82,
+      "yellow": 9,
+      "red": 8
+    },
+    "environment": "no CUDA; live Wikidata; LLM via subagents",
+    "strategies_run": [
+      "G1 api_first",
+      "P1 link_locate",
+      "G3 llm_judge",
+      "G5 hybrid",
+      "P3 llm_judge"
+    ],
+    "strategies_code_only_not_run": [
+      "G2 mgenre (GPU)",
+      "P2 neural_align (GPU)"
+    ],
+    "note": "Grounding tournament: G1 vs G3 vs G5(hybrid). Pairing: P1 vs P3. G2/P2 code-only (GPU), not run."
+  },
+  "extraction": {
+    "recall_on_gold_terms": 0.8081,
+    "gold_terms_found": 80,
+    "gold_terms_total": 99,
+    "note": "Recall proxy on gold entities; full precision needs a gold extraction set (future work)."
+  },
+  "grounding": {
+    "api_first": {
+      "n": 99,
+      "class_distribution": {
+        "green": 82,
+        "yellow": 9,
+        "red": 8
+      },
+      "qid_accuracy_on_groundable": 0.6703,
+      "difficulty": {
+        "macro_f1": 0.4819,
+        "per_label": {
+          "green": {
+            "precision": 0.9,
+            "recall": 0.5488,
+            "f1": 0.6818
+          },
+          "yellow": {
+            "precision": 0.1282,
+            "recall": 0.5556,
+            "f1": 0.2083
+          },
+          "red": {
+            "precision": 0.5,
+            "recall": 0.625,
+            "f1": 0.5556
+          }
+        }
+      },
+      "difficulty_confusion": {
+        "green": {
+          "green": 45,
+          "yellow": 32,
+          "red": 5
+        },
+        "yellow": {
+          "green": 4,
+          "yellow": 5,
+          "red": 0
+        },
+        "red": {
+          "green": 1,
+          "yellow": 2,
+          "red": 5
+        }
+      },
+      "groundable_coverage": 0.899,
+      "red_accuracy": 0.625,
+      "latency_ms": {
+        "p50": 0.0,
+        "p95": 0.1,
+        "max": 0.3,
+        "n": 99
+      },
+      "avg_api_calls": 0.0,
+      "per_category": {
+        "place": {
+          "n": 37,
+          "macro_f1": 0.383
+        },
+        "person": {
+          "n": 14,
+          "macro_f1": 0.65
+        },
+        "title": {
+          "n": 3,
+          "macro_f1": 0.8
+        },
+        "admin": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "ruler": {
+          "n": 3,
+          "macro_f1": 0.4
+        },
+        "deity": {
+          "n": 2,
+          "macro_f1": 0.6667
+        },
+        "people": {
+          "n": 6,
+          "macro_f1": 0.4
+        },
+        "domain": {
+          "n": 4,
+          "macro_f1": 0.9
+        },
+        "dynasty": {
+          "n": 2,
+          "macro_f1": 0.6667
+        },
+        "ethnic_group": {
+          "n": 5,
+          "macro_f1": 0.4889
+        },
+        "language": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "text": {
+          "n": 3,
+          "macro_f1": 1.0
+        },
+        "social": {
+          "n": 4,
+          "macro_f1": 0.3333
+        },
+        "other": {
+          "n": 2,
+          "macro_f1": 0.6667
+        },
+        "org": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "culture": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "period": {
+          "n": 2,
+          "macro_f1": 0.3333
+        },
+        "treaty": {
+          "n": 2,
+          "macro_f1": 1.0
+        },
+        "institution": {
+          "n": 4,
+          "macro_f1": 1.0
+        },
+        "term": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "polity": {
+          "n": 1,
+          "macro_f1": 1.0
+        }
+      }
+    },
+    "llm_judge": {
+      "n": 99,
+      "class_distribution": {
+        "green": 82,
+        "yellow": 9,
+        "red": 8
+      },
+      "qid_accuracy_on_groundable": 0.7802,
+      "difficulty": {
+        "macro_f1": 0.5551,
+        "per_label": {
+          "green": {
+            "precision": 0.9265,
+            "recall": 0.7683,
+            "f1": 0.84
+          },
+          "yellow": {
+            "precision": 0.3333,
+            "recall": 0.4444,
+            "f1": 0.381
+          },
+          "red": {
+            "precision": 0.3158,
+            "recall": 0.75,
+            "f1": 0.4444
+          }
+        }
+      },
+      "difficulty_confusion": {
+        "green": {
+          "green": 63,
+          "yellow": 8,
+          "red": 11
+        },
+        "yellow": {
+          "green": 3,
+          "yellow": 4,
+          "red": 2
+        },
+        "red": {
+          "green": 2,
+          "yellow": 0,
+          "red": 6
+        }
+      },
+      "groundable_coverage": 0.8081,
+      "red_accuracy": 0.75,
+      "latency_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0,
+        "n": 99
+      },
+      "avg_api_calls": 0.0,
+      "per_category": {
+        "place": {
+          "n": 37,
+          "macro_f1": 0.5492
+        },
+        "person": {
+          "n": 14,
+          "macro_f1": 0.8286
+        },
+        "title": {
+          "n": 3,
+          "macro_f1": 1.0
+        },
+        "admin": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "ruler": {
+          "n": 3,
+          "macro_f1": 0.4
+        },
+        "deity": {
+          "n": 2,
+          "macro_f1": 1.0
+        },
+        "people": {
+          "n": 6,
+          "macro_f1": 0.3333
+        },
+        "domain": {
+          "n": 4,
+          "macro_f1": 0.7333
+        },
+        "dynasty": {
+          "n": 2,
+          "macro_f1": 1.0
+        },
+        "ethnic_group": {
+          "n": 5,
+          "macro_f1": 0.6
+        },
+        "language": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "text": {
+          "n": 3,
+          "macro_f1": 1.0
+        },
+        "social": {
+          "n": 4,
+          "macro_f1": 0.0
+        },
+        "other": {
+          "n": 2,
+          "macro_f1": 0.6667
+        },
+        "org": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "culture": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "period": {
+          "n": 2,
+          "macro_f1": 0.3333
+        },
+        "treaty": {
+          "n": 2,
+          "macro_f1": 1.0
+        },
+        "institution": {
+          "n": 4,
+          "macro_f1": 1.0
+        },
+        "term": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "polity": {
+          "n": 1,
+          "macro_f1": 0.0
+        }
+      }
+    },
+    "hybrid": {
+      "n": 99,
+      "class_distribution": {
+        "green": 82,
+        "yellow": 9,
+        "red": 8
+      },
+      "qid_accuracy_on_groundable": 0.7802,
+      "difficulty": {
+        "macro_f1": 0.4819,
+        "per_label": {
+          "green": {
+            "precision": 0.9,
+            "recall": 0.5488,
+            "f1": 0.6818
+          },
+          "yellow": {
+            "precision": 0.1282,
+            "recall": 0.5556,
+            "f1": 0.2083
+          },
+          "red": {
+            "precision": 0.5,
+            "recall": 0.625,
+            "f1": 0.5556
+          }
+        }
+      },
+      "difficulty_confusion": {
+        "green": {
+          "green": 45,
+          "yellow": 32,
+          "red": 5
+        },
+        "yellow": {
+          "green": 4,
+          "yellow": 5,
+          "red": 0
+        },
+        "red": {
+          "green": 1,
+          "yellow": 2,
+          "red": 5
+        }
+      },
+      "groundable_coverage": 0.899,
+      "red_accuracy": 0.625,
+      "latency_ms": {
+        "p50": 0.0,
+        "p95": 0.1,
+        "max": 0.3,
+        "n": 99
+      },
+      "avg_api_calls": 0.0,
+      "per_category": {
+        "place": {
+          "n": 37,
+          "macro_f1": 0.383
+        },
+        "person": {
+          "n": 14,
+          "macro_f1": 0.65
+        },
+        "title": {
+          "n": 3,
+          "macro_f1": 0.8
+        },
+        "admin": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "ruler": {
+          "n": 3,
+          "macro_f1": 0.4
+        },
+        "deity": {
+          "n": 2,
+          "macro_f1": 0.6667
+        },
+        "people": {
+          "n": 6,
+          "macro_f1": 0.4
+        },
+        "domain": {
+          "n": 4,
+          "macro_f1": 0.9
+        },
+        "dynasty": {
+          "n": 2,
+          "macro_f1": 0.6667
+        },
+        "ethnic_group": {
+          "n": 5,
+          "macro_f1": 0.4889
+        },
+        "language": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "text": {
+          "n": 3,
+          "macro_f1": 1.0
+        },
+        "social": {
+          "n": 4,
+          "macro_f1": 0.3333
+        },
+        "other": {
+          "n": 2,
+          "macro_f1": 0.6667
+        },
+        "org": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "culture": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "period": {
+          "n": 2,
+          "macro_f1": 0.3333
+        },
+        "treaty": {
+          "n": 2,
+          "macro_f1": 1.0
+        },
+        "institution": {
+          "n": 4,
+          "macro_f1": 1.0
+        },
+        "term": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "polity": {
+          "n": 1,
+          "macro_f1": 1.0
+        }
+      }
+    }
+  },
+  "pairing": {
+    "link_locate": {
+      "n_non_red": 74,
+      "class_distribution_non_red": {
+        "green": 63,
+        "yellow": 9,
+        "red": 2
+      },
+      "verdict": {
+        "macro_f1": 0.3792,
+        "per_label": {
+          "green": {
+            "precision": 0.8852,
+            "recall": 0.8571,
+            "f1": 0.871
+          },
+          "yellow": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "red": {
+            "precision": 0.1538,
+            "recall": 1.0,
+            "f1": 0.2667
+          }
+        }
+      },
+      "verdict_confusion": {
+        "green": {
+          "green": 54,
+          "yellow": 0,
+          "red": 9
+        },
+        "yellow": {
+          "green": 7,
+          "yellow": 0,
+          "red": 2
+        },
+        "red": {
+          "green": 0,
+          "yellow": 0,
+          "red": 2
+        }
+      },
+      "null_accuracy_on_red": null,
+      "recommended_accuracy": 1.0,
+      "recommended_scored_n": 2,
+      "latency_ms": {
+        "p50": 0.0,
+        "p95": 5.4,
+        "max": 42.2,
+        "n": 74
+      },
+      "per_category": {
+        "place": {
+          "n": 32,
+          "macro_f1": 0.4561
+        },
+        "person": {
+          "n": 14,
+          "macro_f1": 0.8133
+        },
+        "title": {
+          "n": 3,
+          "macro_f1": 1.0
+        },
+        "admin": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "deity": {
+          "n": 2,
+          "macro_f1": 1.0
+        },
+        "people": {
+          "n": 5,
+          "macro_f1": 1.0
+        },
+        "language": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "ethnic_group": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "text": {
+          "n": 3,
+          "macro_f1": 0.0
+        },
+        "social": {
+          "n": 4,
+          "macro_f1": 0.4
+        },
+        "org": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "period": {
+          "n": 2,
+          "macro_f1": 0.5
+        },
+        "dynasty": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "treaty": {
+          "n": 2,
+          "macro_f1": 0.3333
+        },
+        "term": {
+          "n": 1,
+          "macro_f1": 0.0
+        },
+        "polity": {
+          "n": 1,
+          "macro_f1": 0.0
+        }
+      }
+    },
+    "llm_judge": {
+      "n_non_red": 74,
+      "class_distribution_non_red": {
+        "green": 63,
+        "yellow": 9,
+        "red": 2
+      },
+      "verdict": {
+        "macro_f1": 0.844,
+        "per_label": {
+          "green": {
+            "precision": 0.9688,
+            "recall": 0.9841,
+            "f1": 0.9764
+          },
+          "yellow": {
+            "precision": 0.8889,
+            "recall": 0.8889,
+            "f1": 0.8889
+          },
+          "red": {
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6667
+          }
+        }
+      },
+      "verdict_confusion": {
+        "green": {
+          "green": 62,
+          "yellow": 1,
+          "red": 0
+        },
+        "yellow": {
+          "green": 1,
+          "yellow": 8,
+          "red": 0
+        },
+        "red": {
+          "green": 1,
+          "yellow": 0,
+          "red": 1
+        }
+      },
+      "null_accuracy_on_red": null,
+      "recommended_accuracy": 0.9,
+      "recommended_scored_n": 10,
+      "latency_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0,
+        "n": 74
+      },
+      "per_category": {
+        "place": {
+          "n": 32,
+          "macro_f1": 0.9354
+        },
+        "person": {
+          "n": 14,
+          "macro_f1": 1.0
+        },
+        "title": {
+          "n": 3,
+          "macro_f1": 1.0
+        },
+        "admin": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "deity": {
+          "n": 2,
+          "macro_f1": 0.3333
+        },
+        "people": {
+          "n": 5,
+          "macro_f1": 1.0
+        },
+        "language": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "ethnic_group": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "text": {
+          "n": 3,
+          "macro_f1": 0.4
+        },
+        "social": {
+          "n": 4,
+          "macro_f1": 1.0
+        },
+        "org": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "period": {
+          "n": 2,
+          "macro_f1": 1.0
+        },
+        "dynasty": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "treaty": {
+          "n": 2,
+          "macro_f1": 1.0
+        },
+        "term": {
+          "n": 1,
+          "macro_f1": 1.0
+        },
+        "polity": {
+          "n": 1,
+          "macro_f1": 1.0
+        }
+      }
+    }
+  },
+  "difficulty_accuracy_note": "qid_accuracy_on_groundable = grounded.qid == gold_qid among gold green/yellow.",
+  "selection": {
+    "grounding": {
+      "winner": "llm_judge",
+      "ranking": [
+        "llm_judge",
+        "hybrid",
+        "api_first"
+      ],
+      "rule": "max accuracy → max macro-F1 → min avg_api_calls → min p50 latency"
+    },
+    "pairing": {
+      "winner": "llm_judge",
+      "ranking": [
+        "llm_judge",
+        "link_locate"
+      ],
+      "rule": "max accuracy → max macro-F1 → min avg_api_calls → min p50 latency"
+    }
+  }
+}

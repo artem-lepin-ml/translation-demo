@@ -1,0 +1,4004 @@
+{
+ "1": [
+  {
+   "sourceSurface": "Месопотамия",
+   "sourceLemma": "Месопотамия",
+   "context": "Месопотамия (Междуречье) – равнина в бассейне Тигра",
+   "charStart": 0,
+   "charEnd": 11,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Междуречье",
+   "sourceLemma": "Междуречье",
+   "context": "Месопотамия (Междуречье) – равнина в бассейне Тигра и Евфрата,",
+   "charStart": 13,
+   "charEnd": 23,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "the Inter-River",
+   "pairAccuracy": "yellow",
+   "recommended": "Two Rivers",
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Тигра",
+   "sourceLemma": "Тигра",
+   "context": "тамия (Междуречье) – равнина в бассейне Тигра и Евфрата, протянувшаяся на северо-запа",
+   "charStart": 46,
+   "charEnd": 51,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Евфрата",
+   "sourceLemma": "Евфрата",
+   "context": "еждуречье) – равнина в бассейне Тигра и Евфрата, протянувшаяся на северо-запад от Перси",
+   "charStart": 54,
+   "charEnd": 61,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Персидского залива",
+   "sourceLemma": "Персидский залив",
+   "context": "фрата, протянувшаяся на северо-запад от Персидского залива до Верхнего Евфрата. Сейчас она в основ",
+   "charStart": 96,
+   "charEnd": 114,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q34675",
+    "url": "https://www.wikidata.org/wiki/Q34675",
+    "label": "Persian Gulf",
+    "description": "extension of the Indian Ocean"
+   },
+   "candidates": [
+    {
+     "qid": "Q34675",
+     "url": "https://www.wikidata.org/wiki/Q34675",
+     "label": "Persian Gulf",
+     "description": "extension of the Indian Ocean"
+    }
+   ],
+   "targetSurface": "Persian Gulf",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Верхнего Евфрата",
+   "sourceLemma": "Верхнего Евфрата",
+   "context": "а северо-запад от Персидского залива до Верхнего Евфрата. Сейчас она в основном входит в состав",
+   "charStart": 118,
+   "charEnd": 134,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Ирака",
+   "sourceLemma": "Ирака",
+   "context": ". Сейчас она в основном входит в состав Ирака. Весь этот обширный регион делится на д",
+   "charStart": 174,
+   "charEnd": 179,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Нижнюю Месопотамию",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "т обширный регион делится на две части: Нижнюю Месопотамию, лежащую в нижнем течении Тигра и Евфра",
+   "charStart": 229,
+   "charEnd": 247,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Тигра",
+   "sourceLemma": "Тигра",
+   "context": "ю Месопотамию, лежащую в нижнем течении Тигра и Евфрата, где русла этих рек сближалис",
+   "charStart": 274,
+   "charEnd": 279,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Евфрата",
+   "sourceLemma": "Евфрата",
+   "context": "тамию, лежащую в нижнем течении Тигра и Евфрата, где русла этих рек сближались (сейчас",
+   "charStart": 282,
+   "charEnd": 289,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Шатт-эль-Араб",
+   "sourceLemma": "Шатт-эль-Араб",
+   "context": "сейчас они даже сливаются в единую реку Шатт-эль-Араб; в древности они впадали в залив самост",
+   "charStart": 362,
+   "charEnd": 375,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q166966",
+    "url": "https://www.wikidata.org/wiki/Q166966",
+    "label": "Shatt al-Arab",
+    "description": "river in Southwest Asia, formed by the confluence of the Euphrates and the Tigris in the town of al-Qurnah in the Basra Governorate of southern Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q166966",
+     "url": "https://www.wikidata.org/wiki/Q166966",
+     "label": "Shatt al-Arab",
+     "description": "river in Southwest Asia, formed by the confluence of the Euphrates and the Tigris in the town of al-Qurnah in the Basra Governorate of southern Iraq"
+    }
+   ],
+   "targetSurface": "Shatt al-Arab",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Верхнюю",
+   "sourceLemma": "Верхнюю",
+   "context": "али в залив самостоятельными руслами) и Верхнюю (Северную) Месопотамию, где Евфрат и Ти",
+   "charStart": 437,
+   "charEnd": 444,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Евфрат",
+   "sourceLemma": "Евфрат",
+   "context": ") и Верхнюю (Северную) Месопотамию, где Евфрат и Тигр далеко отстоят друг от друга. Ни",
+   "charStart": 473,
+   "charEnd": 479,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q34589",
+    "url": "https://www.wikidata.org/wiki/Q34589",
+    "label": "Euphrates",
+    "description": "river in Asia"
+   },
+   "candidates": [
+    {
+     "qid": "Q34589",
+     "url": "https://www.wikidata.org/wiki/Q34589",
+     "label": "Euphrates",
+     "description": "river in Asia"
+    }
+   ],
+   "targetSurface": "Euphrates",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Тигр",
+   "sourceLemma": "Тигр",
+   "context": "юю (Северную) Месопотамию, где Евфрат и Тигр далеко отстоят друг от друга. Нижнюю Ме",
+   "charStart": 482,
+   "charEnd": 486,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q35591",
+    "url": "https://www.wikidata.org/wiki/Q35591",
+    "label": "Tigris",
+    "description": "river flowing from Turkey through Iraq and Syria"
+   },
+   "candidates": [
+    {
+     "qid": "Q35591",
+     "url": "https://www.wikidata.org/wiki/Q35591",
+     "label": "Tigris",
+     "description": "river flowing from Turkey through Iraq and Syria"
+    }
+   ],
+   "targetSurface": "Tigris",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Нижнюю Месопотамию",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "ат и Тигр далеко отстоят друг от друга. Нижнюю Месопотамию в древности называли Шумером (в наиболе",
+   "charStart": 517,
+   "charEnd": 535,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Шумером",
+   "sourceLemma": "Шумером",
+   "context": "Нижнюю Месопотамию в древности называли Шумером (в наиболее широком смысле этого слова)",
+   "charStart": 557,
+   "charEnd": 564,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Приморьем",
+   "sourceLemma": "Приморьем",
+   "context": "части. Юг Нижней Месопотамии именовался Приморьем, или Шумером «в узком смысле слова», а",
+   "charStart": 691,
+   "charEnd": 700,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Шумером",
+   "sourceLemma": "Шумером",
+   "context": "й Месопотамии именовался Приморьем, или Шумером «в узком смысле слова», а север первона",
+   "charStart": 706,
+   "charEnd": 713,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Ки-Ури",
+   "sourceLemma": "Ки-Ури",
+   "context": "», а север первоначально носил название Ки-Ури, а позднее – Аккад (по названию распола",
+   "charStart": 775,
+   "charEnd": 781,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Аккад",
+   "sourceLemma": "Аккад",
+   "context": "льно носил название Ки-Ури, а позднее – Аккад (по названию располагавшегося здесь гор",
+   "charStart": 795,
+   "charEnd": 800,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q150996",
+    "url": "https://www.wikidata.org/wiki/Q150996",
+    "label": "Akkad",
+    "description": "ancient Mesopotamian city"
+   },
+   "candidates": [
+    {
+     "qid": "Q150996",
+     "url": "https://www.wikidata.org/wiki/Q150996",
+     "label": "Akkad",
+     "description": "ancient Mesopotamian city"
+    }
+   ],
+   "targetSurface": "Akkad",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Аккаде",
+   "sourceLemma": "Аккад",
+   "context": "названию располагавшегося здесь города Аккаде, месопотамской столицы конца III тысяче",
+   "charStart": 844,
+   "charEnd": 850,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q150996",
+    "url": "https://www.wikidata.org/wiki/Q150996",
+    "label": "Akkad",
+    "description": "ancient Mesopotamian city"
+   },
+   "candidates": [
+    {
+     "qid": "Q150996",
+     "url": "https://www.wikidata.org/wiki/Q150996",
+     "label": "Akkad",
+     "description": "ancient Mesopotamian city"
+    }
+   ],
+   "targetSurface": "Akkad",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Шумер и Аккад",
+   "sourceLemma": "Шумер и Аккад",
+   "context": "еся с исхода III тысячелетия до н.э. – «Шумер и Аккад». Еще позже Нижнюю Месопотамию стали на",
+   "charStart": 1002,
+   "charEnd": 1015,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Нижнюю Месопотамию",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "ия до н.э. – «Шумер и Аккад». Еще позже Нижнюю Месопотамию стали называть Вавилонией, по ее новому",
+   "charStart": 1028,
+   "charEnd": 1046,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Вавилонией",
+   "sourceLemma": "Вавилонией",
+   "context": "позже Нижнюю Месопотамию стали называть Вавилонией, по ее новому главному центру – Вавилон",
+   "charStart": 1062,
+   "charEnd": 1072,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Вавилону",
+   "sourceLemma": "Вавилону",
+   "context": "илонией, по ее новому главному центру – Вавилону.",
+   "charStart": 1105,
+   "charEnd": 1113,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  }
+ ],
+ "2": [
+  {
+   "sourceSurface": "Нижняя Месопотамия",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "Нижняя Месопотамия была наиболее изобильным регионом всего",
+   "charStart": 0,
+   "charEnd": 18,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Плодородного Полумесяца",
+   "sourceLemma": "Плодородный Полумесяц",
+   "context": "была наиболее изобильным регионом всего Плодородного Полумесяца, но скудна минеральными ресурсами и дер",
+   "charStart": 59,
+   "charEnd": 82,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q170526",
+    "url": "https://www.wikidata.org/wiki/Q170526",
+    "label": "Fertile Crescent",
+    "description": "crescent-shaped geographic region of the Middle-East, containing the moist and fertile land of Western Asia, and the Nile Valley and Nile Delta of northeast Africa"
+   },
+   "candidates": [
+    {
+     "qid": "Q170526",
+     "url": "https://www.wikidata.org/wiki/Q170526",
+     "label": "Fertile Crescent",
+     "description": "crescent-shaped geographic region of the Middle-East, containing the moist and fertile land of Western Asia, and the Nile Valley and Nile Delta of northeast Africa"
+    }
+   ],
+   "targetSurface": "Fertile Crescent",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Верхняя Месопотамия",
+   "sourceLemma": "Верхняя Месопотамия",
+   "context": "кудна минеральными ресурсами и деревом. Верхняя Месопотамия представляла собой холмистую степь. В е",
+   "charStart": 128,
+   "charEnd": 147,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q311819",
+    "url": "https://www.wikidata.org/wiki/Q311819",
+    "label": "Upper Mesopotamia",
+    "description": "northern portion of region between Tigris and Euphrates rivers, now part of Iraq, Syria and Turkey"
+   },
+   "candidates": [
+    {
+     "qid": "Q311819",
+     "url": "https://www.wikidata.org/wiki/Q311819",
+     "label": "Upper Mesopotamia",
+     "description": "northern portion of region between Tigris and Euphrates rivers, now part of Iraq, Syria and Turkey"
+    }
+   ],
+   "targetSurface": "Upper Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Ассирия",
+   "sourceLemma": "Ассирия",
+   "context": ". В ее восточной части была расположена Ассирия (греч. термин, принятый в науке для обо",
+   "charStart": 222,
+   "charEnd": 229,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q41137",
+    "url": "https://www.wikidata.org/wiki/Q41137",
+    "label": "Assyrian Empire",
+    "description": "major Mesopotamian East Semitic kingdom"
+   },
+   "candidates": [
+    {
+     "qid": "Q41137",
+     "url": "https://www.wikidata.org/wiki/Q41137",
+     "label": "Assyrian Empire",
+     "description": "major Mesopotamian East Semitic kingdom"
+    }
+   ],
+   "targetSurface": "Assyria",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Ашшур",
+   "sourceLemma": "Ашшур",
+   "context": "обозначения области с центром в городе Ашшур на Среднем Тигре).",
+   "charStart": 305,
+   "charEnd": 310,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q200200",
+    "url": "https://www.wikidata.org/wiki/Q200200",
+    "label": "Assur",
+    "description": "archaeological site in Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q200200",
+     "url": "https://www.wikidata.org/wiki/Q200200",
+     "label": "Assur",
+     "description": "archaeological site in Iraq"
+    }
+   ],
+   "targetSurface": "Ashur",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Среднем Тигре",
+   "sourceLemma": "Среднем Тигре",
+   "context": "ния области с центром в городе Ашшур на Среднем Тигре).",
+   "charStart": 314,
+   "charEnd": 327,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  }
+ ],
+ "3": [
+  {
+   "sourceSurface": "Месопотамии",
+   "sourceLemma": "Месопотамия",
+   "context": "вных особенностей геополитической карты Месопотамии – наличие двух ее постоянных «фронтов»:",
+   "charStart": 51,
+   "charEnd": 62,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia’s",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Междуречья",
+   "sourceLemma": "Междуречье",
+   "context": "ке–востоке от нее (где равнинные жители Междуречья почти всегда враждовали с горцами) и на",
+   "charStart": 165,
+   "charEnd": 175,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "the region’s",
+   "pairAccuracy": "yellow",
+   "recommended": "Mesopotamia",
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Аравийским плато",
+   "sourceLemma": "Аравийским плато",
+   "context": "и на западе и юго-западе, на границе с Аравийским плато (откуда в регион волна за волной вторга",
+   "charStart": 250,
+   "charEnd": 266,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Месопотамии",
+   "sourceLemma": "Месопотамия",
+   "context": "волной вторгались кочевники). Бедность Месопотамии металлом и деревом с ранних пор стимули",
+   "charStart": 332,
+   "charEnd": 343,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia’s",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Месопотамцы",
+   "sourceLemma": "Месопотамцы",
+   "context": "орговой и военной экспансии ее жителей. Месопотамцы вывозили в иные страны ткани, зерно и р",
+   "charStart": 446,
+   "charEnd": 457,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  }
+ ],
+ "4": [
+  {
+   "sourceSurface": "Месопотамии",
+   "sourceLemma": "Месопотамия",
+   "context": "Периодизация. История Древней Месопотамии обнимает несколько тысячелетий и традиц",
+   "charStart": 30,
+   "charEnd": 41,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia’s",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Убейд",
+   "sourceLemma": "Убейд",
+   "context": "я в науке на ряд эпох – доисторических: Убейд (VI–IV тысячелетия до н.э.); Урук (IV т",
+   "charStart": 133,
+   "charEnd": 138,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q245156",
+    "url": "https://www.wikidata.org/wiki/Q245156",
+    "label": "Ubaid period",
+    "description": "archaeological culture"
+   },
+   "candidates": [
+    {
+     "qid": "Q245156",
+     "url": "https://www.wikidata.org/wiki/Q245156",
+     "label": "Ubaid period",
+     "description": "archaeological culture"
+    }
+   ],
+   "targetSurface": "Ubaid period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Урук",
+   "sourceLemma": "Урук",
+   "context": "ких: Убейд (VI–IV тысячелетия до н.э.); Урук (IV тысячелетие до н.э.); Джемдет-Наср",
+   "charStart": 168,
+   "charEnd": 172,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q168518",
+    "url": "https://www.wikidata.org/wiki/Q168518",
+    "label": "Uruk",
+    "description": "ancient city of Sumer and Babylonia"
+   },
+   "candidates": [
+    {
+     "qid": "Q168518",
+     "url": "https://www.wikidata.org/wiki/Q168518",
+     "label": "Uruk",
+     "description": "ancient city of Sumer and Babylonia"
+    }
+   ],
+   "targetSurface": "Uruk period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Джемдет-Наср",
+   "sourceLemma": "Джемдет-Наср",
+   "context": "о н.э.); Урук (IV тысячелетие до н.э.); Джемдет-Наср (рубеж IV–III тысячелетий до н.э.); и и",
+   "charStart": 199,
+   "charEnd": 211,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q342799",
+    "url": "https://www.wikidata.org/wiki/Q342799",
+    "label": "Jemdet Nasr",
+    "description": "archaeological site in Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q342799",
+     "url": "https://www.wikidata.org/wiki/Q342799",
+     "label": "Jemdet Nasr",
+     "description": "archaeological site in Iraq"
+    }
+   ],
+   "targetSurface": "Jemdet Nasr period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Раннединастический период",
+   "sourceLemma": "Раннединастический период",
+   "context": "I тысячелетий до н.э.); и исторических: Раннединастический период с тремя подпериодами (XXX–XXIV вв. до н",
+   "charStart": 264,
+   "charEnd": 289,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q716742",
+    "url": "https://www.wikidata.org/wiki/Q716742",
+    "label": "Early Dynastic period",
+    "description": "archaeological culture of Mesopotamia"
+   },
+   "candidates": [
+    {
+     "qid": "Q716742",
+     "url": "https://www.wikidata.org/wiki/Q716742",
+     "label": "Early Dynastic period",
+     "description": "archaeological culture of Mesopotamia"
+    }
+   ],
+   "targetSurface": "Early Dynastic period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Аккадской",
+   "sourceLemma": "Аккадской",
+   "context": "V вв. до н.э.); эпоха первых деспотий – Аккадской и Урской (XXIV–XXI вв. до н.э.); Старов",
+   "charStart": 359,
+   "charEnd": 368,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Урской",
+   "sourceLemma": "Урской",
+   "context": ".); эпоха первых деспотий – Аккадской и Урской (XXIV–XXI вв. до н.э.); Старовавилонски",
+   "charStart": 371,
+   "charEnd": 377,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Старовавилонский",
+   "sourceLemma": "Старовавилонский",
+   "context": "адской и Урской (XXIV–XXI вв. до н.э.); Старовавилонский–Староассирийский (XX–XVI вв. до н.э.),",
+   "charStart": 402,
+   "charEnd": 418,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q733897",
+    "url": "https://www.wikidata.org/wiki/Q733897",
+    "label": "Old Babylonian Empire",
+    "description": "c. 1894 BC – c. 1595 BC dynasty of Babylonia"
+   },
+   "candidates": [
+    {
+     "qid": "Q733897",
+     "url": "https://www.wikidata.org/wiki/Q733897",
+     "label": "Old Babylonian Empire",
+     "description": "c. 1894 BC – c. 1595 BC dynasty of Babylonia"
+    }
+   ],
+   "targetSurface": "Old Babylonian",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Староассирийский",
+   "sourceLemma": "Староассирийский",
+   "context": "XXIV–XXI вв. до н.э.); Старовавилонский–Староассирийский (XX–XVI вв. до н.э.), Средневавилонский",
+   "charStart": 419,
+   "charEnd": 435,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q15782728",
+    "url": "https://www.wikidata.org/wiki/Q15782728",
+    "label": "Old-Assyrian period",
+    "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1950–1750 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q15782728",
+     "url": "https://www.wikidata.org/wiki/Q15782728",
+     "label": "Old-Assyrian period",
+     "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1950–1750 BCE)"
+    }
+   ],
+   "targetSurface": "Old Assyrian",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Средневавилонский",
+   "sourceLemma": "Средневавилонский",
+   "context": "–Староассирийский (XX–XVI вв. до н.э.), Средневавилонский–Среднеассирийский (XVI/XV–XII/XI вв. до",
+   "charStart": 458,
+   "charEnd": 475,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q16530848",
+    "url": "https://www.wikidata.org/wiki/Q16530848",
+    "label": "Middle Babylonian period",
+    "description": "period of the Babylonian civilization in Mesopotamia (ca 1595–1155 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q16530848",
+     "url": "https://www.wikidata.org/wiki/Q16530848",
+     "label": "Middle Babylonian period",
+     "description": "period of the Babylonian civilization in Mesopotamia (ca 1595–1155 BCE)"
+    }
+   ],
+   "targetSurface": "Middle Babylonian",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Среднеассирийский",
+   "sourceLemma": "Среднеассирийский",
+   "context": "(XX–XVI вв. до н.э.), Средневавилонский–Среднеассирийский (XVI/XV–XII/XI вв. до н.э.) и Новоассир",
+   "charStart": 476,
+   "charEnd": 493,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q114868919",
+    "url": "https://www.wikidata.org/wiki/Q114868919",
+    "label": "Middle Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1400–1000 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q114868919",
+     "url": "https://www.wikidata.org/wiki/Q114868919",
+     "label": "Middle Assyrian Period",
+     "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1400–1000 BCE)"
+    }
+   ],
+   "targetSurface": "Middle Assyrian",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Новоассирийский",
+   "sourceLemma": "Новоассирийский",
+   "context": "сирийский (XVI/XV–XII/XI вв. до н.э.) и Новоассирийский (X–VII вв. до н.э.) – Нововавилонский (",
+   "charStart": 524,
+   "charEnd": 539,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q114869081",
+    "url": "https://www.wikidata.org/wiki/Q114869081",
+    "label": "Neo Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia (ca 911–612 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q114869081",
+     "url": "https://www.wikidata.org/wiki/Q114869081",
+     "label": "Neo Assyrian Period",
+     "description": "period of the Assyrian civilization in Mesopotamia (ca 911–612 BCE)"
+    }
+   ],
+   "targetSurface": "Neo-Assyrian period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Нововавилонский",
+   "sourceLemma": "Нововавилонский",
+   "context": "и Новоассирийский (X–VII вв. до н.э.) – Нововавилонский (XII–VI вв. до н.э.) периоды, с некотор",
+   "charStart": 562,
+   "charEnd": 577,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q114869307",
+    "url": "https://www.wikidata.org/wiki/Q114869307",
+    "label": "Neo Babylonian Period",
+    "description": "period of the Babylonian civilization in Mesopotamia (ca 626–539 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q114869307",
+     "url": "https://www.wikidata.org/wiki/Q114869307",
+     "label": "Neo Babylonian Period",
+     "description": "period of the Babylonian civilization in Mesopotamia (ca 626–539 BCE)"
+    }
+   ],
+   "targetSurface": "Neo-Babylonian period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Вавилонии",
+   "sourceLemma": "Вавилония",
+   "context": "екоторыми несовпадениями в периодизации Вавилонии и Ассирии; наконец, Младовавилонский пе",
+   "charStart": 651,
+   "charEnd": 660,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q47690",
+    "url": "https://www.wikidata.org/wiki/Q47690",
+    "label": "Babylonia",
+    "description": "historical country"
+   },
+   "candidates": [
+    {
+     "qid": "Q47690",
+     "url": "https://www.wikidata.org/wiki/Q47690",
+     "label": "Babylonia",
+     "description": "historical country"
+    }
+   ],
+   "targetSurface": "Babylonia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Ассирии",
+   "sourceLemma": "Ассирии",
+   "context": "совпадениями в периодизации Вавилонии и Ассирии; наконец, Младовавилонский период (VI/V",
+   "charStart": 663,
+   "charEnd": 670,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Младовавилонский период",
+   "sourceLemma": "Младовавилонский период",
+   "context": "иодизации Вавилонии и Ассирии; наконец, Младовавилонский период (VI/V в. до н.э. – рубеж эр), когда Мес",
+   "charStart": 681,
+   "charEnd": 704,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Месопотамия",
+   "sourceLemma": "Месопотамия",
+   "context": "иод (VI/V в. до н.э. – рубеж эр), когда Месопотамия входила в состав иноземных империй. Ниж",
+   "charStart": 741,
+   "charEnd": 752,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Новоассирийский",
+   "sourceLemma": "Новоассирийский",
+   "context": "сячелетия до н.э.) и поздняя древность (Новоассирийский период и далее, I тысячелетие до н.э.).",
+   "charStart": 1020,
+   "charEnd": 1035,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q114869081",
+    "url": "https://www.wikidata.org/wiki/Q114869081",
+    "label": "Neo Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia (ca 911–612 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q114869081",
+     "url": "https://www.wikidata.org/wiki/Q114869081",
+     "label": "Neo Assyrian Period",
+     "description": "period of the Assyrian civilization in Mesopotamia (ca 911–612 BCE)"
+    }
+   ],
+   "targetSurface": "Neo-Assyrian period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  }
+ ],
+ "5": [
+  {
+   "sourceSurface": "Нижней Месопотамии",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "Время от первого заселения Нижней Месопотамии и до начала IV тысячелетия до н.э. выде",
+   "charStart": 27,
+   "charEnd": 45,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "IV тысячелетия до н.э.",
+   "sourceLemma": "IV тысячелетия до н.э.",
+   "context": "аселения Нижней Месопотамии и до начала IV тысячелетия до н.э. выделяется сейчас как время становления",
+   "charStart": 58,
+   "charEnd": 80,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "убейдской археологической культуры",
+   "sourceLemma": "убейдской археологической культуры",
+   "context": "я становления и развития так называемой убейдской археологической культуры (названной по поселению эль-Убейд в Ира",
+   "charStart": 147,
+   "charEnd": 181,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "эль-Убейд",
+   "sourceLemma": "эль-Убейд",
+   "context": "ческой культуры (названной по поселению эль-Убейд в Ираке). Ее носители вплотную подошли",
+   "charStart": 206,
+   "charEnd": 215,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q1317854",
+    "url": "https://www.wikidata.org/wiki/Q1317854",
+    "label": "Tell al-'Ubaid",
+    "description": "archaeological site in Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q1317854",
+     "url": "https://www.wikidata.org/wiki/Q1317854",
+     "label": "Tell al-'Ubaid",
+     "description": "archaeological site in Iraq"
+    }
+   ],
+   "targetSurface": "al-Ubaid",
+   "pairAccuracy": "yellow",
+   "recommended": "Tell al-'Ubaid",
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Ираке",
+   "sourceLemma": "Ираке",
+   "context": "уры (названной по поселению эль-Убейд в Ираке). Ее носители вплотную подошли к создан",
+   "charStart": 218,
+   "charEnd": 223,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Убейдская культура",
+   "sourceLemma": "Убейдская культура",
+   "context": "рамы, но так и не открыли письменности. Убейдская культура охватывала всю Месопотамию и ее восточн",
+   "charStart": 341,
+   "charEnd": 359,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q245156",
+    "url": "https://www.wikidata.org/wiki/Q245156",
+    "label": "Ubaid period",
+    "description": "archaeological culture"
+   },
+   "candidates": [
+    {
+     "qid": "Q245156",
+     "url": "https://www.wikidata.org/wiki/Q245156",
+     "label": "Ubaid period",
+     "description": "archaeological culture"
+    }
+   ],
+   "targetSurface": "Ubaid archaeological culture",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "убейдцев",
+   "sourceLemma": "убейдцев",
+   "context": "ее восточную окраину. Вопрос об этносе убейдцев не решен до конца.",
+   "charStart": 428,
+   "charEnd": 436,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  }
+ ],
+ "6": [
+  {
+   "sourceSurface": "культуры Урук",
+   "sourceLemma": "культуры Урук",
+   "context": "я до н.э. образует эпоху так называемой культуры Урук (характерные для нее памятники обнаруже",
+   "charStart": 67,
+   "charEnd": 80,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "городище Урук",
+   "sourceLemma": "городище Урук",
+   "context": "актерные для нее памятники обнаружены в городище Урук), отличающейся от убейдской культуры и",
+   "charStart": 125,
+   "charEnd": 138,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "убейдской культуры",
+   "sourceLemma": "убейдской культуры",
+   "context": "ужены в городище Урук), отличающейся от убейдской культуры и керамикой, и погребениями. Кроме того",
+   "charStart": 157,
+   "charEnd": 175,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "культуры Урук",
+   "sourceLemma": "культуры Урук",
+   "context": "амикой, и погребениями. Кроме того, для культуры Урук характерны первые памятники месопотамск",
+   "charStart": 221,
+   "charEnd": 234,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "месопотамской письменности",
+   "sourceLemma": "месопотамской письменности",
+   "context": "льтуры Урук характерны первые памятники месопотамской письменности – это глиняные хозяйственные документы,",
+   "charStart": 263,
+   "charEnd": 289,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "institution"
+  },
+  {
+   "sourceSurface": "шумерском языке",
+   "sourceLemma": "шумерском языке",
+   "context": "афическую (рисуночную) стадию письма на шумерском языке. Архив этих документов найден на самом",
+   "charStart": 409,
+   "charEnd": 424,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "городище Урук",
+   "sourceLemma": "городище Урук",
+   "context": ". Архив этих документов найден на самом городище Урук. Таким образом, носители культуры Урук",
+   "charStart": 464,
+   "charEnd": 477,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "культуры Урук",
+   "sourceLemma": "культуры Урук",
+   "context": "городище Урук. Таким образом, носители культуры Урук были шумерами.",
+   "charStart": 503,
+   "charEnd": 516,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "шумерами",
+   "sourceLemma": "шумерами",
+   "context": "им образом, носители культуры Урук были шумерами.",
+   "charStart": 522,
+   "charEnd": 530,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  }
+ ],
+ "7": [
+  {
+   "sourceSurface": "убейдской культуры",
+   "sourceLemma": "убейдской культуры",
+   "context": "Но кем были носители предшествующей, убейдской культуры? Многие авторы считают и их шумерами. О",
+   "charStart": 37,
+   "charEnd": 55,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "шумерами",
+   "sourceLemma": "шумерами",
+   "context": "ой культуры? Многие авторы считают и их шумерами. Однако перемена керамических стилей и",
+   "charStart": 84,
+   "charEnd": 92,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "шумерском языке",
+   "sourceLemma": "шумерском языке",
+   "context": "о связана с приходом нового этноса, а в шумерском языке обнаружены заимствования из какого-то б",
+   "charStart": 207,
+   "charEnd": 222,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Алалу",
+   "sourceLemma": "Алалу",
+   "context": "мена (в том числе имена богов, например Алалу, Кубаба, Забаба и др.). Такие имена был",
+   "charStart": 357,
+   "charEnd": 362,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "person"
+  },
+  {
+   "sourceSurface": "Кубаба",
+   "sourceLemma": "Кубаба",
+   "context": "том числе имена богов, например Алалу, Кубаба, Забаба и др.). Такие имена были распро",
+   "charStart": 364,
+   "charEnd": 370,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q107474864",
+    "url": "https://www.wikidata.org/wiki/Q107474864",
+    "label": "Kubaba",
+    "description": "hurro-Hittite goddess"
+   },
+   "candidates": [
+    {
+     "qid": "Q107474864",
+     "url": "https://www.wikidata.org/wiki/Q107474864",
+     "label": "Kubaba",
+     "description": "hurro-Hittite goddess"
+    }
+   ],
+   "targetSurface": "Kubaba",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "person"
+  },
+  {
+   "sourceSurface": "Забаба",
+   "sourceLemma": "Забаба",
+   "context": "ле имена богов, например Алалу, Кубаба, Забаба и др.). Такие имена были распространены",
+   "charStart": 372,
+   "charEnd": 378,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q147461",
+    "url": "https://www.wikidata.org/wiki/Q147461",
+    "label": "Zababa",
+    "description": "war god"
+   },
+   "candidates": [
+    {
+     "qid": "Q147461",
+     "url": "https://www.wikidata.org/wiki/Q147461",
+     "label": "Zababa",
+     "description": "war god"
+    }
+   ],
+   "targetSurface": "Zababa",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "person"
+  },
+  {
+   "sourceSurface": "Шумера",
+   "sourceLemma": "Шумер",
+   "context": "пространены у людей, живших к северу от Шумера, в стране, именовавшейся «Субир, «Субар",
+   "charStart": 447,
+   "charEnd": 453,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q35355",
+    "url": "https://www.wikidata.org/wiki/Q35355",
+    "label": "Sumer",
+    "description": "ancient Mesopotamian civilization from 5500 to 1800 BC"
+   },
+   "candidates": [
+    {
+     "qid": "Q35355",
+     "url": "https://www.wikidata.org/wiki/Q35355",
+     "label": "Sumer",
+     "description": "ancient Mesopotamian civilization from 5500 to 1800 BC"
+    }
+   ],
+   "targetSurface": "Sumer",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Субир",
+   "sourceLemma": "Субир",
+   "context": "еру от Шумера, в стране, именовавшейся «Субир, «Субар» (где тоже была распространена",
+   "charStart": 480,
+   "charEnd": 485,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Субар",
+   "sourceLemma": "Субар",
+   "context": "умера, в стране, именовавшейся «Субир, «Субар» (где тоже была распространена убейдска",
+   "charStart": 488,
+   "charEnd": 493,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q2096441",
+    "url": "https://www.wikidata.org/wiki/Q2096441",
+    "label": "Subartu",
+    "description": "Bronze age city-state mentioned in the Armana Letters"
+   },
+   "candidates": [
+    {
+     "qid": "Q2096441",
+     "url": "https://www.wikidata.org/wiki/Q2096441",
+     "label": "Subartu",
+     "description": "Bronze age city-state mentioned in the Armana Letters"
+    }
+   ],
+   "targetSurface": "Subar",
+   "pairAccuracy": "yellow",
+   "recommended": "Subartu",
+   "note": "place"
+  },
+  {
+   "sourceSurface": "убейдская культура",
+   "sourceLemma": "убейдская культура",
+   "context": ", «Субар» (где тоже была распространена убейдская культура), а сами шумеры считали, что их история",
+   "charStart": 525,
+   "charEnd": 543,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q245156",
+    "url": "https://www.wikidata.org/wiki/Q245156",
+    "label": "Ubaid period",
+    "description": "archaeological culture"
+   },
+   "candidates": [
+    {
+     "qid": "Q245156",
+     "url": "https://www.wikidata.org/wiki/Q245156",
+     "label": "Ubaid period",
+     "description": "archaeological culture"
+    }
+   ],
+   "targetSurface": "Ubaid culture",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Эреду",
+   "sourceLemma": "Эреду",
+   "context": "некогда началась с двух общин – одна в «Эреду» (город, который шумеры полагали своим",
+   "charStart": 624,
+   "charEnd": 629,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q210065",
+    "url": "https://www.wikidata.org/wiki/Q210065",
+    "label": "Eridu",
+    "description": "archaeological site in Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q210065",
+     "url": "https://www.wikidata.org/wiki/Q210065",
+     "label": "Eridu",
+     "description": "archaeological site in Iraq"
+    }
+   ],
+   "targetSurface": "Eridu",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "убейдская культура",
+   "sourceLemma": "убейдская культура",
+   "context": "всего этого, по-видимому, следует, что убейдская культура принадлежала особому дошумерскому народ",
+   "charStart": 770,
+   "charEnd": 788,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q245156",
+    "url": "https://www.wikidata.org/wiki/Q245156",
+    "label": "Ubaid period",
+    "description": "archaeological culture"
+   },
+   "candidates": [
+    {
+     "qid": "Q245156",
+     "url": "https://www.wikidata.org/wiki/Q245156",
+     "label": "Ubaid period",
+     "description": "archaeological culture"
+    }
+   ],
+   "targetSurface": "Ubaid culture",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "дошумерскому народу",
+   "sourceLemma": "дошумерскому народу",
+   "context": "убейдская культура принадлежала особому дошумерскому народу, к языку которого относились упомянутые",
+   "charStart": 810,
+   "charEnd": 829,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Шумеры",
+   "sourceLemma": "Шумеры",
+   "context": "относились упомянутые имена и термины. Шумеры же появились здесь лишь в начале IV тыс",
+   "charStart": 887,
+   "charEnd": 893,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q656043",
+    "url": "https://www.wikidata.org/wiki/Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity"
+   },
+   "candidates": [
+    {
+     "qid": "Q656043",
+     "url": "https://www.wikidata.org/wiki/Q656043",
+     "label": "Sumerians",
+     "description": "people of antiquity"
+    }
+   ],
+   "targetSurface": "The Sumerians",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Нижней Месопотамии",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "ем и ассимилировали его. В результате в Нижней Месопотамии началась эпоха Урук – первая эпоха шуме",
+   "charStart": 1019,
+   "charEnd": 1037,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "эпоха Урук",
+   "sourceLemma": "эпоха Урук",
+   "context": "езультате в Нижней Месопотамии началась эпоха Урук – первая эпоха шумерской истории, а к с",
+   "charStart": 1047,
+   "charEnd": 1057,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q731494",
+    "url": "https://www.wikidata.org/wiki/Q731494",
+    "label": "Uruk period",
+    "description": "archaeological culture"
+   },
+   "candidates": [
+    {
+     "qid": "Q731494",
+     "url": "https://www.wikidata.org/wiki/Q731494",
+     "label": "Uruk period",
+     "description": "archaeological culture"
+    }
+   ],
+   "targetSurface": "Uruk period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "шумерской истории",
+   "sourceLemma": "шумерской истории",
+   "context": "амии началась эпоха Урук – первая эпоха шумерской истории, а к северу от нее продолжали существов",
+   "charStart": 1073,
+   "charEnd": 1090,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "дошумерского этнического ареала",
+   "sourceLemma": "дошумерского этнического ареала",
+   "context": "продолжали существовать племена того же дошумерского этнического ареала. Шумеры называли их северный край «Суба",
+   "charStart": 1150,
+   "charEnd": 1181,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Шумеры",
+   "sourceLemma": "Шумеры",
+   "context": "ого же дошумерского этнического ареала. Шумеры называли их северный край «Субар», а на",
+   "charStart": 1183,
+   "charEnd": 1189,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q656043",
+    "url": "https://www.wikidata.org/wiki/Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity"
+   },
+   "candidates": [
+    {
+     "qid": "Q656043",
+     "url": "https://www.wikidata.org/wiki/Q656043",
+     "label": "Sumerians",
+     "description": "people of antiquity"
+    }
+   ],
+   "targetSurface": "The Sumerians",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Субар",
+   "sourceLemma": "Субар",
+   "context": "еала. Шумеры называли их северный край «Субар», а население – «людьми субар»; а поско",
+   "charStart": 1217,
+   "charEnd": 1222,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q2096441",
+    "url": "https://www.wikidata.org/wiki/Q2096441",
+    "label": "Subartu",
+    "description": "Bronze age city-state mentioned in the Armana Letters"
+   },
+   "candidates": [
+    {
+     "qid": "Q2096441",
+     "url": "https://www.wikidata.org/wiki/Q2096441",
+     "label": "Subartu",
+     "description": "Bronze age city-state mentioned in the Armana Letters"
+    }
+   ],
+   "targetSurface": "Subar",
+   "pairAccuracy": "yellow",
+   "recommended": "Subartu",
+   "note": "place"
+  },
+  {
+   "sourceSurface": "людьми субар",
+   "sourceLemma": "людьми субар",
+   "context": "х северный край «Субар», а население – «людьми субар»; а поскольку шумеры сохранили какую-то",
+   "charStart": 1240,
+   "charEnd": 1252,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Месопотамии",
+   "sourceLemma": "Месопотамия",
+   "context": "какую-то память о том, что их история в Месопотамии началась со смешения с тем же народом,",
+   "charStart": 1324,
+   "charEnd": 1335,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia’s",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Эреду",
+   "sourceLemma": "Эреду",
+   "context": "как плод симбиоза собственно шумерского Эреду и «Субара», представлявшего аборигенов.",
+   "charStart": 1442,
+   "charEnd": 1447,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q210065",
+    "url": "https://www.wikidata.org/wiki/Q210065",
+    "label": "Eridu",
+    "description": "archaeological site in Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q210065",
+     "url": "https://www.wikidata.org/wiki/Q210065",
+     "label": "Eridu",
+     "description": "archaeological site in Iraq"
+    }
+   ],
+   "targetSurface": "Eridu",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Субара",
+   "sourceLemma": "Субара",
+   "context": "симбиоза собственно шумерского Эреду и «Субара», представлявшего аборигенов.",
+   "charStart": 1451,
+   "charEnd": 1457,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  }
+ ],
+ "8": [
+  {
+   "sourceSurface": "Месопотамию",
+   "sourceLemma": "Месопотамию",
+   "context": "сячелетия до н.э. или несколько позже в Месопотамию переселилась из Северной Аравии особая",
+   "charStart": 55,
+   "charEnd": 66,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Северной Аравии",
+   "sourceLemma": "Северной Аравии",
+   "context": "ько позже в Месопотамию переселилась из Северной Аравии особая ветвь семитов – восточные семиты",
+   "charStart": 83,
+   "charEnd": 98,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "восточные семиты",
+   "sourceLemma": "восточные семиты",
+   "context": "Северной Аравии особая ветвь семитов – восточные семиты, получившие в науке название «аккадцев»",
+   "charStart": 122,
+   "charEnd": 138,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "аккадцев",
+   "sourceLemma": "аккадцев",
+   "context": "ые семиты, получившие в науке название «аккадцев». Часть восточных семитов расселилась в",
+   "charStart": 169,
+   "charEnd": 177,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "шумерами",
+   "sourceLemma": "шумерами",
+   "context": "в северной половине территории, занятой шумерами (в результате этот регион получил особо",
+   "charStart": 256,
+   "charEnd": 264,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Ки-Ури",
+   "sourceLemma": "Ки-Ури",
+   "context": "егион получил особое шумерское название Ки-Ури), а часть – вне нее, на Среднем Тигре.",
+   "charStart": 325,
+   "charEnd": 331,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Среднем Тигре",
+   "sourceLemma": "Среднем Тигре",
+   "context": "название Ки-Ури), а часть – вне нее, на Среднем Тигре. От первой группы восточных семитов, см",
+   "charStart": 356,
+   "charEnd": 369,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "шумерами",
+   "sourceLemma": "шумерами",
+   "context": "группы восточных семитов, смешавшейся с шумерами и в конце концов ассимилировавшей их вс",
+   "charStart": 421,
+   "charEnd": 429,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "вавилонян",
+   "sourceLemma": "вавилонян",
+   "context": "имилировавшей их всех, происходит народ вавилонян, а от второй – народ ассирийцев. Вавило",
+   "charStart": 490,
+   "charEnd": 499,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q797930",
+    "url": "https://www.wikidata.org/wiki/Q797930",
+    "label": "Babylonians",
+    "description": "people of antiquity"
+   },
+   "candidates": [
+    {
+     "qid": "Q797930",
+     "url": "https://www.wikidata.org/wiki/Q797930",
+     "label": "Babylonians",
+     "description": "people of antiquity"
+    }
+   ],
+   "targetSurface": "Babylonian people",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "ассирийцев",
+   "sourceLemma": "ассирийцев",
+   "context": "ит народ вавилонян, а от второй – народ ассирийцев. Вавилонский и ассирийский языки – это",
+   "charStart": 521,
+   "charEnd": 531,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "восточносемитского",
+   "sourceLemma": "восточносемитского",
+   "context": "ассирийский языки – это разные диалекты восточносемитского (аккадского) языка, которые на рубеже I",
+   "charStart": 587,
+   "charEnd": 605,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  }
+ ],
+ "9": [
+  {
+   "sourceSurface": "эпоху Джемдет-Наср",
+   "sourceLemma": "эпоху Джемдет-Наср",
+   "context": "После эпохи Урук археологи выделяют эпоху Джемдет-Наср (конец IV тысячелетия до н.э.), названн",
+   "charStart": 36,
+   "charEnd": 54,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Джемдет-Наср",
+   "sourceLemma": "Джемдет-Наср",
+   "context": "очной письменности. Иногда эпохи Урук и Джемдет-Наср объединяют в «Протописьменный период».",
+   "charStart": 243,
+   "charEnd": 255,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q342799",
+    "url": "https://www.wikidata.org/wiki/Q342799",
+    "label": "Jemdet Nasr",
+    "description": "archaeological site in Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q342799",
+     "url": "https://www.wikidata.org/wiki/Q342799",
+     "label": "Jemdet Nasr",
+     "description": "archaeological site in Iraq"
+    }
+   ],
+   "targetSurface": "Jemdet Nasr period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Протописьменный период",
+   "sourceLemma": "Протописьменный период",
+   "context": "эпохи Урук и Джемдет-Наср объединяют в «Протописьменный период». С переходом от пиктографии к полноцен",
+   "charStart": 270,
+   "charEnd": 292,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q97663118",
+    "url": "https://www.wikidata.org/wiki/Q97663118",
+    "label": "Протописьменный период",
+    "description": ""
+   },
+   "candidates": [
+    {
+     "qid": "Q97663118",
+     "url": "https://www.wikidata.org/wiki/Q97663118",
+     "label": "Протописьменный период",
+     "description": ""
+    }
+   ],
+   "targetSurface": "Proto-cuneiform period",
+   "pairAccuracy": "yellow",
+   "recommended": "Proto-literate period",
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Раннединастический период",
+   "sourceLemma": "Раннединастический период",
+   "context": "социальной жизни начинается следующий, Раннединастический период истории Месопотамии (конец IV тысячелет",
+   "charStart": 463,
+   "charEnd": 488,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q716742",
+    "url": "https://www.wikidata.org/wiki/Q716742",
+    "label": "Early Dynastic period",
+    "description": "archaeological culture of Mesopotamia"
+   },
+   "candidates": [
+    {
+     "qid": "Q716742",
+     "url": "https://www.wikidata.org/wiki/Q716742",
+     "label": "Early Dynastic period",
+     "description": "archaeological culture of Mesopotamia"
+    }
+   ],
+   "targetSurface": "Early Dynastic period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Месопотамии",
+   "sourceLemma": "Месопотамия",
+   "context": "ющий, Раннединастический период истории Месопотамии (конец IV тысячелетия – XXIV в. до н.э.",
+   "charStart": 497,
+   "charEnd": 508,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia’s",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "шумерских",
+   "sourceLemma": "шумерских",
+   "context": "до н.э.). Это было время существования шумерских городов-государств. Именно в Раннединас",
+   "charStart": 580,
+   "charEnd": 589,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Раннединастический период",
+   "sourceLemma": "Раннединастический период",
+   "context": "шумерских городов-государств. Именно в Раннединастический период вторым компонентом населения Нижней Мес",
+   "charStart": 619,
+   "charEnd": 644,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q716742",
+    "url": "https://www.wikidata.org/wiki/Q716742",
+    "label": "Early Dynastic period",
+    "description": "archaeological culture of Mesopotamia"
+   },
+   "candidates": [
+    {
+     "qid": "Q716742",
+     "url": "https://www.wikidata.org/wiki/Q716742",
+     "label": "Early Dynastic period",
+     "description": "archaeological culture of Mesopotamia"
+    }
+   ],
+   "targetSurface": "Early Dynastic period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Нижней Месопотамии",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "кий период вторым компонентом населения Нижней Месопотамии оказались живущие в симбиозе с шумерами",
+   "charStart": 674,
+   "charEnd": 692,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "шумерами",
+   "sourceLemma": "шумерами",
+   "context": "опотамии оказались живущие в симбиозе с шумерами восточные семиты – аккадцы. По археолог",
+   "charStart": 724,
+   "charEnd": 732,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "аккадцы",
+   "sourceLemma": "аккадцы",
+   "context": "симбиозе с шумерами восточные семиты – аккадцы. По археологическим критериям Раннедина",
+   "charStart": 752,
+   "charEnd": 759,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Раннединастический период",
+   "sourceLemma": "Раннединастический период",
+   "context": "– аккадцы. По археологическим критериям Раннединастический период подразделяется на три этапа (начало III",
+   "charStart": 790,
+   "charEnd": 815,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q716742",
+    "url": "https://www.wikidata.org/wiki/Q716742",
+    "label": "Early Dynastic period",
+    "description": "archaeological culture of Mesopotamia"
+   },
+   "candidates": [
+    {
+     "qid": "Q716742",
+     "url": "https://www.wikidata.org/wiki/Q716742",
+     "label": "Early Dynastic period",
+     "description": "archaeological culture of Mesopotamia"
+    }
+   ],
+   "targetSurface": "Early Dynastic period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "великий потоп",
+   "sourceLemma": "великий потоп",
+   "context": "памяти месопотамцев, – так называемый «великий потоп» (ок. 2950 г. до н.э.).",
+   "charStart": 1065,
+   "charEnd": 1078,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q134052",
+    "url": "https://www.wikidata.org/wiki/Q134052",
+    "label": "deluge myth",
+    "description": "narrative in which a great flood destroys a civilization, commonly as divine retribution"
+   },
+   "candidates": [
+    {
+     "qid": "Q134052",
+     "url": "https://www.wikidata.org/wiki/Q134052",
+     "label": "deluge myth",
+     "description": "narrative in which a great flood destroys a civilization, commonly as divine retribution"
+    }
+   ],
+   "targetSurface": "Great Flood",
+   "pairAccuracy": "yellow",
+   "recommended": "deluge myth",
+   "note": "event"
+  }
+ ],
+ "10": [
+  {
+   "sourceSurface": "Нижняя Месопотамия",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "В конце XXIV в. до н.э. вся Нижняя Месопотамия впервые объединяется в централизованную",
+   "charStart": 28,
+   "charEnd": 46,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "империю",
+   "sourceLemma": "империю",
+   "context": "впервые объединяется в централизованную империю с неограниченной властью царя, созданну",
+   "charStart": 87,
+   "charEnd": 94,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "institution"
+  },
+  {
+   "sourceSurface": "династией Аккада",
+   "sourceLemma": "династией Аккада",
+   "context": "неограниченной властью царя, созданную династией Аккада (XXIV–XXII вв.) и восстановленную так н",
+   "charStart": 136,
+   "charEnd": 152,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  },
+  {
+   "sourceSurface": "III династией Ура",
+   "sourceLemma": "III династией Ура",
+   "context": "I вв.) и восстановленную так называемой III династией Ура (конец XX–XXI в.). Державу Ура сокрушил",
+   "charStart": 202,
+   "charEnd": 219,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  },
+  {
+   "sourceSurface": "Державу Ура",
+   "sourceLemma": "Державу Ура",
+   "context": "ой III династией Ура (конец XX–XXI в.). Державу Ура сокрушило ок. 2003 г. до н.э. нашествие",
+   "charStart": 239,
+   "charEnd": 250,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "амореев",
+   "sourceLemma": "амореи",
+   "context": "нашествие новых семитских кочевников – амореев. Ее государственность пыталась продолжа",
+   "charStart": 320,
+   "charEnd": 327,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q203507",
+    "url": "https://www.wikidata.org/wiki/Q203507",
+    "label": "Amorites",
+    "description": "ancient Northwest Semitic-speaking people from the Levant"
+   },
+   "candidates": [
+    {
+     "qid": "Q203507",
+     "url": "https://www.wikidata.org/wiki/Q203507",
+     "label": "Amorites",
+     "description": "ancient Northwest Semitic-speaking people from the Levant"
+    }
+   ],
+   "targetSurface": "Amorites",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "I династия Иссина",
+   "sourceLemma": "I династия Иссина",
+   "context": "е государственность пыталась продолжать I династия Иссина (2017–1794), однако бóльшая часть стран",
+   "charStart": 370,
+   "charEnd": 387,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  },
+  {
+   "sourceSurface": "Месопотамия",
+   "sourceLemma": "Месопотамия",
+   "context": "раны вскоре вышла из-под ее контроля, и Месопотамия распалась на множество царств. Времена",
+   "charStart": 464,
+   "charEnd": 475,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "царств",
+   "sourceLemma": "царств",
+   "context": "я, и Месопотамия распалась на множество царств. Времена правления «имперских» династий",
+   "charStart": 499,
+   "charEnd": 505,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "династий Аккада",
+   "sourceLemma": "династий Аккада",
+   "context": "о царств. Времена правления «имперских» династий Аккада и Ура объединяют в период первых центра",
+   "charStart": 537,
+   "charEnd": 552,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  },
+  {
+   "sourceSurface": "Ура",
+   "sourceLemma": "Ур",
+   "context": "правления «имперских» династий Аккада и Ура объединяют в период первых централизова",
+   "charStart": 555,
+   "charEnd": 558,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q5699",
+    "url": "https://www.wikidata.org/wiki/Q5699",
+    "label": "Ur",
+    "description": "ancient Mesopotamian city-state"
+   },
+   "candidates": [
+    {
+     "qid": "Q5699",
+     "url": "https://www.wikidata.org/wiki/Q5699",
+     "label": "Ur",
+     "description": "ancient Mesopotamian city-state"
+    }
+   ],
+   "targetSurface": "Ur",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "период первых централизованных деспотий",
+   "sourceLemma": "период первых централизованных деспотий",
+   "context": "ких» династий Аккада и Ура объединяют в период первых централизованных деспотий в Двуречье (ок. 2316–2003 гг. до н.э.).",
+   "charStart": 572,
+   "charEnd": 611,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Двуречье",
+   "sourceLemma": "Двуречье",
+   "context": "риод первых централизованных деспотий в Двуречье (ок. 2316–2003 гг. до н.э.).",
+   "charStart": 614,
+   "charEnd": 622,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  }
+ ],
+ "11": [
+  {
+   "sourceSurface": "Месопотамии",
+   "sourceLemma": "Месопотамия",
+   "context": "Новое объединение Месопотамии осуществил лишь к середине XVIII в. до",
+   "charStart": 18,
+   "charEnd": 29,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia’s",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "вавилонский",
+   "sourceLemma": "вавилонский",
+   "context": "к середине XVIII в. до н.э. знаменитый вавилонский царь Хаммурапи, сам из аморейской динас",
+   "charStart": 85,
+   "charEnd": 96,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "царь",
+   "sourceLemma": "царь",
+   "context": "XVIII в. до н.э. знаменитый вавилонский царь Хаммурапи, сам из аморейской династии.",
+   "charStart": 97,
+   "charEnd": 101,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q12097",
+    "url": "https://www.wikidata.org/wiki/Q12097",
+    "label": "king",
+    "description": "title given to the name of a male monarch"
+   },
+   "candidates": [
+    {
+     "qid": "Q12097",
+     "url": "https://www.wikidata.org/wiki/Q12097",
+     "label": "king",
+     "description": "title given to the name of a male monarch"
+    }
+   ],
+   "targetSurface": "king",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "title"
+  },
+  {
+   "sourceSurface": "Хаммурапи",
+   "sourceLemma": "Хаммурапи",
+   "context": "в. до н.э. знаменитый вавилонский царь Хаммурапи, сам из аморейской династии. Время прав",
+   "charStart": 102,
+   "charEnd": 111,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q36359",
+    "url": "https://www.wikidata.org/wiki/Q36359",
+    "label": "Hammurabi",
+    "description": "sixth king of Babylon (r. 1792–1750 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q36359",
+     "url": "https://www.wikidata.org/wiki/Q36359",
+     "label": "Hammurabi",
+     "description": "sixth king of Babylon (r. 1792–1750 BCE)"
+    }
+   ],
+   "targetSurface": "Hammurabi",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "person"
+  },
+  {
+   "sourceSurface": "аморейской",
+   "sourceLemma": "аморейской",
+   "context": "итый вавилонский царь Хаммурапи, сам из аморейской династии. Время правления этой династии",
+   "charStart": 120,
+   "charEnd": 130,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "династии",
+   "sourceLemma": "династии",
+   "context": "нский царь Хаммурапи, сам из аморейской династии. Время правления этой династии в Вавило",
+   "charStart": 131,
+   "charEnd": 139,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  },
+  {
+   "sourceSurface": "династии",
+   "sourceLemma": "династии",
+   "context": "орейской династии. Время правления этой династии в Вавилоне рассматривается как особый С",
+   "charStart": 162,
+   "charEnd": 170,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  },
+  {
+   "sourceSurface": "Вавилоне",
+   "sourceLemma": "Вавилоне",
+   "context": "настии. Время правления этой династии в Вавилоне рассматривается как особый Старовавилон",
+   "charStart": 173,
+   "charEnd": 181,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Старовавилонский период",
+   "sourceLemma": "Старовавилонский период",
+   "context": "и в Вавилоне рассматривается как особый Старовавилонский период в истории Месопотамии (1895–1595 гг. до",
+   "charStart": 209,
+   "charEnd": 232,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q733897",
+    "url": "https://www.wikidata.org/wiki/Q733897",
+    "label": "Old Babylonian Empire",
+    "description": "c. 1894 BC – c. 1595 BC dynasty of Babylonia"
+   },
+   "candidates": [
+    {
+     "qid": "Q733897",
+     "url": "https://www.wikidata.org/wiki/Q733897",
+     "label": "Old Babylonian Empire",
+     "description": "c. 1894 BC – c. 1595 BC dynasty of Babylonia"
+    }
+   ],
+   "targetSurface": "Old Babylonian period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Месопотамии",
+   "sourceLemma": "Месопотамия",
+   "context": "собый Старовавилонский период в истории Месопотамии (1895–1595 гг. до н.э.). После нее влас",
+   "charStart": 243,
+   "charEnd": 254,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia’s",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "династии",
+   "sourceLemma": "династии",
+   "context": "сле нее власть над Вавилонией перешла к династии из пришлого народа горцев-касситов, ее",
+   "charStart": 322,
+   "charEnd": 330,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  },
+  {
+   "sourceSurface": "касситов",
+   "sourceLemma": "касситов",
+   "context": "ла к династии из пришлого народа горцев-касситов, ее правление образует следующий, Средн",
+   "charStart": 357,
+   "charEnd": 365,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q7988016",
+    "url": "https://www.wikidata.org/wiki/Q7988016",
+    "label": "Category:Kassite kings",
+    "description": "Wikimedia category"
+   },
+   "candidates": [
+    {
+     "qid": "Q7988016",
+     "url": "https://www.wikidata.org/wiki/Q7988016",
+     "label": "Category:Kassite kings",
+     "description": "Wikimedia category"
+    }
+   ],
+   "targetSurface": "Kassite",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Средневавилонский период",
+   "sourceLemma": "Средневавилонский период",
+   "context": "ситов, ее правление образует следующий, Средневавилонский период (ок. 1595–1150 гг. до н.э.). Касситскую",
+   "charStart": 400,
+   "charEnd": 424,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q16530848",
+    "url": "https://www.wikidata.org/wiki/Q16530848",
+    "label": "Middle Babylonian period",
+    "description": "period of the Babylonian civilization in Mesopotamia (ca 1595–1155 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q16530848",
+     "url": "https://www.wikidata.org/wiki/Q16530848",
+     "label": "Middle Babylonian period",
+     "description": "period of the Babylonian civilization in Mesopotamia (ca 1595–1155 BCE)"
+    }
+   ],
+   "targetSurface": "Middle Babylonian period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Касситскую династию",
+   "sourceLemma": "Касситскую династию",
+   "context": "кий период (ок. 1595–1150 гг. до н.э.). Касситскую династию низвергло нашествие других горцев – эла",
+   "charStart": 454,
+   "charEnd": 473,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  },
+  {
+   "sourceSurface": "эламитов",
+   "sourceLemma": "эламитов",
+   "context": "тию низвергло нашествие других горцев – эламитов, жителей Юго-Западного Ирана, и дальней",
+   "charStart": 510,
+   "charEnd": 518,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Юго-Западного Ирана",
+   "sourceLemma": "Юго-Западного Ирана",
+   "context": "ствие других горцев – эламитов, жителей Юго-Западного Ирана, и дальнейшее течение событий c конца I",
+   "charStart": 528,
+   "charEnd": 547,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Вавилонии",
+   "sourceLemma": "Вавилония",
+   "context": "ячелетия до н.э. до персидской аннексии Вавилонии в 539 г. ученые рассматривают как Новов",
+   "charStart": 632,
+   "charEnd": 641,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q47690",
+    "url": "https://www.wikidata.org/wiki/Q47690",
+    "label": "Babylonia",
+    "description": "historical country"
+   },
+   "candidates": [
+    {
+     "qid": "Q47690",
+     "url": "https://www.wikidata.org/wiki/Q47690",
+     "label": "Babylonia",
+     "description": "historical country"
+    }
+   ],
+   "targetSurface": "Babylonia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Нововавилонский период",
+   "sourceLemma": "Нововавилонский период",
+   "context": "лонии в 539 г. ученые рассматривают как Нововавилонский период. Стоит отметить, что крайний юг Нижней",
+   "charStart": 676,
+   "charEnd": 698,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q114869307",
+    "url": "https://www.wikidata.org/wiki/Q114869307",
+    "label": "Neo Babylonian Period",
+    "description": "period of the Babylonian civilization in Mesopotamia (ca 626–539 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q114869307",
+     "url": "https://www.wikidata.org/wiki/Q114869307",
+     "label": "Neo Babylonian Period",
+     "description": "period of the Babylonian civilization in Mesopotamia (ca 626–539 BCE)"
+    }
+   ],
+   "targetSurface": "Neo-Babylonian period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Нижней Месопотамии",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "период. Стоит отметить, что крайний юг Нижней Месопотамии, заселенный потомками аккадизированных",
+   "charStart": 731,
+   "charEnd": 749,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "шумеров",
+   "sourceLemma": "шумеров",
+   "context": ", заселенный потомками аккадизированных шумеров, нередко обособлялся от правителей в Ва",
+   "charStart": 789,
+   "charEnd": 796,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Вавилоне",
+   "sourceLemma": "Вавилоне",
+   "context": "ов, нередко обособлялся от правителей в Вавилоне (в частности при так называемой династи",
+   "charStart": 834,
+   "charEnd": 842,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "династии Приморья",
+   "sourceLemma": "династии Приморья",
+   "context": "авилоне (в частности при так называемой династии Приморья – 1722 – ок. 1460 гг. до н.э.).",
+   "charStart": 875,
+   "charEnd": 892,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "dynasty"
+  }
+ ],
+ "12": [
+  {
+   "sourceSurface": "Вавилоне",
+   "sourceLemma": "Вавилоне",
+   "context": "Еще во время правления в Вавилоне касситов, в XIV в. до н.э., город-госуд",
+   "charStart": 25,
+   "charEnd": 33,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "касситов",
+   "sourceLemma": "касситов",
+   "context": "Еще во время правления в Вавилоне касситов, в XIV в. до н.э., город-государство Аш",
+   "charStart": 34,
+   "charEnd": 42,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q7988016",
+    "url": "https://www.wikidata.org/wiki/Q7988016",
+    "label": "Category:Kassite kings",
+    "description": "Wikimedia category"
+   },
+   "candidates": [
+    {
+     "qid": "Q7988016",
+     "url": "https://www.wikidata.org/wiki/Q7988016",
+     "label": "Category:Kassite kings",
+     "description": "Wikimedia category"
+    }
+   ],
+   "targetSurface": "Kassite",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Ашшур",
+   "sourceLemma": "Ашшур",
+   "context": "ов, в XIV в. до н.э., город-государство Ашшур, лежавшее на крайней северной периферии",
+   "charStart": 80,
+   "charEnd": 85,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q200200",
+    "url": "https://www.wikidata.org/wiki/Q200200",
+    "label": "Assur",
+    "description": "archaeological site in Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q200200",
+     "url": "https://www.wikidata.org/wiki/Q200200",
+     "label": "Assur",
+     "description": "archaeological site in Iraq"
+    }
+   ],
+   "targetSurface": "Ashur",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "шумеро-аккадского",
+   "sourceLemma": "шумеро-аккадского",
+   "context": "лежавшее на крайней северной периферии шумеро-аккадского ареала, подчинило обширные окрестные те",
+   "charStart": 126,
+   "charEnd": 143,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Ассирийскую державу",
+   "sourceLemma": "Ассирийскую державу",
+   "context": "ритории и превратилось в могущественную Ассирийскую державу. Дальнейшую историю этого царства, впло",
+   "charStart": 224,
+   "charEnd": 243,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Вавилоном",
+   "sourceLemma": "Вавилоном",
+   "context": "того царства, вплоть до его уничтожения Вавилоном и его союзниками в конце VII в. до н.э.",
+   "charStart": 305,
+   "charEnd": 314,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Новоассирийский период",
+   "sourceLemma": "Новоассирийский период",
+   "context": ". до н.э., делят на Среднеассирийский и Новоассирийский периоды, гранью которых служит нашествие на Ме",
+   "charStart": 385,
+   "charEnd": 407,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q114869081",
+    "url": "https://www.wikidata.org/wiki/Q114869081",
+    "label": "Neo Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia (ca 911–612 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q114869081",
+     "url": "https://www.wikidata.org/wiki/Q114869081",
+     "label": "Neo Assyrian Period",
+     "description": "period of the Assyrian civilization in Mesopotamia (ca 911–612 BCE)"
+    }
+   ],
+   "targetSurface": "Neo-Assyrian",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Месопотамию",
+   "sourceLemma": "Месопотамию",
+   "context": "оды, гранью которых служит нашествие на Месопотамию очередной волны семитских кочевников –",
+   "charStart": 445,
+   "charEnd": 456,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "арамеев",
+   "sourceLemma": "арамеев",
+   "context": "очередной волны семитских кочевников – арамеев на рубеже XI–X вв. до н.э. При этом Сре",
+   "charStart": 496,
+   "charEnd": 503,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Среднеассирийский период",
+   "sourceLemma": "Среднеассирийский период",
+   "context": "еев на рубеже XI–X вв. до н.э. При этом Среднеассирийский период условно ведут с рубежа XVI–XV вв., а пр",
+   "charStart": 540,
+   "charEnd": 564,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q114868919",
+    "url": "https://www.wikidata.org/wiki/Q114868919",
+    "label": "Middle Assyrian Period",
+    "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1400–1000 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q114868919",
+     "url": "https://www.wikidata.org/wiki/Q114868919",
+     "label": "Middle Assyrian Period",
+     "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1400–1000 BCE)"
+    }
+   ],
+   "targetSurface": "Middle Assyrian period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Ашшура",
+   "sourceLemma": "Ашшура",
+   "context": "VI–XV вв., а предыдущие времена истории Ашшура не менее условно объединяются в Староас",
+   "charStart": 629,
+   "charEnd": 635,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Староассирийский период",
+   "sourceLemma": "Староассирийский период",
+   "context": "Ашшура не менее условно объединяются в Староассирийский период (XX–XVI вв. до н.э.).",
+   "charStart": 668,
+   "charEnd": 691,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q15782728",
+    "url": "https://www.wikidata.org/wiki/Q15782728",
+    "label": "Old-Assyrian period",
+    "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1950–1750 BCE)"
+   },
+   "candidates": [
+    {
+     "qid": "Q15782728",
+     "url": "https://www.wikidata.org/wiki/Q15782728",
+     "label": "Old-Assyrian period",
+     "description": "period of the Assyrian civilization in Mesopotamia and Anatolia (ca 1950–1750 BCE)"
+    }
+   ],
+   "targetSurface": "Old Assyrian period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  }
+ ],
+ "13": [
+  {
+   "sourceSurface": "Тигра",
+   "sourceLemma": "Тигра",
+   "context": "В низовья Тигра и Евфрата человек проник довольно поздн",
+   "charStart": 10,
+   "charEnd": 15,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Евфрата",
+   "sourceLemma": "Евфрата",
+   "context": "В низовья Тигра и Евфрата человек проник довольно поздно – в эпох",
+   "charStart": 18,
+   "charEnd": 25,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "неолита",
+   "sourceLemma": "неолита",
+   "context": "ник довольно поздно – в эпоху развитого неолита (VI тысячелетие до н.э.). Первыми насел",
+   "charStart": 77,
+   "charEnd": 84,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q36422",
+    "url": "https://www.wikidata.org/wiki/Q36422",
+    "label": "Neolithic",
+    "description": "prehistoric period when agriculture is adopted"
+   },
+   "candidates": [
+    {
+     "qid": "Q36422",
+     "url": "https://www.wikidata.org/wiki/Q36422",
+     "label": "Neolithic",
+     "description": "prehistoric period when agriculture is adopted"
+    }
+   ],
+   "targetSurface": "Neolithic period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Южного Двуречья",
+   "sourceLemma": "Южного Двуречья",
+   "context": "ячелетие до н.э.). Первыми насельниками Южного Двуречья были, как мы уже видели, субареи – выхо",
+   "charStart": 132,
+   "charEnd": 147,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "субареи",
+   "sourceLemma": "субареи",
+   "context": "жного Двуречья были, как мы уже видели, субареи – выходцы с северо-востока, от предгорь",
+   "charStart": 173,
+   "charEnd": 180,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q12158499",
+    "url": "https://www.wikidata.org/wiki/Q12158499",
+    "label": "Subarians",
+    "description": "hypothetical Ancient Mesopotamian people"
+   },
+   "candidates": [
+    {
+     "qid": "Q12158499",
+     "url": "https://www.wikidata.org/wiki/Q12158499",
+     "label": "Subarians",
+     "description": "hypothetical Ancient Mesopotamian people"
+    }
+   ],
+   "targetSurface": "Subarians",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Загросского хребта",
+   "sourceLemma": "Загросского хребта",
+   "context": "выходцы с северо-востока, от предгорьев Загросского хребта. К концу VI тысячелетия до н.э. они осв",
+   "charStart": 223,
+   "charEnd": 241,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Горького моря",
+   "sourceLemma": "Горького моря",
+   "context": "они освоили болотистый край вплоть до «Горького моря» и построили здесь древнейшие известные",
+   "charStart": 313,
+   "charEnd": 326,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Месопотамии",
+   "sourceLemma": "Месопотамия",
+   "context": "шие известные нам огороженные поселения Месопотамии – протогорода. Нижнемесопотамские субар",
+   "charStart": 393,
+   "charEnd": 404,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Mesopotamia’s",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "протогорода",
+   "sourceLemma": "протогорода",
+   "context": "нам огороженные поселения Месопотамии – протогорода. Нижнемесопотамские субареи создали осо",
+   "charStart": 407,
+   "charEnd": 418,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Нижнемесопотамские",
+   "sourceLemma": "Нижнемесопотамские",
+   "context": "ые поселения Месопотамии – протогорода. Нижнемесопотамские субареи создали особую, убейдскую архео",
+   "charStart": 420,
+   "charEnd": 438,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "субареи",
+   "sourceLemma": "субареи",
+   "context": "тамии – протогорода. Нижнемесопотамские субареи создали особую, убейдскую археологическ",
+   "charStart": 439,
+   "charEnd": 446,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q12158499",
+    "url": "https://www.wikidata.org/wiki/Q12158499",
+    "label": "Subarians",
+    "description": "hypothetical Ancient Mesopotamian people"
+   },
+   "candidates": [
+    {
+     "qid": "Q12158499",
+     "url": "https://www.wikidata.org/wiki/Q12158499",
+     "label": "Subarians",
+     "description": "hypothetical Ancient Mesopotamian people"
+    }
+   ],
+   "targetSurface": "Subarians",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "убейдскую археологическую культуру",
+   "sourceLemma": "убейдскую археологическую культуру",
+   "context": "немесопотамские субареи создали особую, убейдскую археологическую культуру (V – начало IV тысячелетия до н.э., или",
+   "charStart": 463,
+   "charEnd": 497,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "убейдское тысячелетие",
+   "sourceLemma": "убейдское тысячелетие",
+   "context": "V – начало IV тысячелетия до н.э., или «убейдское тысячелетие»). Вскоре ее носители-субареи овладели",
+   "charStart": 539,
+   "charEnd": 560,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "субареи",
+   "sourceLemma": "субареи",
+   "context": "дское тысячелетие»). Вскоре ее носители-субареи овладели знаниями выплавки меди (соотве",
+   "charStart": 583,
+   "charEnd": 590,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q12158499",
+    "url": "https://www.wikidata.org/wiki/Q12158499",
+    "label": "Subarians",
+    "description": "hypothetical Ancient Mesopotamian people"
+   },
+   "candidates": [
+    {
+     "qid": "Q12158499",
+     "url": "https://www.wikidata.org/wiki/Q12158499",
+     "label": "Subarians",
+     "description": "hypothetical Ancient Mesopotamian people"
+    }
+   ],
+   "targetSurface": "Subarians",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "убейдцев",
+   "sourceLemma": "убейдцев",
+   "context": "вующие термины были позднее переняты от убейдцев шумерами) и расселились на обширных про",
+   "charStart": 673,
+   "charEnd": 681,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "шумерами",
+   "sourceLemma": "шумерами",
+   "context": "рмины были позднее переняты от убейдцев шумерами) и расселились на обширных пространства",
+   "charStart": 682,
+   "charEnd": 690,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Загроса",
+   "sourceLemma": "Загроса",
+   "context": "обширных пространствах от Центрального Загроса через Верхнюю Месопотамию и Сирию к Сре",
+   "charStart": 748,
+   "charEnd": 755,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Верхнюю Месопотамию",
+   "sourceLemma": "Верхнюю Месопотамию",
+   "context": "транствах от Центрального Загроса через Верхнюю Месопотамию и Сирию к Средиземному морю, а также в",
+   "charStart": 762,
+   "charEnd": 781,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Сирию",
+   "sourceLemma": "Сирию",
+   "context": "ого Загроса через Верхнюю Месопотамию и Сирию к Средиземному морю, а также в Северо-В",
+   "charStart": 784,
+   "charEnd": 789,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Средиземному морю",
+   "sourceLemma": "Средиземному морю",
+   "context": "оса через Верхнюю Месопотамию и Сирию к Средиземному морю, а также в Северо-Восточной Аравии, вкл",
+   "charStart": 792,
+   "charEnd": 809,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Северо-Восточной Аравии",
+   "sourceLemma": "Северо-Восточной Аравии",
+   "context": "и Сирию к Средиземному морю, а также в Северо-Восточной Аравии, включая Бахрейн. Вся эта огромная терр",
+   "charStart": 821,
+   "charEnd": 844,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Бахрейн",
+   "sourceLemma": "Бахрейн",
+   "context": "акже в Северо-Восточной Аравии, включая Бахрейн. Вся эта огромная территория вместе с Н",
+   "charStart": 854,
+   "charEnd": 861,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q398",
+    "url": "https://www.wikidata.org/wiki/Q398",
+    "label": "Bahrain",
+    "description": "country in the Persian Gulf"
+   },
+   "candidates": [
+    {
+     "qid": "Q398",
+     "url": "https://www.wikidata.org/wiki/Q398",
+     "label": "Bahrain",
+     "description": "country in the Persian Gulf"
+    }
+   ],
+   "targetSurface": "Bahrain",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Нижней Месопотамией",
+   "sourceLemma": "Нижней Месопотамией",
+   "context": "н. Вся эта огромная территория вместе с Нижней Месопотамией составила относительно однородную этнок",
+   "charStart": 900,
+   "charEnd": 919,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "убейдской культуры",
+   "sourceLemma": "убейдской культуры",
+   "context": "ультурную ойкумену субареев – носителей убейдской культуры (см. с. 71).",
+   "charStart": 999,
+   "charEnd": 1017,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  }
+ ],
+ "14": [
+  {
+   "sourceSurface": "Нижней Месопотамии",
+   "sourceLemma": "Нижняя Месопотамия",
+   "context": "В начале IV тысячелетия до н.э. в Нижней Месопотамии расселяется новая народность – шумеры,",
+   "charStart": 34,
+   "charEnd": 52,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q11767",
+    "url": "https://www.wikidata.org/wiki/Q11767",
+    "label": "Mesopotamia",
+    "description": "historical region within the Tigris–Euphrates river system"
+   },
+   "candidates": [
+    {
+     "qid": "Q11767",
+     "url": "https://www.wikidata.org/wiki/Q11767",
+     "label": "Mesopotamia",
+     "description": "historical region within the Tigris–Euphrates river system"
+    }
+   ],
+   "targetSurface": "Lower Mesopotamia",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "шумеры",
+   "sourceLemma": "шумеры",
+   "context": "опотамии расселяется новая народность – шумеры, с приходом которых археологическая кул",
+   "charStart": 84,
+   "charEnd": 90,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q656043",
+    "url": "https://www.wikidata.org/wiki/Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity"
+   },
+   "candidates": [
+    {
+     "qid": "Q656043",
+     "url": "https://www.wikidata.org/wiki/Q656043",
+     "label": "Sumerians",
+     "description": "people of antiquity"
+    }
+   ],
+   "targetSurface": "Sumerians",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Убейд",
+   "sourceLemma": "Убейд",
+   "context": "иходом которых археологическая культура Убейд сменяется в этом регионе культурой Урук",
+   "charStart": 136,
+   "charEnd": 141,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q245156",
+    "url": "https://www.wikidata.org/wiki/Q245156",
+    "label": "Ubaid period",
+    "description": "archaeological culture"
+   },
+   "candidates": [
+    {
+     "qid": "Q245156",
+     "url": "https://www.wikidata.org/wiki/Q245156",
+     "label": "Ubaid period",
+     "description": "archaeological culture"
+    }
+   ],
+   "targetSurface": "Ubaid period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Урук",
+   "sourceLemma": "Урук",
+   "context": "бейд сменяется в этом регионе культурой Урук. Судя по позднейшим воспоминаниям шумер",
+   "charStart": 177,
+   "charEnd": 181,
+   "difficulty": "yellow",
+   "grounded": {
+    "qid": "Q168518",
+    "url": "https://www.wikidata.org/wiki/Q168518",
+    "label": "Uruk",
+    "description": "ancient city of Sumer and Babylonia"
+   },
+   "candidates": [
+    {
+     "qid": "Q168518",
+     "url": "https://www.wikidata.org/wiki/Q168518",
+     "label": "Uruk",
+     "description": "ancient city of Sumer and Babylonia"
+    }
+   ],
+   "targetSurface": "Uruk period",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Эреду",
+   "sourceLemma": "Эреду",
+   "context": "ачальным центром их поселения был город Эреду, т.е. район в самом низовье Евфрата. Пр",
+   "charStart": 271,
+   "charEnd": 276,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q210065",
+    "url": "https://www.wikidata.org/wiki/Q210065",
+    "label": "Eridu",
+    "description": "archaeological site in Iraq"
+   },
+   "candidates": [
+    {
+     "qid": "Q210065",
+     "url": "https://www.wikidata.org/wiki/Q210065",
+     "label": "Eridu",
+     "description": "archaeological site in Iraq"
+    }
+   ],
+   "targetSurface": "Eridu",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Евфрата",
+   "sourceLemma": "Евфрата",
+   "context": "город Эреду, т.е. район в самом низовье Евфрата. Приход шумеров в основном носил мирный",
+   "charStart": 305,
+   "charEnd": 312,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  }
+ ],
+ "15": [
+  {
+   "sourceSurface": "шумеров",
+   "sourceLemma": "шумеров",
+   "context": "Вопрос о прародине шумеров не разрешен до сих пор, так как их язык",
+   "charStart": 19,
+   "charEnd": 26,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "шумеры",
+   "sourceLemma": "шумеры",
+   "context": "С нашей точки зрения, вероятнее всего, шумеры пришли с востока, через Иран. Согласно",
+   "charStart": 385,
+   "charEnd": 391,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q656043",
+    "url": "https://www.wikidata.org/wiki/Q656043",
+    "label": "Sumerians",
+    "description": "people of antiquity"
+   },
+   "candidates": [
+    {
+     "qid": "Q656043",
+     "url": "https://www.wikidata.org/wiki/Q656043",
+     "label": "Sumerians",
+     "description": "people of antiquity"
+    }
+   ],
+   "targetSurface": "Sumerians",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Иран",
+   "sourceLemma": "Иран",
+   "context": "е всего, шумеры пришли с востока, через Иран. Согласно шумерским текстам III тысячел",
+   "charStart": 416,
+   "charEnd": 420,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q794",
+    "url": "https://www.wikidata.org/wiki/Q794",
+    "label": "Iran",
+    "description": "country in Western Asia"
+   },
+   "candidates": [
+    {
+     "qid": "Q794",
+     "url": "https://www.wikidata.org/wiki/Q794",
+     "label": "Iran",
+     "description": "country in Western Asia"
+    }
+   ],
+   "targetSurface": "Iran",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "шумерским",
+   "sourceLemma": "шумерским",
+   "context": "пришли с востока, через Иран. Согласно шумерским текстам III тысячелетия до н.э., повест",
+   "charStart": 431,
+   "charEnd": 440,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "III тысячелетия до н.э.",
+   "sourceLemma": "III тысячелетия до н.э.",
+   "context": "через Иран. Согласно шумерским текстам III тысячелетия до н.э., повествующим о контактах этого народа",
+   "charStart": 449,
+   "charEnd": 472,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "culture"
+  },
+  {
+   "sourceSurface": "Аратта",
+   "sourceLemma": "Аратта",
+   "context": "да с далекой центральноиранской страной Аратта (в районе совр. Йезда), в Аратте почита",
+   "charStart": 549,
+   "charEnd": 555,
+   "difficulty": "green",
+   "grounded": {
+    "qid": "Q626512",
+    "url": "https://www.wikidata.org/wiki/Q626512",
+    "label": "Aratta",
+    "description": "land that appears in Sumerian myths"
+   },
+   "candidates": [
+    {
+     "qid": "Q626512",
+     "url": "https://www.wikidata.org/wiki/Q626512",
+     "label": "Aratta",
+     "description": "land that appears in Sumerian myths"
+    }
+   ],
+   "targetSurface": "Aratta",
+   "pairAccuracy": "green",
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Йезда",
+   "sourceLemma": "Йезда",
+   "context": "иранской страной Аратта (в районе совр. Йезда), в Аратте почитают шумерских богов и н",
+   "charStart": 572,
+   "charEnd": 577,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "Аратте",
+   "sourceLemma": "Аратте",
+   "context": "траной Аратта (в районе совр. Йезда), в Аратте почитают шумерских богов и носят шумерс",
+   "charStart": 582,
+   "charEnd": 588,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  },
+  {
+   "sourceSurface": "шумеров",
+   "sourceLemma": "шумеров",
+   "context": "возможно, здесь мы видим след миграции шумеров в Месопотамию с востока.",
+   "charStart": 678,
+   "charEnd": 685,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "people"
+  },
+  {
+   "sourceSurface": "Месопотамию",
+   "sourceLemma": "Месопотамию",
+   "context": "здесь мы видим след миграции шумеров в Месопотамию с востока.",
+   "charStart": 688,
+   "charEnd": 699,
+   "difficulty": "red",
+   "grounded": null,
+   "candidates": [],
+   "targetSurface": null,
+   "pairAccuracy": null,
+   "recommended": null,
+   "note": "place"
+  }
+ ]
+}
