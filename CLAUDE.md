@@ -92,6 +92,7 @@ State the concrete finding (e.g. "`SettingsTab.tsx:172` already renders the regi
 10. Demo product UI copy is **English-only**. Russian belongs to owner-facing docs/reports/specs, never to frontend strings — a spec written in Russian must still spell out UI copy in English (2026-07-02: Russian UI copy shipped because a Russian-language spec dictated copy verbatim; don't repeat that).
 11. Any UI/design change ships only after a served pixel-real HTML mockup using the `--va-*` tokens (visual-companion rule). The design deliverable is spec + mockup URL, not spec alone.
 12. Naming: user-facing labels are "Source" / "Translation" (optionally with language, e.g. "Source · Russian"); code/API identifiers stay `source_*` / `target_*`. Never mix in "original" or "target text" as UI copy.
+13. Every subagent / pipeline-agent launch specifies `model:` explicitly — graphify (build, extract chunks, merge) included. Nothing ever inherits the session model; Fable is orchestrator-only (2026-07-03: graphify extraction ran on inherited Fable because the launch omitted `model:`; don't repeat that). Routing table: [.claude/process.md](.claude/process.md).
 
 ## Routing
 
