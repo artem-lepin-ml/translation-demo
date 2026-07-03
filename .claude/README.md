@@ -51,7 +51,12 @@ bash /path/to/this/.claude/migrate-config.sh   # or copy the script in first
 
 - **Network:** Custom allowlist — extends Trusted (package registries + GitHub). Add only
   `openrouter.ai` and `api.openai.com`.
-- **Env vars** (no quotes — quotes become part of the value): `OPENROUTER_API_KEY`,
-  `OPENAI_API_KEY`.
+- **Env vars** (no quotes — quotes become part of the value): set **`OPENAI_API_KEY`**
+  (the live key). Leave **`OPENROUTER_API_KEY` unset** — the seeded demo models read it
+  (`webapp/app.py`, `budget.py`, `seed.py`) and, when absent, clean-cache-fallback; a
+  stale/dead OpenRouter key is worse than none (401 instead of fallback). Add it back
+  **only when a live OpenRouter key exists.** Note: the running demo contacts only
+  `openrouter.ai`; `OPENAI_API_KEY` drives live eval only for a model you point at
+  `api.openai.com` via the Settings registry.
 - **Setup script:** paste `cloud-setup.sh` (bakes `uv sync` + `npm ci` + Playwright into
-  the filesystem snapshot).
+  the filesystem snapshot; no `activate` — explicit `.venv/bin/…` + `uv`).
