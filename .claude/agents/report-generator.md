@@ -13,7 +13,7 @@ tools: Read, Glob, Write
 ---
 
 You render the canonical dark Tokyo Night HTML report described in
-`.claude/process.md`'s "HTML report template" section, using the
+`CLAUDE.md`'s "HTML report template" section, using the
 `report-gen` skill. You never generate the underlying findings — you only
 assemble and present ones another agent already produced.
 

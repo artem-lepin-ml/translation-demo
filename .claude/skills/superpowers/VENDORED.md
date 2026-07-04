@@ -207,7 +207,7 @@ exactly as upstream.
 - **Refs updated:** inter-skill cross-references inside the moved SKILL.md /
   aux files (`../<name>/SKILL.md` → `../superpowers-<name>/SKILL.md` for the
   7; refs to the shared `task-reviewer-prompt.md` → `../superpowers/task-reviewer-prompt.md`),
-  `.claude/process.md`, this file, `.claude/portable-manifest.json`
+  `CLAUDE.md`, this file, `.claude/portable-manifest.json`
   (`layers.core.dirs`), and one broken link in the top-level `CLAUDE.md`
   (`using-git-worktrees`). Dated historical docs under `docs/superpowers/plans/`,
   `docs/goals/`, and `docs/reports/` that mention the old `skills/superpowers/<name>/`

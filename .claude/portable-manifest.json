@@ -43,12 +43,7 @@
         {
           "path": "CLAUDE.md",
           "type": "stub",
-          "stub": "# CLAUDE.md\n\nProject conventions and routing for agents working in this repository.\nThis file was scaffolded by `scripts/claude-workflow-init.sh` and is never\noverwritten by re-running the installer. Replace this stub with the routing,\nconventions and hard invariants for THIS project.\n\n## Workflow\n\nThe full development process lives in [.claude/process.md](.claude/process.md).\nDurable rules and hard invariants live under [.claude/rules/](.claude/rules/).\n\n## Conventions\n\n- Conventional Commits in English; subject imperative, scope = module/concern.\n- Branch + PR for new work; never commit directly to the trunk branch.\n- Doc-parity: a code/contract change updates its doc in the same commit.\n- Single source of truth: every fact lives in one file; others link, never copy.\n\n## Routing\n\n| Topic | Doc |\n|---|---|\n| Development process | [.claude/process.md](.claude/process.md) |\n| Durable rules and invariants | [.claude/rules/](.claude/rules/) |\n"
-        },
-        {
-          "path": ".claude/process.md",
-          "type": "copy",
-          "from": ".claude/process.md"
+          "stub": "# CLAUDE.md\n\nProject conventions and routing for agents working in this repository.\nThis file was scaffolded by `scripts/claude-workflow-init.sh` and is never\noverwritten by re-running the installer. Replace this stub with the routing,\nconventions and hard invariants for THIS project.\n\n## Workflow\n\nThe development process (Scenario A/B, model routing, report template) is documented inline in the source repo's root `CLAUDE.md`; copy the sections you need into this file.\nDurable rules and hard invariants live under [.claude/rules/](.claude/rules/).\n\n## Conventions\n\n- Conventional Commits in English; subject imperative, scope = module/concern.\n- Branch + PR for new work; never commit directly to the trunk branch.\n- Doc-parity: a code/contract change updates its doc in the same commit.\n- Single source of truth: every fact lives in one file; others link, never copy.\n\n## Routing\n\n| Topic | Doc |\n|---|---|\n| Development process | this `CLAUDE.md` (inline) |\n| Durable rules and invariants | [.claude/rules/](.claude/rules/) |\n"
         },
         {
           "path": "docs/reports/.gitkeep",

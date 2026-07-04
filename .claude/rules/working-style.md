@@ -1,8 +1,9 @@
 # Working style (owner preferences)
 
 Durable behavioral preferences distilled from standing feedback. Language policy,
-communication style and the HTML report template are canonical in
-[.claude/process.md](../process.md) — this file carries only what is not covered there.
+communication style and the HTML report template are canonical in the repo-root
+[CLAUDE.md](../../CLAUDE.md) (§ Language policy, § Reports & communication style) —
+this file carries only what is not covered there.
 
 ## Communication extras
 - **Research → clickable direct link + one-line gloss** for every cited resource
@@ -18,8 +19,9 @@ communication style and the HTML report template are canonical in
 - **Dark Tokyo Night palette** (owner-approved). Canonical tokens:
   [tokyo-night.css](tokyo-night.css) (same directory). Green = pass, yellow = open/warn,
   red = fail, blue = data.
-- Delivery rules (served HTML locally / Claude Artifact in cloud) → process.md
-  § HTML report template. Never hand off a bare `.md` path — the owner can't open
+- Delivery rules (served HTML locally / Claude Artifact in cloud) → repo-root
+  [CLAUDE.md](../../CLAUDE.md) § Reports & communication style / HTML report
+  template. Never hand off a bare `.md` path — the owner can't open
   another worktree's files from his checkout.
 
 ## Naming & PRs

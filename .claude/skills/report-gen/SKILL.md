@@ -5,7 +5,7 @@ description: >-
   docs/experiments/ source data into docs/reports/html/, filling only the
   canonical template's designated content slots — never its CSS or layout.
   Use at workflow steps 6 (Verify) and 8 (Finish), or for any long piece of
-  work that needs the final HTML report per .claude/process.md's "HTML report
+  work that needs the final HTML report per CLAUDE.md's "HTML report
   template" section.
 ---
 
@@ -30,7 +30,7 @@ presentation only — it does not generate findings, run tests, or review code.
 3. **Data source**: `docs/reports/` and `docs/experiments/` — read the actual
    review/audit/test output the caller points at. Never fabricate a score,
    verdict, or evidence link; a claim without a backing artifact does not go
-   into the report (mirrors process.md block 5, "Run artifacts").
+   into the report (mirrors CLAUDE.md's HTML report template block 5, "Run artifacts").
 4. **Output**: write the filled report to `docs/reports/html/<slug>.html`
    (slug = `YYYY-MM-DD-topic`, matching the naming already used under
    `docs/experiments/`).
@@ -45,7 +45,7 @@ presentation only — it does not generate findings, run tests, or review code.
 
 [templates/report-template.html](templates/report-template.html) is the
 canonical structure — six blocks in the fixed order from
-`.claude/process.md`:
+`CLAUDE.md`'s HTML report template:
 
 1. **Главное** (`main-verdict`, `overall-badge`) — 1-2 sentence outcome +
    verdict.

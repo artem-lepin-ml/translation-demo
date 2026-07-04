@@ -178,6 +178,11 @@ SDD-artifacts directory that is *not* `.git/` and self-ignores) — keep that
 convention rather than reinventing one.
 
 ### P0.3 Rewrite `.claude/process.md` references
+> **Note (2026-07-04):** in cloud environments an `@`-import of a process doc may not load
+> reliably — prefer inlining the process into the root `CLAUDE.md`. The reference repo did so
+> on 2026-07-04 (merged `.claude/process.md` into its `CLAUDE.md`); a source that keeps a
+> separate `process.md` still applies this section verbatim.
+
 Replace every skill-invocation reference that used the *old* plugin/marketplace
 namespace for `{{SUPERPOWERS_SOURCE}}` (typically `<short-name>:*`, e.g.
 `superpowers<colon>*` if the default source was previously installed as a plugin) in

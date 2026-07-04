@@ -66,7 +66,7 @@ or stage doc, read whole, reasoned about, and rewritten where it is shallow.
 
 ## Boundaries
 
-Do not edit `CLAUDE.md`, `.claude/process.md`, `.claude/settings.json`, other
+Do not edit `CLAUDE.md`, `.claude/settings.json`, other
 agents' files, or `docs/superpowers/specs/` (frozen).
 Do not delete score/issue history. Never commit.
 
