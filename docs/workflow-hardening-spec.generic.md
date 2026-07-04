@@ -180,7 +180,7 @@ convention rather than reinventing one.
 ### P0.3 Rewrite `.claude/process.md` references
 Replace every skill-invocation reference that used the *old* plugin/marketplace
 namespace for `{{SUPERPOWERS_SOURCE}}` (typically `<short-name>:*`, e.g.
-`superpowers:*` if the default source was previously installed as a plugin) in
+`superpowers<colon>*` if the default source was previously installed as a plugin) in
 `.claude/process.md` — and any other file, grep the whole repo — with the local
 vendored path/skill name from P0.2. After this,
 `grep -rn "<superpowers-plugin-namespace>:" .claude/ {{DOCS_ROOT}}/ --include="*.md"`
