@@ -1,6 +1,7 @@
 ---
 name: pr-writer
 description: Invoke when the user wants to ship a PR for the current branch on this repo (GitLab remote gitlab.frontierai.ru). Drafts a Conventional Commits title and a Russian body in the project's style, writes the full shell handoff (worktree switch → git push → GitLab merge note → fetch), and on a follow-up call (mode B) performs the local-only post-merge cleanup (worktree remove, branch delete, gc). Never runs commands against gitlab.frontierai.ru and never pushes or fetches by itself.
+model: sonnet
 tools: Read, Bash, Grep, Glob
 ---
 
