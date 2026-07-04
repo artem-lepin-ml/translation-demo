@@ -54,7 +54,7 @@ digraph process {
         "Implementer subagent asks questions?" [shape=diamond];
         "Answer questions, provide context" [shape=box];
         "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
-        "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" [shape=box];
+        "Write diff file, dispatch task reviewer subagent (../superpowers/task-reviewer-prompt.md)" [shape=box];
         "Task reviewer reports spec ✅ and quality approved?" [shape=diamond];
         "Dispatch fix subagent for Critical/Important findings" [shape=box];
         "Mark task complete in todo list and progress ledger" [shape=box];
@@ -63,22 +63,22 @@ digraph process {
     "Read plan, note context and global constraints, create todos" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [shape=box];
-    "Use ../finishing-a-development-branch/SKILL.md" [shape=box style=filled fillcolor=lightgreen];
+    "Use ../superpowers-finishing-a-development-branch/SKILL.md" [shape=box style=filled fillcolor=lightgreen];
 
     "Read plan, note context and global constraints, create todos" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
-    "Implementer subagent implements, tests, commits, self-reviews" -> "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)";
-    "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" -> "Task reviewer reports spec ✅ and quality approved?";
+    "Implementer subagent implements, tests, commits, self-reviews" -> "Write diff file, dispatch task reviewer subagent (../superpowers/task-reviewer-prompt.md)";
+    "Write diff file, dispatch task reviewer subagent (../superpowers/task-reviewer-prompt.md)" -> "Task reviewer reports spec ✅ and quality approved?";
     "Task reviewer reports spec ✅ and quality approved?" -> "Dispatch fix subagent for Critical/Important findings" [label="no"];
-    "Dispatch fix subagent for Critical/Important findings" -> "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" [label="re-review"];
+    "Dispatch fix subagent for Critical/Important findings" -> "Write diff file, dispatch task reviewer subagent (../superpowers/task-reviewer-prompt.md)" [label="re-review"];
     "Task reviewer reports spec ✅ and quality approved?" -> "Mark task complete in todo list and progress ledger" [label="yes"];
     "Mark task complete in todo list and progress ledger" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [label="no"];
-    "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" -> "Use ../finishing-a-development-branch/SKILL.md";
+    "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" -> "Use ../superpowers-finishing-a-development-branch/SKILL.md";
 }
 ```
 
@@ -266,7 +266,7 @@ a ledger file, not only in todos.
 ## Prompt Templates
 
 - [implementer-prompt.md](implementer-prompt.md) - Dispatch implementer subagent
-- [task-reviewer-prompt.md](task-reviewer-prompt.md) - Dispatch task reviewer subagent (spec compliance + code quality)
+- [task-reviewer-prompt.md](../superpowers/task-reviewer-prompt.md) - Dispatch task reviewer subagent (spec compliance + code quality)
 - Final whole-branch review: use the requesting-code-review skill (not vendored in this repo) — [code-reviewer.md](../requesting-code-review/code-reviewer.md)
 
 ## Example Workflow
@@ -406,10 +406,10 @@ Done!
 ## Integration
 
 **Required workflow skills:**
-- **[using-git-worktrees](../using-git-worktrees/SKILL.md)** - Ensures isolated workspace (creates one or verifies existing)
-- **[writing-plans](../writing-plans/SKILL.md)** - Creates the plan this skill executes
+- **[using-git-worktrees](../superpowers-using-git-worktrees/SKILL.md)** - Ensures isolated workspace (creates one or verifies existing)
+- **[writing-plans](../superpowers-writing-plans/SKILL.md)** - Creates the plan this skill executes
 - **requesting-code-review** (not vendored in this repo) - Code review template for the final whole-branch review
-- **[finishing-a-development-branch](../finishing-a-development-branch/SKILL.md)** - Complete development after all tasks
+- **[finishing-a-development-branch](../superpowers-finishing-a-development-branch/SKILL.md)** - Complete development after all tasks
 
 **Subagents should use:**
 - **test-driven-development** (not vendored in this repo) - Subagents follow TDD for each task

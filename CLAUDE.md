@@ -20,7 +20,7 @@ Repo topology after the 2026-07-01 reorg:
 Multiple sessions/agents run at the same time. To keep their commits from colliding, each concurrent task is fully isolated:
 
 1. **Its own `feat/<topic>` branch off `dev-demo`** — never off `main`, never a branch another agent is already using.
-2. **Its own worktree** under `../worktrees/<topic>/` ([using-git-worktrees](.claude/skills/superpowers/using-git-worktrees/SKILL.md)).
+2. **Its own worktree** under `../worktrees/<topic>/` ([using-git-worktrees](.claude/skills/superpowers-using-git-worktrees/SKILL.md)).
 
 An agent works **only inside its assigned worktree path**. It must never `cd` or `git checkout` into `dev-demo`'s worktree or another agent's worktree — that is the only way parallel commits stay conflict-free. Each `feat/*` branch merges back into `dev-demo` on its own. The primary checkout hosts `old-gse-translating`; `dev-demo` keeps its own dedicated worktree that feature agents do not touch.
 

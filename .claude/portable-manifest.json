@@ -7,6 +7,13 @@
       "policy": "Vendored infrastructure. On EVERY run: a missing core file is (re)installed; an identical file is a no-op; a target file that DIFFERS is preserved and reported as a collision (never clobbered).",
       "dirs": [
         ".claude/skills/superpowers",
+        ".claude/skills/superpowers-brainstorming",
+        ".claude/skills/superpowers-writing-plans",
+        ".claude/skills/superpowers-subagent-driven-development",
+        ".claude/skills/superpowers-dispatching-parallel-agents",
+        ".claude/skills/superpowers-systematic-debugging",
+        ".claude/skills/superpowers-using-git-worktrees",
+        ".claude/skills/superpowers-finishing-a-development-branch",
         ".claude/skills/report-gen",
         ".claude/skills/lessons",
         ".claude/hooks",

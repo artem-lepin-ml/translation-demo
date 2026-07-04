@@ -13,7 +13,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
-**Context:** If working in an isolated worktree, it should have been created via the [using-git-worktrees](../using-git-worktrees/SKILL.md) skill at execution time.
+**Context:** If working in an isolated worktree, it should have been created via the [using-git-worktrees](../superpowers-using-git-worktrees/SKILL.md) skill at execution time.
 
 **Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
 - (User preferences for plan location override this default)
@@ -58,7 +58,7 @@ independently testable deliverable.
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use [subagent-driven-development](../subagent-driven-development/SKILL.md) (recommended) or executing-plans (not vendored in this repo) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use [subagent-driven-development](../superpowers-subagent-driven-development/SKILL.md) (recommended) or executing-plans (not vendored in this repo) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -166,7 +166,7 @@ After saving the plan, offer execution choice:
 **Which approach?"**
 
 **If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use [subagent-driven-development](../subagent-driven-development/SKILL.md)
+- **REQUIRED SUB-SKILL:** Use [subagent-driven-development](../superpowers-subagent-driven-development/SKILL.md)
 - Fresh subagent per task + two-stage review
 
 **If Inline Execution chosen:**

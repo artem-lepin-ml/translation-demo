@@ -13,13 +13,17 @@ out below.
 
 | # | Skill | Upstream path | Vendored path |
 |---|-------|----------------|----------------|
-| 1 | brainstorming | `skills/brainstorming/` | `.claude/skills/superpowers/brainstorming/` |
-| 2 | writing-plans | `skills/writing-plans/` | `.claude/skills/superpowers/writing-plans/` |
-| 3 | subagent-driven-development | `skills/subagent-driven-development/` | `.claude/skills/superpowers/subagent-driven-development/` |
-| 4 | dispatching-parallel-agents | `skills/dispatching-parallel-agents/` | `.claude/skills/superpowers/dispatching-parallel-agents/` |
-| 5 | systematic-debugging | `skills/systematic-debugging/` | `.claude/skills/superpowers/systematic-debugging/` |
-| 6 | using-git-worktrees | `skills/using-git-worktrees/` | `.claude/skills/superpowers/using-git-worktrees/` |
-| 7 | finishing-a-development-branch | `skills/finishing-a-development-branch/` | `.claude/skills/superpowers/finishing-a-development-branch/` |
+| 1 | brainstorming | `skills/brainstorming/` | `.claude/skills/superpowers-brainstorming/` |
+| 2 | writing-plans | `skills/writing-plans/` | `.claude/skills/superpowers-writing-plans/` |
+| 3 | subagent-driven-development | `skills/subagent-driven-development/` | `.claude/skills/superpowers-subagent-driven-development/` |
+| 4 | dispatching-parallel-agents | `skills/dispatching-parallel-agents/` | `.claude/skills/superpowers-dispatching-parallel-agents/` |
+| 5 | systematic-debugging | `skills/systematic-debugging/` | `.claude/skills/superpowers-systematic-debugging/` |
+| 6 | using-git-worktrees | `skills/using-git-worktrees/` | `.claude/skills/superpowers-using-git-worktrees/` |
+| 7 | finishing-a-development-branch | `skills/finishing-a-development-branch/` | `.claude/skills/superpowers-finishing-a-development-branch/` |
+
+(Vendored path column reflects the post-2026-07-04-flatten depth-1 location;
+see "Local modifications — flattened to depth-1" below. Originally each
+folder vendored under a shared `.claude/skills/superpowers/<name>/` parent.)
 
 Each folder was vendored **whole** (SKILL.md + every auxiliary file living
 alongside it upstream), except brainstorming's `scripts/` (see below).
@@ -27,39 +31,43 @@ alongside it upstream), except brainstorming's `scripts/` (see below).
 ### File inventory
 
 ```
-brainstorming/SKILL.md
-brainstorming/spec-document-reviewer-prompt.md
-brainstorming/visual-companion.md
-brainstorming/brainstorm-server/frame-template.html
-brainstorming/brainstorm-server/helper.js
-brainstorming/brainstorm-server/server.cjs
-brainstorming/brainstorm-server/start-server.sh
-brainstorming/brainstorm-server/stop-server.sh
-writing-plans/SKILL.md
-writing-plans/plan-document-reviewer-prompt.md
-subagent-driven-development/SKILL.md
-subagent-driven-development/implementer-prompt.md
-subagent-driven-development/task-reviewer-prompt.md
-subagent-driven-development/scripts/review-package
-subagent-driven-development/scripts/sdd-workspace
-subagent-driven-development/scripts/task-brief
-dispatching-parallel-agents/SKILL.md
-systematic-debugging/SKILL.md
-systematic-debugging/CREATION-LOG.md
-systematic-debugging/condition-based-waiting-example.ts
-systematic-debugging/condition-based-waiting.md
-systematic-debugging/defense-in-depth.md
-systematic-debugging/find-polluter.sh
-systematic-debugging/root-cause-tracing.md
-systematic-debugging/test-academic.md
-systematic-debugging/test-pressure-1.md
-systematic-debugging/test-pressure-2.md
-systematic-debugging/test-pressure-3.md
-using-git-worktrees/SKILL.md
-finishing-a-development-branch/SKILL.md
-task-reviewer-prompt.md
-VENDORED.md
+superpowers-brainstorming/SKILL.md
+superpowers-brainstorming/spec-document-reviewer-prompt.md
+superpowers-brainstorming/visual-companion.md
+superpowers-brainstorming/brainstorm-server/frame-template.html
+superpowers-brainstorming/brainstorm-server/helper.js
+superpowers-brainstorming/brainstorm-server/server.cjs
+superpowers-brainstorming/brainstorm-server/start-server.sh
+superpowers-brainstorming/brainstorm-server/stop-server.sh
+superpowers-writing-plans/SKILL.md
+superpowers-writing-plans/plan-document-reviewer-prompt.md
+superpowers-subagent-driven-development/SKILL.md
+superpowers-subagent-driven-development/implementer-prompt.md
+superpowers-subagent-driven-development/task-reviewer-prompt.md
+superpowers-subagent-driven-development/scripts/review-package
+superpowers-subagent-driven-development/scripts/sdd-workspace
+superpowers-subagent-driven-development/scripts/task-brief
+superpowers-dispatching-parallel-agents/SKILL.md
+superpowers-systematic-debugging/SKILL.md
+superpowers-systematic-debugging/CREATION-LOG.md
+superpowers-systematic-debugging/condition-based-waiting-example.ts
+superpowers-systematic-debugging/condition-based-waiting.md
+superpowers-systematic-debugging/defense-in-depth.md
+superpowers-systematic-debugging/find-polluter.sh
+superpowers-systematic-debugging/root-cause-tracing.md
+superpowers-systematic-debugging/test-academic.md
+superpowers-systematic-debugging/test-pressure-1.md
+superpowers-systematic-debugging/test-pressure-2.md
+superpowers-systematic-debugging/test-pressure-3.md
+superpowers-using-git-worktrees/SKILL.md
+superpowers-finishing-a-development-branch/SKILL.md
+superpowers/task-reviewer-prompt.md
+superpowers/VENDORED.md
 ```
+
+(Paths above are relative to `.claude/skills/`. `superpowers-subagent-driven-development/task-reviewer-prompt.md`
+is now an unreferenced leftover copy of `superpowers/task-reviewer-prompt.md` —
+see "Local modifications — flattened to depth-1" below.)
 
 ## Supporting assets
 
@@ -71,9 +79,11 @@ the equivalent asset (a zero-dependency WebSocket/HTTP server for the
 brainstorming skill's visual companion) lives at
 `skills/brainstorming/scripts/` and consists of `server.cjs`, `helper.js`,
 `start-server.sh`, `stop-server.sh`, `frame-template.html`. This is the asset
-the spec's destination path (`.claude/skills/superpowers/brainstorming/brainstorm-server/`)
-clearly refers to, so it was vendored there, **renamed from `scripts/` to
-`brainstorm-server/`** per the spec's explicit destination.
+the spec's destination path (originally `.claude/skills/superpowers/brainstorming/brainstorm-server/`,
+now `.claude/skills/superpowers-brainstorming/brainstorm-server/` — see
+"Local modifications — flattened to depth-1" below) clearly refers to, so it
+was vendored there, **renamed from `scripts/` to `brainstorm-server/`** per
+the spec's explicit destination.
 
 ### `task-reviewer-prompt.md` (v6.0 unified reviewer)
 
@@ -97,6 +107,14 @@ Vendored to **both**:
 
 Both copies are byte-identical to the upstream file; no rewrite needed since
 it contains no upstream-layout-assuming paths.
+
+**2026-07-04 update:** after the depth-1 flatten (see "Local modifications —
+flattened to depth-1" below), `superpowers-subagent-driven-development/SKILL.md`
+now points at the holder copy via `../superpowers/task-reviewer-prompt.md`
+instead of its own local `./task-reviewer-prompt.md`. The local copy at
+`.claude/skills/superpowers-subagent-driven-development/task-reviewer-prompt.md`
+is consequently an unreferenced duplicate, left in place rather than deleted
+(not asked for; still byte-identical to the holder copy).
 
 ## Local modifications (relative-path rewrites)
 
@@ -172,6 +190,26 @@ exactly as upstream.
   `test-driven-development`, `executing-plans`, `verification-before-completion`)
   were converted to plain prose naming the skill plus "(not vendored in this
   repo)" instead, so nothing points at a path that doesn't exist. Touched:
-  - `.claude/skills/superpowers/subagent-driven-development/SKILL.md`
-  - `.claude/skills/superpowers/writing-plans/SKILL.md`
-  - `.claude/skills/superpowers/systematic-debugging/SKILL.md`
+  - `.claude/skills/superpowers-subagent-driven-development/SKILL.md`
+  - `.claude/skills/superpowers-writing-plans/SKILL.md`
+  - `.claude/skills/superpowers-systematic-debugging/SKILL.md`
+
+## Local modifications (2026-07-04 — flattened to depth-1 for skill discovery)
+
+- **Bug:** Claude Code only auto-discovers skills at `.claude/skills/<name>/SKILL.md`
+  (depth 1). All 7 skills lived at `.claude/skills/superpowers/<name>/SKILL.md`
+  (depth 2), so none of them were registered as invocable skills.
+- **Fix:** flattened the 7 skill dirs from `superpowers/<name>/` to
+  `superpowers-<name>/` (depth-1) via `git mv`, so Claude Code auto-discovers
+  them as invocable skills. `VENDORED.md` and `task-reviewer-prompt.md`
+  remain in `.claude/skills/superpowers/`, which now holds only those two
+  files (provenance/holder dir, not a skill dir itself).
+- **Refs updated:** inter-skill cross-references inside the moved SKILL.md /
+  aux files (`../<name>/SKILL.md` → `../superpowers-<name>/SKILL.md` for the
+  7; refs to the shared `task-reviewer-prompt.md` → `../superpowers/task-reviewer-prompt.md`),
+  `.claude/process.md`, this file, `.claude/portable-manifest.json`
+  (`layers.core.dirs`), and one broken link in the top-level `CLAUDE.md`
+  (`using-git-worktrees`). Dated historical docs under `docs/superpowers/plans/`,
+  `docs/goals/`, and `docs/reports/` that mention the old `skills/superpowers/<name>/`
+  paths were left untouched — they are point-in-time records, not live routing
+  docs.
