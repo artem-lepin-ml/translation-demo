@@ -67,6 +67,15 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/subagent-activity-marker.py\""
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/experiment-approval-gate.py\""
+          }
+        ]
       }
     ],
     "SubagentStop": [
