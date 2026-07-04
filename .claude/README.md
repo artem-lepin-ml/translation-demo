@@ -9,8 +9,8 @@ source of config in the cloud.
 | Path | What it is |
 |---|---|
 | `process.md` | The development process (8-step Scenario A/B, model routing, report template). `@`-imported from the root `CLAUDE.md`. Ex-global `~/.claude/CLAUDE.md`, repathed. |
-| `rules/invariants.md` | Hard invariants that never expire (prediction preservation, `data/raw` immutability, LLM-via-client, English-only UI, commit rules). Portable home for what auto-memory used to hold — auto-memory does **not** rehydrate in cloud. |
-| `rules/working-style.md` | Durable owner preferences (Russian owner-facing / English thinking, report palette, naming, PR style). |
+| `rules/invariants.md` | Durable owner rules beyond the CLAUDE.md Hard Invariants (prediction preservation, secrets). Portable home for what auto-memory used to hold — auto-memory does **not** rehydrate in cloud. |
+| `rules/working-style.md` | Durable owner preferences not covered by process.md (research links, estimates/scope, report palette, naming, PR style). |
 | `agents/` | Project subagents: `docs-keeper`, `doc-syncer`, `e2e-tester`, `pr-writer`. |
 | `skills/` | User skills this repo uses: `verify-spec` (+ `aspects-catalog.md`), `verify-pr`, `graphify`, `looper`, `playwright-cli`. |
 | `commands/` | Slash commands (`looper`). |

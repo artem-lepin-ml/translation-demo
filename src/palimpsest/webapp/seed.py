@@ -19,7 +19,7 @@ from .judge import derive_severity, sanitize_issue
 from .model_matrix import MATRIX, DEFAULT_CRITERION_MODEL
 
 # label_first is the terminology grounding package's judge-prompt constant, not
-# an LLMClient import — no invariant-#6 conflict (repo CLAUDE.md hard invariant 6).
+# an LLMClient import — no conflict with the LLM-access-via-LLMClient design.
 from ..terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_PROMPT
 
 SEED_FILE = paths.DATA / "seed" / "seed_paragraphs.jsonl"

@@ -150,8 +150,8 @@ class BudgetGuard:
 
 
 def _build_judge(guard: BudgetGuard):
-    """Lazy-import LLMClient (Hard Invariant #6: no direct `openai` import
-    outside palimpsest.llm.client), pointed at OpenAI direct per the task brief
+    """Lazy-import LLMClient (no direct `openai` import outside
+    palimpsest.llm.client by design), pointed at OpenAI direct per the task brief
     (the repo-default OpenRouter base/key are dead)."""
     from palimpsest.llm.client import LLMClient, LLMConfig
 

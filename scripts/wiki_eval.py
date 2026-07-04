@@ -152,8 +152,8 @@ def _build_extract_fn(guard: BudgetGuard | None = None):
     Mirrors term_pipeline.py's `extract --real` path (same prompt, validated
     substrings only) but wrapped as the single-paragraph `extract_fn` predict.py
     expects. Lazy-imports LLMClient so --dry-run/--help stay importable without
-    `openai` installed (Hard Invariant #6: LLMClient-only, no direct openai
-    import outside palimpsest.llm.client).
+    `openai` installed (LLMClient-only by design, no direct openai import
+    outside palimpsest.llm.client).
     """
     from palimpsest.llm.client import LLMClient, LLMConfig
 

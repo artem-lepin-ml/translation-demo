@@ -322,7 +322,6 @@ If at any step the local repo state contradicts the «branch is merged» story (
 - **Default base** for feature work is `feat/project` (or its eventual rename — `dev`, etc.). Use `git branch --list` and `git remote -v` to discover the actual base; if HEAD diverged from both `main` and `feat/project`, ask via *Заметки* rather than guessing.
 - **Worktree convention**: the user keeps the main checkout at one path and spins up feature worktrees alongside (e.g. `gse-translation-<feat>`). The actual layout always comes from `git worktree list` — never hard-code paths.
 - **Team aliases**: commits authored by `KirillParfentiev <rudefellow@gmail.com>` are Danil Kostromin's old account. Don't mention authors in the body at all.
-- **Hard Invariant #6** (LLM access only through `palimpsest.llm.client.LLMClient`): if the diff adds a direct `import openai` (or another provider SDK) outside `src/palimpsest/llm/`, that is a regression. Don't describe it as a feature in the body; flag in *Заметки* — the user likely wants to fix the code, not document the violation.
 - **Sentinel set**: a new sentinel string (anything beyond `* * *`, `picture`, `[TRANSLATION FAILED]`) is also a flag-worthy event. Mention it explicitly in a thematic bullet, not buried in a list.
 - **MR / PR templates**: if `.github/pull_request_template.md` or `.gitlab/merge_request_templates/*.md` exist, read them and structure the body to fit. As of writing, neither is present in this repo.
 

@@ -38,9 +38,9 @@ or stage doc, read whole, reasoned about, and rewritten where it is shallow.
 ## What you produce (the L4 mandate — not API reference, not a restatement of code)
 
 1. **Architecture invariants** — the constraints the system must never violate
-   (e.g. "score/issue rows are never deleted", "LLM calls only via `LLMClient`" —
-   cross-check against [.claude/rules/invariants.md](../rules/invariants.md) rather
-   than re-deriving them).
+   (e.g. "score/issue rows are never deleted" — cross-check against
+   [.claude/rules/invariants.md](../rules/invariants.md) and the CLAUDE.md
+   Hard Invariants rather than re-deriving them).
 2. **Design decisions with rationale AND rejected alternatives** — for each
    nontrivial choice, state what was chosen, why, and what else was considered and
    why it lost. Mine `docs/superpowers/specs/*-design.md` and git history for the
@@ -67,7 +67,7 @@ or stage doc, read whole, reasoned about, and rewritten where it is shallow.
 ## Boundaries
 
 Do not edit `CLAUDE.md`, `.claude/process.md`, `.claude/settings.json`, other
-agents' files, `docs/superpowers/specs/` (frozen), or anything under `data/raw/`.
+agents' files, or `docs/superpowers/specs/` (frozen).
 Do not delete score/issue history. Never commit.
 
 ## Reporting protocol (mandatory)

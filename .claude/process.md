@@ -2,7 +2,7 @@
 
 ## Language policy
 
-Think, plan and talk to subagents in English (token economy). ALL owner-facing output is in Russian: chat replies, reports (md/HTML), specs/plans, D-journal entries, flags to the owner. Project docs keep their existing language (Russian).
+Think, plan and talk to subagents in English (token economy). ALL owner-facing output is in Russian: chat replies, reports (md / HTML / Claude artifacts), specs/plans, D-journal entries, flags to the owner. Project documentation (README, docs/, CLAUDE.md, agent/skill definitions) is written in English.
 
 ## Process
 
@@ -93,7 +93,7 @@ Registered battle-tier agents (18: 14 vendored + 4 native), each lane made mutua
 **Specialized tool, not part of the 8-step flow:** research/experiment work does not follow Scenario A/B — it goes through `experiment-runner`'s own owner-approval gate (writes TASK/BUDGET/PLAN → owner creates APPROVED → git-ratcheted modify→train→eval loop via the looper skill).
 
 ### Convention: config lives in the repo (cloud-ready)
-This file (`.claude/process.md`) carries the process common to the work: the 8 steps, A/B scenarios, routing, calls to agents/skills (e2e-tester, docs-keeper, doc-syncer, pr-writer, /verify-spec, /verify-pr — doc-syncer does mechanical stage-doc sync after code edits, docs-keeper does L1→L4 parity upkeep), graphify rules, documentation convention, hard invariants. It is `@`-imported from the repo-root `CLAUDE.md`.
+This file (`.claude/process.md`) carries the process common to the work: the 8 steps, A/B scenarios, routing, calls to agents/skills (e2e-tester, docs-keeper, doc-syncer, pr-writer, /verify-spec, /verify-pr — doc-syncer does mechanical stage-doc sync after code edits, docs-keeper does L1→L4 parity upkeep), graphify rules, documentation convention, general working rules. It is `@`-imported from the repo-root `CLAUDE.md` (which owns the Hard Invariants list).
 - Repo-root `CLAUDE.md` — project specifics: stack, repo map, test tiers and commands, data manifest (`docs/testing/e2e-data.md`), project invariants, path overrides — plus `@.claude/process.md`.
 - Agents live in `.claude/agents/`, skills in `.claude/skills/`, commands in `.claude/commands/`, durable rules in `.claude/rules/`. Everything is in-repo so cloud sessions (claude.ai/code) see it — nothing depends on a machine-local `~/.claude`.
 - Placing a new rule: process/routing → here; project fact → repo CLAUDE.md; a durable invariant → its own file under `.claude/rules/`. Single source of truth, never duplicate.
@@ -108,8 +108,7 @@ graphify is a skill (invoke via the Skill tool, not bash; its python package ins
 - Auto-start: on the SessionStart hook injection, build the graph via a background agent without blocking the main work.
 
 ### Useful skills & MCP
-- context7
-- clone-website — used mostly as a template that defines the algorithm for porting a real site into our code.
+- context7 — current library/framework/SDK docs; usage rule in CLAUDE.md § Agents, skills & docs lookup (context7 first, web search for official docs as fallback).
 - Browser e2e, in order of preference: (1) **`playwright-cli` skill** — primary for interactive/adversarial runs (~4x cheaper than MCP: disk snapshots read selectively, `snapshot --depth/--scope`; named sessions `-s=<topic>` isolate parallel runs/worktrees); (2) **scripted `npx playwright test`** — cheapest for regression suites (model sees pass/fail + report, not DOM); (3) **playwright MCP** (`--isolated`) — fallback for interactive a11y-ref reasoning only; (4) **chrome-devtools MCP** — perf/network/console debugging, not e2e driving.
 
 ## Reports & communication style
@@ -128,7 +127,7 @@ An HTML page in `docs/reports/`, **dark theme**, visual graphics over walls of t
 5. **Run artifacts (evidence)** — attached confirmations of every claim: test run outputs (counts, 0-failures lines), e2e proof (screenshots embedded/linked from `shots/`, scenario table with provenance), audit verdicts, commit hashes. A claim without an artifact doesn't go in the report.
 6. **Next steps / owner decisions needed.**
 
-**Always serve HTML reports locally on completion:** a background `python3 -m http.server <port> --bind 127.0.0.1` from the report directory (ports 8096+, check availability) and give me the direct link `http://localhost:<port>/<file>.html`. Work is not finished until the report is served.
+**Delivery — the report must actually reach the owner; a bare `.md`/file path is not delivery.** Local sessions: serve on completion via a background `python3 -m http.server <port> --bind 127.0.0.1` from the report directory (ports 8096+, check availability) and give the direct link `http://localhost:<port>/<file>.html`. Cloud sessions (claude.ai/code): localhost is unreachable for the owner — publish the same template as a **Claude Artifact** and give the artifact link. Work is not finished until the report is delivered one of these ways.
 
 The report itself can be rendered via `report-generator` (report-gen skill + `tokyo-night.css`) from already-produced findings in `docs/reports/`/`docs/experiments/`, instead of hand-authoring — it assembles presentation only, it does not perform the analysis.
 
@@ -139,9 +138,10 @@ The report itself can be rendered via `report-generator` (report-gen skill + `to
 - **Real-time / as a hook.** A doc updates **in the same commit** as the contract/code. Docs are pushed before code-hunts.
 - **Cut the old.** Legacy docs are deleted or get a `⚠️ LEGACY` banner — they don't accumulate. Never present target (not yet implemented) code as existing: the target lives in `specs/`, the current state in the memory bank.
 
-## Hard Invariants
+## General working rules
 
-### General working rules
+The canonical two-tier Hard Invariants list (general + project-specific) lives in the repo-root [CLAUDE.md](../CLAUDE.md); these are process-level principles on top of it.
+
 1. **Module isolation via interfaces.** Every module/entity is independent and interacts ONLY through its declared interface (API contract / schema) and nothing else. This reduces code complexity for agents.
-2. **Documentation and tests are first-class** (see the eponymous sections): doc-parity in the same commit; tests — by a separate agent, from the docs.
+2. **Documentation and tests are first-class.** Tests are written by a separate agent, from the docs (doc-parity in the same commit — CLAUDE.md Hard Invariant 2).
 3. **Honesty.** Never claim "checks passed" without a real run of acceptance tests; explicitly separate "ran" vs "didn't run + why".

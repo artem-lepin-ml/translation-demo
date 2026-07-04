@@ -26,7 +26,7 @@ Palimpsest is an interactive translation-evaluation web app: a paragraph-level L
 - **Budget-guarded real LLM calls.** Every live judge call goes through a hard spend/call cap (`budget.py`, $2 / 200 calls per process) plus a precompute sub-cap, so the app degrades to cached scores rather than running unbounded cost on a public demo — [webapp.md — Precompute](../subsystems/webapp.md#precompute).
 - **Evidence-first e2e.** Verification runs a real browser through the full user journey (never DB-seeded via URL), against the manifest in [e2e-data.md](../testing/e2e-data.md), with screenshots as provenance for every claimed state.
 - **Dark Tokyo-Night UI.** One design system, `variant-a.css`, governs every screen — see [webapp-ui-design.md](../subsystems/webapp-ui-design.md). New UI extends it; it is never reinvented in parallel.
-- **English-only UI.** Frontend copy is English regardless of the language the spec was written in — see [CLAUDE.md Hard Invariants #10](../../CLAUDE.md#hard-invariants).
+- **English-only UI.** Frontend copy is English regardless of the language the spec was written in — see [CLAUDE.md Hard Invariants #9](../../CLAUDE.md#hard-invariants).
 
 ## Working rules for the demo
 
