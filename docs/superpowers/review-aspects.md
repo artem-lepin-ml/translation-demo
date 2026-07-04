@@ -59,4 +59,8 @@ Up-link: [CLAUDE.md](../../CLAUDE.md) · [docs/README.md](../README.md). Кан�
 
 ### C6. Граница term-агента (интеграция)
 - **SPEC:** `Term[]` / `term_pairs.json` — единственная поверхность? Демо не лезет во внутренности агента и наоборот? Контракт самодостаточен для независимой параллельной разработки? Моки → реальные данные без смены контракта?
+
+### C7. Соответствие спецификации (spec-fidelity)
+- **SPEC:** n/a — этот аспект применяется на этапе PR (M7 /verify-pr), не к самой спеке.
+- **PR:** the diff faithfully implements the originating spec/tickets — verified against the artifacts item by item, each AC traced to evidence (not vibes). Mandatory in every /verify-pr run (per .claude/workflow.md § M7). Каждый пункт спеки/тикета сопоставлен с конкретным изменением и с исполненной проверкой; нетрассируемых требований нет.
 <!-- /custom -->

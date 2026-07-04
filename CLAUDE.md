@@ -24,7 +24,7 @@ Spec-driven development. We craft a high-quality spec together; you then execute
 6. **Verify** — skill `/verify-pr`: the orchestrator picks ≥5 aspects from `docs/superpowers/review-aspects.md`; aspect agents with full rights write and run unit/integration tests, check code and data (isolated DB only). In parallel — a browser run by the `e2e-tester` agent + a mandatory audit of its report (Sonnet auditor, PASS/FAIL gate: provenance/screenshot failures send the run back). At Verify/Ship, also dispatch `docs-architect-l4` for any architecture-depth documentation (invariants/rationale/data-flow/failure-modes) — separate from `docs-keeper`'s L1→L4 parity check. Deliver the full PR-quality report per the **Reports** section (HTML, 360 diagram). Serious problems found → step 7; nothing critical and all scores positive → step 8.
 7. **Fix** — [systematic-debugging](.claude/skills/superpowers-systematic-debugging/SKILL.md): carefully analyze the code and context, find the deep root cause and fix it. If the problem is systemic or complex, log it to docs/PROBLEMS.md; after finding all occurrences, run deep research + a tournament via dynamic workflow to find the best solution. After fixing everything, redo step 6 from a clean slate.
 </loop>
-8. **Finish** — run the `e2e-tester` agent (real data ONLY from the `docs/testing/e2e-data.md` manifest; the full user journey in the browser — e.g. the teacher's and the student's path, not DB-seeding via URL — for ALL scenarios described in the PR) + the audit of its report; then `docs-keeper` — final doc-parity check across the whole PR; then `/graphify <root> --update` via a background agent. Failure → back into the loop at step 6. Success → final HTML report per **Reports** in [docs/reports/](docs/reports/). If there is something to test, deploy a full test environment for me and await my tests and review. Approved → [finishing-a-development-branch](.claude/skills/superpowers-finishing-a-development-branch/SKILL.md), PR `feat/<topic>` → `dev-demo`. Not approved → understand why, improve step 6 so it would catch the problems I found, and return to step 6.
+8. **Finish** — run the `e2e-tester` agent (real data ONLY from the `docs/testing/e2e-data.md` manifest; the full user journey in the browser — e.g. the teacher's and the student's path, not DB-seeding via URL — for ALL scenarios described in the PR) + the audit of its report; then `docs-keeper` — final doc-parity check across the whole PR; then `/graphify <root> --update` via a background agent (pinned `model: sonnet` — hard cap: never opus/fable). Failure → back into the loop at step 6. Success → final HTML report per **Reports** in [docs/reports/](docs/reports/). If there is something to test, deploy a full test environment for me and await my tests and review. Approved → [finishing-a-development-branch](.claude/skills/superpowers-finishing-a-development-branch/SKILL.md), PR `feat/<topic>` → `dev-demo`. Not approved → understand why, improve step 6 so it would catch the problems I found, and return to step 6.
 
 If the task is very large: decompose and execute with several parallel background agents — a swarm via [dispatching-parallel-agents](.claude/skills/superpowers-dispatching-parallel-agents/SKILL.md).
 
@@ -131,8 +131,8 @@ Use a hierarchical structure: chief aggregator → per-topic aggregators → sev
 ### Knowledge graph (graphify)
 graphify is a skill (invoke via the Skill tool, not bash; its python package installs itself on the first run).
 - Auto-use: questions about architecture/relations/"where does X live" → `/graphify query "<question>"` first; grep only if the graph can't answer. Pass `graphify-out/GRAPH_REPORT.md` to recon and review agents as input context.
-- Auto-update: at feature end (step 8) — `/graphify <root> --update` via a background agent.
-- Auto-start: on the SessionStart hook injection, build the graph via a background agent without blocking the main work.
+- Auto-update: at feature end (step 8) — `/graphify <root> --update` via a background agent (pinned `model: sonnet` — hard cap: never opus/fable).
+- Auto-start: on the SessionStart hook injection, build the graph via a background agent (pinned `model: sonnet` — hard cap: never opus/fable) without blocking the main work.
 
 ### Useful skills & MCP
 - Browser e2e, in order of preference: (1) **`playwright-cli` skill** — primary for interactive/adversarial runs (~4x cheaper than MCP: disk snapshots read selectively, `snapshot --depth/--scope`; named sessions `-s=<topic>` isolate parallel runs/worktrees); (2) **scripted `npx playwright test`** — cheapest for regression suites (model sees pass/fail + report, not DOM); (3) **playwright MCP** (`--isolated`) — fallback for interactive a11y-ref reasoning only; (4) **chrome-devtools MCP** — perf/network/console debugging, not e2e driving.
@@ -232,6 +232,7 @@ These are process-level principles on top of the Hard Invariants above.
 | Terminology module — difficulty + pairAccuracy | [docs/stages/terminology.md](docs/stages/terminology.md) |
 | Wiki-eval harness — G6 grounding eval | [docs/stages/wiki-eval.md](docs/stages/wiki-eval.md) |
 | Docs index (L1) | [docs/README.md](docs/README.md) |
+| Domain language (ubiquitous terms) | [CONTEXT.md](CONTEXT.md) |
 | E2E test data manifest | [docs/testing/e2e-data.md](docs/testing/e2e-data.md) |
 | Review-aspects catalog for /verify-spec & /verify-pr | [docs/superpowers/review-aspects.md](docs/superpowers/review-aspects.md) |
 | Known issues & gotchas | [docs/known_issues.md](docs/known_issues.md) |

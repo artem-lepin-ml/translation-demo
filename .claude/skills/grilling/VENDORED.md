@@ -1,0 +1,8 @@
+- **Source repo:** https://github.com/mattpocock/skills
+- **Upstream path:** skills/productivity/grilling/
+- **Pinned commit SHA:** `272f99b22574f50e4266791c86b9302682970e23`
+- **Upstream commit date:** 2026-07-03
+- **Vendor date:** 2026-07-04
+- **License:** MIT (SPDX: MIT) — Copyright (c) 2026 Matt Pocock. Full text at the upstream LICENSE; not copied here.
+- **Supply-chain review:** CLEAN (adversarial opus review, 2026-07-04) — no runtime-fetch / permission-change / meta-instruction.
+- **Local modifications:** SKILL.md vendored verbatim (no changes needed).

@@ -38,10 +38,10 @@ try {
   if (root) {
     const st = graphStatus(root);
     if (st?.kind === 'missing') {
-      inject(`В проекте ${root} нет графа знаний graphify. Построй его фоновым агентом через Skill: /graphify ${root} — не блокируя основную работу.`);
+      inject(`В проекте ${root} нет графа знаний graphify. Построй его фоновым агентом на модели sonnet (жёсткий кап — не opus/fable) через Skill: /graphify ${root} — не блокируя основную работу.`);
     } else if (st?.kind === 'stale') {
       try { sh('pgrep -f graphify'); process.exit(0); } catch { /* not running — ok */ }
-      inject(`Граф знаний graphify устарел: ${st.commits} коммитов после последней сборки. Запусти фоновым агентом /graphify ${root} --update.`);
+      inject(`Граф знаний graphify устарел: ${st.commits} коммитов после последней сборки. Запусти фоновым агентом на модели sonnet (жёсткий кап — не opus/fable) /graphify ${root} --update.`);
     }
     process.exit(0);
   }
@@ -61,7 +61,7 @@ try {
   }
   if (findings.length) {
     try { sh('pgrep -f graphify'); process.exit(0); } catch { /* not running — ok */ }
-    inject(`Графы знаний graphify в проектах этой папки требуют внимания (построй фоновым агентом, не блокируя работу): ${findings.join('; ')}`);
+    inject(`Графы знаний graphify в проектах этой папки требуют внимания (построй фоновым агентом на модели sonnet — жёсткий кап, не opus/fable — не блокируя работу): ${findings.join('; ')}`);
   }
 } catch { /* silent */ }
 process.exit(0);
