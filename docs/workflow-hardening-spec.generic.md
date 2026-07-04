@@ -524,7 +524,7 @@ content at runtime — strip that behavior and note it).
 ## 9. Acceptance tests (run each; paste outputs into the report)
 
 - **T-P0.1** `ls {{DOCS_ROOT}}/reports/.gitkeep`
-- **T-P0.2** `test -f .claude/skills/superpowers/brainstorming/SKILL.md && cat .claude/skills/superpowers/VENDORED.md | head -5`; every skill vendored per P0.2 has its own directory under `.claude/skills/superpowers/`.
+- **T-P0.2** `test -f .claude/skills/superpowers-brainstorming/SKILL.md && cat .claude/skills/superpowers/VENDORED.md | head -5`; every skill vendored per P0.2 has its own top-level directory `.claude/skills/superpowers-<skill-name>/` (flattened, depth-1 — Claude Code only auto-discovers skills one level deep, so a nested `.claude/skills/superpowers/<skill-name>/SKILL.md` would not register); shared provenance files (`VENDORED.md`, merged reviewer-prompt) stay in `.claude/skills/superpowers/`.
 - **T-P0.3** `grep -rn "<superpowers-plugin-namespace>:" .claude/ {{DOCS_ROOT}}/ --include="*.md" | grep -v VENDORED` → empty (substitute the actual plugin namespace `{{SUPERPOWERS_SOURCE}}` used before vendoring, if any — commonly its short repo name).
 - **T-P0.4** `grep -c "<superpowers-plugin-short-name>" .claude/settings.json` → 0.
 - **T-P1.1** `touch .claude/.orchestration-active; echo '{"tool_name":"Edit","tool_input":{},"agent_type":""}' | .claude/hooks/<gate-script>` → deny JSON with the specified reason; same input with a real donor `"agent_type"` value → allow; remove flag → allow. Paste all three outputs.

@@ -368,8 +368,8 @@ n_agents, agents_ok = check_agents()
 results = [
     ("T-P0.1  docs/reports exists",
      os.path.isdir(tpath("docs/reports"))),
-    ("T-P0.2  superpowers/brainstorming/SKILL.md exists",
-     os.path.isfile(tpath(".claude/skills/superpowers/brainstorming/SKILL.md"))),
+    ("T-P0.2  superpowers-brainstorming/SKILL.md exists",
+     os.path.isfile(tpath(".claude/skills/superpowers-brainstorming/SKILL.md"))),
     ("T-P0.3  no bare 'superpowers:' refs in .claude/*.md",
      len(bad_refs) == 0),
     (f"T-P2    agents<=25 ({n_agents}) & vendored carry source:",
