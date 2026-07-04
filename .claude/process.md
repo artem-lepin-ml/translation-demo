@@ -57,6 +57,37 @@ Canonical catalog of aspects, findings format and aggregation rules: `.claude/sk
 
 Rules: (R1) subagents NEVER inherit the session model — set `model:` explicitly; aggregation is done by the orchestrator itself or a `model: opus` subagent; (R2) executors medium/high, aggregators high/xhigh — sparingly; (R3) Fable 5 may auto-reroute biology/cybersec-adjacent prompts to Opus 4.8 — if systematic, consciously switch the agent's model with a D-journal entry; (R4) escalation: Sonnet → Opus → Fable ("Fable — when the task would justify a senior contractor"); (R5) code: a ready plan/spec exists → ALWAYS Sonnet (not Opus and not Fable); no plan and the code is freeform → Opus.
 
+### Dispatch map (task class → named agent)
+
+**The orchestrator MUST pass the named agent type in Agent/Task calls; falling back to the generic agent is a protocol violation (and is what the P1.1 orchestrator write-gate's pressure is meant to prevent).** The gate (`.claude/hooks/orchestrator-write-gate.py`) blocks the main thread's own direct Edit/Write/Bash while orchestrating — its whole point is to force dispatch onto one of the named lanes below, so an unnamed/generic dispatch defeats it just as much as a direct edit would.
+
+Registered battle-tier agents (18: 14 vendored + 4 native), each lane made mutually disjoint — read `.claude/agents/*.md` for the full description, this is only the one-line trigger:
+
+| Agent (`agentType`) | Dispatch when |
+|---|---|
+| `api-designer` | Designing/revising a REST/GraphQL API contract — before implementation exists |
+| `backend-developer` | Implementing/hardening a server-side service once a contract exists |
+| `frontend-developer` | Building/refactoring a framework-agnostic frontend app feature end-to-end |
+| `python-pro` | General idiomatic Python engineering outside a specific web framework |
+| `fastapi-developer` | Building/optimizing FastAPI async endpoints, Pydantic models, DI wiring |
+| `typescript-pro` | Advanced TypeScript type-system work (generics, cross-boundary type contracts) |
+| `react-specialist` | React 18+ specifics: rendering perf, concurrent features, hooks/state architecture |
+| `sql-pro` | SQL query optimization, index strategy, relational schema design |
+| `devops-engineer` | IaC / CI-CD pipeline / container-orchestration work |
+| `debugger` | Runtime bug root-cause diagnosis from stack traces/logs/crashes (read-only) |
+| `code-reviewer` | Read-only static diff review for correctness/security/quality |
+| `ml-engineer` | Production ML systems engineering: pipelines, training, serving infra |
+| `data-scientist` | Data analysis: statistics, hypothesis/A-B testing, predictive modeling |
+| `prompt-engineer` | LLM prompt design, evaluation, and optimization before it ships |
+| `docs-keeper` | L1→L4 doc-parity upkeep (steps 5/8) |
+| `doc-syncer` | Mechanical stage-doc sync (`docs/stages/<NN>.md`, `docs/pipeline.md`) after code edits |
+| `e2e-tester` | Real-browser end-to-end QA of a feature/PR (steps 6/8) |
+| `pr-writer` | Drafting the PR title/body and the push/merge shell handoff |
+
+**Bench-tier agents** (`.claude/agents-bench/`) are NOT registered/dispatchable — they are promoted into `.claude/agents/` via `git mv` only when a concrete project need arises; until promoted, don't route to them.
+
+Forward note: the four Phase-3 agents (`docs-architect-l4`, `experiment-runner`, `report-generator`, `spec-expander`) will be appended to this map once built.
+
 ### Convention: config lives in the repo (cloud-ready)
 This file (`.claude/process.md`) carries the process common to the work: the 8 steps, A/B scenarios, routing, calls to agents/skills (e2e-tester, docs-keeper, doc-syncer, pr-writer, /verify-spec, /verify-pr — doc-syncer does mechanical stage-doc sync after code edits, docs-keeper does L1→L4 parity upkeep), graphify rules, documentation convention, hard invariants. It is `@`-imported from the repo-root `CLAUDE.md`.
 - Repo-root `CLAUDE.md` — project specifics: stack, repo map, test tiers and commands, data manifest (`docs/testing/e2e-data.md`), project invariants, path overrides — plus `@.claude/process.md`.
