@@ -1,0 +1,69 @@
+{
+  "manifest_version": 1,
+  "description": "Portable manifest for scripts/claude-workflow-init.sh. Declares the three-layer .claude/ workflow architecture (core / roster / project-local) that the installer transfers into any target repo. The installer is data-driven: it reads THIS file, it does not hardcode the paths.",
+  "workflow_version_file": ".claude/WORKFLOW_VERSION",
+  "layers": {
+    "core": {
+      "policy": "Vendored infrastructure. On EVERY run: a missing core file is (re)installed; an identical file is a no-op; a target file that DIFFERS is preserved and reported as a collision (never clobbered).",
+      "dirs": [
+        ".claude/skills/superpowers",
+        ".claude/skills/report-gen",
+        ".claude/skills/lessons",
+        ".claude/hooks",
+        ".claude/rules",
+        ".claude/agents-bench",
+        ".claude/commands"
+      ],
+      "files": [
+        ".claude/agent-memory/.gitkeep",
+        ".claude/agent-memory/README.md",
+        ".claude/memory/.gitkeep",
+        "scripts/sync-agents-codex.sh"
+      ],
+      "note_optional": "The .claude/rules dir walk also carries tokyo-night.css, and picks up .claude/rules/spec-rubrics.md only when the source repo actually has it (a missing source file is silently skipped). Memory DIR content is treated as project-local and never wiped: core only ever writes the .gitkeep placeholders here."
+    },
+    "roster": {
+      "policy": "The battle-tier agent roster. Installed on FIRST install (target has no WORKFLOW_VERSION). On a normal run it is audited but not grown: identical -> no-op, different -> collision (preserved + warned), missing -> left absent. With --update-roster, source agents missing from the target are added. Never overwrites a modified agent.",
+      "dirs": [
+        ".claude/agents"
+      ],
+      "removed_list": ".claude/agents/.removed",
+      "deletion_tracking": "A target-side .claude/agents/.removed file (one agent basename per line, e.g. 'php-pro.md' or 'php-pro', '#' comments allowed) lists agents the target intentionally dropped. Their names are skipped on first install and on --update-roster, so a deleted agent is never silently re-added."
+    },
+    "project_local": {
+      "policy": "Scaffolded ONCE if absent, NEVER overwritten. These belong to the target project and the installer must not manage their content after creation.",
+      "entries": [
+        {
+          "path": "CLAUDE.md",
+          "type": "stub",
+          "stub": "# CLAUDE.md\n\nProject conventions and routing for agents working in this repository.\nThis file was scaffolded by `scripts/claude-workflow-init.sh` and is never\noverwritten by re-running the installer. Replace this stub with the routing,\nconventions and hard invariants for THIS project.\n\n## Workflow\n\nThe full development process lives in [.claude/process.md](.claude/process.md).\nDurable rules and hard invariants live under [.claude/rules/](.claude/rules/).\n\n## Conventions\n\n- Conventional Commits in English; subject imperative, scope = module/concern.\n- Branch + PR for new work; never commit directly to the trunk branch.\n- Doc-parity: a code/contract change updates its doc in the same commit.\n- Single source of truth: every fact lives in one file; others link, never copy.\n\n## Routing\n\n| Topic | Doc |\n|---|---|\n| Development process | [.claude/process.md](.claude/process.md) |\n| Durable rules and invariants | [.claude/rules/](.claude/rules/) |\n"
+        },
+        {
+          "path": ".claude/process.md",
+          "type": "copy",
+          "from": ".claude/process.md"
+        },
+        {
+          "path": "docs/reports/.gitkeep",
+          "type": "empty"
+        },
+        {
+          "path": "docs/experiments/.gitkeep",
+          "type": "empty"
+        }
+      ]
+    }
+  },
+  "settings_merge": {
+    "target": ".claude/settings.json",
+    "source": ".claude/settings.json",
+    "take_keys": ["hooks", "permissions"],
+    "policy": "Deep merge, never overwrite. permissions.{allow,deny,ask} are unioned (target entries kept, source entries appended, de-duplicated). hooks are unioned per event and de-duplicated by (matcher, command). All other target keys (enabledPlugins, extraKnownMarketplaces, env, ...) are preserved untouched; the fragment intentionally does not carry them."
+  },
+  "gitignore": [
+    ".agents/",
+    ".claude/settings.local.json",
+    ".claude/session-context/backups/",
+    ".superpowers/"
+  ]
+}
