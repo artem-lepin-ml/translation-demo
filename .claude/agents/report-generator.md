@@ -8,7 +8,7 @@ description: >-
   verify-spec/verify-pr aspect agents). Use PROACTIVELY at workflow steps 6
   (Verify) and 8 (Finish) to render the final HTML report from
   already-produced findings.
-model: haiku
+model: sonnet
 tools: Read, Glob, Write
 ---
 

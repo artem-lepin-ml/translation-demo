@@ -7,7 +7,7 @@ description: >-
   USE PROACTIVELY for any e2e/browser verification of a feature or PR.
   MUST BE USED at workflow steps 6 (Verify) and 8 (Finish) whenever the change
   touches UI or user scenarios.
-model: fable
+model: sonnet
 effort: high
 memory: user
 # No `tools:` restriction: the agent needs Playwright MCP tools (mcp__playwright__browser_*),

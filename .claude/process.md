@@ -53,7 +53,7 @@ Canonical catalog of aspects, findings format and aggregation rules: `.claude/sk
 | Deep research, systematic debugging (step 7), aspect-report aggregation by a subagent, code WITHOUT a ready plan (freeform/exploratory), security-critical code | Opus 4.8 (`model: opus`) | high → xhigh |
 | ALL code written to a ready plan/spec (standard practice), unit tests, aspect reviewers (steps 2/6), documentation updates, docs-keeper, e2e report audits | Sonnet 4.6 (`model: sonnet`) | medium → high |
 | Repo recon, search/grep, mechanical edits | Haiku 4.5 (`model: haiku`) | low |
-| e2e-tester (browser runs) | Fable 5 (agent frontmatter) | high |
+| e2e-tester (browser runs) | Sonnet 4.6 (`model: sonnet` in agent frontmatter) | high |
 
 Rules: (R1) subagents NEVER inherit the session model — set `model:` explicitly; aggregation is done by the orchestrator itself or a `model: opus` subagent; (R2) executors medium/high, aggregators high/xhigh — sparingly; (R3) Fable 5 may auto-reroute biology/cybersec-adjacent prompts to Opus 4.8 — if systematic, consciously switch the agent's model with a D-journal entry; (R4) escalation: Sonnet → Opus → Fable ("Fable — when the task would justify a senior contractor"); (R5) code: a ready plan/spec exists → ALWAYS Sonnet (not Opus and not Fable); no plan and the code is freeform → Opus.
 

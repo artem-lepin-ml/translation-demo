@@ -1,7 +1,7 @@
 ---
 name: doc-syncer
 description: After editing code under src/palimpsest/, prompts/<NN>_*/, or scripts/<NN>_*.py, dispatch this agent to sync docs/stages/<NN>.md and docs/pipeline.md to the code change. Caller passes changed files, a stage name, or a git range (e.g. main...HEAD); omitted means staged diff. Applies minimal edits, returns drift summary and convention candidates. Does not edit CLAUDE.md, README.md, docs/superpowers/, references/, data/raw/, factowl/.
-model: haiku
+model: sonnet
 tools: Read, Edit, Write, Bash, Grep, Glob
 ---
 

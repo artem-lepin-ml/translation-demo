@@ -82,3 +82,9 @@ All three paths/SHAs verified present in the repo via their provenance-comment h
 - The one residual dangling superpowers cross-ref link (`subagent-driven-development/SKILL.md:270`, confirmed above in §3(i)).
 - P6.1 core no-clobber upgrade caveat (current behavior: collisions are skipped/reported, not force-merged — a possible future enhancement, not a defect).
 - claude-mem (P5.2) full activation — currently best-effort/inert-in-web (hooks wired and tested, but no-op); real integration needs an environment where the worker/CLI can run with a `~/.claude` plugin registration.
+
+## 6. Post-spec owner adjustments (2026-07-04)
+
+Sections above are the point-in-time record of the spec execution; the owner then adjusted the result. Current state where it differs:
+
+- **Model pins:** `doc-syncer` and `report-generator` haiku → **sonnet**; `e2e-tester` fable → **sonnet** (supersedes §3(d)'s "kept `fable`" and the §4 remap note). Routing table in `.claude/process.md` updated in the same commit.
