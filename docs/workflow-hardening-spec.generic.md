@@ -92,7 +92,7 @@ table" — not "leave the literal `{{...}}` text in the committed files."
 | `{{EXCLUDED_DONOR_SOURCES}}` | Donor sources/patterns the owner has explicitly rejected for this repo | none by default |
 | `{{OFFICIAL_PLUGIN_MARKETPLACE}}` | Name of the official/approved plugin marketplace this repo permits | `claude-plugins-official` |
 | `{{BATTLE_TIER_CAP}}` | Max number of registered (battle-tier) agents in `.claude/agents/` | 25 |
-| `{{MEMORY_TOOL}}` | Optional session-memory tool integration name, if the environment has one (else "none — skip P5.2") | `claude-mem` |
+| `{{MEMORY_TOOL}}` | Optional session-memory tool integration name, if the environment has one (else "none — skip P5.2"; tools that need a machine-local `~/.claude` registration are inert in cloud sessions — prefer "none" there) | `none — skip P5.2` |
 | `{{CODEX_SYNC_TARGET}}` | Path for cross-tool skill portability sync, if needed | `.agents/skills/` |
 | `{{TRANSFER_SCRIPT}}` | Path to the source repo's P6.1 transfer script | `scripts/claude-workflow-init.sh` |
 

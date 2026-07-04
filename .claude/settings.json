@@ -47,14 +47,6 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-context-pointer.py\""
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/claude-mem-restore.py\""
-          }
-        ]
       }
     ],
     "PreToolUse": [
@@ -92,16 +84,6 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/subagent-report-check.py\""
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/claude-mem-export.py\""
           }
         ]
       }

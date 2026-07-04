@@ -28,7 +28,7 @@ after use — confirmed via `git status --porcelain` (empty) at the end of the r
 | P3.C | `report-generator` agent + `report-gen` skill | DONE | T-P3.C: `ls .claude/skills/report-gen/templates/` → `report-template.html` (non-empty); `grep "^tools:" .claude/agents/report-generator.md` → `tools: Read, Glob, Write` (no Bash/Edit) | none |
 | P3.D | `spec-expander` (rubric loop over verify-spec aspects-catalog) | DONE | T-P3.D: `grep -n "aspects-catalog" .claude/agents/spec-expander.md` → line 28, references `.claude/skills/verify-spec/aspects-catalog.md` | none |
 | P5.1 | Memory scaffold (`agent-memory/`, `memory/`) | DONE (no explicit T-test in the given list; verified directly) | `.claude/agent-memory/{.gitkeep,README.md}` and `.claude/memory/.gitkeep` present on disk | none |
-| P5.2 | claude-mem integration | **DONE (best-effort)** | claude-mem installed via cloud-setup (npm bin present); SessionStart `claude-mem-restore.py` + Stop `claude-mem-export.py` hooks wired, both fail-open/timeout-guarded (tested exit 0, no junk files). HONEST CAVEAT: claude-mem is functionally INERT in this web environment — its worker isn't running and its CLI refuses to operate without a `~/.claude` plugin registration, which we deliberately don't do (G1 conflict). The canonical, working memory remains the git-committed text `.claude/memory/*.jsonl` (P5.1); the hooks degrade to no-op. | Downgraded from full integration to best-effort/no-op due to environment constraints — see §2 Partial/caveats |
+| P5.2 | claude-mem integration | **DONE (best-effort)** | claude-mem installed via cloud-setup (npm bin present); SessionStart `claude-mem-restore.py` + Stop `claude-mem-export.py` hooks wired, both fail-open/timeout-guarded (tested exit 0, no junk files). HONEST CAVEAT: claude-mem is functionally INERT in this web environment — its worker isn't running and its CLI refuses to operate without a `~/.claude` plugin registration, which we deliberately don't do (G1 conflict). The canonical, working memory remains the git-committed text `.claude/memory/*.jsonl` (P5.1); the hooks degrade to no-op. | Downgraded from full integration to best-effort/no-op due to environment constraints — see §2 Partial/caveats. **REMOVED 2026-07-04** by owner decision — see §6 |
 | P5.3 | cloud-setup guards report/memory dirs | DONE (no explicit T-test; verified directly) | `.claude/cloud-setup.sh:15` → `mkdir -p docs/reports .claude/agent-memory .claude/memory` | none |
 | P5.4 | `.gitignore` entries (orchestration flag, session backups, memory DBs) | DONE | T-P5: `.gitignore` contains `.claude/settings.local.json` (59), `.claude/session-context/backups/` (60), `.claude/.orchestration-active` (61), `.claude/memory/*.db(-wal/-shm)` (63-65), plus pre-existing `data/demo.db`, `data/e2e.db`; `git status --porcelain` clean (no binaries staged) | none |
 | P5.5 | `sync-agents-codex.sh` (`.claude/skills` → `.agents/skills` mirror) | DONE (no explicit T-test; verified directly) | `scripts/sync-agents-codex.sh` exists, POSIX sh, idempotent, mirrors skills dir for Codex discovery per its header comment | none |
@@ -43,7 +43,7 @@ Everything else in the acceptance list (P0.1, P0.2, P0.4, P1.1, P1.2, P1.4, P2.1
 
 ### Partial / caveats
 
-- **P5.2 (claude-mem) is wired but functionally inert in this web environment.** The hooks (SessionStart restore, Stop export) are installed, fail-open, and tested to exit 0 without leaving junk files — but claude-mem's own worker process isn't running here and its CLI refuses to operate without a `~/.claude` plugin registration, which is deliberately not done (conflicts with G1). In practice the hooks are a no-op today; the actual, working memory mechanism is still the git-committed `.claude/memory/*.jsonl` text files from P5.1. This is honest best-effort, not a working integration.
+- **P5.2 (claude-mem) is wired but functionally inert in this web environment.** The hooks (SessionStart restore, Stop export) are installed, fail-open, and tested to exit 0 without leaving junk files — but claude-mem's own worker process isn't running here and its CLI refuses to operate without a `~/.claude` plugin registration, which is deliberately not done (conflicts with G1). In practice the hooks are a no-op today; the actual, working memory mechanism is still the git-committed `.claude/memory/*.jsonl` text files from P5.1. This is honest best-effort, not a working integration. (Resolved 2026-07-04: the owner decided to drop it entirely — see §6.)
 
 ## 3. Deviations & judgment calls
 
@@ -81,10 +81,11 @@ All three paths/SHAs verified present in the repo via their provenance-comment h
 - The wiki-eval P3 metric code bug + red-rate note (same caveat: not found tracked in-repo during this pass).
 - The one residual dangling superpowers cross-ref link (`subagent-driven-development/SKILL.md:270`, confirmed above in §3(i)).
 - P6.1 core no-clobber upgrade caveat (current behavior: collisions are skipped/reported, not force-merged — a possible future enhancement, not a defect).
-- claude-mem (P5.2) full activation — currently best-effort/inert-in-web (hooks wired and tested, but no-op); real integration needs an environment where the worker/CLI can run with a `~/.claude` plugin registration.
+- ~~claude-mem (P5.2) full activation~~ — closed by removal (owner decision 2026-07-04, see §6).
 
 ## 6. Post-spec owner adjustments (2026-07-04)
 
 Sections above are the point-in-time record of the spec execution; the owner then adjusted the result. Current state where it differs:
 
 - **Model pins:** `doc-syncer` and `report-generator` haiku → **sonnet**; `e2e-tester` fable → **sonnet** (supersedes §3(d)'s "kept `fable`" and the §4 remap note). Routing table in `.claude/process.md` updated in the same commit.
+- **claude-mem removed entirely** (was P5.2 best-effort, inert in web): both hooks deleted, `settings.json` SessionStart/Stop wiring dropped, `npm install -g claude-mem` removed from `cloud-setup.sh`. The one and only memory mechanism is the git-committed text under `.claude/memory/*.jsonl` (P5.1).
