@@ -14,9 +14,11 @@ set -euo pipefail
 # somehow lost the placeholders (git doesn't track empty dirs on its own).
 mkdir -p docs/reports .claude/agent-memory .claude/memory
 
-# claude-mem is NOT part of this environment (Phase 5 spec item P5.2,
-# skipped) — no worker process, no import step here. Memory is plain
-# committed text under .claude/agent-memory/ and .claude/memory/*.jsonl.
+# claude-mem: OPTIONAL runtime memory index. Canonical memory is the committed
+# text under .claude/memory/*.jsonl — claude-mem only accelerates search over it.
+# Best-effort: if it fails to install/start in this environment, the workflow
+# degrades to the git-text memory (spec P5.2 / G1).
+npm install -g claude-mem >/dev/null 2>&1 || true
 
 # Plugins (github, feature-dev, code-simplifier) are declared in
 # .claude/settings.json (`enabledPlugins`) and load from this repo clone —
