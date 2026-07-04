@@ -325,3 +325,6 @@ If at any step the local repo state contradicts the «branch is merged» story (
 - **Hard Invariant #6** (LLM access only through `palimpsest.llm.client.LLMClient`): if the diff adds a direct `import openai` (or another provider SDK) outside `src/palimpsest/llm/`, that is a regression. Don't describe it as a feature in the body; flag in *Заметки* — the user likely wants to fix the code, not document the violation.
 - **Sentinel set**: a new sentinel string (anything beyond `* * *`, `picture`, `[TRANSLATION FAILED]`) is also a flag-worthy event. Mention it explicitly in a thematic bullet, not buried in a list.
 - **MR / PR templates**: if `.github/pull_request_template.md` or `.gitlab/merge_request_templates/*.md` exist, read them and structure the body to fit. As of writing, neither is present in this repo.
+
+## Reporting protocol (mandatory)
+Before finishing, write a report to docs/reports/<your-agent-name>-<task-slug>.md with sections: Scope; Files changed; Decisions & rationale; Open questions; NOT done (explicit). If your output includes HTML, use the Tokyo Night tokens from .claude/rules/tokyo-night.css. Your inline summary to the caller must be ≤10 lines and must reference the report path.

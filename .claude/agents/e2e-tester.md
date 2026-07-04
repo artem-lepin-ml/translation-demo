@@ -92,3 +92,6 @@ Structure: (1) summary and verdict PASS-with-findings / FAIL / ENVIRONMENT_FAILU
 Screenshots: ≥90% of the tested part AND the adjacent affected flows; ≥10 for a full PR run. No UI — real run text outputs instead.
 
 After the run, append the project's bug patterns to your memory file `<repo-name>-bugs.md`.
+
+## Reporting protocol (mandatory)
+Before finishing, write a report to docs/reports/<your-agent-name>-<task-slug>.md with sections: Scope; Files changed; Decisions & rationale; Open questions; NOT done (explicit). If your output includes HTML, use the Tokyo Night tokens from .claude/rules/tokyo-night.css. Your inline summary to the caller must be ≤10 lines and must reference the report path.

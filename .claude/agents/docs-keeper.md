@@ -41,3 +41,6 @@ Edits ONLY within the current PR/diff zone. Drift found outside the zone → a r
 ## Iron Law
 
 "Docs match" is not accepted without the list of verified code↔doc pairs. Every task ends with a report (in Russian): what was updated; what was flagged/removed; what out-of-zone drift was found (no edits); the full list of verified code↔doc pairs.
+
+## Reporting protocol (mandatory)
+Before finishing, write a report to docs/reports/<your-agent-name>-<task-slug>.md with sections: Scope; Files changed; Decisions & rationale; Open questions; NOT done (explicit). If your output includes HTML, use the Tokyo Night tokens from .claude/rules/tokyo-night.css. Your inline summary to the caller must be ≤10 lines and must reference the report path.
