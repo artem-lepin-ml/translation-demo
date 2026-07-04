@@ -13,11 +13,11 @@ Spec-driven development. We craft a high-quality spec together; you then execute
 
 1. **Brainstorm** — [brainstorming](.claude/skills/superpowers/brainstorming/SKILL.md) (+ [visual-companion](.claude/skills/superpowers/brainstorming/visual-companion.md) when there is UI/UX/design). Spec → [docs/superpowers/specs/](docs/superpowers/specs/). Goal: a spec with goal, scope, success criteria and the most correct plan to reach the goal, honoring every subtlety of the task and my global vision.
 2. **Verify Spec** — skill `/verify-spec`: the orchestrator picks ≥3 relevant aspects from `docs/superpowers/review-aspects.md` (the skill generates it if missing), one subagent = one aspect (fresh context, read-only), structured findings → aggregation (max severity, disagreements section) → mandatory spec/plan rework → gate (CRITICAL/HIGH → rework and re-review of the affected aspects).
-3. **Plan** — [writing-plans](.claude/skills/superpowers/writing-plans/SKILL.md). Plan → [docs/superpowers/plans/](docs/superpowers/plans/). Work the spec out in more detail, down to a plan.
+3. **Plan** — first run `spec-expander` on the draft spec: it drafts missing sections against the review-aspects rubrics and flags OPEN gaps; the expanded spec is the planner input. Then [writing-plans](.claude/skills/superpowers/writing-plans/SKILL.md). Plan → [docs/superpowers/plans/](docs/superpowers/plans/). Work the spec out in more detail, down to a plan.
 4. **Branch + worktree** — [using-git-worktrees](.claude/skills/superpowers/using-git-worktrees/SKILL.md). Branch `feat/<topic>` off `dev-demo`.
 5. **Execute** — [subagent-driven-development](.claude/skills/superpowers/subagent-driven-development/SKILL.md) or a dynamic workflow. Parallelize independent task classes as much as possible. Remember tests and documentation. Every commit that changes a contract/behavior is accompanied by a `docs-keeper` call (doc-parity in the same commit).
 <loop>
-6. **Verify** — skill `/verify-pr`: the orchestrator picks ≥5 aspects from `docs/superpowers/review-aspects.md`; aspect agents with full rights write and run unit/integration tests, check code and data (isolated DB only). In parallel — a browser run by the `e2e-tester` agent + a mandatory audit of its report (Sonnet auditor, PASS/FAIL gate: provenance/screenshot failures send the run back). Deliver the full PR-quality report per the **Reports** section (HTML, 360 diagram). Serious problems found → step 7; nothing critical and all scores positive → step 8.
+6. **Verify** — skill `/verify-pr`: the orchestrator picks ≥5 aspects from `docs/superpowers/review-aspects.md`; aspect agents with full rights write and run unit/integration tests, check code and data (isolated DB only). In parallel — a browser run by the `e2e-tester` agent + a mandatory audit of its report (Sonnet auditor, PASS/FAIL gate: provenance/screenshot failures send the run back). At Verify/Ship, also dispatch `docs-architect-l4` for any architecture-depth documentation (invariants/rationale/data-flow/failure-modes) — separate from `docs-keeper`'s L1→L4 parity check. Deliver the full PR-quality report per the **Reports** section (HTML, 360 diagram). Serious problems found → step 7; nothing critical and all scores positive → step 8.
 7. **Fix** — [systematic-debugging](.claude/skills/superpowers/systematic-debugging/SKILL.md): carefully analyze the code and context, find the deep root cause and fix it. If the problem is systemic or complex, log it to docs/PROBLEMS.md; after finding all occurrences, run deep research + a tournament via dynamic workflow to find the best solution. After fixing everything, redo step 6 from a clean slate.
 </loop>
 8. **Finish** — run the `e2e-tester` agent (real data ONLY from the `docs/testing/e2e-data.md` manifest; the full user journey in the browser — e.g. the teacher's and the student's path, not DB-seeding via URL — for ALL scenarios described in the PR) + the audit of its report; then `docs-keeper` — final doc-parity check across the whole PR; then `/graphify <root> --update` via a background agent. Failure → back into the loop at step 6. Success → final HTML report per **Reports** in [docs/reports/](docs/reports/). If there is something to test, deploy a full test environment for me and await my tests and review. Approved → [finishing-a-development-branch](.claude/skills/superpowers/finishing-a-development-branch/SKILL.md), PR `feat/<topic>` → `dev-demo`. Not approved → understand why, improve step 6 so it would catch the problems I found, and return to step 6.
@@ -83,10 +83,14 @@ Registered battle-tier agents (18: 14 vendored + 4 native), each lane made mutua
 | `doc-syncer` | Mechanical stage-doc sync (`docs/stages/<NN>.md`, `docs/pipeline.md`) after code edits |
 | `e2e-tester` | Real-browser end-to-end QA of a feature/PR (steps 6/8) |
 | `pr-writer` | Drafting the PR title/body and the push/merge shell handoff |
+| `docs-architect-l4` | Architecture-depth L4 docs (invariants, rationale + rejected alternatives, data-flow, failure modes) at Verify/Ship |
+| `experiment-runner` | Bounded, approval-gated research experiments (train/eval ratchet loops) |
+| `report-generator` | Rendering the final served dark-HTML report from existing findings |
+| `spec-expander` | Expanding a draft spec to full rubric coverage before the planning step |
 
 **Bench-tier agents** (`.claude/agents-bench/`) are NOT registered/dispatchable — they are promoted into `.claude/agents/` via `git mv` only when a concrete project need arises; until promoted, don't route to them.
 
-Forward note: the four Phase-3 agents (`docs-architect-l4`, `experiment-runner`, `report-generator`, `spec-expander`) will be appended to this map once built.
+**Specialized tool, not part of the 8-step flow:** research/experiment work does not follow Scenario A/B — it goes through `experiment-runner`'s own owner-approval gate (writes TASK/BUDGET/PLAN → owner creates APPROVED → git-ratcheted modify→train→eval loop via the looper skill).
 
 ### Convention: config lives in the repo (cloud-ready)
 This file (`.claude/process.md`) carries the process common to the work: the 8 steps, A/B scenarios, routing, calls to agents/skills (e2e-tester, docs-keeper, doc-syncer, pr-writer, /verify-spec, /verify-pr — doc-syncer does mechanical stage-doc sync after code edits, docs-keeper does L1→L4 parity upkeep), graphify rules, documentation convention, hard invariants. It is `@`-imported from the repo-root `CLAUDE.md`.
@@ -125,6 +129,8 @@ An HTML page in `docs/reports/`, **dark theme**, visual graphics over walls of t
 6. **Next steps / owner decisions needed.**
 
 **Always serve HTML reports locally on completion:** a background `python3 -m http.server <port> --bind 127.0.0.1` from the report directory (ports 8096+, check availability) and give me the direct link `http://localhost:<port>/<file>.html`. Work is not finished until the report is served.
+
+The report itself can be rendered via `report-generator` (report-gen skill + `tokyo-night.css`) from already-produced findings in `docs/reports/`/`docs/experiments/`, instead of hand-authoring — it assembles presentation only, it does not perform the analysis.
 
 ## Documentation
 
