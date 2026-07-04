@@ -26,18 +26,9 @@
     ]
   },
   "enabledPlugins": {
-    "superpowers@superpowers-dev": true,
     "github@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "superpowers-dev": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/obra/superpowers.git"
-      }
-    }
   },
   "hooks": {
     "SessionStart": [
