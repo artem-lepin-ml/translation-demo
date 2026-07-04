@@ -20,7 +20,7 @@ Repo topology after the 2026-07-01 reorg:
 Multiple sessions/agents run at the same time. To keep their commits from colliding, each concurrent task is fully isolated:
 
 1. **Its own `feat/<topic>` branch off `dev-demo`** — never off `main`, never a branch another agent is already using.
-2. **Its own worktree** under `../worktrees/<topic>/` (`superpowers:using-git-worktrees`).
+2. **Its own worktree** under `../worktrees/<topic>/` ([using-git-worktrees](.claude/skills/superpowers/using-git-worktrees/SKILL.md)).
 
 An agent works **only inside its assigned worktree path**. It must never `cd` or `git checkout` into `dev-demo`'s worktree or another agent's worktree — that is the only way parallel commits stay conflict-free. Each `feat/*` branch merges back into `dev-demo` on its own. The primary checkout hosts `old-gse-translating`; `dev-demo` keeps its own dedicated worktree that feature agents do not touch.
 
@@ -74,7 +74,7 @@ The demo frontend and backend are **already built**. Before proposing any UI or 
 
 1. **Grep the relevant code** for the feature's noun (e.g. `model`, `registry`, a button label) under [frontend/src/demo/variant-a/](frontend/src/demo/variant-a/) or [src/palimpsest/](src/palimpsest/), and open the matching file(s).
 2. **Follow the routing / "See also" links** in this file and the relevant `docs/subsystems/*.md` for a spec that already covers it.
-3. For any visual change, read the design system [docs/subsystems/webapp-ui-design.md](docs/subsystems/webapp-ui-design.md) and the rendered screenshots under [docs/reports/e2e/shots/](docs/reports/e2e/shots/), and **reuse existing `va-*` tokens/classes**.
+3. For any visual change, read the design system [docs/subsystems/webapp-ui-design.md](docs/subsystems/webapp-ui-design.md) and the rendered screenshots under [docs/reports/e2e/shots/](docs/reports/e2e/shots/) (if present in this checkout; this GitHub mirror excludes screenshot archives — see Data), and **reuse existing `va-*` tokens/classes**.
 
 State the concrete finding (e.g. "`SettingsTab.tsx:172` already renders the registry table") before drafting. If that check isn't done and reported, don't present the design.
 
@@ -98,11 +98,14 @@ State the concrete finding (e.g. "`SettingsTab.tsx:172` already renders the regi
 | Topic | Doc |
 |---|---|
 | Product, quickstart, stack | [README.md](README.md) |
+| Pipeline overview / stage index | [docs/pipeline.md](docs/pipeline.md) |
 | Positioning, audience, quality bar | [docs/goals/demo-positioning.md](docs/goals/demo-positioning.md) |
 | Demo web app — backend + frontend, DB schema, API surface | [docs/subsystems/webapp.md](docs/subsystems/webapp.md) |
 | Frontend visual design system (tokens, `va-*` classes, screenshots) | [docs/subsystems/webapp-ui-design.md](docs/subsystems/webapp-ui-design.md) |
 | API / data contract (SSOT: DTOs, REST, DDL) | [docs/superpowers/specs/2026-06-30-demo-contracts.md](docs/superpowers/specs/2026-06-30-demo-contracts.md) |
 | Terminology module — difficulty + pairAccuracy | [docs/stages/terminology.md](docs/stages/terminology.md) |
+| Wiki-eval harness — G6 grounding eval | [docs/stages/wiki-eval.md](docs/stages/wiki-eval.md) |
 | Docs index (L1) | [docs/README.md](docs/README.md) |
 | E2E test data manifest | [docs/testing/e2e-data.md](docs/testing/e2e-data.md) |
+| Review-aspects catalog for /verify-spec & /verify-pr | [docs/superpowers/review-aspects.md](docs/superpowers/review-aspects.md) |
 | Known issues & gotchas | [docs/known_issues.md](docs/known_issues.md) |
