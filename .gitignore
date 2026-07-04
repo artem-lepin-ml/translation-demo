@@ -51,6 +51,10 @@ _screenshots_staging/
 data/e2e.db
 data/e2e-budget_calls.jsonl
 
+# Codex portability mirror (scripts/sync-agents-codex.sh); generated from
+# .claude/skills/, regenerate on demand, never commit
+.agents/
+
 # Workflow-hardening: orchestration state, session backups, memory DBs
 .claude/settings.local.json
 .claude/session-context/backups/
