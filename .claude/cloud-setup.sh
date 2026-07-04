@@ -10,6 +10,18 @@
 #   A stale/dead OpenRouter key is worse than none (401 instead of cache-fallback).
 set -euo pipefail
 
+# Memory/report dirs are gitkeep'd already, but guard for a clone that
+# somehow lost the placeholders (git doesn't track empty dirs on its own).
+mkdir -p docs/reports .claude/agent-memory .claude/memory
+
+# claude-mem is NOT part of this environment (Phase 5 spec item P5.2,
+# skipped) — no worker process, no import step here. Memory is plain
+# committed text under .claude/agent-memory/ and .claude/memory/*.jsonl.
+
+# Plugins (github, feature-dev, code-simplifier) are declared in
+# .claude/settings.json (`enabledPlugins`) and load from this repo clone —
+# no separate marketplace/install step needed in cloud sessions.
+
 uv sync --extra dev                                     # .venv + runtime + dev extra (pytest, ruff)
 ( cd frontend && npm ci )                               # vitest, tsc, build deps
 npx playwright install --with-deps chromium || true     # for later e2e; non-fatal if CDN blocked
