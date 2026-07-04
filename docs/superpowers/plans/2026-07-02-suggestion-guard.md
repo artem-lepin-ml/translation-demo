@@ -1,6 +1,6 @@
 # Suggestion Guard (advice-text guard) Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `.claude/skills/superpowers/subagent-driven-development/SKILL.md` (recommended) or executing-plans (not vendored) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Prevent any Accept/apply-edit from splicing a judge's advice-text ("Consider...", "Use 'X', which is the standard...") into a translation by adding a pure guard on all three issue-ingest paths, backed by a prompt contract.
 
@@ -46,7 +46,7 @@ Verified against the code in the same worktree content as `dev-demo`. No design-
 
 ## Task 1: Systematic-debugging corpus audit (FIRST - gates heuristic tuning)
 
-REQUIRED SUB-SKILL mindset: `superpowers:systematic-debugging`. Root cause before fixes. This task produces the audit report whose numbers the later heuristic must reproduce. Do **not** tune the heuristic in Tasks 3-4 to anything the audit did not justify.
+REQUIRED SUB-SKILL mindset: `.claude/skills/superpowers/systematic-debugging/SKILL.md`. Root cause before fixes. This task produces the audit report whose numbers the later heuristic must reproduce. Do **not** tune the heuristic in Tasks 3-4 to anything the audit did not justify.
 
 **Files:**
 - Create: `docs/reports/2026-07-02-suggestion-guard-audit.md`

@@ -1,6 +1,6 @@
 # Explicit Re-evaluation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use executing-plans (not vendored) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Accepting suggestions (single or Accept-all) and manual paragraph edits must NOT trigger a paid LLM re-evaluation. Re-judging happens ONLY when the user explicitly presses «Evaluate ↻». Outdated scores get a visible "stale" indicator.
 

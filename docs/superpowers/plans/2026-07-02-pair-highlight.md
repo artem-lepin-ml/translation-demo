@@ -1,6 +1,6 @@
 # Pair-Highlight Consolidation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use executing-plans (not vendored) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Deviations from spec:** None substantive. One decision the spec delegated to the planner is PINNED here: the RU side **stays on `difficulty-*`** (semantically correct — it is the difficulty signal, not the pair verdict — and the smaller diff). The consolidation instead **deletes** the dead parallel color families (`.va-term-span-source.verdict-*` and the prefix-less `.va-term-dot.green/.yellow/.red`), so no duplicate color rules for the same live element survive. See Task 3 rationale.
 

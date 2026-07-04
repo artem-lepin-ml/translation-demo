@@ -162,3 +162,16 @@ exactly as upstream.
   `SUPERPOWERS_TELEMETRY_DISABLED` constant and its env-var detection were left
   in place (pre-existing, unrelated — not ripped out). `node -c` passes; the
   vendored tree has no remaining runtime fetch of remote content in live code.
+
+## Local modifications (T-P0.3 — dangling `superpowers:` cross-references)
+
+- Rewrote inter-skill `superpowers:<name>` cross-references inside vendored
+  SKILL.md files to relative `../<name>/SKILL.md` sibling links (the
+  `superpowers:` plugin namespace no longer resolves after vendoring).
+  References to skills outside the 7 vendored here (`requesting-code-review`,
+  `test-driven-development`, `executing-plans`, `verification-before-completion`)
+  were converted to plain prose naming the skill plus "(not vendored in this
+  repo)" instead, so nothing points at a path that doesn't exist. Touched:
+  - `.claude/skills/superpowers/subagent-driven-development/SKILL.md`
+  - `.claude/skills/superpowers/writing-plans/SKILL.md`
+  - `.claude/skills/superpowers/systematic-debugging/SKILL.md`

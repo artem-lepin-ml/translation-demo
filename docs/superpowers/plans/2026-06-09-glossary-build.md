@@ -2,7 +2,7 @@
 
 Up-link: [docs/superpowers/specs/2026-06-09-glossary-build.md](../specs/2026-06-09-glossary-build.md). Goal: [docs/goals/2026-06-09-glossary-overnight.md](../../goals/2026-06-09-glossary-overnight.md).
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` to execute this plan phase-by-phase. Each phase has explicit exit criteria with auto-check commands. Pin every subagent prompt to absolute worktree path per goal §6.4: `/Users/a1111/Projects/Work/gse-translation/worktrees/glossary-overnight`.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `.claude/skills/superpowers/subagent-driven-development/SKILL.md` to execute this plan phase-by-phase. Each phase has explicit exit criteria with auto-check commands. Pin every subagent prompt to absolute worktree path per goal §6.4: `/Users/a1111/Projects/Work/gse-translation/worktrees/glossary-overnight`.
 
 ---
 
@@ -560,7 +560,7 @@ Total: ~9.5h (incl. reserve, parallel groups absorb ~1.5h → on budget).
    - `git -C ... diff feat/project -- data/raw/ data/pilot/pilot_original.md` empty.
    - `git log feat/project..HEAD --format=%B | grep -i 'co-authored' && exit 1 || echo ok`.
    - `grep -rn "import openai\|from openai" src/` returns only `llm/client.py`.
-5. Run Adversarial-verify via `superpowers:verification-before-completion` OR invoke 5 parallel sub-agents via `superpowers:dispatching-parallel-agents` with these spec prompts (each must be pinned to worktreePath per goal §6.4):
+5. Run Adversarial-verify via verification-before-completion (not vendored) OR invoke 5 parallel sub-agents via `.claude/skills/superpowers/dispatching-parallel-agents/SKILL.md` with these spec prompts (each must be pinned to worktreePath per goal §6.4):
    - Agent 1 — correctness+edge-cases: specs §3–§8 coverage, rare-name handling, bracket semantics, S4 sanity probe.
    - Agent 2 — architecture+unit-tests: module isolation, spec §2 dependencies, test strategy coverage, test file count.
    - Agent 3 — e2e-tests+UI/UX: chrome-devtools screenshots real (not fake), file sizes >5KB, timestamp format, console-visible PNG present.

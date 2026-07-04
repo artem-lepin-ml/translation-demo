@@ -1,6 +1,6 @@
 # Model Registry Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `.claude/skills/superpowers/subagent-driven-development/SKILL.md` (recommended) or executing-plans (not vendored) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make the demo's "cardboard" model registry actually call each model with per-model-correct parameters, add a per-model Test button (real term-extraction request → overlap share), and guard every real call with a hard $2 budget — all on live OpenRouter only (3 local vLLM rows are seeded but never run now).
 

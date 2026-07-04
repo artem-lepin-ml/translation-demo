@@ -4,7 +4,7 @@
 **Сценарий:** B (autonomous, без вопросов Артёму)
 **Бюджет:** ~8 часов wall-clock · токенов не жалеть
 **Спонсор:** Артём (R&D lead)
-**Branch:** `feat/term-pairing` от `feat/demo` (через `superpowers:using-git-worktrees`)
+**Branch:** `feat/term-pairing` от `feat/demo` (через `.claude/skills/superpowers/using-git-worktrees/SKILL.md`)
 **Железо:** GPU (CUDA) есть · живой публичный API Wikidata/Wikipedia разрешён
 
 Документ — input для агента, который проснётся ночью и работает по сценарию B (8 шагов из [CLAUDE.md](../../CLAUDE.md)). Ключевые решения зафиксированы в §2 — не передумывать. Любую ambiguity решать своим judgment и фиксировать в spec/plan.

@@ -1,6 +1,6 @@
 # G6 `label_first` Grounding — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `.claude/skills/superpowers/subagent-driven-development/SKILL.md` (recommended) or executing-plans (not vendored) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace all grounding strategies (G1/G2/G3/G5) with a single deterministic-first strategy G6 `label_first`: exact-label match resolves without a model call; LLM judge escalates only genuine ambiguity; every decision is traced (`GroundingTrace v1`) and ablatable via three independent toggles.
 
