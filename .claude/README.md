@@ -13,6 +13,7 @@ source of config in the cloud.
 | `agents/` | Project subagents: `docs-keeper`, `doc-syncer`, `e2e-tester`, `pr-writer`. |
 | `skills/` | User skills this repo uses: `verify-spec` (+ `aspects-catalog.md`), `verify-pr`, `looper`, `playwright-cli`. |
 | `commands/` | Slash commands (`looper`). |
+| `playbooks/` | Cross-cutting orchestrator playbooks (`finding-unknowns.md` — unknowns-discovery methodology, W1–W8). |
 | `hooks/` | Session/tool hooks: orchestration write-gate, session-context pointer, experiment approval gate, subagent markers, precompact backup. |
 | `settings.json` | Enabled plugins, marketplace, SessionStart hook wiring (via `$CLAUDE_PROJECT_DIR`). |
 | `cloud-setup.sh` | Reference **Environment → Setup script** for claude.ai/code (deps baked into the snapshot). |

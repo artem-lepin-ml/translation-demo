@@ -13,6 +13,9 @@ Think, plan and talk to subagents in English (token economy). ALL owner-facing o
 ### Core concept
 Spec-driven development. We craft a high-quality spec together; you then execute it fully autonomously (no interruptions, no check-ins). I review only specs, reviews and the docs/ documentation.
 
+### Finding unknowns
+Cross-cutting discovery playbook — turning unknown-unknowns into known-unknowns before/during/after implementation (blindspot pass, brainstorm/prototype, interview, references, implementation notes, pitch, quiz): [.claude/playbooks/finding-unknowns.md](.claude/playbooks/finding-unknowns.md). It underpins the 8-step flow rather than replacing it — the W-phases map onto the steps (W1–W5 → brainstorm/verify-spec/plan, W6 → execute, W7–W8 → verify/finish), and its unknowns taxonomy is the lens for deciding which step a task actually needs.
+
 ### Scenario A (I'm present and actively participating)
 
 1. **Brainstorm** — [brainstorming](.claude/skills/superpowers-brainstorming/SKILL.md) (+ [visual-companion](.claude/skills/superpowers-brainstorming/visual-companion.md) when there is UI/UX/design). Spec → [docs/superpowers/specs/](docs/superpowers/specs/). Goal: a spec with goal, scope, success criteria and the most correct plan to reach the goal, honoring every subtlety of the task and my global vision.
