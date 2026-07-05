@@ -658,3 +658,315 @@ def test_run_one_config_threads_wikidata_workers_to_client(monkeypatch, tmp_path
     # default stays the client's own politeness constant
     wiki_eval._run_one_config("111", [], str(tmp_path), dry_run=True, guard=None)
     assert captured["network_concurrency"] == wiki_eval.DEFAULT_NETWORK_CONCURRENCY == 3
+
+
+# ── qwen-run resilience patch (2026-07-05): FailureTracker ─────────────────
+#
+# A single call that fails 3x (client.py's pre-patch default) can kill an
+# entire ~35k-call run when its only route flaps with 429s and CloseRouter's
+# circuit breaker turns that into minutes-long hard-503 windows. The fix is
+# three layers: (1) longer retries (RESILIENT_ATTEMPTS/RESILIENT_BACKOFF),
+# (2) last-resort tolerance once even that's exhausted, (3) LOUD accounting
+# of every tolerated failure via FailureTracker so a run never silently
+# degrades without the owner knowing. Tests below cover (2)+(3); (1) is
+# covered by the "resilient attempts/backoff wired" tests further down.
+
+
+def test_failure_tracker_records_failed_paragraphs_and_judge_calls():
+    tracker = wiki_eval.FailureTracker()
+    tracker.record_failed_paragraph("Article A", 3)
+    tracker.record_failed_paragraph("Article B", 0)
+    tracker.record_failed_judge_call()
+    tracker.record_failed_judge_call()
+
+    assert tracker.n_failed_paragraphs == 2
+    assert tracker.failed_paragraphs == [
+        {"title": "Article A", "paragraph_index": 3},
+        {"title": "Article B", "paragraph_index": 0},
+    ]
+    assert tracker.n_failed_judge_calls == 2
+
+
+def test_failure_tracker_thread_safe_under_concurrent_recording():
+    tracker = wiki_eval.FailureTracker()
+    n_threads, n_per_thread = 8, 50
+
+    def worker(i: int) -> None:
+        for j in range(n_per_thread):
+            tracker.record_failed_paragraph(f"t{i}", j)
+
+    threads = [threading.Thread(target=worker, args=(i,)) for i in range(n_threads)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert tracker.n_failed_paragraphs == n_threads * n_per_thread
+    assert len(tracker.failed_paragraphs) == n_threads * n_per_thread
+
+
+# ── _parallel_extract_fn: last-resort extraction tolerance ─────────────────
+
+
+def test_parallel_extract_fn_tolerates_transient_exhausted_paragraph():
+    """A paragraph whose extract_fn call is still TRANSIENT-failing (simulating
+    complete_retrying having exhausted RESILIENT_ATTEMPTS against a flapping
+    provider-8-style route) must not kill the whole article -- it's tolerated
+    as zero mentions, and the failure is recorded loudly via FailureTracker,
+    never silently dropped."""
+
+    def flaky_extract_fn(paragraph):
+        if paragraph == "bad":
+            raise TimeoutError("simulated exhausted retries against a 429/503 route")
+        return [paragraph.upper()]
+
+    tracker = wiki_eval.FailureTracker()
+    wrapped = wiki_eval._parallel_extract_fn(
+        flaky_extract_fn, ["good1", "bad", "good2"], title="Ancient Sumer", tracker=tracker,
+    )
+    results = [wrapped(p) for p in ["good1", "bad", "good2"]]
+
+    assert results == [["GOOD1"], [], ["GOOD2"]]
+    assert tracker.n_failed_paragraphs == 1
+    assert tracker.failed_paragraphs == [{"title": "Ancient Sumer", "paragraph_index": 1}]
+    assert tracker.n_failed_judge_calls == 0  # unaffected, different counter
+
+
+def test_parallel_extract_fn_deterministic_error_still_raises_and_kills_run():
+    """A deterministic failure (bad request / bad model config) must NOT be
+    tolerated -- it means every remaining paragraph would fail identically,
+    so the whole run must still die loudly instead of silently degrading."""
+
+    def bad_extract_fn(paragraph):
+        raise ValueError("400 bad request -- misconfigured model id")
+
+    tracker = wiki_eval.FailureTracker()
+    with pytest.raises(ValueError):
+        wiki_eval._parallel_extract_fn(bad_extract_fn, ["p1"], title="X", tracker=tracker)
+
+    assert tracker.n_failed_paragraphs == 0  # not tolerated, not counted as a tolerance
+
+
+def test_parallel_extract_fn_without_tracker_still_tolerates_silently():
+    """title/tracker default to None so existing callers (this function's own
+    pre-ticket tests included) keep working unchanged -- the tolerance logic
+    still runs, it just has nothing to record into."""
+
+    def flaky_extract_fn(paragraph):
+        if paragraph == "bad":
+            raise TimeoutError("simulated exhausted retries")
+        return [paragraph]
+
+    wrapped = wiki_eval._parallel_extract_fn(flaky_extract_fn, ["good", "bad"])
+    results = [wrapped(p) for p in ["good", "bad"]]
+    assert results == [["good"], []]
+
+
+# ── _build_judge / _build_extract_fn: resilient retries + judge tolerance ──
+
+
+def _fake_llm_client_factory(*, always_raise=None, contents=None):
+    """Builds a FakeLLMClient class for monkeypatching
+    palimpsest.llm.client.LLMClient. ``always_raise`` (if set) is raised on
+    every complete_retrying call, simulating complete_retrying itself having
+    already exhausted its own attempts/backoff loop against a flapping
+    route. ``contents`` (if set) is a list of successive ``.content`` values
+    returned across calls, in order (one entry consumed per call)."""
+    calls: list[dict] = []
+
+    class FakeLLMClient:
+        def __init__(self, config):
+            self.config = config
+
+        def complete_retrying(self, system, user, **kw):
+            calls.append({"system": system, "user": user, "kw": kw})
+            if always_raise is not None:
+                raise always_raise
+            from palimpsest.llm.client import LLMResult, Usage
+            content = contents[len(calls) - 1] if contents else "{}"
+            return LLMResult(content=content, usage=Usage(10, 5, 0, 0.0001))
+
+    return FakeLLMClient, calls
+
+
+def test_build_judge_transient_exhausted_raises_and_counts(monkeypatch):
+    """A judge call still TRANSIENT-failing after RESILIENT_ATTEMPTS retries
+    must propagate unchanged (LabelFirstGrounding.ground() already treats ANY
+    judge exception as terminal judge_unavailable) but must ALSO increment
+    FailureTracker.n_failed_judge_calls -- otherwise a run could silently
+    degrade with no owner-visible signal."""
+    FakeLLMClient, calls = _fake_llm_client_factory(always_raise=TimeoutError("exhausted"))
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=1000.0)
+    llm_semaphore = wiki_eval._CountingSemaphore(4)
+    tracker = wiki_eval.FailureTracker()
+    judge = wiki_eval._build_judge(guard, llm_semaphore, tracker=tracker)
+
+    with pytest.raises(TimeoutError):
+        judge("some judge prompt")
+
+    assert tracker.n_failed_judge_calls == 1
+    assert len(calls) == 1  # this wrapper does not itself retry a raw exception
+
+
+def test_build_judge_transient_exhausted_used_with_real_grounding_leaves_mention_unresolved():
+    """Full call-boundary integration: when the judge closure raises after
+    exhausting retries, LabelFirstGrounding.ground() -- unchanged, pre-existing
+    contract -- resolves the mention as judge_unavailable/yellow with no
+    grounded QID, i.e. the mention proceeds exactly as if judge were
+    unavailable for it. This is why the judge-side fix needs no change at the
+    grounding call boundary itself (see _build_judge's docstring)."""
+    from palimpsest.terminology.base import GroundingConfig, TermMention
+    from palimpsest.terminology.grounding.label_first import LabelFirstGrounding
+
+    class _FakeWD:
+        def __init__(self):
+            self.n_calls = 0
+
+        def search_entities(self, term, lang="ru", limit=7):
+            return [{"id": "Q1"}, {"id": "Q2"}]  # ambiguous -> forces judge escalation
+
+        def search_cirrus(self, term, limit=7):
+            return []
+
+        def wikipedia_wikibase_item(self, title, lang="ru"):
+            return None
+
+        def get_entities(self, qids, **kw):
+            entities = {
+                "Q1": {"id": "Q1", "labels": {"ru": {"value": "Тутмос"}}, "aliases": {},
+                       "descriptions": {}, "claims": {}, "sitelinks": {}},
+                "Q2": {"id": "Q2", "labels": {"ru": {"value": "Тутмос"}}, "aliases": {},
+                       "descriptions": {}, "claims": {}, "sitelinks": {}},
+            }
+            return {q: entities[q] for q in qids if q in entities}
+
+    def exhausted_judge(prompt):
+        raise TimeoutError("simulated exhausted retries against a flapping route")
+
+    strategy = LabelFirstGrounding(_FakeWD(), GroundingConfig())
+    result = strategy.ground(TermMention(surface="Тутмос", lemma="Тутмос"), judge=exhausted_judge)
+
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "judge_unavailable"
+    assert result.grounded is None  # mention stays unresolved, not silently top-1'd
+
+
+def test_build_judge_malformed_json_recovers_on_one_reask(monkeypatch):
+    """Unparseable JSON on the first attempt gets exactly ONE corrective
+    re-ask; if THAT succeeds, judge() returns normally and the tolerance
+    counter stays untouched (this mention was fully resolved, no failure to
+    report)."""
+    FakeLLMClient, calls = _fake_llm_client_factory(
+        contents=["not json at all", '{"qid": "Q1", "reason": "ok"}'],
+    )
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=1000.0)
+    llm_semaphore = wiki_eval._CountingSemaphore(4)
+    tracker = wiki_eval.FailureTracker()
+    judge = wiki_eval._build_judge(guard, llm_semaphore, tracker=tracker)
+
+    result = judge("some judge prompt")
+
+    assert result == {"qid": "Q1", "reason": "ok"}
+    assert len(calls) == 2  # original + exactly one re-ask
+    assert calls[1]["system"] == wiki_eval.JUDGE_REASK_SYSTEM_PROMPT
+    assert tracker.n_failed_judge_calls == 0  # recovered -- not a tolerated failure
+
+
+def test_build_judge_malformed_json_gives_up_after_one_reask_and_counts(monkeypatch):
+    """If the re-ask ALSO fails to parse, judge() gives up: raises (so
+    ground() falls back to judge_unavailable exactly as it already does for
+    any judge exception) and counts it -- exactly ONE re-ask, never an
+    unbounded retry loop."""
+    import json
+
+    FakeLLMClient, calls = _fake_llm_client_factory(contents=["not json", "still not json"])
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=1000.0)
+    llm_semaphore = wiki_eval._CountingSemaphore(4)
+    tracker = wiki_eval.FailureTracker()
+    judge = wiki_eval._build_judge(guard, llm_semaphore, tracker=tracker)
+
+    with pytest.raises(json.JSONDecodeError):
+        judge("some judge prompt")
+
+    assert len(calls) == 2  # original + exactly one re-ask, no more
+    assert tracker.n_failed_judge_calls == 1
+
+
+def test_build_judge_uses_resilient_attempts_and_backoff(monkeypatch):
+    """Task requirement: judge closures pass attempts=6,
+    backoff=(1,3,9,20,40,60) -- long enough to ride out a multi-minute
+    CloseRouter circuit-breaker window, not client.py's 3-attempt default."""
+    FakeLLMClient, calls = _fake_llm_client_factory(contents=['{"qid": null, "reason": "n/a"}'])
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=1000.0)
+    llm_semaphore = wiki_eval._CountingSemaphore(4)
+    judge = wiki_eval._build_judge(guard, llm_semaphore)
+    judge("prompt")
+
+    assert calls[0]["kw"]["attempts"] == 6 == wiki_eval.RESILIENT_ATTEMPTS
+    assert wiki_eval.RESILIENT_BACKOFF == (1.0, 3.0, 9.0, 20.0, 40.0, 60.0)
+    assert calls[0]["kw"]["backoff"] == wiki_eval.RESILIENT_BACKOFF
+
+
+def test_build_extract_fn_uses_resilient_attempts_and_backoff(monkeypatch):
+    """Same requirement as above, for the extraction closure."""
+    FakeLLMClient, calls = _fake_llm_client_factory(contents=["[]"])
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=1000.0)
+    llm_semaphore = wiki_eval._CountingSemaphore(4)
+    extract_fn = wiki_eval._build_extract_fn(guard, llm_semaphore)
+    extract_fn("some paragraph")
+
+    assert calls[0]["kw"]["attempts"] == 6 == wiki_eval.RESILIENT_ATTEMPTS
+    assert wiki_eval.RESILIENT_BACKOFF == (1.0, 3.0, 9.0, 20.0, 40.0, 60.0)
+    assert calls[0]["kw"]["backoff"] == wiki_eval.RESILIENT_BACKOFF
+
+
+# ── meta.json counters wiring ────────────────────────────────────────────────
+
+
+def test_run_one_config_surfaces_failure_counters_in_meta(monkeypatch, tmp_path):
+    """n_failed_paragraphs/failed_paragraphs/n_failed_judge_calls must land in
+    _run_one_config's returned counters dict (which cmd_run spreads straight
+    into meta.json) -- this is the actual owner-visible surface for the loud
+    accounting, not just an internal FailureTracker attribute."""
+    captured: dict = {}
+
+    def fake_build_judge(guard, sem, **kw):
+        captured["tracker"] = kw.get("tracker")
+        return None
+
+    def fake_process_articles_parallel(articles, **kw):
+        tracker = kw.get("tracker")
+        tracker.record_failed_paragraph("Some Article", 4)
+        tracker.record_failed_judge_call()
+        return [], 0
+
+    monkeypatch.setattr(wiki_eval, "_build_judge", fake_build_judge)
+    monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
+    monkeypatch.setattr(wiki_eval, "_process_articles_parallel", fake_process_articles_parallel)
+    monkeypatch.setattr(
+        wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object(),
+    )
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    _, counters = wiki_eval._run_one_config("111", [], str(tmp_path), dry_run=False, guard=guard)
+
+    assert counters["n_failed_paragraphs"] == 1
+    assert counters["failed_paragraphs"] == [{"title": "Some Article", "paragraph_index": 4}]
+    assert counters["n_failed_judge_calls"] == 1
+    assert captured["tracker"] is not None  # the same FailureTracker instance was threaded through

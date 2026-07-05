@@ -135,6 +135,18 @@ DEFAULT_ARTICLE_WORKERS = 3
 # matrix runs (docs/experiments/2026-07-05-model-comparison/APPROVED.md item 5).
 DEFAULT_LLM_WORKERS = 4
 
+# Last-resort retry budget for extraction/judge calls (owner directive, qwen-run
+# resilience patch, 2026-07-05): the client.py default (3 attempts, 1/3/9s) is
+# tuned for isolated blips, not the minutes-long hard-503 windows CloseRouter's
+# circuit breaker produces once a flappy route (e.g. provider-8) trips it under
+# a 429 storm. A `run`/`ablate` invocation makes ~35k calls total, so a single
+# call exhausting only 3 short retries must not be allowed to kill the whole
+# run -- 6 attempts with backoff stretching to 60s gives a flapping route real
+# time to recover before this layer gives up and the last-resort tolerance
+# below (FailureTracker) kicks in.
+RESILIENT_ATTEMPTS = 6
+RESILIENT_BACKOFF: tuple[float, ...] = (1.0, 3.0, 9.0, 20.0, 40.0, 60.0)
+
 # Conservative per-call price estimate (gpt-4o-mini list price, USD/token),
 # mirrors eval_grounding.py -- used only for the pre-call reservation and
 # --dry-run forecast, settled against real usage.cost when the provider
@@ -277,6 +289,42 @@ class _CountingSemaphore:
         self._sem.release()
 
 
+class FailureTracker:
+    """Thread-safe LOUD accounting for last-resort-tolerated call failures
+    (qwen-run resilience patch, 2026-07-05). Two things are tolerated rather
+    than left to kill the whole run, and both must be counted, never silent:
+
+    - an extraction call that's still TRANSIENT-failing after
+      ``RESILIENT_ATTEMPTS`` retries -> that one paragraph is treated as
+      zero mentions (see ``_parallel_extract_fn``'s ``safe_extract``);
+    - a judge call that's still TRANSIENT-failing (or still returns
+      unparseable JSON after one re-ask) -> the affected mention falls back
+      to ``LabelFirstGrounding.ground()``'s pre-existing
+      ``resolved_by=judge_unavailable`` path (see ``_build_judge``).
+
+    Deterministic errors are NOT recorded here -- they propagate and kill the
+    run (extraction) or fall into the same judge_unavailable path ground()
+    already had before this patch (judge), unchanged either way. Shared
+    across every concurrent article/paragraph worker thread (same
+    lock-per-mutation pattern as ``BudgetGuard``).
+    """
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self.n_failed_paragraphs = 0
+        self.failed_paragraphs: list[dict] = []
+        self.n_failed_judge_calls = 0
+
+    def record_failed_paragraph(self, title: str | None, paragraph_index: int) -> None:
+        with self._lock:
+            self.n_failed_paragraphs += 1
+            self.failed_paragraphs.append({"title": title, "paragraph_index": paragraph_index})
+
+    def record_failed_judge_call(self) -> None:
+        with self._lock:
+            self.n_failed_judge_calls += 1
+
+
 # ── extractor + judge builders (E-D16 bridge) ────────────────────────────────
 
 
@@ -304,6 +352,16 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
     ThreadPoolExecutor worker counts (per-article extraction pool,
     article-level pool) may be larger, they just block on this semaphore
     before actually calling the provider.
+
+    Retries at ``RESILIENT_ATTEMPTS``/``RESILIENT_BACKOFF`` (6 attempts, up
+    to 60s backoff -- qwen-run resilience patch): if the call is still
+    TRANSIENT-failing after that, it raises here unchanged and out through
+    ``extract_fn``; the last-resort per-paragraph tolerance (zero mentions +
+    loud ``FailureTracker`` accounting) lives one level up, in
+    ``_parallel_extract_fn``, which is where the paragraph index and article
+    title needed for the accounting are actually available. A deterministic
+    error (bad request, bad config) is never tolerated anywhere -- it
+    propagates all the way out and kills the run.
     """
     from palimpsest.llm.client import LLMClient, LLMConfig
 
@@ -321,7 +379,10 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
             raise RuntimeError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_EXTRACT_CALL, kind="extract")
         with llm_semaphore:
-            reply = client.complete_retrying(system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source))
+            reply = client.complete_retrying(
+                system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source),
+                attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
+            )
         actual_cost = reply.usage.cost_usd
         if actual_cost is None and reply.usage.prompt_tokens:
             actual_cost = (reply.usage.prompt_tokens * PRICE_IN
@@ -336,7 +397,8 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
     return extract_fn
 
 
-def _parallel_extract_fn(extract_fn, paragraphs: list[str]):
+def _parallel_extract_fn(extract_fn, paragraphs: list[str], *, title: str | None = None,
+                          tracker: FailureTracker | None = None):
     """Phase 1 of predicting one article (ticket 002): run ``extract_fn`` over
     every paragraph CONCURRENTLY via a ThreadPoolExecutor sized
     ``palimpsest.llm.client.DEFAULT_MAX_CONCURRENCY`` (4). Phase 2 (grounding +
@@ -373,17 +435,57 @@ def _parallel_extract_fn(extract_fn, paragraphs: list[str]):
     -> ``openai``) so this module stays importable for --dry-run/--help
     without `openai` installed; this helper is only ever called from the paid,
     non-dry-run path.
+
+    Last-resort tolerance (qwen-run resilience patch, 2026-07-05): if
+    ``extract_fn(paragraph)`` still raises after ``_build_extract_fn``'s
+    ``RESILIENT_ATTEMPTS`` retries because the underlying error is TRANSIENT
+    (429/5xx/timeout -- ``palimpsest.llm.client.is_transient_error``), that
+    ONE paragraph is tolerated as yielding zero mentions rather than killing
+    the whole run: one lost paragraph out of ~300+/article is an acceptable
+    gap, a dead 35k-call run is not. The failure is never silent -- it's
+    recorded via ``tracker`` as ``(title, paragraph_index)`` and counted, for
+    meta.json's ``n_failed_paragraphs``/``failed_paragraphs``. A
+    deterministic error (bad request, bad model config) is NOT tolerated --
+    it means the run is misconfigured and would fail identically on every
+    remaining paragraph, so it propagates and kills the run exactly as
+    before this patch. ``title``/``tracker`` default to ``None`` so existing
+    callers (including this function's own pre-existing tests) keep working
+    unchanged -- the tolerance logic simply runs without an owner-visible
+    counter in that case.
     """
-    from palimpsest.llm.client import DEFAULT_MAX_CONCURRENCY
+    from palimpsest.llm.client import DEFAULT_MAX_CONCURRENCY, is_transient_error
+
+    def safe_extract(item: tuple[int, str]) -> list:
+        idx, paragraph = item
+        try:
+            return extract_fn(paragraph)
+        except Exception as exc:  # noqa: BLE001 -- re-raised unless transient
+            if not is_transient_error(exc):
+                raise
+            if tracker is not None:
+                tracker.record_failed_paragraph(title, idx)
+            return []
 
     with ThreadPoolExecutor(max_workers=DEFAULT_MAX_CONCURRENCY) as pool:
-        mentions_per_paragraph = list(pool.map(extract_fn, paragraphs))
+        mentions_per_paragraph = list(pool.map(safe_extract, enumerate(paragraphs)))
     ordered = iter(mentions_per_paragraph)
     return lambda _paragraph: next(ordered)
 
 
+JUDGE_SYSTEM_PROMPT = "You are a Wikidata disambiguation judge. Return strict JSON only."
+# One re-ask on unparseable JSON (qwen-run resilience patch) uses this instead
+# of JUDGE_SYSTEM_PROMPT -- a corrective nudge rather than a byte-identical
+# retry, since temperature=0 against the same prompt+system would otherwise
+# very likely reproduce the exact same malformed reply.
+JUDGE_REASK_SYSTEM_PROMPT = (
+    JUDGE_SYSTEM_PROMPT + " Your previous reply was not valid JSON -- return ONLY the JSON "
+    "object, with no markdown code fence and no commentary before or after it."
+)
+
+
 def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
-                  model: str | None = None, provider: str | None = None):
+                  model: str | None = None, provider: str | None = None,
+                  tracker: FailureTracker | None = None):
     """Judge on the same provider as the extractor (default CloseRouter
     claude-haiku-4.5, pinned via CLOSEROUTER_PROVIDER). Returns None when the
     provider key is unset so the caller can fall back to judge=None.
@@ -393,8 +495,31 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
     grounding (phase 2), which with article-level parallelism now runs
     concurrently across article workers, so this closure needs the same
     global cap.
+
+    Last-resort tolerance (qwen-run resilience patch, 2026-07-05): retries at
+    ``RESILIENT_ATTEMPTS``/``RESILIENT_BACKOFF`` (6 attempts, up to 60s
+    backoff) instead of ``complete_retrying``'s 3-attempt default, to ride
+    out CloseRouter's multi-minute circuit-breaker windows. If a call is
+    still TRANSIENT-failing after that, or the reply is still not valid JSON
+    after ONE corrective re-ask, this closure lets the exception propagate
+    exactly as before this patch -- ``LabelFirstGrounding.ground()`` already
+    treats ANY judge exception as terminal ``resolved_by=judge_unavailable``
+    (grounding/label_first.py's module docstring: "judge raising ... collapse
+    to yellow/judge_unavailable -- terminal, no retry"; see also
+    ``test_label_first_judge_raises_resolves_judge_unavailable_called_once_not_retried``
+    in tests/test_terminology.py). So the tolerance itself needs no change at
+    the grounding call boundary -- this wrapper's only job is to make the two
+    "gave up" cases LOUD before re-raising: ``tracker.record_failed_judge_call()``
+    so meta.json's ``n_failed_judge_calls`` shows how many mentions fell back
+    to judge_unavailable via this path, instead of that fact being invisible
+    inside ground()'s pre-existing catch-all. A judge call that raises a
+    DETERMINISTIC error (e.g. a real bad-request/config bug) is not counted
+    here -- ground()'s catch-all still swallows it into judge_unavailable
+    unchanged from before this patch; that's an existing, separate contract,
+    not something this task changes. ``tracker`` defaults to ``None`` so
+    existing callers/tests keep working unchanged (no counter observed).
     """
-    from palimpsest.llm.client import LLMClient, LLMConfig
+    from palimpsest.llm.client import LLMClient, LLMConfig, is_transient_error
 
     _load_dotenv()
     route = _resolve_route(model, provider)
@@ -407,27 +532,57 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
         temperature=0, max_tokens=JUDGE_MAX_TOKENS, extra_body=route["judge_extra_body"],
     ))
 
-    def judge(prompt: str) -> dict:
+    def _call(prompt: str, *, system: str) -> str:
+        """One real judge network call: reserve, call (resilient retries), settle."""
         if not guard.can_reserve(EST_COST_PER_JUDGE_CALL, kind="judge"):
             raise RuntimeError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_JUDGE_CALL, kind="judge")
         with llm_semaphore:
             result = client.complete_retrying(
-                system="You are a Wikidata disambiguation judge. Return strict JSON only.",
-                user=prompt,
+                system=system, user=prompt,
+                attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
             )
         actual_cost = result.usage.cost_usd
         if actual_cost is None and result.usage.prompt_tokens:
             actual_cost = (result.usage.prompt_tokens * PRICE_IN
                            + result.usage.completion_tokens * PRICE_OUT)
         guard.settle(EST_COST_PER_JUDGE_CALL, actual_cost, kind="judge")
+        return result.content
 
-        text = result.content.strip()
+    def _parse(text: str) -> dict:
+        text = text.strip()
         if text.startswith("```"):
             text = text.strip("`")
             if text.startswith("json"):
                 text = text[4:]
         return json.loads(text)
+
+    def judge(prompt: str) -> dict:
+        try:
+            content = _call(prompt, system=JUDGE_SYSTEM_PROMPT)
+        except Exception as exc:  # noqa: BLE001 -- re-raised either way, see docstring
+            if tracker is not None and is_transient_error(exc):
+                tracker.record_failed_judge_call()
+            raise
+
+        try:
+            return _parse(content)
+        except json.JSONDecodeError:
+            pass  # one corrective re-ask below before giving up
+
+        try:
+            content = _call(prompt, system=JUDGE_REASK_SYSTEM_PROMPT)
+        except Exception as exc:  # noqa: BLE001 -- re-raised either way, see docstring
+            if tracker is not None and is_transient_error(exc):
+                tracker.record_failed_judge_call()
+            raise
+
+        try:
+            return _parse(content)
+        except json.JSONDecodeError:
+            if tracker is not None:
+                tracker.record_failed_judge_call()
+            raise
 
     return judge
 
@@ -570,7 +725,7 @@ def cmd_build_gt(args) -> int:
 def _process_articles_parallel(
     articles: list[tuple[str, list[str], str]], *, article_workers: int,
     extract_fn, judge, canonicalize, wd: WikidataClient, config: GroundingConfig,
-    guard: BudgetGuard | None,
+    guard: BudgetGuard | None, tracker: FailureTracker | None = None,
 ) -> tuple[list[dict], int]:
     """Article-level parallelism (ticket 002b): process every ``(title,
     paragraphs, article_text)`` triple in ``articles`` CONCURRENTLY, up to
@@ -616,7 +771,10 @@ def _process_articles_parallel(
         # extract every paragraph's mentions concurrently. Phase 2 (grounding +
         # judge, inside predict_tuples) is untouched and stays sequential
         # WITHIN one article -- it's the across-article overlap that's new.
-        paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs)
+        # title/tracker (qwen-run resilience patch): _parallel_extract_fn needs
+        # both to record which article/paragraph a tolerated transient failure
+        # came from -- see its docstring.
+        paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs, title=title, tracker=tracker)
         result = predict.predict_tuples(
             article_text, paragraphs, paragraph_extract_fn, ground_fn,
             judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
@@ -672,7 +830,12 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
     # palimpsest.llm.client.DEFAULT_MAX_CONCURRENCY, raised via --llm-workers
     # for matrix runs).
     llm_semaphore = _CountingSemaphore(llm_workers)
-    judge = _build_judge(guard, llm_semaphore, model=model, provider=provider)
+    # FailureTracker (qwen-run resilience patch): ONE shared instance per run,
+    # threaded into the judge (transient-exhausted/unparseable-JSON tolerance)
+    # and into _process_articles_parallel (per-paragraph extraction tolerance)
+    # so both loud-accounting counters land in this run's meta.json.
+    tracker = FailureTracker()
+    judge = _build_judge(guard, llm_semaphore, model=model, provider=provider, tracker=tracker)
     extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider)
 
     articles: list[tuple[str, list[str], str]] = []
@@ -688,7 +851,7 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
 
     pred_records, n_paragraphs_total = _process_articles_parallel(
         articles, article_workers=article_workers, extract_fn=extract_fn, judge=judge,
-        canonicalize=canonicalize, wd=wd, config=config, guard=guard,
+        canonicalize=canonicalize, wd=wd, config=config, guard=guard, tracker=tracker,
     )
 
     counters = {
@@ -700,6 +863,11 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         # ticket 004); recorded so every run's meta.json carries the evidence,
         # not just the configured cap (ticket 002b).
         "llm_max_in_flight_observed": llm_semaphore.max_in_use,
+        # Last-resort tolerance accounting (qwen-run resilience patch): loud,
+        # never silent -- see FailureTracker's docstring.
+        "n_failed_paragraphs": tracker.n_failed_paragraphs,
+        "failed_paragraphs": tracker.failed_paragraphs,
+        "n_failed_judge_calls": tracker.n_failed_judge_calls,
     }
     return pred_records, counters
 
