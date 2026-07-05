@@ -216,6 +216,24 @@ def test_resolve_route_partial_override_falls_back_per_field():
     assert route["extract_extra_body"] == {"provider": wiki_eval.CLOSEROUTER_PROVIDER}
 
 
+def test_resolve_route_auto_provider_omits_provider_key(monkeypatch):
+    """ticket 004: --provider auto must not send {"provider": "auto"} -- the
+    provider key is omitted from extra_body entirely so CloseRouter's own
+    routing picks a route (verified in ticket-003 triage for models with no
+    clean pinned route, e.g. qwen3.7-plus)."""
+    route = wiki_eval._resolve_route("qwen/qwen3.7-plus", "auto")
+    assert route["extract_extra_body"] is None
+    assert route["judge_extra_body"] is None
+    # model_slug still appends "--auto" verbatim -- no special-casing needed there.
+    assert wiki_eval.model_slug("qwen/qwen3.7-plus", "auto") == "qwen--qwen3.7-plus--auto"
+
+
+def test_resolve_route_non_auto_provider_still_pins_explicit_route():
+    route = wiki_eval._resolve_route("openai/gpt-5.5", "provider-8")
+    assert route["extract_extra_body"] == {"provider": "provider-8"}
+    assert route["judge_extra_body"] == {"provider": "provider-8"}
+
+
 # ── CLI parsing ──────────────────────────────────────────────────────────
 
 
@@ -267,6 +285,42 @@ def test_cli_ablate_article_workers_default_and_override():
 
     args2 = wiki_eval._build_parser().parse_args(["ablate", "--article-workers", "2"])
     assert args2.article_workers == 2
+
+
+def test_cli_run_llm_workers_default_and_override():
+    args = wiki_eval._build_parser().parse_args(["run"])
+    assert args.llm_workers == wiki_eval.DEFAULT_LLM_WORKERS == 4
+
+    args2 = wiki_eval._build_parser().parse_args(["run", "--llm-workers", "16"])
+    assert args2.llm_workers == 16
+
+
+def test_cli_ablate_llm_workers_default_and_override():
+    args = wiki_eval._build_parser().parse_args(["ablate"])
+    assert args.llm_workers == wiki_eval.DEFAULT_LLM_WORKERS == 4
+
+    args2 = wiki_eval._build_parser().parse_args(["ablate", "--llm-workers", "16"])
+    assert args2.llm_workers == 16
+
+
+def test_cli_run_wikidata_cache_default_and_override():
+    args = wiki_eval._build_parser().parse_args(["run"])
+    assert args.wikidata_cache == str(wiki_eval.WIKIDATA_CACHE)
+
+    args2 = wiki_eval._build_parser().parse_args([
+        "run", "--wikidata-cache", "reports/terminology/wikidata_cache.gemini.jsonl",
+    ])
+    assert args2.wikidata_cache == "reports/terminology/wikidata_cache.gemini.jsonl"
+
+
+def test_cli_ablate_wikidata_cache_default_and_override():
+    args = wiki_eval._build_parser().parse_args(["ablate"])
+    assert args.wikidata_cache == str(wiki_eval.WIKIDATA_CACHE)
+
+    args2 = wiki_eval._build_parser().parse_args([
+        "ablate", "--wikidata-cache", "reports/terminology/wikidata_cache.qwen.jsonl",
+    ])
+    assert args2.wikidata_cache == "reports/terminology/wikidata_cache.qwen.jsonl"
 
 
 # ── _process_articles_parallel (article-level parallelism, ticket 002b) ────
@@ -481,3 +535,85 @@ def test_canonicalize_fn_cache_is_thread_safe_under_concurrent_reuse():
 
     for i, r in enumerate(results):
         assert r == f"Q{i % 5}-canon"
+
+
+# ── _run_one_config wiring for --llm-workers / --wikidata-cache (ticket 004) ─
+
+
+def test_run_one_config_sizes_llm_semaphore_from_llm_workers(monkeypatch, tmp_path):
+    """--llm-workers must size the process-wide llm_semaphore that
+    _run_one_config builds (meta.json's llm_semaphore field then reflects
+    it), not the hardcoded palimpsest.llm.client.DEFAULT_MAX_CONCURRENCY."""
+    captured_sizes = []
+
+    class FakeSemaphore:
+        def __init__(self, value):
+            captured_sizes.append(value)
+            self.max_in_use = value
+
+    monkeypatch.setattr(wiki_eval, "_CountingSemaphore", FakeSemaphore)
+    monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
+    monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
+    monkeypatch.setattr(wiki_eval, "_process_articles_parallel", lambda articles, **kw: ([], 0))
+    monkeypatch.setattr(wiki_eval, "WikidataClient", lambda cache_path=None: object())
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    _, counters = wiki_eval._run_one_config(
+        "111", [], str(tmp_path), dry_run=False, guard=guard, llm_workers=7,
+    )
+    assert captured_sizes == [7]
+    assert counters["llm_max_in_flight_observed"] == 7  # FakeSemaphore.max_in_use == its size
+
+
+def test_run_one_config_default_llm_workers_matches_constant(monkeypatch, tmp_path):
+    captured_sizes = []
+
+    class FakeSemaphore:
+        def __init__(self, value):
+            captured_sizes.append(value)
+            self.max_in_use = value
+
+    monkeypatch.setattr(wiki_eval, "_CountingSemaphore", FakeSemaphore)
+    monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
+    monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
+    monkeypatch.setattr(wiki_eval, "_process_articles_parallel", lambda articles, **kw: ([], 0))
+    monkeypatch.setattr(wiki_eval, "WikidataClient", lambda cache_path=None: object())
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    wiki_eval._run_one_config("111", [], str(tmp_path), dry_run=False, guard=guard)
+    assert captured_sizes == [wiki_eval.DEFAULT_LLM_WORKERS] == [4]
+
+
+def test_run_one_config_threads_wikidata_cache_path_to_client(monkeypatch, tmp_path):
+    """--wikidata-cache must reach WikidataClient(cache_path=...) -- both the
+    dry-run and non-dry-run branches build `wd` from the same parameter."""
+    captured: dict = {}
+
+    class FakeWD:
+        def __init__(self, cache_path=None):
+            captured["cache_path"] = cache_path
+
+    monkeypatch.setattr(wiki_eval, "WikidataClient", FakeWD)
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    custom_cache = str(tmp_path / "wikidata_cache.custom.jsonl")
+    wiki_eval._run_one_config(
+        "111", [], str(tmp_path), dry_run=True, guard=None, wikidata_cache=custom_cache,
+    )
+    assert captured["cache_path"] == custom_cache
+
+
+def test_run_one_config_default_wikidata_cache_is_shared_path(monkeypatch, tmp_path):
+    captured: dict = {}
+
+    class FakeWD:
+        def __init__(self, cache_path=None):
+            captured["cache_path"] = cache_path
+
+    monkeypatch.setattr(wiki_eval, "WikidataClient", FakeWD)
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    wiki_eval._run_one_config("111", [], str(tmp_path), dry_run=True, guard=None)
+    assert captured["cache_path"] == wiki_eval.WIKIDATA_CACHE

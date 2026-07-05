@@ -85,11 +85,17 @@ def _resolve_route(model: str | None = None, provider: str | None = None) -> dic
     cr_provider = provider or CLOSEROUTER_PROVIDER
     if WIKI_EVAL_PROVIDER == "closerouter":
         base = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+        # "auto" (ticket 004, model-comparison matrix): omit the provider key
+        # from extra_body entirely rather than send {"provider": "auto"} --
+        # verified in ticket-003 triage for models with no clean pinned route
+        # (e.g. qwen3.7-plus). model_slug() still appends "--auto" to the
+        # run-dir slug since it just formats whatever --provider was passed.
+        cr_extra_body = None if cr_provider == "auto" else {"provider": cr_provider}
         return {
             "extract_model": cr_model, "judge_model": cr_model,
             "extract_base_url": base, "judge_base_url": base,
             "extract_api_key_env": "OPENROUTER_API_KEY", "judge_api_key_env": "OPENROUTER_API_KEY",
-            "extract_extra_body": {"provider": cr_provider}, "judge_extra_body": {"provider": cr_provider},
+            "extract_extra_body": cr_extra_body, "judge_extra_body": cr_extra_body,
         }
     elif WIKI_EVAL_PROVIDER == "openrouter":
         return {
@@ -118,6 +124,16 @@ DEFAULT_MAX_USD = 40.0
 # runs its own two-phase (extract/ground) flow, but ALL of them share the same
 # semaphore-bounded extract_fn/judge -- see `_process_articles_parallel`.
 DEFAULT_ARTICLE_WORKERS = 3
+
+# Process-wide cap on concurrent in-flight LLM calls (extract+judge combined),
+# i.e. the size of the llm_semaphore built in `_run_one_config` (ticket 002b
+# introduced the semaphore hardcoded to palimpsest.llm.client.DEFAULT_MAX_CONCURRENCY;
+# ticket 004 makes it a CLI override via --llm-workers). Duplicated here rather
+# than imported -- same reason DEFAULT_MAX_CONCURRENCY itself is lazy-imported
+# elsewhere in this file: --dry-run/--help must stay importable without
+# `openai` installed. Owner-approved 16 for the 2026-07-05 model-comparison
+# matrix runs (docs/experiments/2026-07-05-model-comparison/APPROVED.md item 5).
+DEFAULT_LLM_WORKERS = 4
 
 # Conservative per-call price estimate (gpt-4o-mini list price, USD/token),
 # mirrors eval_grounding.py -- used only for the pre-call reservation and
@@ -281,12 +297,13 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
 
     ``llm_semaphore`` (ticket 002b, article-level parallelism): the SAME
     semaphore instance is shared with ``_build_judge`` by the caller
-    (``_run_one_config``), sized ``DEFAULT_MAX_CONCURRENCY`` -- it wraps only
-    the actual network call, never the guard bookkeeping, and is the ONE thing
-    that bounds total in-flight LLM requests (extract + judge, across every
-    article worker) to 4; ThreadPoolExecutor worker counts (per-article
-    extraction pool, article-level pool) may be larger, they just block on
-    this semaphore before actually calling the provider.
+    (``_run_one_config``), sized ``--llm-workers`` (default DEFAULT_LLM_WORKERS,
+    ticket 004) -- it wraps only the actual network call, never the guard
+    bookkeeping, and is the ONE thing that bounds total in-flight LLM requests
+    (extract + judge, across every article worker) to that size;
+    ThreadPoolExecutor worker counts (per-article extraction pool,
+    article-level pool) may be larger, they just block on this semaphore
+    before actually calling the provider.
     """
     from palimpsest.llm.client import LLMClient, LLMConfig
 
@@ -332,11 +349,13 @@ def _parallel_extract_fn(extract_fn, paragraphs: list[str]):
     extraction call simultaneously. The real cap is the ``llm_semaphore``
     every ``extract_fn`` call blocks on inside ``_build_extract_fn``'s
     ``extractor()`` closure (shared process-wide with the judge), so actual
-    network concurrency never exceeds ``DEFAULT_MAX_CONCURRENCY`` regardless
-    of how many threads are waiting. This pool's max_workers is left at 4
-    rather than raised, since raising it wouldn't buy anything (all threads
-    still serialize on the same 4-slot semaphore) and it keeps this function's
-    contract unchanged from ticket 002 for its existing paragraph-order tests.
+    network concurrency never exceeds that semaphore's size regardless of how
+    many threads are waiting. This pool's max_workers is left at 4 rather than
+    raised, since raising it wouldn't buy anything on its own (every thread
+    still serializes on the one shared semaphore) and it keeps this function's
+    contract unchanged from ticket 002 for its existing paragraph-order tests
+    -- ticket 004's ``--llm-workers`` raises the semaphore itself (not this
+    pool) when more paragraph/article threads need to fit through it at once.
 
     Design choice (ticket 002 asked to pick the cleanest of "a new
     predict_tuples parameter" vs. "an order-safe wrapper"): an order-safe
@@ -616,9 +635,11 @@ def _process_articles_parallel(
 
 def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_run: bool, guard: BudgetGuard | None,
                      model: str | None = None, provider: str | None = None,
-                     article_workers: int = DEFAULT_ARTICLE_WORKERS) -> tuple[list[dict], dict]:
+                     article_workers: int = DEFAULT_ARTICLE_WORKERS,
+                     llm_workers: int = DEFAULT_LLM_WORKERS,
+                     wikidata_cache: str | Path = WIKIDATA_CACHE) -> tuple[list[dict], dict]:
     config = _config_from_bits(bits)
-    wd = WikidataClient(cache_path=WIKIDATA_CACHE)
+    wd = WikidataClient(cache_path=wikidata_cache)
     canonicalize = _canonicalize_fn(wd)
 
     if dry_run:
@@ -645,11 +666,11 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
 
     # Non-dry-run: build the shared extractor/judge (and the ONE process-wide
     # llm_semaphore bounding both) once, then fan out across `article_workers`
-    # concurrent article workers (ticket 002b). Lazy-imported here (not at
-    # module scope) so --dry-run/--help stay importable without `openai`.
-    from palimpsest.llm.client import DEFAULT_MAX_CONCURRENCY
-
-    llm_semaphore = _CountingSemaphore(DEFAULT_MAX_CONCURRENCY)
+    # concurrent article workers (ticket 002b). ``llm_workers`` sizes the
+    # semaphore (ticket 004; default DEFAULT_LLM_WORKERS mirrors
+    # palimpsest.llm.client.DEFAULT_MAX_CONCURRENCY, raised via --llm-workers
+    # for matrix runs).
+    llm_semaphore = _CountingSemaphore(llm_workers)
     judge = _build_judge(guard, llm_semaphore, model=model, provider=provider)
     extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider)
 
@@ -674,9 +695,9 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         "n_paragraphs": n_paragraphs_total,
         "n_pred_mentions": len(pred_records),
         # Observed peak of simultaneous in-flight LLM calls (extract + judge
-        # combined) -- must never exceed DEFAULT_MAX_CONCURRENCY (the
-        # llm_semaphore size); recorded so every run's meta.json carries the
-        # evidence, not just the configured cap (ticket 002b).
+        # combined) -- must never exceed llm_workers (the llm_semaphore size,
+        # ticket 004); recorded so every run's meta.json carries the evidence,
+        # not just the configured cap (ticket 002b).
         "llm_max_in_flight_observed": llm_semaphore.max_in_use,
     }
     return pred_records, counters
@@ -687,7 +708,8 @@ def cmd_run(args) -> int:
     guard = BudgetGuard(args.max_usd, max_judge_calls=args.max_judge_calls)
 
     if args.dry_run:
-        _, counters = _run_one_config(args.config, gt_records, args.cache, dry_run=True, guard=None)
+        _, counters = _run_one_config(args.config, gt_records, args.cache, dry_run=True, guard=None,
+                                       wikidata_cache=args.wikidata_cache)
         # Forecast: 1 judge call per ~3 mentions (rough escalation-rate prior,
         # matches eval_grounding.py's dry-run intent -- an upper-bound sanity
         # check, not a precise simulation, per spec Sec.5 cap-reconciliation).
@@ -705,12 +727,9 @@ def cmd_run(args) -> int:
     pred_records, counters = _run_one_config(
         args.config, gt_records, args.cache, dry_run=False, guard=guard,
         model=args.model, provider=args.provider, article_workers=args.article_workers,
+        llm_workers=args.llm_workers, wikidata_cache=args.wikidata_cache,
     )
     finished_at = datetime.now(timezone.utc)
-
-    # Lazy import (already loaded by now via _run_one_config's non-dry-run path)
-    # just to record the process-wide LLM concurrency cap in meta.json (ticket 002b).
-    from palimpsest.llm.client import DEFAULT_MAX_CONCURRENCY
 
     model = args.model or CLOSEROUTER_MODEL
     provider = args.provider or CLOSEROUTER_PROVIDER
@@ -741,7 +760,7 @@ def cmd_run(args) -> int:
         "max_usd": args.max_usd,
         "max_judge_calls": args.max_judge_calls,
         "article_workers": args.article_workers,
-        "llm_semaphore": DEFAULT_MAX_CONCURRENCY,
+        "llm_semaphore": args.llm_workers,
         "stopped_reason": guard.stopped_reason,
         "started_at": started_at.isoformat(),
         "finished_at": finished_at.isoformat(),
@@ -880,7 +899,14 @@ def _build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_run.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
                         help="articles processed concurrently (ticket 002b); LLM calls "
-                             "stay capped at DEFAULT_MAX_CONCURRENCY regardless of this value")
+                             "stay capped at --llm-workers regardless of this value")
+    p_run.add_argument("--llm-workers", type=int, default=DEFAULT_LLM_WORKERS,
+                        help="process-wide cap on concurrent in-flight LLM calls (extract+judge "
+                             "combined); sizes the llm_semaphore (ticket 004; owner-approved 16 "
+                             "for model-comparison matrix runs)")
+    p_run.add_argument("--wikidata-cache", default=str(WIKIDATA_CACHE),
+                        help="Wikidata JSONL cache path (ticket 004: per-run copies avoid a "
+                             "cross-process append race when several runs execute in parallel)")
     p_run.add_argument("--dry-run", action="store_true", help="print cost forecast only, write nothing")
     p_run.set_defaults(func=cmd_run)
 
@@ -893,7 +919,14 @@ def _build_parser() -> argparse.ArgumentParser:
     p_ablate.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_ablate.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
                            help="articles processed concurrently (ticket 002b); LLM calls "
-                                "stay capped at DEFAULT_MAX_CONCURRENCY regardless of this value")
+                                "stay capped at --llm-workers regardless of this value")
+    p_ablate.add_argument("--llm-workers", type=int, default=DEFAULT_LLM_WORKERS,
+                           help="process-wide cap on concurrent in-flight LLM calls (extract+judge "
+                                "combined); sizes the llm_semaphore (ticket 004; owner-approved 16 "
+                                "for model-comparison matrix runs)")
+    p_ablate.add_argument("--wikidata-cache", default=str(WIKIDATA_CACHE),
+                           help="Wikidata JSONL cache path (ticket 004: per-run copies avoid a "
+                                "cross-process append race when several runs execute in parallel)")
     p_ablate.add_argument("--dry-run", action="store_true")
     p_ablate.set_defaults(func=cmd_ablate)
 
