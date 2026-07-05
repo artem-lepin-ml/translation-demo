@@ -2,7 +2,7 @@
 
 ⚠️ **LEGACY (admin-gate removed in wave-4).** The owner rejected admin-token gating: Settings are fully open to everyone, no unlock step. All admin/unlock content in this plan is historical — not current behavior. See [2026-07-03-wave-4.md, block Б5](../specs/2026-07-03-wave-4.md).
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use executing-plans (not vendored) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax.
 
 **Goal:** Implement spec rev-2 [2026-07-02-settings-rework.md](../specs/2026-07-02-settings-rework.md) — admin unlock, Add-Evaluator/Add-Model modals, seed demo flag, visible errors. The spec is the contract; this plan sequences it. The approved mockup [docs/mockups/settings-rework.html](../../mockups/settings-rework.html) is the visual ground truth (its inline CSS is a style reference for the real `variant-a.css` additions).
 

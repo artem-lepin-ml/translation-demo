@@ -1,0 +1,11 @@
+- **Source repo:** https://github.com/mattpocock/skills
+- **Upstream path:** skills/productivity/handoff/
+- **Pinned commit SHA:** `272f99b22574f50e4266791c86b9302682970e23`
+- **Upstream commit date:** 2026-07-03
+- **Vendor date:** 2026-07-04
+- **License:** MIT (SPDX: MIT) — Copyright (c) 2026 Matt Pocock. Full text at the upstream LICENSE; not copied here.
+- **Supply-chain review:** CLEAN (adversarial opus review, 2026-07-04) — no runtime-fetch / permission-change / meta-instruction.
+- **Local modifications:**
+  - Remapped output location: OS temp dir → `.claude/session-context/HANDOFF.md` (repo-local, checked-in continuity file); stripped the "save to the temporary directory of the user's OS" instruction.
+  - Adopted this repo's W7 continuity structure for the doc body: slug + route (S/M/L), ticket-queue status, last decision, next action, open gotchas — while keeping upstream's "suggested skills" section, the do-not-duplicate-artifacts rule (reference specs/plans/ADRs/commits by path instead of copying), and the redact-secrets/PII rule.
+  - Removed `disable-model-invocation: true` from frontmatter: in this repo the orchestrator invokes `handoff` itself at W7 continuity checkpoints, so it must be model-invocable (upstream ships it as user-invoked-only).

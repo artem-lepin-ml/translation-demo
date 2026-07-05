@@ -1,6 +1,6 @@
 # Terminology Extract — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development. Steps use `- [ ]`. Work ONLY inside `/Users/a1111/Projects/Work/worktrees/terminology-extract`; never `cd`/checkout elsewhere. Commits: Conventional Commits, **no Claude co-author trailer**.
+> **For agentic workers:** REQUIRED SUB-SKILL: `.claude/skills/superpowers/subagent-driven-development/SKILL.md`. Steps use `- [ ]`. Work ONLY inside `/Users/a1111/Projects/Work/worktrees/terminology-extract`; never `cd`/checkout elsewhere. Commits: Conventional Commits, **no Claude co-author trailer**.
 
 **Goal:** Turn stage-1 `extract` into a real, reproducible term extractor that catches lowercase historical terms (peoples, titles, social classes), measured against a non-circular gold, and feeds a live-re-extract demo.
 

@@ -1,4 +1,4 @@
-"""is_transient_error lives in palimpsest.llm.client (invariant #6 — all LLM/
+"""is_transient_error lives in palimpsest.llm.client (by design all LLM/
 openai access goes through this module). app.py's `_judge_live` retry loop
 imports it from here instead of importing `openai` itself.
 

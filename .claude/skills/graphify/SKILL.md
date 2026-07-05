@@ -6,6 +6,8 @@ trigger: /graphify
 
 # /graphify
 
+> **Model cap (owner directive).** Invoke via a background agent pinned `model: sonnet` or lower (`haiku` acceptable) — never opus or fable for graph build/update/query.
+
 Turn any folder of files into a navigable knowledge graph with community detection, an honest audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.
 
 ## Usage

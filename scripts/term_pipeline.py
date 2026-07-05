@@ -138,7 +138,7 @@ def _or_credits(api_key: str) -> float | None:
     """GET https://openrouter.ai/api/v1/credits -> total_usage in USD, or None on failure.
 
     Plain REST GET via urllib (billing/observability, not an LLM completion) --
-    doesn't touch Invariant #6 (LLMClient-only rule is about model calls).
+    doesn't touch the LLMClient-only design (that rule is about model calls).
     """
     req = urllib.request.Request(
         f"{OR_BASE_URL}/credits", headers={"Authorization": f"Bearer {api_key}"}

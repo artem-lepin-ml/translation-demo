@@ -66,7 +66,7 @@ def is_transient_error(exc: BaseException) -> bool:
     way. ``asyncio.CancelledError`` is never treated as transient: it must
     always propagate to cancel the task, never be swallowed into a retry.
 
-    Single source of truth for this classification (invariant #6 — all LLM/
+    Single source of truth for this classification (by design all LLM/
     openai access goes through this module); callers outside `palimpsest.llm`
     must not import `openai` directly just to replicate it.
     """

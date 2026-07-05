@@ -1503,7 +1503,7 @@ describe('mergeUp', () => {
 4. Браузерный проход `playwright-cli` (сессия `-s=pair-upload`): все 15 состояний из спеки §5.8, скриншот на каждое, сверка testid'ов из задач 9–11. Живые пункты (10–12: прогрев, дельты) — с реальным `OPENROUTER_API_KEY` и малым документом (2 абзаца), расход ≤ $0.05.
 5. Особая проверка budget-critical (задачи 2, 7): `budget_calls.jsonl` содержит записи `"endpoint": "precompute"`; суммарный расход прогона в пределах ожидания; повторная загрузка после исчерпания `PALIMPSEST_PRECOMPUTE_CALLS=3` (env для теста) даёт `status: "stopped"` без падения.
 
-Коммит не нужен (верификация); дефекты → `superpowers:systematic-debugging` → фикс-коммиты `fix(...)`.
+Коммит не нужен (верификация); дефекты → `.claude/skills/superpowers/systematic-debugging/SKILL.md` → фикс-коммиты `fix(...)`.
 
 ---
 

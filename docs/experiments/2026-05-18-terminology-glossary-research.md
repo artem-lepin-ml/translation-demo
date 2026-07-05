@@ -1,6 +1,6 @@
 # Терминологический словарь RU→EN: подготовка к research-запросу
 
-Up-link: [docs/pipeline.md](../pipeline.md). Контекст по существующей инфраструктуре глоссария — [CLAUDE.md](../../CLAUDE.md) (раздел Hard Invariants #8).
+Up-link: [docs/pipeline.md](../pipeline.md). Контекст по существующей инфраструктуре глоссария — `glossary/main.json` (единый источник RU→EN терминологии) и [docs/stages/terminology.md](../stages/terminology.md).
 
 Документ собирает контекст по будущей стадии — построение словаря для post-edit замены терминов в черновике перевода. Реализация не описана; здесь — структуризация источника и подготовленный запрос для Claude UI / research mode.
 

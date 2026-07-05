@@ -1,6 +1,7 @@
 ---
 name: doc-syncer
-description: After editing code under src/palimpsest/, prompts/<NN>_*/, or scripts/<NN>_*.py, dispatch this agent to sync docs/stages/<NN>.md and docs/pipeline.md to the code change. Caller passes changed files, a stage name, or a git range (e.g. main...HEAD); omitted means staged diff. Applies minimal edits, returns drift summary and convention candidates. Does not edit CLAUDE.md, README.md, docs/superpowers/, references/, data/raw/, factowl/.
+description: After editing code under src/palimpsest/, prompts/<NN>_*/, or scripts/<NN>_*.py, dispatch this agent to sync docs/stages/<NN>.md and docs/pipeline.md to the code change. Caller passes changed files, a stage name, or a git range (e.g. main...HEAD); omitted means staged diff. Applies minimal edits, returns drift summary and convention candidates. Does not edit CLAUDE.md, README.md, docs/superpowers/.
+model: sonnet
 tools: Read, Edit, Write, Bash, Grep, Glob
 ---
 
@@ -17,7 +18,6 @@ Out of scope (flag, do not edit):
 - `docs/superpowers/specs/`, `docs/superpowers/plans/` — frozen design artifacts.
 - `docs/known_issues.md` — flag if a new pitfall surfaced; let the user decide phrasing.
 - `docs/factchecker.md` — operational guide in Russian (commands, keys, how-to-run); flag if you see contract changes (paths, flags, config keys), but do not edit.
-- `references/`, `data/raw/`, `factowl/` — read-only per repo invariants.
 
 ## Documentation philosophy
 
@@ -55,8 +55,6 @@ Project-wide rules belong in `CLAUDE.md > ## Conventions` — out of scope to ed
 Examples of conventions to recognize when reading a code change:
 
 - **Fail fast, no soft fallback**: on malformed model output, raise (e.g. `JudgeParseError`); never silently write `score: -1` or any placeholder. If a new branch returns a sentinel value for a parse failure, treat it as a regression and flag the code, not document it.
-- **LLM access only via `palimpsest.llm.client.LLMClient`** (Hard Invariant #6).
-- **Glossary upsert only via `Glossary.upsert`** (Hard Invariant #8).
 - **Sentinels are a closed set**: `* * *`, `picture`, `[TRANSLATION FAILED]`. A new sentinel string introduced by code requires an explicit doc entry, not silent acceptance.
 
 When a code change introduces or modifies a project-wide convention, emit a flag of the form:
@@ -140,7 +138,6 @@ If multiple stages were touched, repeat the block per stage.
 - Conventional Commits in English; agent doesn't commit, but if you mention a follow-up message, format it `docs(stages): sync NN_<name> with <module>` or `docs(pipeline): refresh Status for Stage NN`.
 - Stage docs are bilingual: Russian prose, English code blocks and section headers. Keep that pattern.
 - `docs/pipeline.md` uses `Status: **aligned**.` / `**done**.` / `**manual**.` — keep the existing label vocabulary; don't introduce new labels.
-- LLM access discipline (Hard Invariant #6): if a code change adds a non-`LLMClient` LLM call, flag it strongly — that is a regression, not a doc drift, and the caller likely wants to revert the code, not document it.
 
 ## Stage doc template
 
@@ -181,3 +178,6 @@ CLI:
 ````
 
 Sections you cannot ground in code → write `_TBD_`. Never fabricate Design decisions or Subtleties to fill space.
+
+## Reporting protocol (mandatory)
+Before finishing, write a report to docs/reports/<your-agent-name>-<task-slug>.md with sections: Scope; Files changed; Decisions & rationale; Open questions; NOT done (explicit). If your output includes HTML, use the Tokyo Night tokens from .claude/rules/tokyo-night.css. Your inline summary to the caller must be ≤10 lines and must reference the report path.

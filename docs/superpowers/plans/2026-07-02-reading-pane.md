@@ -1,6 +1,6 @@
 # Реализация rev-3 читальной области (Variant A) — план
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) или superpowers:executing-plans для позадачного исполнения. Шаги отмечены чекбоксами (`- [ ]`).
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `.claude/skills/superpowers/subagent-driven-development/SKILL.md` (recommended) или executing-plans (not vendored) для позадачного исполнения. Шаги отмечены чекбоксами (`- [ ]`).
 
 **Goal:** три точечных улучшения Document-вкладки — компактный чип вместо левого гуттера (вкл. фикс цветов полос), унификация типографики панелей (общий baseline), адаптивные заголовки `Source · <Language>` / `Translation · <Language>` + инвентарь переименований. Правка НЕ меняется: каждый абзац — всегда живой TipTap, как сегодня.
 
