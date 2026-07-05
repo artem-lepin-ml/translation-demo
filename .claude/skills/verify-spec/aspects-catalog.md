@@ -40,7 +40,7 @@ Severity scale: CRITICAL — invariant/goal violation, blocks the base scenario;
 
 ## Generating the project file `docs/superpowers/review-aspects.md`
 
-1. Context gathering by 2–3 parallel subagents (Haiku/Sonnet): docs/ (README, subsystems, features), the project CLAUDE.md, specs and reports from the last ~14 days, `graphify-out/GRAPH_REPORT.md` (if present), dialog memory (if available).
+1. Context gathering by 2–3 parallel subagents (Haiku/Sonnet): docs/ (README, subsystems, features), the project CLAUDE.md, specs and reports from the last ~14 days, dialog memory (if available).
 2. Select the applicable aspects from the catalog + generate project-specific custom ones.
 3. For each aspect write: (a) when it applies; (b) questions for SPEC review; (c) checks for final PR testing; (d) a link to the severity scale.
 4. Regeneration is careful: sections marked `<!-- custom -->` (the owner's manual edits) are carried over unchanged; only the canonical part is regenerated.

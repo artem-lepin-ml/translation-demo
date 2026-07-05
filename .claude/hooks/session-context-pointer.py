@@ -2,8 +2,7 @@
 """SessionStart context pointer (Phase-1 workflow hardening).
 
 If current-state docs exist, inject an `additionalContext` note listing their PATHS
-ONLY (never their contents) so the session reads them before continuing. Additive to
-the existing graphify SessionStart hook — both run and their context is unioned.
+ONLY (never their contents) so the session reads them before continuing.
 
 If none of the candidate files exist -> exit 0 with no output.
 FAIL-OPEN: any exception -> exit 0 silently.
