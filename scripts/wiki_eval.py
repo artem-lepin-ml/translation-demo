@@ -47,32 +47,37 @@ DEFAULT_PAGES_CACHE = ROOT / "data/eval/wiki/pages"
 WIKIDATA_CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
 OUT_ROOT = ROOT / "reports/terminology/wiki-eval"
 
-# Extraction model: production default is the live demo pipeline's winner
-# (2026-07-02 NER tournament, docs/reports/2026-07-02-ner-model-tournament.html)
-# -- anthropic/claude-haiku-4.5 via OpenRouter. As of 2026-07-03 the repo's
-# OpenRouter/CloseRouter keys are DEAD (401/403); only OPENAI_API_KEY against
-# api.openai.com is live. WIKI_EVAL_PROVIDER=openai-direct (the default below)
-# reroutes BOTH the extractor and the judge to OpenAI-direct gpt-4o-mini so
-# tonight's eval can run at all -- this measures gpt-4o-mini as the
-# extractor, NOT the deployed claude-haiku-4.5 extractor. Restore
-# WIKI_EVAL_PROVIDER=openrouter (claude-haiku-4.5 extractor) once the OR key
-# is live again.
-WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "openai-direct")
+# Extraction + judge provider. Default = CloseRouter (OpenAI-compatible gateway
+# at OPENROUTER_BASE_URL) running the deployed extractor anthropic/claude-haiku-4.5
+# (2026-07-02 NER tournament winner, docs/reports/2026-07-02-ner-model-tournament.html).
+# CloseRouter pins a specific upstream route via a per-request `provider` field
+# (passed through extra_body); "auto" lets the gateway pick a live route. Its WAF
+# rejects the OpenAI SDK's default User-Agent — palimpsest.llm.client sends a
+# neutral one. WIKI_EVAL_PROVIDER switches the gateway: "openrouter" (openrouter.ai)
+# or "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks.
+# CLOSEROUTER_PROVIDER pins the upstream route ("auto" | "provider-N").
+WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "closerouter")
+CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "auto")
 
-if WIKI_EVAL_PROVIDER == "openrouter":
-    EXTRACT_MODEL = "anthropic/claude-haiku-4.5"
-    EXTRACT_BASE_URL = "https://openrouter.ai/api/v1"
-    EXTRACT_API_KEY_ENV = "OPENROUTER_API_KEY"
-else:
-    EXTRACT_MODEL = "gpt-4o-mini"
-    EXTRACT_BASE_URL = "https://api.openai.com/v1"
-    EXTRACT_API_KEY_ENV = "OPENAI_API_KEY"
-
-# Judge model: always OpenAI direct (eval_grounding.py's ablation harness
-# pattern) -- gpt-4o-mini so the two eval reports stay comparable.
-JUDGE_MODEL = "gpt-4o-mini"
-JUDGE_BASE_URL = "https://api.openai.com/v1"
 JUDGE_MAX_TOKENS = 512
+
+if WIKI_EVAL_PROVIDER == "closerouter":
+    _CR_BASE = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+    _CR_EXTRA = {"provider": CLOSEROUTER_PROVIDER}
+    EXTRACT_MODEL = JUDGE_MODEL = "anthropic/claude-haiku-4.5"
+    EXTRACT_BASE_URL = JUDGE_BASE_URL = _CR_BASE
+    EXTRACT_API_KEY_ENV = JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
+    EXTRACT_EXTRA_BODY = JUDGE_EXTRA_BODY = _CR_EXTRA
+elif WIKI_EVAL_PROVIDER == "openrouter":
+    EXTRACT_MODEL = JUDGE_MODEL = "anthropic/claude-haiku-4.5"
+    EXTRACT_BASE_URL = JUDGE_BASE_URL = "https://openrouter.ai/api/v1"
+    EXTRACT_API_KEY_ENV = JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
+    EXTRACT_EXTRA_BODY = JUDGE_EXTRA_BODY = None
+else:  # openai-direct fallback
+    EXTRACT_MODEL = JUDGE_MODEL = "gpt-4o-mini"
+    EXTRACT_BASE_URL = JUDGE_BASE_URL = "https://api.openai.com/v1"
+    EXTRACT_API_KEY_ENV = JUDGE_API_KEY_ENV = "OPENAI_API_KEY"
+    EXTRACT_EXTRA_BODY = JUDGE_EXTRA_BODY = None
 
 # E-D11/Sec.11: pre-call reservation cap + hard call-count ceiling.
 MAX_JUDGE_CALLS = 900
@@ -162,10 +167,11 @@ def _build_extract_fn(guard: BudgetGuard | None = None):
     if not api_key:
         raise RuntimeError(f"{EXTRACT_API_KEY_ENV} not set (checked .env and environment) -- required for extraction")
 
-    client = LLMClient(LLMConfig(model=EXTRACT_MODEL, base_url=EXTRACT_BASE_URL, api_key=api_key, temperature=0))
+    client = LLMClient(LLMConfig(model=EXTRACT_MODEL, base_url=EXTRACT_BASE_URL, api_key=api_key,
+                                 temperature=0, extra_body=EXTRACT_EXTRA_BODY))
 
     def extractor(source: str) -> list[dict]:
-        reply = client.complete(system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source))
+        reply = client.complete_retrying(system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source))
         return parse_surfaces(reply.content)
 
     def extract_fn(paragraph: str):
@@ -176,26 +182,26 @@ def _build_extract_fn(guard: BudgetGuard | None = None):
 
 
 def _build_judge(guard: BudgetGuard):
-    """OpenAI-direct gpt-4o-mini judge, identical wiring to eval_grounding.py's
-    _build_judge (OpenRouter/CloseRouter keys are dead for this project;
-    task brief mandates OPENAI_API_KEY + api.openai.com direct)."""
+    """Judge on the same provider as the extractor (default CloseRouter
+    claude-haiku-4.5, pinned via CLOSEROUTER_PROVIDER). Returns None when the
+    provider key is unset so the caller can fall back to judge=None."""
     from palimpsest.llm.client import LLMClient, LLMConfig
 
     _load_dotenv()
-    api_key = os.environ.get("OPENAI_API_KEY")
+    api_key = os.environ.get(JUDGE_API_KEY_ENV)
     if not api_key:
         return None
 
     client = LLMClient(LLMConfig(
         model=JUDGE_MODEL, base_url=JUDGE_BASE_URL, api_key=api_key,
-        temperature=0, max_tokens=JUDGE_MAX_TOKENS,
+        temperature=0, max_tokens=JUDGE_MAX_TOKENS, extra_body=JUDGE_EXTRA_BODY,
     ))
 
     def judge(prompt: str) -> dict:
         if not guard.can_reserve(EST_COST_PER_JUDGE_CALL):
             raise RuntimeError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_JUDGE_CALL)
-        result = client.complete(
+        result = client.complete_retrying(
             system="You are a Wikidata disambiguation judge. Return strict JSON only.",
             user=prompt,
         )

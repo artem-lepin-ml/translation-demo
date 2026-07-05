@@ -3,12 +3,24 @@ from __future__ import annotations
 
 import asyncio
 import os
+import time
 from dataclasses import dataclass
 
 import openai
 from openai import OpenAI
 
 from ..config import ModelConfig
+
+# CloseRouter's WAF blocks the OpenAI SDK's default User-Agent (HTTP 403 "Your
+# request was blocked") before it ever routes to a model — any neutral UA
+# passes. Sent on every client so identical code works against CloseRouter,
+# OpenRouter, OpenAI and local vLLM.
+USER_AGENT = "palimpsest-llm/1.0"
+
+# Hard ceiling on concurrent in-flight requests when a caller fans out. Providers
+# run ~90% per-route success under load, so parallelism stays bounded (owner
+# directive); callers gate their own fan-out on this.
+DEFAULT_MAX_CONCURRENCY = 4
 
 
 @dataclass(slots=True)
@@ -51,7 +63,10 @@ def _extract_usage(resp) -> Usage:
     cost = getattr(u, "cost", None)
     if cost is None:
         extra = getattr(u, "model_extra", None) or {}
+        # OpenRouter surfaces `cost`; CloseRouter surfaces `cost_usd`.
         cost = extra.get("cost")
+        if cost is None:
+            cost = extra.get("cost_usd")
     return Usage(int(getattr(u, "prompt_tokens", 0) or 0),
                  int(getattr(u, "completion_tokens", 0) or 0),
                  int(reasoning or 0),
@@ -86,7 +101,8 @@ class LLMClient:
     def __init__(self, config: LLMConfig):
         self.config = config
         self._client = OpenAI(base_url=config.base_url, api_key=config.api_key,
-                              max_retries=0, timeout=30.0)
+                              max_retries=0, timeout=30.0,
+                              default_headers={"User-Agent": USER_AGENT})
 
     def complete(self, system: str, user: str) -> LLMResult:
         kwargs: dict = {
@@ -104,3 +120,22 @@ class LLMClient:
         resp = self._client.chat.completions.create(**kwargs)
         content = resp.choices[0].message.content or ""
         return LLMResult(content=content, usage=_extract_usage(resp))
+
+    def complete_retrying(self, system: str, user: str, *, attempts: int = 3,
+                          backoff: tuple[float, ...] = (1.0, 3.0, 9.0)) -> LLMResult:
+        """`complete()` with bounded retries on transient errors only.
+
+        Retries 429/5xx/timeout/connection failures (`is_transient_error`) up to
+        `attempts` times, sleeping `backoff[i]` between tries; deterministic
+        errors (400/401/malformed JSON) propagate on the first hit — a retry
+        would only burn another paid call and fail the same way. Owner directive
+        for CloseRouter's ~90% per-route success: 3 attempts, 1s/3s/9s backoff.
+        """
+        for i in range(attempts):
+            try:
+                return self.complete(system, user)
+            except Exception as exc:  # noqa: BLE001 — re-raised unless transient
+                if not is_transient_error(exc) or i == attempts - 1:
+                    raise
+                time.sleep(backoff[min(i, len(backoff) - 1)])
+        raise RuntimeError("unreachable")  # pragma: no cover
