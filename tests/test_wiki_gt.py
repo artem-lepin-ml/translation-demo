@@ -1,4 +1,4 @@
-"""Tests for wiki_gt: anchor extraction, hardness, strata, filters, determinism.
+"""Tests for wiki_gt: anchor extraction, strata, filters, determinism.
 
 All offline: fixture HTML strings + fake title->qid maps. No network.
 """
@@ -10,13 +10,10 @@ import pytest
 
 from palimpsest.terminology.evaluation.wiki_gt import (
     CHRONO_P31_QIDS,
-    AnchorTarget,
     _follow_redirect_chain,
     build_gt,
     extract_gt,
-    hardness,
     memoized_titles_to_qids,
-    select_articles,
     titles_to_qids,
 )
 
@@ -109,7 +106,7 @@ def test_extract_gt_piped_anchor_surface_differs_from_canonical_title():
     target = result.anchor_targets[0]
     assert target.surface == "Цин"
     assert target.canonical_title == "Цин (династия)"
-    assert target.surface != target.canonical_title  # piped -> contributes to hardness
+    assert target.surface != target.canonical_title  # piped anchor: surface != target title
 
 
 def test_extract_gt_chrono_filter_drops_year_target():
@@ -144,78 +141,6 @@ def test_extract_gt_global_index_across_paragraph_boundary():
     empire = next(t for t in result.tuples if t[2] == "Q2277")
     rim = next(t for t in result.tuples if t[2] == "Q220")
     assert empire[0] > rim[0]
-
-
-# ── hardness ─────────────────────────────────────────────────────────────────
-
-
-def test_hardness_piped_anchor_counts_as_ambiguous():
-    targets = [
-        AnchorTarget(surface="Цин", anchor_target_title="Цин (династия)",
-                     canonical_title="Цин (династия)", qid="Q1"),
-        AnchorTarget(surface="Рим", anchor_target_title="Рим",
-                     canonical_title="Рим", qid="Q2"),
-    ]
-    scores = hardness({"page": targets})
-    assert scores["page"] == 0.5  # 1 of 2 grounded anchors is piped/ambiguous
-
-
-def test_hardness_same_surface_different_qid_across_pool_is_ambiguous():
-    page_a = [AnchorTarget(surface="Мир", anchor_target_title="Мир",
-                            canonical_title="Мир", qid="Q_peace")]
-    page_b = [AnchorTarget(surface="Мир", anchor_target_title="Мир (город)",
-                            canonical_title="Мир (город)", qid="Q_town")]
-    scores = hardness({"a": page_a, "b": page_b})
-    assert scores["a"] == 1.0
-    assert scores["b"] == 1.0
-
-
-def test_hardness_unambiguous_page_scores_zero():
-    targets = [
-        AnchorTarget(surface="Рим", anchor_target_title="Рим", canonical_title="Рим", qid="Q1"),
-        AnchorTarget(
-            surface="Афины", anchor_target_title="Афины", canonical_title="Афины", qid="Q2"
-        ),
-    ]
-    scores = hardness({"page": targets})
-    assert scores["page"] == 0.0
-
-
-def test_hardness_page_with_no_grounded_anchors_scores_zero():
-    targets = [AnchorTarget(surface="X", anchor_target_title="X", canonical_title=None, qid=None)]
-    scores = hardness({"page": targets})
-    assert scores["page"] == 0.0
-
-
-# ── select_articles ──────────────────────────────────────────────────────────
-
-
-def test_select_articles_forces_seeds_into_hard():
-    pool = {f"page{i}": 0.1 for i in range(10)}
-    pool["low_score_seed"] = 0.0
-    result = select_articles(pool, n_hard=3, n_typical=3, seeds=["low_score_seed"])
-    assert "low_score_seed" in result.hard
-    assert result.n_hard_seeds == 1
-
-
-def test_select_articles_ranks_by_hardness_descending():
-    pool = {"a": 0.9, "b": 0.5, "c": 0.1, "d": 0.3}
-    result = select_articles(pool, n_hard=2, n_typical=2, seeds=[])
-    assert result.hard == ["a", "b"]
-
-
-def test_select_articles_typical_excludes_hard():
-    pool = {"a": 0.9, "b": 0.5, "c": 0.1, "d": 0.3}
-    result = select_articles(pool, n_hard=1, n_typical=3, seeds=[])
-    assert "a" not in result.typical
-    assert set(result.typical) == {"b", "c", "d"}
-
-
-def test_select_articles_seed_not_in_pool_is_ignored():
-    pool = {"a": 0.5, "b": 0.3}
-    result = select_articles(pool, n_hard=2, n_typical=2, seeds=["ghost"])
-    assert "ghost" not in result.hard
-    assert result.n_hard_seeds == 0
 
 
 # ── build_gt: determinism + fail-loud ────────────────────────────────────────

@@ -294,63 +294,39 @@ def cmd_build_gt(args) -> int:
     titles_path = Path(args.titles)
     lines = [l.strip() for l in titles_path.read_text(encoding="utf-8").splitlines() if l.strip()]
 
-    # each line: "<title>" or "<title>\t<stratum>"; a line explicitly marked
-    # "hard" in the input file is a forced hardness seed (spec E-D3).
+    # each line: "<title>" or "<title>\t<stratum>"; untagged lines default to
+    # "typical" (legacy pilot-file default -- the v2 titles file tags every line).
     titles: dict[str, str] = {}
     stratum_map: dict[str, str] = {}
-    seeds: list[str] = []
     for line in lines:
         parts = line.split("\t")
         title = parts[0].strip()
         stratum = parts[1].strip() if len(parts) > 1 else "typical"
         stratum_map[title] = stratum
-        if stratum == "hard":
-            seeds.append(title)
 
     wd = WikidataClient(cache_path=WIKIDATA_CACHE)
-    # Single shared cache: the hardness pre-pass and build_gt's internal
-    # anchor-title->QID lookups reuse the same resolved titles instead of
-    # each re-fetching identical batches over the network (spec: call once).
+    # Single shared cache: build_gt's internal anchor-title->QID lookups reuse
+    # the same resolved titles instead of each re-fetching identical batches
+    # over the network (spec: call once).
     shared_titles_to_qids = wiki_gt.memoized_titles_to_qids()
 
     qid_map = shared_titles_to_qids(list(stratum_map.keys()))
     for title, entry in qid_map.items():
         titles[title] = (entry or {}).get("qid") or ""
 
-    pages_gt = {}
-    for title in titles:
-        try:
-            html = wiki_gt.fetch_html(title, args.cache)
-        except wiki_gt.WikiFetchError:
-            continue
-        anchor_titles = sorted(wiki_gt._collect_anchor_titles(html))
-        title_to_qid = shared_titles_to_qids(anchor_titles) if anchor_titles else {}
-        pages_gt[title] = wiki_gt.extract_gt(html, title_to_qid, p31_of=_p31_of_fn(wd))
-    hardness_scores = wiki_gt.hardness(pages_gt)
-
-    # Hard-seed disclosure (E-D3): how many of the hard-stratum pages are
-    # forced seeds vs. score-ranked, and each seed's hardness percentile.
-    # select_articles reasons over the FULL pool so the disclosure reflects
-    # every candidate's rank, not just the pre-labeled subset.
-    selection = wiki_gt.select_articles(hardness_scores, n_hard=len(seeds) or 50, seeds=seeds)
-
     summary = wiki_gt.build_gt(
         titles,
         args.cache,
         args.out,
         stratum_of=lambda t: stratum_map.get(t, "typical"),
-        hardness_of=lambda t: hardness_scores.get(t, 0.0),
         p31_of=_p31_of_fn(wd),
         titles_to_qids_fn=shared_titles_to_qids,
     )
-    summary["n_hard_seeds"] = selection.n_hard_seeds
-    summary["seed_percentiles"] = selection.seed_percentiles
     summary_path = Path(str(args.out) + ".summary.json")
     summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
 
     n = sum(1 for _ in Path(args.out).open(encoding="utf-8"))
     print(f"wrote {n} articles -> {args.out}")
-    print(f"n_hard_seeds={selection.n_hard_seeds}  seed_percentiles={selection.seed_percentiles}")
     return 0
 
 

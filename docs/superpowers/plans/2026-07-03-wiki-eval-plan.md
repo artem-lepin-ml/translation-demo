@@ -1,5 +1,7 @@
 # Wiki-evaluation (E1+E2) — implementation plan
 
+> ⚠️ **Superseded in part (2026-07-05):** corpus selection (50/50 strata, hardness) retired for selection v2 — see [docs/stages/wiki-eval.md § Corpus](../../stages/wiki-eval.md).
+
 Up-link: spec [2026-07-03-wiki-eval-design.md](../specs/2026-07-03-wiki-eval-design.md). Branch `feat/wiki-eval` off G6 (`bf3cec2`). Test command: `PYTHONPATH=src /Users/a1111/Projects/Work/worktrees/grounding-label-first/.venv/bin/python -m pytest tests/ -q` (reused venv resolves `palimpsest` to THIS worktree via PYTHONPATH). Conventional Commits, no Co-Authored-By trailer. All modules under `src/palimpsest/terminology/evaluation/`.
 
 Pinned constants (spec §11): HTML parser `BeautifulSoup(html, "lxml")`; tokenizer `re.split(r"\s+", nfc+nbsp→space)`, punctuation attached, global index no per-paragraph reset; chrono P31 set `chrono_p31_v1` = {Q3186692, Q39911, Q578, Q3311614, Q29964144, Q14795564, Q18340514}; underpowered cell n<30; MAX_JUDGE_CALLS=900, default --max-usd 40, judge max_tokens 512.
