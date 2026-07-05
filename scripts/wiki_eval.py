@@ -48,18 +48,19 @@ WIKIDATA_CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
 OUT_ROOT = ROOT / "reports/terminology/wiki-eval"
 
 # Extraction + judge provider. Default = CloseRouter (OpenAI-compatible gateway at
-# OPENROUTER_BASE_URL) running openai/gpt-5.4-mini pinned to provider-8. Model and
-# route are env-overridable (CLOSEROUTER_MODEL / CLOSEROUTER_PROVIDER). provider-8
-# is chosen over provider-6 and "auto": on a 2026-07-05 probe both worked 10/10 but
-# provider-6 (where "auto" routes gpt-5.4-mini) padded ~4400 hidden prompt tokens
-# per call vs 21 on provider-8 — a ~200x input-cost trap. CloseRouter's WAF rejects
-# the OpenAI SDK's default User-Agent; palimpsest.llm.client sends a neutral one.
-# WIKI_EVAL_PROVIDER switches the gateway: "openrouter" (openrouter.ai) or
-# "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks. To measure the
-# 2026-07-02 NER tournament winner instead, set CLOSEROUTER_MODEL=anthropic/claude-haiku-4.5.
+# OPENROUTER_BASE_URL) running google/gemini-3.1-flash-lite pinned to provider-9.
+# Model and route are env-overridable (CLOSEROUTER_MODEL / CLOSEROUTER_PROVIDER).
+# provider-9 verified on a 2026-07-05 probe: 10/10, ~1.4s, honest prompt tokens (5),
+# cost surfaced — the fastest/cheapest clean route in the fleet. Pin an explicit
+# route because "auto" can land on a reseller-padded provider for some models
+# (e.g. gpt-5.4-mini -> provider-6, +4400 hidden prompt tokens/call). CloseRouter's
+# WAF rejects the OpenAI SDK's default User-Agent; palimpsest.llm.client sends a
+# neutral one. WIKI_EVAL_PROVIDER switches the gateway: "openrouter" (openrouter.ai)
+# or "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks. Set
+# CLOSEROUTER_MODEL=anthropic/claude-haiku-4.5 to measure the 2026-07-02 NER winner.
 WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "closerouter")
-CLOSEROUTER_MODEL = os.environ.get("CLOSEROUTER_MODEL", "openai/gpt-5.4-mini")
-CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-8")
+CLOSEROUTER_MODEL = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
+CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
 
 JUDGE_MAX_TOKENS = 512
 
