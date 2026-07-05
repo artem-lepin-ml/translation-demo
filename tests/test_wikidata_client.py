@@ -12,6 +12,9 @@ from __future__ import annotations
 import json
 import threading
 import time
+import urllib.error
+
+import pytest
 
 from palimpsest.terminology import wikidata as wikidata_mod
 from palimpsest.terminology.wikidata import WikidataClient
@@ -123,6 +126,110 @@ def test_fetch_concurrent_identical_miss_never_corrupts_cache(tmp_path, monkeypa
     for line in lines:
         rec = json.loads(line)
         assert rec["value"] == {"ok": True}
+
+
+# ── 429/5xx retry with Retry-After-honoring backoff (2026-07-05 canary fix) ──
+
+
+def _http_error(code: int, headers: dict | None = None) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError("https://www.wikidata.org/w/api.php", code,
+                                  "err", headers or {}, None)
+
+
+def test_fetch_retries_429_then_succeeds(monkeypatch):
+    """Two 429s then a 200 must succeed after backoff -- the exact storm
+    signature that killed the 2026-07-05 matrix canary run."""
+    calls = [0]
+    sleeps: list[float] = []
+
+    def fake_urlopen(req, timeout=None, context=None):
+        calls[0] += 1
+        if calls[0] <= 2:
+            raise _http_error(429)
+        return _FakeResponse({"ok": True})
+
+    monkeypatch.setattr(wikidata_mod.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(wikidata_mod.time, "sleep", sleeps.append)
+
+    wd = WikidataClient(cache_path=None)
+    data = wd._fetch(wikidata_mod.API, {"action": "test-429"})
+    assert data == {"ok": True}
+    assert calls[0] == 3
+    assert len(sleeps) == 2  # backed off before each retry
+    assert all(s > 0 for s in sleeps)
+
+
+def test_fetch_retries_5xx_then_succeeds(monkeypatch):
+    calls = [0]
+
+    def fake_urlopen(req, timeout=None, context=None):
+        calls[0] += 1
+        if calls[0] == 1:
+            raise _http_error(500)
+        return _FakeResponse({"ok": True})
+
+    monkeypatch.setattr(wikidata_mod.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(wikidata_mod.time, "sleep", lambda s: None)
+
+    wd = WikidataClient(cache_path=None)
+    assert wd._fetch(wikidata_mod.API, {"action": "test-500"}) == {"ok": True}
+    assert calls[0] == 2
+
+
+def test_fetch_deterministic_4xx_raises_immediately(monkeypatch):
+    """A 400 is a deterministic client error -- no retry, no sleep, raise on
+    the first attempt."""
+    calls = [0]
+    sleeps: list[float] = []
+
+    def fake_urlopen(req, timeout=None, context=None):
+        calls[0] += 1
+        raise _http_error(400)
+
+    monkeypatch.setattr(wikidata_mod.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(wikidata_mod.time, "sleep", sleeps.append)
+
+    wd = WikidataClient(cache_path=None)
+    with pytest.raises(urllib.error.HTTPError) as excinfo:
+        wd._fetch(wikidata_mod.API, {"action": "test-400"})
+    assert excinfo.value.code == 400
+    assert calls[0] == 1
+    assert sleeps == []
+
+
+def test_fetch_sustained_429_exhausts_after_five_attempts(monkeypatch):
+    calls = [0]
+
+    def fake_urlopen(req, timeout=None, context=None):
+        calls[0] += 1
+        raise _http_error(429)
+
+    monkeypatch.setattr(wikidata_mod.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(wikidata_mod.time, "sleep", lambda s: None)
+
+    wd = WikidataClient(cache_path=None)
+    with pytest.raises(urllib.error.HTTPError) as excinfo:
+        wd._fetch(wikidata_mod.API, {"action": "test-429-storm"})
+    assert excinfo.value.code == 429
+    assert calls[0] == 5
+
+
+def test_retry_after_honors_server_header_above_old_10s_cap():
+    """The 2026-07-05 canary root cause: Retry-After was capped at 10s, so a
+    server asking for 60s got hammered again in 10 and the storm never
+    cleared. The header must now win up to 120s."""
+    assert wikidata_mod._retry_after({"Retry-After": "60"}, 0) == 60.0
+    assert wikidata_mod._retry_after({"Retry-After": "300"}, 0) == 120.0  # bounded
+
+
+def test_retry_after_fallback_escalates_and_floors_the_header():
+    # no header -> escalating 2s*(attempt+1)
+    assert wikidata_mod._retry_after(None, 0) == 2.0
+    assert wikidata_mod._retry_after({}, 3) == 8.0
+    # a header smaller than the escalating fallback never shrinks the backoff
+    assert wikidata_mod._retry_after({"Retry-After": "1"}, 3) == 8.0
+    # malformed header -> fallback
+    assert wikidata_mod._retry_after({"Retry-After": "soon"}, 1) == 4.0
 
 
 def test_network_concurrency_is_configurable(monkeypatch):

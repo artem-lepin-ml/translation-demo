@@ -1,9 +1,10 @@
 """Minimal live Wikidata client — stdlib only, polite, cached.
 
 Etiquette (Wikidata API guidelines): a descriptive User-Agent, ``maxlag=5``
-(parsed from the JSON body, not just the HTTP code), ``Retry-After`` on 429/503,
-and a local JSONL cache so reruns are fast and reproducible. No third-party
-dependency: everything goes through ``urllib``.
+(parsed from the JSON body, not just the HTTP code), ``Retry-After``-honoring
+backoff on 429/5xx (see ``_retry_after``), and a local JSONL cache so reruns
+are fast and reproducible. No third-party dependency: everything goes through
+``urllib``.
 """
 from __future__ import annotations
 
@@ -93,8 +94,8 @@ class WikidataClient:
                     with urllib.request.urlopen(req, timeout=self.timeout, context=self._ctx) as resp:
                         raw = resp.read()
                     data = json.loads(raw) if raw else {}
-                except urllib.error.HTTPError as exc:  # 429/503 → back off
-                    if exc.code in (429, 503) and attempt < 4:
+                except urllib.error.HTTPError as exc:  # 429/5xx → back off; other 4xx is deterministic
+                    if (exc.code == 429 or exc.code >= 500) and attempt < 4:
                         time.sleep(_retry_after(exc.headers, attempt))
                         continue
                     raise
@@ -227,8 +228,21 @@ def canonical_en_forms(entity: dict) -> list[str]:
 
 
 def _retry_after(headers, attempt: int) -> float:
+    """Backoff before retrying attempt N (0-based): the server's Retry-After
+    when present, else an escalating 2s*(attempt+1) fallback -- and never LESS
+    than that fallback even with a header, so consecutive 429s always slow us
+    down further. Capped at 120s.
+
+    History (2026-07-05 matrix canary crash): the original cap was 10s with a
+    2**attempt fallback capped at 8s -- a sustained Wikidata 429 storm (their
+    real Retry-After is often 60s+) blew through all 5 attempts in <40s and an
+    exhausted-retries HTTPError killed the whole run. Honoring the server's
+    figure (bounded) is both politer and the only thing that actually survives
+    a storm.
+    """
+    fallback = 2.0 * (attempt + 1)
     raw = headers.get("Retry-After") if headers else None
     try:
-        return min(10.0, float(raw))
+        return min(120.0, max(float(raw), fallback))
     except (TypeError, ValueError):
-        return min(8.0, 2 ** attempt)
+        return min(120.0, fallback)

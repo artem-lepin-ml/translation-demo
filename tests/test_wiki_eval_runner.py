@@ -323,6 +323,22 @@ def test_cli_ablate_wikidata_cache_default_and_override():
     assert args2.wikidata_cache == "reports/terminology/wikidata_cache.qwen.jsonl"
 
 
+def test_cli_run_wikidata_workers_default_and_override():
+    args = wiki_eval._build_parser().parse_args(["run"])
+    assert args.wikidata_workers == wiki_eval.DEFAULT_NETWORK_CONCURRENCY == 3
+
+    args2 = wiki_eval._build_parser().parse_args(["run", "--wikidata-workers", "2"])
+    assert args2.wikidata_workers == 2
+
+
+def test_cli_ablate_wikidata_workers_default_and_override():
+    args = wiki_eval._build_parser().parse_args(["ablate"])
+    assert args.wikidata_workers == wiki_eval.DEFAULT_NETWORK_CONCURRENCY == 3
+
+    args2 = wiki_eval._build_parser().parse_args(["ablate", "--wikidata-workers", "2"])
+    assert args2.wikidata_workers == 2
+
+
 # ── _process_articles_parallel (article-level parallelism, ticket 002b) ────
 
 
@@ -555,7 +571,7 @@ def test_run_one_config_sizes_llm_semaphore_from_llm_workers(monkeypatch, tmp_pa
     monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
     monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
     monkeypatch.setattr(wiki_eval, "_process_articles_parallel", lambda articles, **kw: ([], 0))
-    monkeypatch.setattr(wiki_eval, "WikidataClient", lambda cache_path=None: object())
+    monkeypatch.setattr(wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object())
     monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
 
     guard = wiki_eval.BudgetGuard(max_usd=10.0)
@@ -578,7 +594,7 @@ def test_run_one_config_default_llm_workers_matches_constant(monkeypatch, tmp_pa
     monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
     monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
     monkeypatch.setattr(wiki_eval, "_process_articles_parallel", lambda articles, **kw: ([], 0))
-    monkeypatch.setattr(wiki_eval, "WikidataClient", lambda cache_path=None: object())
+    monkeypatch.setattr(wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object())
     monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
 
     guard = wiki_eval.BudgetGuard(max_usd=10.0)
@@ -592,8 +608,9 @@ def test_run_one_config_threads_wikidata_cache_path_to_client(monkeypatch, tmp_p
     captured: dict = {}
 
     class FakeWD:
-        def __init__(self, cache_path=None):
+        def __init__(self, cache_path=None, network_concurrency=3):
             captured["cache_path"] = cache_path
+            captured["network_concurrency"] = network_concurrency
 
     monkeypatch.setattr(wiki_eval, "WikidataClient", FakeWD)
     monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
@@ -609,11 +626,35 @@ def test_run_one_config_default_wikidata_cache_is_shared_path(monkeypatch, tmp_p
     captured: dict = {}
 
     class FakeWD:
-        def __init__(self, cache_path=None):
+        def __init__(self, cache_path=None, network_concurrency=3):
             captured["cache_path"] = cache_path
+            captured["network_concurrency"] = network_concurrency
 
     monkeypatch.setattr(wiki_eval, "WikidataClient", FakeWD)
     monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
 
     wiki_eval._run_one_config("111", [], str(tmp_path), dry_run=True, guard=None)
     assert captured["cache_path"] == wiki_eval.WIKIDATA_CACHE
+
+
+def test_run_one_config_threads_wikidata_workers_to_client(monkeypatch, tmp_path):
+    """--wikidata-workers must reach WikidataClient(network_concurrency=...)
+    (2026-07-05 canary 429-storm adaptation: matrix runs pass 2 to halve
+    per-process Wikidata pressure)."""
+    captured: dict = {}
+
+    class FakeWD:
+        def __init__(self, cache_path=None, network_concurrency=3):
+            captured["network_concurrency"] = network_concurrency
+
+    monkeypatch.setattr(wiki_eval, "WikidataClient", FakeWD)
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    wiki_eval._run_one_config(
+        "111", [], str(tmp_path), dry_run=True, guard=None, wikidata_workers=2,
+    )
+    assert captured["network_concurrency"] == 2
+
+    # default stays the client's own politeness constant
+    wiki_eval._run_one_config("111", [], str(tmp_path), dry_run=True, guard=None)
+    assert captured["network_concurrency"] == wiki_eval.DEFAULT_NETWORK_CONCURRENCY == 3

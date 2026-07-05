@@ -41,7 +41,7 @@ from palimpsest.terminology.extract import (
 )
 from palimpsest.terminology.grounding import LabelFirstGrounding
 from palimpsest.terminology.grounding.match import norm
-from palimpsest.terminology.wikidata import WikidataClient
+from palimpsest.terminology.wikidata import DEFAULT_NETWORK_CONCURRENCY, WikidataClient
 
 ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = ROOT / ".env"
@@ -637,9 +637,10 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
                      model: str | None = None, provider: str | None = None,
                      article_workers: int = DEFAULT_ARTICLE_WORKERS,
                      llm_workers: int = DEFAULT_LLM_WORKERS,
-                     wikidata_cache: str | Path = WIKIDATA_CACHE) -> tuple[list[dict], dict]:
+                     wikidata_cache: str | Path = WIKIDATA_CACHE,
+                     wikidata_workers: int = DEFAULT_NETWORK_CONCURRENCY) -> tuple[list[dict], dict]:
     config = _config_from_bits(bits)
-    wd = WikidataClient(cache_path=wikidata_cache)
+    wd = WikidataClient(cache_path=wikidata_cache, network_concurrency=wikidata_workers)
     canonicalize = _canonicalize_fn(wd)
 
     if dry_run:
@@ -728,6 +729,7 @@ def cmd_run(args) -> int:
         args.config, gt_records, args.cache, dry_run=False, guard=guard,
         model=args.model, provider=args.provider, article_workers=args.article_workers,
         llm_workers=args.llm_workers, wikidata_cache=args.wikidata_cache,
+        wikidata_workers=args.wikidata_workers,
     )
     finished_at = datetime.now(timezone.utc)
 
@@ -761,6 +763,7 @@ def cmd_run(args) -> int:
         "max_judge_calls": args.max_judge_calls,
         "article_workers": args.article_workers,
         "llm_semaphore": args.llm_workers,
+        "wikidata_workers": args.wikidata_workers,
         "stopped_reason": guard.stopped_reason,
         "started_at": started_at.isoformat(),
         "finished_at": finished_at.isoformat(),
@@ -907,6 +910,10 @@ def _build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--wikidata-cache", default=str(WIKIDATA_CACHE),
                         help="Wikidata JSONL cache path (ticket 004: per-run copies avoid a "
                              "cross-process append race when several runs execute in parallel)")
+    p_run.add_argument("--wikidata-workers", type=int, default=DEFAULT_NETWORK_CONCURRENCY,
+                        help="concurrent live Wikidata API calls for this process (politeness "
+                             "bound; matrix runs pass 2 so 4 parallel processes stay under the "
+                             "API's rate limit -- 2026-07-05 canary 429-storm adaptation)")
     p_run.add_argument("--dry-run", action="store_true", help="print cost forecast only, write nothing")
     p_run.set_defaults(func=cmd_run)
 
@@ -927,6 +934,10 @@ def _build_parser() -> argparse.ArgumentParser:
     p_ablate.add_argument("--wikidata-cache", default=str(WIKIDATA_CACHE),
                            help="Wikidata JSONL cache path (ticket 004: per-run copies avoid a "
                                 "cross-process append race when several runs execute in parallel)")
+    p_ablate.add_argument("--wikidata-workers", type=int, default=DEFAULT_NETWORK_CONCURRENCY,
+                           help="concurrent live Wikidata API calls for this process (politeness "
+                                "bound; matrix runs pass 2 so 4 parallel processes stay under the "
+                                "API's rate limit -- 2026-07-05 canary 429-storm adaptation)")
     p_ablate.add_argument("--dry-run", action="store_true")
     p_ablate.set_defaults(func=cmd_ablate)
 
