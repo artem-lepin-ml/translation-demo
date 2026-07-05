@@ -1,0 +1,678 @@
+{
+  "model": "qwen/qwen3.7-plus",
+  "generated_at": "2026-07-05T19:14:42.089624+00:00",
+  "n_per_route": 10,
+  "sleep_s": 0.2,
+  "routes_requested": [
+    "auto",
+    "provider-1",
+    "provider-2",
+    "provider-3",
+    "provider-4",
+    "provider-5",
+    "provider-6",
+    "provider-7",
+    "provider-8",
+    "provider-9",
+    "provider-10",
+    "provider-11",
+    "provider-12"
+  ],
+  "routes": {
+    "auto": {
+      "n_calls": 10,
+      "n_success": 8,
+      "success_rate": 0.8,
+      "latency_median_s": 5.682762026000091,
+      "latency_p90_s": 6.3041983719999735,
+      "prompt_tokens_median": 20.0,
+      "completion_tokens_median": 181.5,
+      "cost_per_call": 0.00023872,
+      "cost_source": "real",
+      "honest_tokens": true,
+      "dead": false,
+      "auto_variant": "no_extra_body",
+      "verdict": "unstable",
+      "calls": [
+        {
+          "ok": true,
+          "latency_s": 6.206606085999738,
+          "prompt_tokens": 20,
+          "completion_tokens": 178,
+          "cost_usd": 0.00023424,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 5.984183084000051,
+          "prompt_tokens": 20,
+          "completion_tokens": 185,
+          "cost_usd": 0.0002432,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 5.989396220999879,
+          "prompt_tokens": 20,
+          "completion_tokens": 203,
+          "cost_usd": 0.00026624,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 6.3041983719999735,
+          "prompt_tokens": 20,
+          "completion_tokens": 188,
+          "cost_usd": 0.00024704,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 5.381340968000131,
+          "prompt_tokens": 20,
+          "completion_tokens": 191,
+          "cost_usd": 0.00025088,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 4.477033795999887,
+          "prompt_tokens": 20,
+          "completion_tokens": 143,
+          "cost_usd": 0.00018944,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 3.5981309030003104,
+          "prompt_tokens": 20,
+          "completion_tokens": 116,
+          "cost_usd": 0.00015488,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 4.434256337000079,
+          "prompt_tokens": 20,
+          "completion_tokens": 155,
+          "cost_usd": 0.0002048,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": false,
+          "latency_s": 0.7701676369997585,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "RateLimitError",
+          "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'Qwen', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '48671be1-9ea5",
+          "http_status": 429
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5466879999999037,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "RateLimitError",
+          "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'Qwen', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '5d7596ef-70ab",
+          "http_status": 429
+        }
+      ]
+    },
+    "provider-1": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5440923920000387,
+      "latency_p90_s": 0.582442508999975,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5057422750001024,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.582442508999975,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-2": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.43246364399988124,
+      "latency_p90_s": 0.4578661059999831,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.4578661059999831,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.40706118199977936,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-3": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5680369919998611,
+      "latency_p90_s": 0.5758489469999404,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5602250369997819,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5758489469999404,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-4": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5269666484998652,
+      "latency_p90_s": 0.5278575049997016,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5260757920000287,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5278575049997016,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-5": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5542385265000576,
+      "latency_p90_s": 0.5704642229998171,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5704642229998171,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.538012830000298,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-6": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5440156665001723,
+      "latency_p90_s": 0.5506327950001833,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5506327950001833,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5373985380001614,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-7": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5481580040002427,
+      "latency_p90_s": 0.5847827550001057,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5847827550001057,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5115332530003798,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-8": {
+      "n_calls": 10,
+      "n_success": 6,
+      "success_rate": 0.6,
+      "latency_median_s": 4.5531923354999435,
+      "latency_p90_s": 5.167762721000145,
+      "prompt_tokens_median": 20.0,
+      "completion_tokens_median": 160.5,
+      "cost_per_call": 0.00021183999999999998,
+      "cost_source": "real",
+      "honest_tokens": true,
+      "dead": false,
+      "auto_variant": null,
+      "verdict": "unstable",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.541641312000138,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "RateLimitError",
+          "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'Qwen', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '212c28a0-c873",
+          "http_status": 429
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5492852880001919,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "RateLimitError",
+          "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'Qwen', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '025b87f8-05b6",
+          "http_status": 429
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5633053390001805,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "RateLimitError",
+          "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'Qwen', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '3f7dfeb4-982e",
+          "http_status": 429
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5876947249998921,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "RateLimitError",
+          "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'Qwen', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': 'd603ad2d-60ae",
+          "http_status": 429
+        },
+        {
+          "ok": true,
+          "latency_s": 5.167762721000145,
+          "prompt_tokens": 20,
+          "completion_tokens": 190,
+          "cost_usd": 0.0002496,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 4.285320438999861,
+          "prompt_tokens": 20,
+          "completion_tokens": 139,
+          "cost_usd": 0.00018432,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 5.041858248000153,
+          "prompt_tokens": 20,
+          "completion_tokens": 182,
+          "cost_usd": 0.00023936,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 4.821064232000026,
+          "prompt_tokens": 20,
+          "completion_tokens": 175,
+          "cost_usd": 0.0002304,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 4.1227754850001475,
+          "prompt_tokens": 20,
+          "completion_tokens": 146,
+          "cost_usd": 0.00019328,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 3.9906034270002237,
+          "prompt_tokens": 20,
+          "completion_tokens": 136,
+          "cost_usd": 0.00018048,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        }
+      ]
+    },
+    "provider-9": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5356207155002721,
+      "latency_p90_s": 0.5737775700004022,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5737775700004022,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.49746386100014206,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-10": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5411968705000163,
+      "latency_p90_s": 0.5416512030001286,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.540742537999904,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5416512030001286,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-11": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5688444664999679,
+      "latency_p90_s": 0.5955926849997013,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5955926849997013,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5420962480002345,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-12": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5392528875001972,
+      "latency_p90_s": 0.559332275000088,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5191735000003064,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.559332275000088,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['qwen/qwen3.7-plus'], 'route_candidate_counts': {'resolved_models': 1, 'endpoint_rows': 1, 'filt",
+          "http_status": 503
+        }
+      ]
+    }
+  },
+  "selection": {
+    "chosen_route": "provider-8",
+    "rule_trace": "RELAXED (no route reached success>=9/10 with honest tokens; relaxed success threshold) -- eligible=['auto', 'provider-8']; picked min cost/call=0.00021183999999999998 (real), tie-break latency_median_s=4.5531923354999435",
+    "relaxed_reason": "no route reached success>=9/10 with honest tokens; relaxed success threshold"
+  },
+  "temp0_check": {
+    "route": "provider-8",
+    "extra_body": {
+      "provider": "provider-8"
+    },
+    "ok": true,
+    "error_class": null,
+    "error_message": null
+  }
+}
