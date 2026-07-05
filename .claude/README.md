@@ -11,9 +11,9 @@ source of config in the cloud.
 | `rules/invariants.md` | Durable owner rules beyond the CLAUDE.md Hard Invariants (prediction preservation, secrets). Portable home for what auto-memory used to hold — auto-memory does **not** rehydrate in cloud. |
 | `rules/working-style.md` | Durable owner preferences beyond the root `CLAUDE.md` conventions (research links, estimates/scope, report palette, naming, PR style). |
 | `agents/` | Project subagents: `docs-keeper`, `doc-syncer`, `e2e-tester`, `pr-writer`. |
-| `skills/` | User skills this repo uses: `verify-spec` (+ `aspects-catalog.md`), `verify-pr`, `graphify`, `looper`, `playwright-cli`. |
+| `skills/` | User skills this repo uses: `verify-spec` (+ `aspects-catalog.md`), `verify-pr`, `looper`, `playwright-cli`. |
 | `commands/` | Slash commands (`looper`). |
-| `hooks/` | Portable SessionStart hooks (`graphify-freshness.mjs`). |
+| `hooks/` | Session/tool hooks: orchestration write-gate, session-context pointer, experiment approval gate, subagent markers, precompact backup. |
 | `settings.json` | Enabled plugins, marketplace, SessionStart hook wiring (via `$CLAUDE_PROJECT_DIR`). |
 | `cloud-setup.sh` | Reference **Environment → Setup script** for claude.ai/code (deps baked into the snapshot). |
 | `migrate-config.sh` | The reusable tool that produced this directory — see below. |

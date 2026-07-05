@@ -44,9 +44,6 @@ reports/terminology/shots/
 budget_calls.jsonl
 
 # Generated / scratch (never commit)
-graphify-out/
-graphify_out/
-.graphifyignore
 _screenshots_staging/
 data/e2e.db
 data/e2e-budget_calls.jsonl
