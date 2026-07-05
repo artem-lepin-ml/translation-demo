@@ -47,24 +47,26 @@ DEFAULT_PAGES_CACHE = ROOT / "data/eval/wiki/pages"
 WIKIDATA_CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
 OUT_ROOT = ROOT / "reports/terminology/wiki-eval"
 
-# Extraction + judge provider. Default = CloseRouter (OpenAI-compatible gateway
-# at OPENROUTER_BASE_URL) running the deployed extractor anthropic/claude-haiku-4.5
-# (2026-07-02 NER tournament winner, docs/reports/2026-07-02-ner-model-tournament.html).
-# CloseRouter pins a specific upstream route via a per-request `provider` field
-# (passed through extra_body); "auto" lets the gateway pick a live route. Its WAF
-# rejects the OpenAI SDK's default User-Agent — palimpsest.llm.client sends a
-# neutral one. WIKI_EVAL_PROVIDER switches the gateway: "openrouter" (openrouter.ai)
-# or "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks.
-# CLOSEROUTER_PROVIDER pins the upstream route ("auto" | "provider-N").
+# Extraction + judge provider. Default = CloseRouter (OpenAI-compatible gateway at
+# OPENROUTER_BASE_URL) running openai/gpt-5.4-mini pinned to provider-8. Model and
+# route are env-overridable (CLOSEROUTER_MODEL / CLOSEROUTER_PROVIDER). provider-8
+# is chosen over provider-6 and "auto": on a 2026-07-05 probe both worked 10/10 but
+# provider-6 (where "auto" routes gpt-5.4-mini) padded ~4400 hidden prompt tokens
+# per call vs 21 on provider-8 — a ~200x input-cost trap. CloseRouter's WAF rejects
+# the OpenAI SDK's default User-Agent; palimpsest.llm.client sends a neutral one.
+# WIKI_EVAL_PROVIDER switches the gateway: "openrouter" (openrouter.ai) or
+# "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks. To measure the
+# 2026-07-02 NER tournament winner instead, set CLOSEROUTER_MODEL=anthropic/claude-haiku-4.5.
 WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "closerouter")
-CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "auto")
+CLOSEROUTER_MODEL = os.environ.get("CLOSEROUTER_MODEL", "openai/gpt-5.4-mini")
+CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-8")
 
 JUDGE_MAX_TOKENS = 512
 
 if WIKI_EVAL_PROVIDER == "closerouter":
     _CR_BASE = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
     _CR_EXTRA = {"provider": CLOSEROUTER_PROVIDER}
-    EXTRACT_MODEL = JUDGE_MODEL = "anthropic/claude-haiku-4.5"
+    EXTRACT_MODEL = JUDGE_MODEL = CLOSEROUTER_MODEL
     EXTRACT_BASE_URL = JUDGE_BASE_URL = _CR_BASE
     EXTRACT_API_KEY_ENV = JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
     EXTRACT_EXTRA_BODY = JUDGE_EXTRA_BODY = _CR_EXTRA
