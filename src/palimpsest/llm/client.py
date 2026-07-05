@@ -46,6 +46,7 @@ class LLMConfig:
     max_tokens: int = 4096
     seed: int | None = None               # None → omit (capability-gated, see model_matrix.supports_seed)
     extra_body: dict | None = None        # top_k/min_p/reasoning/provider/usage passthrough
+    timeout: float = 30.0                 # per-request wall clock (s)
 
     @classmethod
     def from_model_config(cls, cfg: ModelConfig) -> "LLMConfig":
@@ -101,7 +102,7 @@ class LLMClient:
     def __init__(self, config: LLMConfig):
         self.config = config
         self._client = OpenAI(base_url=config.base_url, api_key=config.api_key,
-                              max_retries=0, timeout=30.0,
+                              max_retries=0, timeout=config.timeout,
                               default_headers={"User-Agent": USER_AGENT})
 
     def complete(self, system: str, user: str) -> LLMResult:
