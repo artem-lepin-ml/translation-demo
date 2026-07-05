@@ -113,6 +113,12 @@ def _resolve_route(model: str | None = None, provider: str | None = None) -> dic
 MAX_JUDGE_CALLS = 900
 DEFAULT_MAX_USD = 40.0
 
+# Article-level parallelism (ticket 002b): `run`/`ablate` process this many
+# articles concurrently by default: each article keeps its own judge_cache and
+# runs its own two-phase (extract/ground) flow, but ALL of them share the same
+# semaphore-bounded extract_fn/judge -- see `_process_articles_parallel`.
+DEFAULT_ARTICLE_WORKERS = 3
+
 # Conservative per-call price estimate (gpt-4o-mini list price, USD/token),
 # mirrors eval_grounding.py -- used only for the pre-call reservation and
 # --dry-run forecast, settled against real usage.cost when the provider
@@ -228,10 +234,38 @@ class BudgetGuard:
             self.spent_by_kind[kind] += delta
 
 
+class _CountingSemaphore:
+    """``threading.Semaphore`` wrapper that records the peak number of
+    simultaneous holders (ticket 002b acceptance: the semaphore bound must be
+    *observable*, not just asserted in tests). ``max_in_use`` lands in
+    meta.json as ``llm_max_in_flight_observed`` so every run self-evidences
+    that in-flight LLM calls never exceeded the cap. Context-manager only --
+    that's the only way ``_build_extract_fn``/``_build_judge`` use it."""
+
+    def __init__(self, value: int) -> None:
+        self._sem = threading.Semaphore(value)
+        self._lock = threading.Lock()
+        self._in_use = 0
+        self.max_in_use = 0
+
+    def __enter__(self) -> _CountingSemaphore:
+        self._sem.acquire()
+        with self._lock:
+            self._in_use += 1
+            self.max_in_use = max(self.max_in_use, self._in_use)
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        with self._lock:
+            self._in_use -= 1
+        self._sem.release()
+
+
 # ── extractor + judge builders (E-D16 bridge) ────────────────────────────────
 
 
-def _build_extract_fn(guard: BudgetGuard, *, model: str | None = None, provider: str | None = None):
+def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
+                       model: str | None = None, provider: str | None = None):
     """Real NER extraction entry point: LLMClient + DEFAULT_NER_PROMPT ->
     llm_surfaces -> mentions_from_surfaces -> list[TermMention].
 
@@ -244,6 +278,15 @@ def _build_extract_fn(guard: BudgetGuard, *, model: str | None = None, provider:
     contract as the judge below -- this closure may be invoked concurrently
     from several ThreadPoolExecutor workers (phase 1 of prediction), which is
     exactly why BudgetGuard grew a lock.
+
+    ``llm_semaphore`` (ticket 002b, article-level parallelism): the SAME
+    semaphore instance is shared with ``_build_judge`` by the caller
+    (``_run_one_config``), sized ``DEFAULT_MAX_CONCURRENCY`` -- it wraps only
+    the actual network call, never the guard bookkeeping, and is the ONE thing
+    that bounds total in-flight LLM requests (extract + judge, across every
+    article worker) to 4; ThreadPoolExecutor worker counts (per-article
+    extraction pool, article-level pool) may be larger, they just block on
+    this semaphore before actually calling the provider.
     """
     from palimpsest.llm.client import LLMClient, LLMConfig
 
@@ -260,7 +303,8 @@ def _build_extract_fn(guard: BudgetGuard, *, model: str | None = None, provider:
         if not guard.can_reserve(EST_COST_PER_EXTRACT_CALL, kind="extract"):
             raise RuntimeError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_EXTRACT_CALL, kind="extract")
-        reply = client.complete_retrying(system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source))
+        with llm_semaphore:
+            reply = client.complete_retrying(system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source))
         actual_cost = reply.usage.cost_usd
         if actual_cost is None and reply.usage.prompt_tokens:
             actual_cost = (reply.usage.prompt_tokens * PRICE_IN
@@ -277,10 +321,22 @@ def _build_extract_fn(guard: BudgetGuard, *, model: str | None = None, provider:
 
 def _parallel_extract_fn(extract_fn, paragraphs: list[str]):
     """Phase 1 of predicting one article (ticket 002): run ``extract_fn`` over
-    every paragraph CONCURRENTLY, bounded by
+    every paragraph CONCURRENTLY via a ThreadPoolExecutor sized
     ``palimpsest.llm.client.DEFAULT_MAX_CONCURRENCY`` (4). Phase 2 (grounding +
     judge, inside ``predict.predict_tuples``) stays fully sequential --
     unchanged.
+
+    Ticket 002b (article-level parallelism): this pool size is no longer the
+    sole concurrency bound once several articles run at once -- N articles
+    each spin up their own such pool, so up to N*4 threads may attempt an
+    extraction call simultaneously. The real cap is the ``llm_semaphore``
+    every ``extract_fn`` call blocks on inside ``_build_extract_fn``'s
+    ``extractor()`` closure (shared process-wide with the judge), so actual
+    network concurrency never exceeds ``DEFAULT_MAX_CONCURRENCY`` regardless
+    of how many threads are waiting. This pool's max_workers is left at 4
+    rather than raised, since raising it wouldn't buy anything (all threads
+    still serialize on the same 4-slot semaphore) and it keeps this function's
+    contract unchanged from ticket 002 for its existing paragraph-order tests.
 
     Design choice (ticket 002 asked to pick the cleanest of "a new
     predict_tuples parameter" vs. "an order-safe wrapper"): an order-safe
@@ -307,10 +363,18 @@ def _parallel_extract_fn(extract_fn, paragraphs: list[str]):
     return lambda _paragraph: next(ordered)
 
 
-def _build_judge(guard: BudgetGuard, *, model: str | None = None, provider: str | None = None):
+def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
+                  model: str | None = None, provider: str | None = None):
     """Judge on the same provider as the extractor (default CloseRouter
     claude-haiku-4.5, pinned via CLOSEROUTER_PROVIDER). Returns None when the
-    provider key is unset so the caller can fall back to judge=None."""
+    provider key is unset so the caller can fall back to judge=None.
+
+    ``llm_semaphore`` (ticket 002b): same shared instance as
+    ``_build_extract_fn`` -- see its docstring. Judge calls happen inside
+    grounding (phase 2), which with article-level parallelism now runs
+    concurrently across article workers, so this closure needs the same
+    global cap.
+    """
     from palimpsest.llm.client import LLMClient, LLMConfig
 
     _load_dotenv()
@@ -328,10 +392,11 @@ def _build_judge(guard: BudgetGuard, *, model: str | None = None, provider: str 
         if not guard.can_reserve(EST_COST_PER_JUDGE_CALL, kind="judge"):
             raise RuntimeError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_JUDGE_CALL, kind="judge")
-        result = client.complete_retrying(
-            system="You are a Wikidata disambiguation judge. Return strict JSON only.",
-            user=prompt,
-        )
+        with llm_semaphore:
+            result = client.complete_retrying(
+                system="You are a Wikidata disambiguation judge. Return strict JSON only.",
+                user=prompt,
+            )
         actual_cost = result.usage.cost_usd
         if actual_cost is None and result.usage.prompt_tokens:
             actual_cost = (result.usage.prompt_tokens * PRICE_IN
@@ -350,28 +415,46 @@ def _build_judge(guard: BudgetGuard, *, model: str | None = None, provider: str 
 
 def _canonicalize_fn(wd: WikidataClient):
     """QID -> canonical QID via the same redirect path GT used (E-D18):
-    wbgetentities on a redirect returns the target under `entity["id"]`."""
+    wbgetentities on a redirect returns the target under `entity["id"]`.
+
+    Thread safety (ticket 002b): this closure is built once per config in
+    ``_run_one_config`` and shared across every concurrent article worker --
+    ``cache`` is a plain dict, so get/set races (lost updates, or a
+    dict-mutated-during-iteration crash) are possible without a lock. ``lock``
+    guards only the dict read/write, never the network call (``wd.get_entities``
+    is itself thread-safe, see wikidata.py) -- a rare double-compute on an
+    identical concurrent miss is accepted, not a correctness bug.
+    """
     cache: dict[str, str] = {}
+    lock = threading.Lock()
 
     def canonicalize(qid: str) -> str:
-        if qid in cache:
-            return cache[qid]
+        with lock:
+            if qid in cache:
+                return cache[qid]
         entities = wd.get_entities([qid], props="")
         entity = entities.get(qid) or {}
         canonical = entity.get("id", qid)
-        cache[qid] = canonical
+        with lock:
+            cache[qid] = canonical
         return canonical
 
     return canonicalize
 
 
 def _p31_of_fn(wd: WikidataClient):
-    """QID -> set of target P31 (instance-of) QIDs, for the chronology filter."""
+    """QID -> set of target P31 (instance-of) QIDs, for the chronology filter.
+
+    Thread safety (ticket 002b): same dict-lock pattern as ``_canonicalize_fn``
+    -- see its docstring.
+    """
     cache: dict[str, set[str]] = {}
+    lock = threading.Lock()
 
     def p31_of(qid: str) -> set[str]:
-        if qid in cache:
-            return cache[qid]
+        with lock:
+            if qid in cache:
+                return cache[qid]
         entities = wd.get_entities([qid], props="claims")
         entity = entities.get(qid) or {}
         claims = entity.get("claims", {}).get("P31", [])
@@ -381,7 +464,8 @@ def _p31_of_fn(wd: WikidataClient):
             value = snak.get("datavalue", {}).get("value", {})
             if isinstance(value, dict) and value.get("id"):
                 values.add(value["id"])
-        cache[qid] = values
+        with lock:
+            cache[qid] = values
         return values
 
     return p31_of
@@ -389,16 +473,23 @@ def _p31_of_fn(wd: WikidataClient):
 
 def _label_exists_fn(wd: WikidataClient):
     """P3 predicate (spec Sec.4): does `surface` exist as a Wikidata RU label
-    anywhere reachable via wbsearchentities exact-prefix search?"""
+    anywhere reachable via wbsearchentities exact-prefix search?
+
+    Thread safety (ticket 002b): same dict-lock pattern as ``_canonicalize_fn``
+    -- see its docstring.
+    """
     cache: dict[str, bool] = {}
+    lock = threading.Lock()
 
     def label_exists(surface: str) -> bool:
         key = norm(surface)
-        if key in cache:
-            return cache[key]
+        with lock:
+            if key in cache:
+                return cache[key]
         hits = wd.search_entities(surface, lang="ru", limit=1)
         exists = any(norm(h.get("label", "")) == key for h in hits)
-        cache[key] = exists
+        with lock:
+            cache[key] = exists
         return exists
 
     return label_exists
@@ -457,58 +548,136 @@ def cmd_build_gt(args) -> int:
 # ── run ───────────────────────────────────────────────────────────────────────
 
 
-def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_run: bool, guard: BudgetGuard | None,
-                     model: str | None = None, provider: str | None = None) -> tuple[list[dict], dict]:
-    config = _config_from_bits(bits)
-    wd = WikidataClient(cache_path=WIKIDATA_CACHE)
-    grounder = LabelFirstGrounding(wd, config)
-    canonicalize = _canonicalize_fn(wd)
+def _process_articles_parallel(
+    articles: list[tuple[str, list[str], str]], *, article_workers: int,
+    extract_fn, judge, canonicalize, wd: WikidataClient, config: GroundingConfig,
+    guard: BudgetGuard | None,
+) -> tuple[list[dict], int]:
+    """Article-level parallelism (ticket 002b): process every ``(title,
+    paragraphs, article_text)`` triple in ``articles`` CONCURRENTLY, up to
+    ``article_workers`` at a time, each keeping its own ``judge_cache`` and
+    running its own phase-1(parallel extract)/phase-2(sequential ground)
+    flow -- unchanged from ticket 002 per article. The speedup comes from
+    overlapping Wikidata I/O and judge latency across articles, not from more
+    LLM concurrency: ``extract_fn``/``judge`` are the SAME shared closures for
+    every article, both bound by the one process-wide ``llm_semaphore``
+    built in ``_run_one_config`` (see ``_build_extract_fn``/``_build_judge``).
 
-    judge = None if dry_run else _build_judge(guard, model=model, provider=provider)
-    extract_fn = None if dry_run else _build_extract_fn(guard, model=model, provider=provider)
+    ``wd`` (the WikidataClient) and ``canonicalize`` are likewise shared --
+    both are thread-safe (see wikidata.py and ``_canonicalize_fn``). A fresh
+    ``LabelFirstGrounding`` instance is built PER ARTICLE over the shared
+    ``wd``: the strategy object itself is stateless besides ``wd``/``config``
+    refs, but instantiating fresh per article removes any doubt about future
+    per-call state leaking across concurrent articles (ticket 002b's "if in
+    doubt, one grounder per worker" guidance) at negligible cost.
 
-    def ground_fn(mention, *, judge=judge, scope_id=None, judge_cache=None):
-        return grounder.ground(mention, judge=judge, scope_id=scope_id, judge_cache=judge_cache)
+    Returns ``(pred_records, n_paragraphs_total)`` with ``pred_records`` in
+    ``articles`` order regardless of completion order -- ``ThreadPoolExecutor.
+    map`` submits every task immediately but yields results positionally, the
+    same order-preserving guarantee ``_parallel_extract_fn`` already relies on
+    for paragraphs, applied here one level up for articles.
+    """
+
+    def process_one(item: tuple[str, list[str], str]) -> tuple[list[dict], int]:
+        title, paragraphs, article_text = item
+        # Budget already exhausted by another (already-running) article worker:
+        # skip starting a NEW article's calls entirely -- mirrors ticket 002's
+        # sequential early-break, just checked at article-start instead of
+        # article-end since concurrent workers can't "break a shared for-loop".
+        if guard is not None and guard.stopped_reason is not None:
+            return [], 0
+
+        grounder = LabelFirstGrounding(wd, config)
+
+        def ground_fn(mention, *, judge=judge, scope_id=None, judge_cache=None):
+            return grounder.ground(mention, judge=judge, scope_id=scope_id, judge_cache=judge_cache)
+
+        judge_cache: dict = {}
+        # Phase 1 (parallel, capped at DEFAULT_MAX_CONCURRENCY per article):
+        # extract every paragraph's mentions concurrently. Phase 2 (grounding +
+        # judge, inside predict_tuples) is untouched and stays sequential
+        # WITHIN one article -- it's the across-article overlap that's new.
+        paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs)
+        result = predict.predict_tuples(
+            article_text, paragraphs, paragraph_extract_fn, ground_fn,
+            judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
+        )
+        records = [{"title": title, **r} for r in result["records"]]
+        return records, len(paragraphs)
 
     pred_records: list[dict] = []
     n_paragraphs_total = 0
-    n_mentions_est = 0
+    with ThreadPoolExecutor(max_workers=article_workers) as pool:
+        for records, n_paragraphs in pool.map(process_one, articles):
+            pred_records.extend(records)
+            n_paragraphs_total += n_paragraphs
+    return pred_records, n_paragraphs_total
 
+
+def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_run: bool, guard: BudgetGuard | None,
+                     model: str | None = None, provider: str | None = None,
+                     article_workers: int = DEFAULT_ARTICLE_WORKERS) -> tuple[list[dict], dict]:
+    config = _config_from_bits(bits)
+    wd = WikidataClient(cache_path=WIKIDATA_CACHE)
+    canonicalize = _canonicalize_fn(wd)
+
+    if dry_run:
+        n_paragraphs_total = 0
+        n_mentions_est = 0
+        for rec in gt_records:
+            title = rec["title"]
+            # tokens[] is a flat token list, not paragraphs -- re-derive paragraphs
+            # from the cached HTML so predict_tuples gets the same chunking wiki_gt used.
+            html_path = Path(cache_dir) / f"{wiki_gt._safe_filename(title)}.html"
+            if not html_path.exists():
+                continue
+            html = html_path.read_text(encoding="utf-8")
+            article_text = flatten(html)
+            paragraphs = article_text.split("\n")
+            n_paragraphs_total += len(paragraphs)
+            n_mentions_est += sum(len(p.split()) for p in paragraphs) // 20  # rough forecast only
+        counters = {
+            "n_articles": len(gt_records),
+            "n_paragraphs": n_paragraphs_total,
+            "n_pred_mentions": n_mentions_est,
+        }
+        return [], counters
+
+    # Non-dry-run: build the shared extractor/judge (and the ONE process-wide
+    # llm_semaphore bounding both) once, then fan out across `article_workers`
+    # concurrent article workers (ticket 002b). Lazy-imported here (not at
+    # module scope) so --dry-run/--help stay importable without `openai`.
+    from palimpsest.llm.client import DEFAULT_MAX_CONCURRENCY
+
+    llm_semaphore = _CountingSemaphore(DEFAULT_MAX_CONCURRENCY)
+    judge = _build_judge(guard, llm_semaphore, model=model, provider=provider)
+    extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider)
+
+    articles: list[tuple[str, list[str], str]] = []
     for rec in gt_records:
         title = rec["title"]
-        # tokens[] is a flat token list, not paragraphs -- re-derive paragraphs
-        # from the cached HTML so predict_tuples gets the same chunking wiki_gt used.
         html_path = Path(cache_dir) / f"{wiki_gt._safe_filename(title)}.html"
         if not html_path.exists():
             continue
         html = html_path.read_text(encoding="utf-8")
         article_text = flatten(html)
         paragraphs = article_text.split("\n")
-        n_paragraphs_total += len(paragraphs)
+        articles.append((title, paragraphs, article_text))
 
-        if dry_run:
-            n_mentions_est += sum(len(p.split()) for p in paragraphs) // 20  # rough forecast only
-            continue
-
-        judge_cache: dict = {}
-        # Phase 1 (parallel, capped at DEFAULT_MAX_CONCURRENCY): extract every
-        # paragraph's mentions concurrently. Phase 2 (grounding + judge, inside
-        # predict_tuples) is untouched and stays sequential.
-        paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs)
-        result = predict.predict_tuples(
-            article_text, paragraphs, paragraph_extract_fn, ground_fn,
-            judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
-        )
-        for r in result["records"]:
-            pred_records.append({"title": title, **r})
-
-        if guard is not None and guard.stopped_reason is not None:
-            break
+    pred_records, n_paragraphs_total = _process_articles_parallel(
+        articles, article_workers=article_workers, extract_fn=extract_fn, judge=judge,
+        canonicalize=canonicalize, wd=wd, config=config, guard=guard,
+    )
 
     counters = {
         "n_articles": len(gt_records),
         "n_paragraphs": n_paragraphs_total,
-        "n_pred_mentions": n_mentions_est if dry_run else len(pred_records),
+        "n_pred_mentions": len(pred_records),
+        # Observed peak of simultaneous in-flight LLM calls (extract + judge
+        # combined) -- must never exceed DEFAULT_MAX_CONCURRENCY (the
+        # llm_semaphore size); recorded so every run's meta.json carries the
+        # evidence, not just the configured cap (ticket 002b).
+        "llm_max_in_flight_observed": llm_semaphore.max_in_use,
     }
     return pred_records, counters
 
@@ -535,9 +704,13 @@ def cmd_run(args) -> int:
     started_at = datetime.now(timezone.utc)
     pred_records, counters = _run_one_config(
         args.config, gt_records, args.cache, dry_run=False, guard=guard,
-        model=args.model, provider=args.provider,
+        model=args.model, provider=args.provider, article_workers=args.article_workers,
     )
     finished_at = datetime.now(timezone.utc)
+
+    # Lazy import (already loaded by now via _run_one_config's non-dry-run path)
+    # just to record the process-wide LLM concurrency cap in meta.json (ticket 002b).
+    from palimpsest.llm.client import DEFAULT_MAX_CONCURRENCY
 
     model = args.model or CLOSEROUTER_MODEL
     provider = args.provider or CLOSEROUTER_PROVIDER
@@ -567,6 +740,8 @@ def cmd_run(args) -> int:
         },
         "max_usd": args.max_usd,
         "max_judge_calls": args.max_judge_calls,
+        "article_workers": args.article_workers,
+        "llm_semaphore": DEFAULT_MAX_CONCURRENCY,
         "stopped_reason": guard.stopped_reason,
         "started_at": started_at.isoformat(),
         "finished_at": finished_at.isoformat(),
@@ -703,6 +878,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
     p_run.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
     p_run.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
+    p_run.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
+                        help="articles processed concurrently (ticket 002b); LLM calls "
+                             "stay capped at DEFAULT_MAX_CONCURRENCY regardless of this value")
     p_run.add_argument("--dry-run", action="store_true", help="print cost forecast only, write nothing")
     p_run.set_defaults(func=cmd_run)
 
@@ -713,6 +891,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p_ablate.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
     p_ablate.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
     p_ablate.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
+    p_ablate.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
+                           help="articles processed concurrently (ticket 002b); LLM calls "
+                                "stay capped at DEFAULT_MAX_CONCURRENCY regardless of this value")
     p_ablate.add_argument("--dry-run", action="store_true")
     p_ablate.set_defaults(func=cmd_ablate)
 
