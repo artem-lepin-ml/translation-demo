@@ -10,8 +10,9 @@ Usage (from the worktree root, with PYTHONPATH=src):
   python scripts/wiki_eval.py build-gt --titles <file> --out data/eval/wiki/gt.jsonl --cache data/eval/wiki/pages
   python scripts/wiki_eval.py run --gt data/eval/wiki/gt.jsonl --config 111 --dry-run
   python scripts/wiki_eval.py run --gt data/eval/wiki/gt.jsonl --config 111 --max-usd 40
+  python scripts/wiki_eval.py run --gt data/eval/wiki/gt.jsonl --config 111 --model openai/gpt-5.5 --provider provider-3 --max-usd 12 --max-judge-calls 5000
   python scripts/wiki_eval.py ablate --gt data/eval/wiki/gt.jsonl --max-usd 40 --dry-run
-  python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl --pred reports/terminology/wiki-eval/111/<run_id>
+  python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl --pred reports/terminology/wiki-eval/<model-slug>/111/<run_id>
 """
 from __future__ import annotations
 
@@ -20,7 +21,9 @@ import itertools
 import json
 import os
 import sys
+import threading
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -49,54 +52,98 @@ OUT_ROOT = ROOT / "reports/terminology/wiki-eval"
 
 # Extraction + judge provider. Default = CloseRouter (OpenAI-compatible gateway at
 # OPENROUTER_BASE_URL) running google/gemini-3.1-flash-lite pinned to provider-9.
-# Model and route are env-overridable (CLOSEROUTER_MODEL / CLOSEROUTER_PROVIDER).
-# provider-9 verified on a 2026-07-05 probe: 10/10, ~1.4s, honest prompt tokens (5),
+# Model and route are overridable three ways, in priority order: CLI --model/
+# --provider (ticket 002, model-comparison runs) > CLOSEROUTER_MODEL/
+# CLOSEROUTER_PROVIDER env vars > the hardcoded defaults below. provider-9 was
+# verified on a 2026-07-05 probe: 10/10, ~1.4s, honest prompt tokens (5),
 # cost surfaced — the fastest/cheapest clean route in the fleet. Pin an explicit
 # route because "auto" can land on a reseller-padded provider for some models
 # (e.g. gpt-5.4-mini -> provider-6, +4400 hidden prompt tokens/call). CloseRouter's
 # WAF rejects the OpenAI SDK's default User-Agent; palimpsest.llm.client sends a
 # neutral one. WIKI_EVAL_PROVIDER switches the gateway: "openrouter" (openrouter.ai)
-# or "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks. Set
-# CLOSEROUTER_MODEL=anthropic/claude-haiku-4.5 to measure the 2026-07-02 NER winner.
+# or "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks -- --model/
+# --provider only affect the closerouter branch (see _resolve_route).
 WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "closerouter")
 CLOSEROUTER_MODEL = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
 CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
 
 JUDGE_MAX_TOKENS = 512
 
-if WIKI_EVAL_PROVIDER == "closerouter":
-    _CR_BASE = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
-    _CR_EXTRA = {"provider": CLOSEROUTER_PROVIDER}
-    EXTRACT_MODEL = JUDGE_MODEL = CLOSEROUTER_MODEL
-    EXTRACT_BASE_URL = JUDGE_BASE_URL = _CR_BASE
-    EXTRACT_API_KEY_ENV = JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
-    EXTRACT_EXTRA_BODY = JUDGE_EXTRA_BODY = _CR_EXTRA
-elif WIKI_EVAL_PROVIDER == "openrouter":
-    EXTRACT_MODEL = JUDGE_MODEL = "anthropic/claude-haiku-4.5"
-    EXTRACT_BASE_URL = JUDGE_BASE_URL = "https://openrouter.ai/api/v1"
-    EXTRACT_API_KEY_ENV = JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
-    EXTRACT_EXTRA_BODY = JUDGE_EXTRA_BODY = None
-else:  # openai-direct fallback
-    EXTRACT_MODEL = JUDGE_MODEL = "gpt-4o-mini"
-    EXTRACT_BASE_URL = JUDGE_BASE_URL = "https://api.openai.com/v1"
-    EXTRACT_API_KEY_ENV = JUDGE_API_KEY_ENV = "OPENAI_API_KEY"
-    EXTRACT_EXTRA_BODY = JUDGE_EXTRA_BODY = None
 
-# E-D11/Sec.11: pre-call reservation cap + hard call-count ceiling.
+def _resolve_route(model: str | None = None, provider: str | None = None) -> dict:
+    """Resolve the extractor+judge route config for this call.
+
+    Computed as a function (not module-level constants) so CLI ``--model``/
+    ``--provider`` always win regardless of import order -- the previous
+    design baked ``CLOSEROUTER_MODEL``/``CLOSEROUTER_PROVIDER`` into
+    module-level constants at import time, before argparse had even run
+    (ticket 002). ``model``/``provider`` override the env vars only on the
+    default ``closerouter`` branch; the ``openrouter``/``openai-direct``
+    fallbacks keep their own fixed model, unaffected by CLI overrides.
+    """
+    cr_model = model or CLOSEROUTER_MODEL
+    cr_provider = provider or CLOSEROUTER_PROVIDER
+    if WIKI_EVAL_PROVIDER == "closerouter":
+        base = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+        return {
+            "extract_model": cr_model, "judge_model": cr_model,
+            "extract_base_url": base, "judge_base_url": base,
+            "extract_api_key_env": "OPENROUTER_API_KEY", "judge_api_key_env": "OPENROUTER_API_KEY",
+            "extract_extra_body": {"provider": cr_provider}, "judge_extra_body": {"provider": cr_provider},
+        }
+    elif WIKI_EVAL_PROVIDER == "openrouter":
+        return {
+            "extract_model": "anthropic/claude-haiku-4.5", "judge_model": "anthropic/claude-haiku-4.5",
+            "extract_base_url": "https://openrouter.ai/api/v1", "judge_base_url": "https://openrouter.ai/api/v1",
+            "extract_api_key_env": "OPENROUTER_API_KEY", "judge_api_key_env": "OPENROUTER_API_KEY",
+            "extract_extra_body": None, "judge_extra_body": None,
+        }
+    else:  # openai-direct fallback
+        return {
+            "extract_model": "gpt-4o-mini", "judge_model": "gpt-4o-mini",
+            "extract_base_url": "https://api.openai.com/v1", "judge_base_url": "https://api.openai.com/v1",
+            "extract_api_key_env": "OPENAI_API_KEY", "judge_api_key_env": "OPENAI_API_KEY",
+            "extract_extra_body": None, "judge_extra_body": None,
+        }
+
+
+# E-D11/Sec.11: pre-call reservation cap + hard call-count ceiling (judge calls
+# only -- see BudgetGuard; extraction calls are bounded by --max-usd alone,
+# there are ~1 per paragraph and that's already bounded by the corpus size).
 MAX_JUDGE_CALLS = 900
 DEFAULT_MAX_USD = 40.0
 
 # Conservative per-call price estimate (gpt-4o-mini list price, USD/token),
 # mirrors eval_grounding.py -- used only for the pre-call reservation and
 # --dry-run forecast, settled against real usage.cost when the provider
-# reports it (E-D12).
+# reports it (E-D12). Shared fallback for both extraction and judge calls;
+# not a per-model price table (that's ticket 003's provider-triage concern).
 PRICE_IN = 0.15 / 1_000_000
 PRICE_OUT = 0.60 / 1_000_000
 EST_PROMPT_TOKENS = 1000
 EST_COMPLETION_TOKENS = JUDGE_MAX_TOKENS
 EST_COST_PER_JUDGE_CALL = EST_PROMPT_TOKENS * PRICE_IN + EST_COMPLETION_TOKENS * PRICE_OUT
 
+# Extraction prompt = DEFAULT_NER_PROMPT template (~500 tokens) + one paragraph
+# of RU source text; completion = a JSON list of extracted surfaces, typically
+# well short of the extractor's 4096-token LLMConfig default. Deliberately
+# generous vs. a typical paragraph so the estimate doesn't under-shoot (same
+# worst-case-bound philosophy as EST_COST_PER_JUDGE_CALL above).
+EST_EXTRACT_PROMPT_TOKENS = 1200
+EST_EXTRACT_COMPLETION_TOKENS = 400
+EST_COST_PER_EXTRACT_CALL = EST_EXTRACT_PROMPT_TOKENS * PRICE_IN + EST_EXTRACT_COMPLETION_TOKENS * PRICE_OUT
+
 ALL_CONFIG_BITS = ["".join(p) for p in itertools.product("01", repeat=3)]
+
+
+def model_slug(model: str, provider: str) -> str:
+    """`<model>/<provider>` -> a filesystem-safe run-dir segment (ticket 002):
+    every ``/`` in the model id becomes ``--``, then ``--<provider>`` is
+    appended. Dots are preserved (dotted model names stay dotted in filenames,
+    working-style.md "Naming & PRs") -- e.g. ``openai/gpt-5.5`` + ``provider-3``
+    -> ``openai--gpt-5.5--provider-3``.
+    """
+    return f"{model.replace('/', '--')}--{provider}"
 
 
 def _load_dotenv(path: Path = ENV_FILE) -> None:
@@ -120,40 +167,71 @@ def _config_from_bits(bits: str) -> GroundingConfig:
 
 class BudgetGuard:
     """Provider-agnostic in-process pre-call spend cap (E-D11). Identical
-    contract to eval_grounding.py's guard: reserve() before every judge call,
-    settle() after with the real cost once known."""
+    contract to eval_grounding.py's guard: reserve() before every call,
+    settle() after with the real cost once known.
 
-    def __init__(self, max_usd: float) -> None:
+    Ticket 002: extraction calls now share this same guard (previously only
+    judge calls were reserved/settled -- a real accounting hole for the
+    ~12k/100-article extraction volume). ``kind`` ("extract"/"judge") tags
+    each reservation for the meta.json spend/call-count split; only "judge"
+    calls count against ``max_judge_calls`` (extraction has no count
+    ceiling of its own, just the shared dollar cap). Thread-safe: phase 1 of
+    prediction (ticket 002) runs extract_fn over a paragraph's siblings
+    concurrently via a ThreadPoolExecutor, so multiple threads can call
+    can_reserve/reserve/settle at once -- every method takes ``_lock``.
+    Known imprecision: can_reserve() and reserve() are separate lock
+    acquisitions (matching eval_grounding.py's two-step contract), so under
+    concurrency several threads can pass the check against the same
+    pre-reservation ``spent`` before any of them reserves, overshooting by up
+    to (concurrency-1) small per-call estimates -- bounded by
+    DEFAULT_MAX_CONCURRENCY=4, consistent with this guard's existing
+    worst-case-not-exact tolerance (settle() already lets actual cost exceed
+    the estimate between calls)."""
+
+    def __init__(self, max_usd: float, max_judge_calls: int = MAX_JUDGE_CALLS) -> None:
         self.max_usd = max_usd
+        self.max_judge_calls = max_judge_calls
         self.spent = 0.0
-        self.n_calls = 0
+        self.spent_by_kind: dict[str, float] = {"extract": 0.0, "judge": 0.0}
+        self.calls_by_kind: dict[str, int] = {"extract": 0, "judge": 0}
         self.stopped_reason: str | None = None
+        self._lock = threading.Lock()
 
-    def can_reserve(self, est: float) -> bool:
-        if self.stopped_reason is not None:
-            return False
-        if self.n_calls + 1 > MAX_JUDGE_CALLS:
-            self.stopped_reason = f"MAX_JUDGE_CALLS={MAX_JUDGE_CALLS} reached"
-            return False
-        if self.spent + est > self.max_usd:
-            self.stopped_reason = f"budget cap ${self.max_usd:.2f} hit (spent ${self.spent:.4f} + est ${est:.4f})"
-            return False
-        return True
+    @property
+    def n_calls(self) -> int:
+        return self.calls_by_kind["extract"] + self.calls_by_kind["judge"]
 
-    def reserve(self, est: float) -> None:
-        self.spent += est
-        self.n_calls += 1
+    def can_reserve(self, est: float, *, kind: str = "judge") -> bool:
+        with self._lock:
+            if self.stopped_reason is not None:
+                return False
+            if kind == "judge" and self.calls_by_kind["judge"] + 1 > self.max_judge_calls:
+                self.stopped_reason = f"max_judge_calls={self.max_judge_calls} reached"
+                return False
+            if self.spent + est > self.max_usd:
+                self.stopped_reason = f"budget cap ${self.max_usd:.2f} hit (spent ${self.spent:.4f} + est ${est:.4f})"
+                return False
+            return True
 
-    def settle(self, est: float, actual: float | None) -> None:
+    def reserve(self, est: float, *, kind: str = "judge") -> None:
+        with self._lock:
+            self.spent += est
+            self.spent_by_kind[kind] += est
+            self.calls_by_kind[kind] += 1
+
+    def settle(self, est: float, actual: float | None, *, kind: str = "judge") -> None:
         if actual is None:
             return
-        self.spent += actual - est
+        with self._lock:
+            delta = actual - est
+            self.spent += delta
+            self.spent_by_kind[kind] += delta
 
 
 # ── extractor + judge builders (E-D16 bridge) ────────────────────────────────
 
 
-def _build_extract_fn(guard: BudgetGuard | None = None):
+def _build_extract_fn(guard: BudgetGuard, *, model: str | None = None, provider: str | None = None):
     """Real NER extraction entry point: LLMClient + DEFAULT_NER_PROMPT ->
     llm_surfaces -> mentions_from_surfaces -> list[TermMention].
 
@@ -161,20 +239,33 @@ def _build_extract_fn(guard: BudgetGuard | None = None):
     substrings only) but wrapped as the single-paragraph `extract_fn` predict.py
     expects. Lazy-imports LLMClient so --dry-run/--help stay importable without
     `openai` installed (LLMClient-only by design, no direct openai import
-    outside palimpsest.llm.client).
+    outside palimpsest.llm.client). ``guard`` is required (not optional) since
+    ticket 002: every extraction call now reserves/settles against it, same
+    contract as the judge below -- this closure may be invoked concurrently
+    from several ThreadPoolExecutor workers (phase 1 of prediction), which is
+    exactly why BudgetGuard grew a lock.
     """
     from palimpsest.llm.client import LLMClient, LLMConfig
 
     _load_dotenv()
-    api_key = os.environ.get(EXTRACT_API_KEY_ENV)
+    route = _resolve_route(model, provider)
+    api_key = os.environ.get(route["extract_api_key_env"])
     if not api_key:
-        raise RuntimeError(f"{EXTRACT_API_KEY_ENV} not set (checked .env and environment) -- required for extraction")
+        raise RuntimeError(f"{route['extract_api_key_env']} not set (checked .env and environment) -- required for extraction")
 
-    client = LLMClient(LLMConfig(model=EXTRACT_MODEL, base_url=EXTRACT_BASE_URL, api_key=api_key,
-                                 temperature=0, extra_body=EXTRACT_EXTRA_BODY))
+    client = LLMClient(LLMConfig(model=route["extract_model"], base_url=route["extract_base_url"], api_key=api_key,
+                                 temperature=0, extra_body=route["extract_extra_body"]))
 
     def extractor(source: str) -> list[dict]:
+        if not guard.can_reserve(EST_COST_PER_EXTRACT_CALL, kind="extract"):
+            raise RuntimeError(guard.stopped_reason)
+        guard.reserve(EST_COST_PER_EXTRACT_CALL, kind="extract")
         reply = client.complete_retrying(system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source))
+        actual_cost = reply.usage.cost_usd
+        if actual_cost is None and reply.usage.prompt_tokens:
+            actual_cost = (reply.usage.prompt_tokens * PRICE_IN
+                           + reply.usage.completion_tokens * PRICE_OUT)
+        guard.settle(EST_COST_PER_EXTRACT_CALL, actual_cost, kind="extract")
         return parse_surfaces(reply.content)
 
     def extract_fn(paragraph: str):
@@ -184,26 +275,59 @@ def _build_extract_fn(guard: BudgetGuard | None = None):
     return extract_fn
 
 
-def _build_judge(guard: BudgetGuard):
+def _parallel_extract_fn(extract_fn, paragraphs: list[str]):
+    """Phase 1 of predicting one article (ticket 002): run ``extract_fn`` over
+    every paragraph CONCURRENTLY, bounded by
+    ``palimpsest.llm.client.DEFAULT_MAX_CONCURRENCY`` (4). Phase 2 (grounding +
+    judge, inside ``predict.predict_tuples``) stays fully sequential --
+    unchanged.
+
+    Design choice (ticket 002 asked to pick the cleanest of "a new
+    predict_tuples parameter" vs. "an order-safe wrapper"): an order-safe
+    wrapper. ``predict_tuples`` already calls ``extract_fn(paragraph)`` exactly
+    once per paragraph, strictly in ``paragraphs`` order -- so precomputing
+    every paragraph's mentions up front (``ThreadPoolExecutor.map``, which
+    preserves input order in its output regardless of completion order) and
+    replaying them through a positional iterator reproduces byte-identical
+    tuple/stitching semantics with zero changes to ``predict.py`` or its tests.
+    Replay is by POSITION, not by paragraph text -- a content-keyed cache would
+    misalign whenever paragraph text repeats (e.g. blank lines from
+    ``tokenize.flatten``'s split).
+
+    Lazy-imports ``DEFAULT_MAX_CONCURRENCY`` (pulls in ``palimpsest.llm.client``
+    -> ``openai``) so this module stays importable for --dry-run/--help
+    without `openai` installed; this helper is only ever called from the paid,
+    non-dry-run path.
+    """
+    from palimpsest.llm.client import DEFAULT_MAX_CONCURRENCY
+
+    with ThreadPoolExecutor(max_workers=DEFAULT_MAX_CONCURRENCY) as pool:
+        mentions_per_paragraph = list(pool.map(extract_fn, paragraphs))
+    ordered = iter(mentions_per_paragraph)
+    return lambda _paragraph: next(ordered)
+
+
+def _build_judge(guard: BudgetGuard, *, model: str | None = None, provider: str | None = None):
     """Judge on the same provider as the extractor (default CloseRouter
     claude-haiku-4.5, pinned via CLOSEROUTER_PROVIDER). Returns None when the
     provider key is unset so the caller can fall back to judge=None."""
     from palimpsest.llm.client import LLMClient, LLMConfig
 
     _load_dotenv()
-    api_key = os.environ.get(JUDGE_API_KEY_ENV)
+    route = _resolve_route(model, provider)
+    api_key = os.environ.get(route["judge_api_key_env"])
     if not api_key:
         return None
 
     client = LLMClient(LLMConfig(
-        model=JUDGE_MODEL, base_url=JUDGE_BASE_URL, api_key=api_key,
-        temperature=0, max_tokens=JUDGE_MAX_TOKENS, extra_body=JUDGE_EXTRA_BODY,
+        model=route["judge_model"], base_url=route["judge_base_url"], api_key=api_key,
+        temperature=0, max_tokens=JUDGE_MAX_TOKENS, extra_body=route["judge_extra_body"],
     ))
 
     def judge(prompt: str) -> dict:
-        if not guard.can_reserve(EST_COST_PER_JUDGE_CALL):
+        if not guard.can_reserve(EST_COST_PER_JUDGE_CALL, kind="judge"):
             raise RuntimeError(guard.stopped_reason)
-        guard.reserve(EST_COST_PER_JUDGE_CALL)
+        guard.reserve(EST_COST_PER_JUDGE_CALL, kind="judge")
         result = client.complete_retrying(
             system="You are a Wikidata disambiguation judge. Return strict JSON only.",
             user=prompt,
@@ -212,7 +336,7 @@ def _build_judge(guard: BudgetGuard):
         if actual_cost is None and result.usage.prompt_tokens:
             actual_cost = (result.usage.prompt_tokens * PRICE_IN
                            + result.usage.completion_tokens * PRICE_OUT)
-        guard.settle(EST_COST_PER_JUDGE_CALL, actual_cost)
+        guard.settle(EST_COST_PER_JUDGE_CALL, actual_cost, kind="judge")
 
         text = result.content.strip()
         if text.startswith("```"):
@@ -333,14 +457,15 @@ def cmd_build_gt(args) -> int:
 # ── run ───────────────────────────────────────────────────────────────────────
 
 
-def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_run: bool, guard: BudgetGuard | None) -> tuple[list[dict], dict]:
+def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_run: bool, guard: BudgetGuard | None,
+                     model: str | None = None, provider: str | None = None) -> tuple[list[dict], dict]:
     config = _config_from_bits(bits)
     wd = WikidataClient(cache_path=WIKIDATA_CACHE)
     grounder = LabelFirstGrounding(wd, config)
     canonicalize = _canonicalize_fn(wd)
 
-    judge = None if dry_run else _build_judge(guard)
-    extract_fn = None if dry_run else _build_extract_fn(guard)
+    judge = None if dry_run else _build_judge(guard, model=model, provider=provider)
+    extract_fn = None if dry_run else _build_extract_fn(guard, model=model, provider=provider)
 
     def ground_fn(mention, *, judge=judge, scope_id=None, judge_cache=None):
         return grounder.ground(mention, judge=judge, scope_id=scope_id, judge_cache=judge_cache)
@@ -366,8 +491,12 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
             continue
 
         judge_cache: dict = {}
+        # Phase 1 (parallel, capped at DEFAULT_MAX_CONCURRENCY): extract every
+        # paragraph's mentions concurrently. Phase 2 (grounding + judge, inside
+        # predict_tuples) is untouched and stays sequential.
+        paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs)
         result = predict.predict_tuples(
-            article_text, paragraphs, extract_fn, ground_fn,
+            article_text, paragraphs, paragraph_extract_fn, ground_fn,
             judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
         )
         for r in result["records"]:
@@ -386,7 +515,7 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
 
 def cmd_run(args) -> int:
     gt_records = _load_gt(Path(args.gt))
-    guard = BudgetGuard(args.max_usd)
+    guard = BudgetGuard(args.max_usd, max_judge_calls=args.max_judge_calls)
 
     if args.dry_run:
         _, counters = _run_one_config(args.config, gt_records, args.cache, dry_run=True, guard=None)
@@ -403,20 +532,56 @@ def cmd_run(args) -> int:
         print(f"\nForecast ${est_cost:.4f} is within --max-usd ${args.max_usd:.2f}. Dry run only -- nothing written.")
         return 0
 
-    pred_records, counters = _run_one_config(args.config, gt_records, args.cache, dry_run=False, guard=guard)
+    started_at = datetime.now(timezone.utc)
+    pred_records, counters = _run_one_config(
+        args.config, gt_records, args.cache, dry_run=False, guard=guard,
+        model=args.model, provider=args.provider,
+    )
+    finished_at = datetime.now(timezone.utc)
 
-    run_id = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
-    out_dir = OUT_ROOT / args.config / run_id
+    model = args.model or CLOSEROUTER_MODEL
+    provider = args.provider or CLOSEROUTER_PROVIDER
+    slug = model_slug(model, provider)
+    run_id = started_at.strftime("%Y-%m-%dT%H-%M-%SZ")
+    out_dir = OUT_ROOT / slug / args.config / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
     with (out_dir / "pred.jsonl").open("w", encoding="utf-8") as fh:
         for r in pred_records:
             fh.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-    print(f"config={args.config}  run_id={run_id}  {counters}")
-    print(f"spent=${guard.spent:.4f}  judge_calls={guard.n_calls}")
+    meta = {
+        "model": model,
+        "provider": provider,
+        "config": args.config,
+        "run_id": run_id,
+        "price_in_per_token": PRICE_IN,
+        "price_out_per_token": PRICE_OUT,
+        "spend": {
+            "total": guard.spent,
+            "extract": guard.spent_by_kind["extract"],
+            "judge": guard.spent_by_kind["judge"],
+        },
+        "calls": {
+            "extract": guard.calls_by_kind["extract"],
+            "judge": guard.calls_by_kind["judge"],
+        },
+        "max_usd": args.max_usd,
+        "max_judge_calls": args.max_judge_calls,
+        "stopped_reason": guard.stopped_reason,
+        "started_at": started_at.isoformat(),
+        "finished_at": finished_at.isoformat(),
+        "wall_clock_s": (finished_at - started_at).total_seconds(),
+        **counters,
+    }
+    (out_dir / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
+
+    print(f"model={model}  provider={provider}  config={args.config}  run_id={run_id}  {counters}")
+    print(f"spent=${guard.spent:.4f} (extract=${guard.spent_by_kind['extract']:.4f} judge=${guard.spent_by_kind['judge']:.4f})"
+          f"  extract_calls={guard.calls_by_kind['extract']}  judge_calls={guard.calls_by_kind['judge']}")
     if guard.stopped_reason:
         print(f"STOPPED: {guard.stopped_reason}")
     print(f"wrote -> {out_dir / 'pred.jsonl'}")
+    print(f"wrote -> {out_dir / 'meta.json'}")
     return 0
 
 
@@ -485,11 +650,20 @@ def cmd_report(args) -> int:
     n_gt_tuples = sum(len(a["gt_tuples"]) for a in articles)
     meta = {
         "run_id": pred_dir.name,
-        "config": pred_dir.parent.name,
+        "config": pred_dir.parent.name,  # ticket 002: config stays parent-dir-of-run_id
         "n_articles": len(gt_records),
         "n_gt_tuples": n_gt_tuples,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
+
+    # ticket 002: merge the run's own meta.json (model, provider, spend split,
+    # wall-clock, ...) into the report meta when present -- run_meta's fields
+    # fill in first, then meta's freshly-computed run_id/config/generated_at
+    # win on any overlapping key (derived directly from pred_dir, authoritative).
+    run_meta_path = pred_dir / "meta.json"
+    if run_meta_path.exists():
+        run_meta = json.loads(run_meta_path.read_text(encoding="utf-8"))
+        meta = {**run_meta, **meta}
 
     metrics_out = pred_dir / "metrics.json"
     metrics_out.write_text(json.dumps({**result, "meta": meta}, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -508,7 +682,10 @@ def cmd_report(args) -> int:
 # ── argparse ──────────────────────────────────────────────────────────────────
 
 
-def main() -> int:
+def _build_parser() -> argparse.ArgumentParser:
+    """Pure parser construction, split out from ``main()`` so tests can parse
+    argv and inspect the resulting namespace without invoking ``args.func``
+    (which would make a real paid LLM call for ``run``/``ablate``)."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="command", required=True)
 
@@ -523,6 +700,9 @@ def main() -> int:
     p_run.add_argument("--cache", default=str(DEFAULT_PAGES_CACHE))
     p_run.add_argument("--config", default="111", help="3-bit config id, e.g. 111 = use_lemma+use_fallbacks+match_aliases")
     p_run.add_argument("--max-usd", type=float, default=DEFAULT_MAX_USD)
+    p_run.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
+    p_run.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
+    p_run.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_run.add_argument("--dry-run", action="store_true", help="print cost forecast only, write nothing")
     p_run.set_defaults(func=cmd_run)
 
@@ -530,16 +710,23 @@ def main() -> int:
     p_ablate.add_argument("--gt", default=str(DEFAULT_GT))
     p_ablate.add_argument("--cache", default=str(DEFAULT_PAGES_CACHE))
     p_ablate.add_argument("--max-usd", type=float, default=DEFAULT_MAX_USD)
+    p_ablate.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
+    p_ablate.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
+    p_ablate.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_ablate.add_argument("--dry-run", action="store_true")
     p_ablate.set_defaults(func=cmd_ablate)
 
     p_report = sub.add_parser("report", help="offline recompute: metrics.json + report.html from persisted pred + gt")
     p_report.add_argument("--gt", default=str(DEFAULT_GT))
-    p_report.add_argument("--pred", required=True, help="run dir containing pred.jsonl, e.g. reports/terminology/wiki-eval/111/<run_id>")
+    p_report.add_argument("--pred", required=True, help="run dir containing pred.jsonl, e.g. reports/terminology/wiki-eval/<model-slug>/111/<run_id>")
     p_report.add_argument("--ablation", action="store_true", help="reserved for a future multi-config comparison report")
     p_report.set_defaults(func=cmd_report)
 
-    args = ap.parse_args()
+    return ap
+
+
+def main() -> int:
+    args = _build_parser().parse_args()
     return args.func(args)
 
 
