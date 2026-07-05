@@ -6,7 +6,8 @@
 ## 0. Grounding
 
 - Текущий `GlossaryTab.tsx` — плоская таблица per-occurrence: Difficulty / Pair / Source / Translation / Wikidata / ¶ / Note; куча дублей («Тигра», «Евфрата» по 2-3 раза — видно на скрине владельца), нет группировки, нет деталей граундинга.
-- Данные: таблица `term` (`db.py`): `source_surface, source_lemma, context, char_start/end, difficulty, grounded_json, candidates_json, target_surface, pair_accuracy, recommended, note, trace_json` (NOT NULL DEFAULT '{}'). Seed = 204 реальных терма (G3+P3, spec 2026-07-02-seed-refresh).
+- Данные: таблица `term` (`db.py`): `source_surface, source_lemma, context, char_start/end, difficulty, grounded_json, candidates_json, target_surface, pair_accuracy, recommended, note, trace_json` (NOT NULL DEFAULT '{}'). Seed = 204 терма.
+- **Факт о seed-данных (ревью, дамп `seed.py::_seed_terms:151-184`):** сегодня это «mock terms» — `candidates_json=[]` и `trace_json='{}'` у ВСЕХ 204 строк, `grounded_json` без `resolved_by`, QID синтетический (`Q{100000+hash(...)%900000}`), т.е. Wikidata-ссылки текущего глоссария не настоящие. Difficulty/pairAccuracy — реальные выходы G3/P3, но трассы решений в данных нет. Отсюда двухчастный план: §2.2-degradation как основной путь + §7 обогащение данных как отдельный шаг.
 - Мокап-структура: группировка по (lemma, entity); строка = чипы Difficulty+Pair, Source (+категория-пилюля), Translation, Wikidata (label-ссылка + QID моно), Grounding-бейдж (◆ label match / ◇ LLM · model / ◇ LLM rejected all / ○ no candidates), Mentions ×N; раскрытие → Context RU/EN с `<mark>`, 4-шаговый path-степпер (QUERY → SEARCH → LABEL MATCH → DECISION; состояния done/warn/fail/skip), таблица кандидатов (chosen/rejected, via-чипы `label·ru`/`alias`/`none`), карточка judge-решения, список всех mentions.
 
 ## 1. Цель
@@ -21,13 +22,13 @@
 - Сортировка: по первому появлению (min paragraph.idx, потом char_start).
 - Саммари-строка под заголовком: `Grouped by lemma + entity · {G} terms · {M} mentions · resolved deterministically: {d} · via LLM: {l} · not grounded: {n}` — счётчики из §2.2.
 
-### 2.2 Grounding-бейдж из `grounded_json` / `trace_json`
-Читать `resolved_by` (в grounded_json или trace_json — фактическое поле проверить на seed-данных, взять то, что заполнено):
-- `exact_label` (или синоним `label_match`) → `◆ label match` (класс badge det, зелёный тон);
-- `llm_disambiguation` → `◇ LLM · {model}` (badge llm, жёлтый; model из trace_json, fallback — grounding_config.model_name, fallback — `LLM`);
-- `llm_rejected`/кандидаты были, выбора нет → `◇ LLM rejected all` (badge rej);
-- нет кандидатов / grounded_json пуст → `○ no candidates` (badge none).
-- **Graceful degradation:** если trace_json = '{}' (старые/чужие данные) и grounded_json есть → бейдж `◆ grounded` (det) без пути; если и его нет → `○ no candidates`. Ничего не падает, консоль чистая.
+### 2.2 Grounding-бейдж — строгий приоритет правил (разночтение §2.2/§6 закрыто ревью)
+Единая функция `resolveBadge(term)`; правила применяются СТРОГО по порядку, первое сработавшее побеждает:
+1. `trace_json.resolved_by` задан → маппинг: `exact_label|label_match` → `◆ label match` (det); `llm_disambiguation` → `◇ LLM · {model}` (llm; model из trace, fallback `LLM`); `llm_rejected` → `◇ LLM rejected all` (rej); `no_candidates` → `○ no candidates` (none).
+2. trace_json пуст (`'{}'`), но grounded qid есть → `◆ grounded` (det-тон, без пути) — это основной случай текущих seed-данных.
+3. trace_json непуст, но `resolved_by` отсутствует → эвристика: candidates>1 → llm; candidates==1 → det; qid нет и candidates>0 → rej; иначе none.
+4. Ничего нет → `○ no candidates`.
+Ничего не падает, консоль чистая; правило зафиксировать комментарием у функции.
 
 ### 2.3 Раскрытая панель
 - **Context**: RU = `term.context` с `<mark>` на source_surface (уже есть char_start/end — но они относятся к абзацу; в контекст-сниппете маркировать вхождение surface поиском, без regex-инъекций); EN = предложение из paragraph.target вокруг target_surface с `<mark class="t">` (найти первое вхождение target_surface; нет — панель без EN-строки).
@@ -39,7 +40,7 @@
 ## 3. UI-детали (соответствие мокапу — обязательное)
 
 - Классы/токены: перенести стили мокапа в `variant-a.css` с префиксом `va-gl-` (`va-gl-table`, `va-gl-badge det|llm|rej|none`, `va-gl-step done|warn|fail|skip`, `va-gl-cand`, `va-gl-judge`, `va-gl-occ`, `va-gl-cat`, `va-gl-qid`, `va-gl-via`), значения (цвета, радиусы, паддинги, размеры шрифтов) — ровно из мокапа; ничего нового не изобретать.
-- Колонки: `[chevron] Difficulty · Pair · Source · Russian · Translation · English · Wikidata · Grounding · Mentions` (языки в заголовках — из document.source_lang/target_lang, capitalized, как сейчас).
+- Колонки — ровно 7 data-колонок + chevron, сдвоенные заголовки как в мокапе (строка 113) и текущем GlossaryTab: `[chevron]` · `Difficulty` · `Pair` · `"Source · {SourceLang}"` · `"Translation · {TargetLang}"` · `Wikidata` · `Grounding` · `Mentions` (языки из document.source_lang/target_lang, capitalized).
 - Wikidata-ячейка: ссылка = английский label entity (из grounded_json.label, fallback — QID), `target="_blank"`, рядом QID моноширинным `va-gl-qid`. Не «Mesopotamia» 6 раз подряд синим на полстраницы, как сейчас: ссылка компактная.
 - Категория-пилюля (`Geographical`/`Onomastics`/…): из `term.note` (сейчас там `place` и т.п.) — Title Case, в пилюле `va-gl-cat` после source-текста. Пустая note → без пилюли.
 - Раскрытие: аккордеон, несколько строк могут быть открыты одновременно (как в мокапе), chevron поворачивается, `tr.detail` с фоном `--va-surface`.
@@ -49,14 +50,17 @@
 
 ## 4. Backend
 
-Изменений API нет: `GET /api/documents/{id}` уже отдаёт terms с нужными json-полями. Проверить, что terms-DTO включает `source_lemma`, `candidates_json`, `trace_json`, `grounded_json` целиком (если что-то отрезано в сериализации — добавить, контракт-SSOT дополнить в том же коммите).
+Одно обязательное изменение (факт, подтверждён ревью): `_term_dict` (`app.py:91-101`) отдаёт `sourceLemma`, `grounded` (распарсенный grounded_json), `candidates` (распарсенный candidates_json), но **`trace_json` в DTO отсутствует вовсе** — а на нём весь степпер. Добавить `"traceJson": json.loads(r["trace_json"] or "{}")` (camelCase, распарсенный объект — конвенция как у grounded/candidates). Контракт-SSOT дополнить в том же коммите. Больше изменений API нет.
 
 ## 5. Тесты
 
-- Vitest: группировка (дубли «Тигр/Тигра» сливаются по лемме; худший difficulty; счётчики саммари); бейдж-выбор по resolved_by; degradation при trace='{}'; mention-клик вызывает переход.
-- E2E: скриншоты collapsed-таблицы и всех 4 видов раскрытых панелей (det/llm/rej/none) на seed-документе; клик mention → Document; сравнение глазом с мокапом (агент прикладывает мокап-скрин рядом).
+- Vitest: группировка (дубли «Тигр/Тигра» сливаются по лемме; худший difficulty; счётчики саммари); `resolveBadge` — все 4 правила §2.2, включая llm/rej на СИНТЕТИЧЕСКИХ фикстурах (в юнитах, без претензии на seed-происхождение); degradation при trace='{}'; mention-клик вызывает переход.
+- E2E на seed-документе — только реально достижимые состояния: collapsed-таблица, раскрытая панель `◆ grounded` (degradation: контекст + mentions, без степпера), `○ no candidates`. Если §7-обогащение успело лечь в данные — добавить скриншоты det/llm/rej с полным степпером. Клик mention → Document. Сравнение глазом с мокапом (агент прикладывает мокап-скрин рядом).
 
-## 6. Риски / открытое
+## 6. Честность подачи
 
-- Реальное наполнение `trace_json` в seed-данных неизвестно до реализации — первым шагом исполнитель делает дамп 3-5 строк term и фиксирует фактические поля в коммит-сообщении; при пустоте trace работает degradation-ветка §2.2/2.3 (это НЕ провал спеки).
-- Если `resolved_by` в данных отсутствует вовсе — вычислять эвристикой: qid есть + candidates>1 → llm; qid есть + candidates==1 → label match; qid нет + candidates>0 → rejected; иначе none. Зафиксировать выбор в коде комментарием у эвристики.
+В отчёте и доках прямо пишем: редизайн — это реальный UI поверх имеющихся полей term; полнота «пути заземления» зависит от наполненности trace_json. Сегодняшний seed трассы не содержит (mock из _seed_terms) — поэтому §7.
+
+## 7. Обогащение seed-данных (отдельный шаг ПОСЛЕ приземления UI, time-box 30 мин)
+
+Попытаться прогнать существующий терминологический модуль (G3-grounding с Wikidata-кэшем `reports/terminology/wikidata_cache.jsonl`, если кэш есть в чекауте; иначе живые вызовы Wikidata — они бесплатные и покрыты polite-кэшем) на уникальных леммах seed-документа и записать в term реальные `qid/candidates_json/trace_json` (+ `resolved_by`). Скрипт кладём в `scripts/enrich_seed_terms.py`, обновление данных — идемпотентный UPDATE по (paragraph_id, char_start, char_end); данные в `data/seed/seed_paragraphs.jsonl` тоже обновить (чтобы reseed воспроизводился). Не успели/не вышло → остаёмся на degradation (это осознанный fallback, не провал); фиксируем состояние в known_issues.

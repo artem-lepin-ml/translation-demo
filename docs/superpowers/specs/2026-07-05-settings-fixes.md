@@ -27,7 +27,7 @@
 
 ### 2.2 Cultural Adaptation — добить хвосты
 - Удалить осиротевший `prompts/scoring/cultural.md`.
-- Прод-БД: **не** `DELETE` (инвариант «никогда не удалять LLM-предсказания» — у критерия есть score-строки). Деплой-скрипт выполняет `UPDATE criterion SET enabled=0 WHERE id='cultural'` (колонка `enabled` есть в DDL). UI и агрегация уже уважают enabled=0 (проверить: `aggregate.py` фильтрует enabled; если нет — добавить фильтр `WHERE enabled=1` в выборку критериев для оценки; отображение отключённых строк в Settings — серым, как сейчас).
+- Прод-БД: **не** `DELETE` (инвариант «никогда не удалять LLM-предсказания» — у критерия есть score-строки). Деплой-чеклист (`deploy/`, см. S5 §2.4 про migrate.py) выполняет `UPDATE criterion SET enabled=0 WHERE id='cultural'`. Подтверждено ревью: и `app.py`, и `aggregate.py` УЖЕ фильтруют enabled=0 — код менять не нужно, только данные прода.
 - Тест `tests/test_suggestion_guard.py`, ссылающийся на cultural, переключить на живой критерий.
 
 ### 2.3 Редактируемый промпт оценщика (главная фича S1)
@@ -42,19 +42,19 @@ Backend: изменений не требуется (PUT уже пишет promp
 
 ### 2.4 Params моделей — читаемо и валидно
 Backend:
-- `_require_params_object` расширить: whitelist ключей `max_tokens:int 1..32768`, `temperature:float 0..2`, `top_p:float 0..1`, `top_k:int`, `min_p:float`, `seed:int`, `reasoning:{effort: low|medium|high}`. Неизвестный ключ → 422 `{"detail":"unknown param: <key>"}` (больше не сохраняем мусор, который потом молча выкидывается).
+- `_require_params_object` расширить: whitelist ключей `max_tokens:int 1..32768`, `temperature:float 0..2`, `top_p:float 0..1`, `top_k:int`, `min_p:float`, `seed:int`, `enable_thinking:bool`, `reasoning:{effort: low|medium|high}`. (`enable_thinking` — легитимный ключ `ModelParams` (`model_params.py:27,68-69`), сеется у vLLM-строки `Qwen/Qwen3.6-27B` в полном 8-строчном наборе — без него no-op Save этой модели давал бы 422.) Неизвестный ключ → 422 `{"detail":"unknown param: <key>"}` (больше не сохраняем мусор, который потом молча выкидывается).
 - В ответ `GET /api/models` добавить поле `effective_params` — результат `ModelParams.for_model()` для строки (то, что реально уйдёт в вызов). Контракт-SSOT дополнить.
 Frontend (`SettingsTab`):
 - Вместо бейджа «`N params`» — инлайн-текст моноширинным: `max_tokens 1536 · temp 0.6 · top_k 20` (первые 3, остальное «+N»). Клик — раскрытие как сейчас.
 - В Edit-модалке params остаются JSON-textarea (это админский инструмент), но: (a) под полем — live-валидация с сообщением 422 от бэка; (b) блок `Effective params` (read-only, серым): что реально пойдёт в API после фильтра capability, с пометкой `seed 7 · forced for reproducibility`, если модель supports_seed.
 Seed-матрица (`model_matrix.py`, demo-набор из 5 OpenRouter-строк):
-- Привести params к «нормальным»: судейские модели → `{"max_tokens": 1536, "temperature": 0}`; qwen-строку избавить от экзотики `top_k/min_p` (оставить `{"max_tokens":1536,"temperature":0}`); gemini — `{"max_tokens":2048,"temperature":0}`. Причина: детерминизм судьи + понятность на демо. Обновить спеку model-registry ссылкой.
+- Факт (ревью): в demo-наборе экзотики нет — `qwen/qwen3.6-plus` несёт `{"max_tokens":1536,"temperature":0.7}`; `top_k/min_p` живут только на двух vLLM-строках полного набора (в прод-seed с `PALIMPSEST_SEED_DEMO=1` не попадают). Дельта: всем 5 demo-строкам выставить `temperature: 0` (детерминизм судьи), `max_tokens` не трогать; vLLM-строки не трогать (их params легальны при whitelist §2.4). Обновить спеку model-registry ссылкой.
 - Деплой-скрипт обновляет params существующих строк на проде через `PUT /api/models/*` (не reseed).
 
 ### 2.5 Кнопки — работают или честно падают
-- `handleRemoveModel`: catch → `fieldError` с текстом бэка (409 → `Model is used by evaluator «X» — reassign it first`). Паттерн — как у критерия.
+- `handleRemoveModel`: catch → `fieldError` с текстом бэка (409 → `Model is used by evaluator "X" — reassign it first`; кавычки прямые, не «» — инвариант 9, в EN-UI гильеметов нет). Паттерн — как у критерия.
 - `Test` у модели: оставить (работает, реальный probe); добавить видимый спиннер-состояние `Testing…` и результат в строке (match-share % / err), не только в консоль. Проверить текущий рендер результата; если уже есть — довести до e2e-чека.
-- API key нельзя очистить (known_issues #9): добавить в Edit-модалку кнопку `Clear key` → `PUT` с `api_key: ""` + backend: пустая строка = очистить (сейчас, вероятно, игнор — проверить и починить).
+- API key нельзя очистить (known_issues #9). Точный механизм бага (ревью): wire-поле — camelCase `apiKey`; `update_model` (`app.py:804`) делает falsy-check `m["apiKey"] if m.get("apiKey") else row["api_key"]`, т.е. пустая строка неотличима от отсутствия поля. Фикс: presence-check — `"apiKey" in m and m["apiKey"] == ""` ⇒ очистить; `"apiKey" not in m` ⇒ оставить прежний. UI: кнопка `Clear key` шлёт `PUT {apiKey: ""}`. Unit-тест на обе ветки.
 - `+ Add evaluator` / `+ Add model` — прогнать e2e, починить найденное (разведка не нашла поломок в коде — вероятно, прод-эффект).
 
 ### 2.6 Причины «висячих табличек»
@@ -73,5 +73,5 @@ Seed-матрица (`model_matrix.py`, demo-набор из 5 OpenRouter-стр
 - E2E (шаг 6/8): Settings-сценарий — открыть каждый оценщик, изменить промпт, сохранить, перезагрузить страницу, промпт на месте; Edit/Test/Remove модели; добавить+удалить временный оценщик и модель; скриншоты.
 
 ## 5. Риски / открытое
-- `aggregate.py`/evaluate могут не фильтровать enabled=0 — если так, это отдельный маленький фикс в рамках S1 (проверить первым делом).
-- Владелец на скрине видит 5-й evaluator (Cultural) из старой прод-БД: закрывается деплой-скриптом (§2.2), НЕ кодом.
+- ~~enabled=0 фильтрация~~ — снято: ревью подтвердило, что фильтрация уже есть в app.py и aggregate.py.
+- Владелец на скрине видит 5-й evaluator (Cultural) из старой прод-БД: закрывается деплой-чеклистом (§2.2), НЕ кодом.

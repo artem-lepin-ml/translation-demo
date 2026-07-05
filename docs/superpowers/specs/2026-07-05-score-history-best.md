@@ -32,9 +32,23 @@ CREATE TABLE target_revision (
 );
 CREATE INDEX idx_target_revision_para ON target_revision(paragraph_id, id);
 ```
-- Пишется в ТОЙ ЖЕ транзакции, что и изменение `paragraph.target`: PATCH paragraph (только если текст реально изменился — дебаунс уже на фронте, плюс сравнение на бэке), apply-edit, translate (S4), restore (§3.3), reset (пишет ревизию origin='seed' с seed_target).
-- Миграция при деплое: для существующих абзацев вставить по одной ревизии из текущего target (origin='seed', created_at=now) — чтобы у всего была базовая ревизия. Инвариант «не удалять предсказания» не задет (только добавляем).
-- `score` получает колонку `revision_id INTEGER REFERENCES target_revision(id)` (nullable; старые строки NULL). Evaluate заполняет её текущей (последней) ревизией абзаца.
+`origin`: `'seed' | 'upload' | 'edit' | 'apply_edit' | 'translate' | 'restore'`.
+- **Полный список точек записи ревизии (HIGH из ревью — исходный список был неполон).** Ревизия пишется в той же транзакции, что и изменение/создание `paragraph.target`:
+  1. `POST /api/documents` — создание абзацев (обычная пара: origin='upload' с исходным target; translate:true — ревизию НЕ пишем, target пуст, её напишет translate);
+  2. PATCH paragraph (origin='edit'; только если текст реально изменился — сравнение на бэке);
+  3. apply-edit (origin='apply_edit');
+  4. translate S4 (origin='translate', по мере записи каждого абзаца);
+  5. restore §3.3 (origin='restore');
+  6. reset (origin='seed', текст = seed_target);
+  7. seed.py — базовая ревизия origin='seed' на каждый абзац при засеве (чтобы свежая dev/test БД совпадала по форме с мигрированным продом).
+- **Штамповка `score.revision_id` — во ВСЕХ трёх местах INSERT INTO score** (ревью нашло три): `app.py:493` (evaluate), `precompute.py:97-109` (`_write_paragraph` — единственный путь оценки свежезагруженных/переведённых документов!), `seed.py:118-125` (baseline+cache при засеве → ссылаются на ревизию п.7). Хелпер `db.latest_revision_id(paragraph_id)`.
+- `score.revision_id INTEGER REFERENCES target_revision(id)` (nullable). Исторические прод-строки остаются NULL — честно; «best» активируется вперёд с момента деплоя.
+
+### 2.4 Миграционный модуль (CRITICAL из ревью: механизма миграций в проекте НЕТ; владелец модуля — эта спека, S4/S1 переиспользуют)
+- Новый `src/palimpsest/webapp/migrate.py`: функция `migrate(conn)` — СТРОГО аддитивные идемпотентные шаги: `CREATE TABLE IF NOT EXISTS target_revision (...)`; `CREATE TABLE IF NOT EXISTS translator_config (...)` (+INSERT seed-строки конфига при отсутствии — S4 §2.1); `ALTER TABLE score ADD COLUMN revision_id ...` под защитой `PRAGMA table_info(score)`; backfill: абзацам без единой ревизии — одна ревизия из текущего target (origin='seed').
+- Вызов: (а) на старте приложения (lifespan / первый connect — до обслуживания запросов) — прод получает схему автоматически при рестарте контейнера; (б) CLI `python -m palimpsest.webapp.migrate` для ручного прогона. Деплой-чеклист: `cp demo.db demo.db.bak-$(date +%s)` ПЕРЕД рестартом.
+- Параллельно та же DDL добавляется в `db.py::SCHEMA` (безусловно — из него строятся все свежие БД; иначе тесты зелёные на схеме, которой нет на проде).
+- Тесты: миграция дважды подряд на заполненной фикстуре (идемпотентность, данные целы); эквивалентность схем «fresh seed» vs «старая БД + migrate» (сравнение sqlite_master по таблицам/колонкам).
 
 ### 2.2 Понятие «лучшая ревизия»
 - `best = argmax(aggregate)` по score-строкам абзаца с `kind='live'` или `'seed'` (кэш-строки `kind='cache'` ИСКЛЮЧЕНЫ — они синтетические, см. §0.2a) с непустым revision_id; тай-брейк — новее.
@@ -50,18 +64,20 @@ CREATE INDEX idx_target_revision_para ON target_revision(paragraph_id, id);
 - Ревизии без оценки показывают `—` (не оценивались) — честно.
 - Diff-подсказка: клик по строке истории → под списком мини-панель с текстом этой ревизии (read-only, 6 строк макс, скролл) — без полноценного diff-рендера (не изобретать; простой текст).
 
-### 3.3 Restore
-- `POST /api/paragraphs/{pid}/restore` `{revision_id}` → target := text ревизии, новая ревизия origin='restore', ответ = обновлённый paragraph DTO. Скоры НЕ копируются (после restore чип показывает `—`/старый latest с пометкой; следующий evaluate честно замерит). 409 если ревизия чужого абзаца.
+### 3.3 Restore + список ревизий (REST — дельта SSOT)
+- `GET /api/paragraphs/{pid}/revisions` → `{revisions: [{id, origin, createdAt, text, aggregate: number|null, isBest, isCurrent}]}` (aggregate — лучший score-агрегат, привязанный к этой ревизии, null если не оценивалась; сортировка новые-сверху). Питает History-блок §3.2.
+- `POST /api/paragraphs/{pid}/restore` `{revisionId}` → target := text ревизии, новая ревизия origin='restore', ответ = обновлённый paragraph DTO. Скоры НЕ копируются (после restore чип показывает `—`/старый latest с пометкой; следующий evaluate честно замерит). 409 если ревизия чужого абзаца.
 - UI-копирайт: `Revision history`, `Restore`, `Best`, `current`, `not scored`.
 
-### 3.4 Кэш-фолбэк — честная подпись
-- Ответ evaluate с `cached:true` уже отличим: в ScoresView добавить бейдж `cached` (`--va-text-dim`, mono, 10px) у затронутых критериев + тултип `Offline fallback estimate, not a live judgment`. Дельта после кэша считается от последнего ЖИВОГО балла, не от кэшевого (фикс §0.2a: `_para_score_views.prev` пропускает kind='cache' при выборе базы для дельты).
+### 3.4 Кэш-фолбэк — честная подпись (только фронт; backend-«фикс» снят ревью)
+- Факт (ревью): `_para_score_views` (`app.py:126-131`) УЖЕ выбирает только `kind IN ('seed','live')` — кэш никогда не участвует в дельте; «падение» от кэша — чисто отображенческий артефакт транзиентного `cached:true`-ответа, в БД он не персистится. Backend не трогаем.
+- Фронт: в ScoresView бейдж `cached` (`--va-text-dim`, mono, 10px) у затронутых критериев + тултип `Offline fallback estimate, not a live judgment` — этого достаточно, чтобы кэш-число не читалось как живой балл.
 
 ## 4. Документный уровень
 - `docAggregate` без изменений (сумма latest). Рядом в шапке — при наличии хотя бы одного абзаца, где best>latest: тултип на doc-чипе `Some paragraphs have better past revisions — see ⭰`. Не делаем «doc-best» (агрегат из разных ревизий разных абзацев — фикция).
 
 ## 5. Тесты
-- Pytest: ревизия пишется на PATCH/apply-edit/reset/restore (и НЕ пишется на no-op PATCH); best-выбор исключает cache; restore создаёт ревизию и не трогает score; evaluate проставляет revision_id; миграция сид-БД (скрипт деплоя) идемпотентна.
+- Pytest: ревизия пишется на create/PATCH/apply-edit/reset/restore/translate (и НЕ пишется на no-op PATCH); best-выбор исключает cache; restore создаёт ревизию и не трогает score; revision_id проставляют ВСЕ ТРИ score-пути (evaluate, precompute._write_paragraph, seed); migrate.py — идемпотентность двойного прогона + эквивалентность схем fresh-vs-migrated; «best» активируется на свежезагруженном документе после precompute (регрессия на главный HIGH ревью).
 - Vitest: History-блок (сортировка, best-маркер, +N more, restore-вызов); cached-бейдж; дельта пропускает cache.
 - E2E: изменить абзац → evaluate (балл A) → изменить хуже → evaluate (балл B<A) → History показывает обе ревизии, best=A → Restore → evaluate → балл≈A. Скриншоты каждого шага.
 
