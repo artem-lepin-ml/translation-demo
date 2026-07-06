@@ -121,6 +121,7 @@ interface ModelRegistryEntry {       // тело POST/PUT (с ключом)
 }
 interface ModelRegistryEntryPublic {  // ответ GET (без ключа)
   name: string; baseUrl: string; apiKeyMasked: string; params: Record<string, unknown>;
+  effectiveParams: Record<string, unknown>;   // rev-5: params.for_model() output — what ACTUALLY goes into the call
 }
 
 // ответ POST /api/models/{name}/test — реальный зонд-вызов (тратит деньги)
@@ -306,6 +307,80 @@ interface GlossaryEntry {
 
 **UX статусов issue (aspect-6):** `accepted`/`dismissed` issue в инспекторе — зачёркнут, в EN-панели не подсвечивается, переживает пересчёт. `targetSurface=null` — только RU-бейдж, ховер без EN-пары. Стабильные `data-testid` для шага-8 — в плане (инвентарь UI-поверхностей), не в контракте данных.
 
+## 7. Rev-5 delta (2026-07-05, wave-5 — settings-fixes / translator / score-history-best / export-xlsx / upload-modal-polish)
+
+Реализовано в ветке `claude/emlp-2026-website-fixes-muih1x`. Полные спеки: [2026-07-05-settings-fixes.md](2026-07-05-settings-fixes.md), [2026-07-05-translator.md](2026-07-05-translator.md), [2026-07-05-score-history-best.md](2026-07-05-score-history-best.md), [2026-07-05-export-xlsx.md](2026-07-05-export-xlsx.md), [2026-07-05-upload-modal-polish.md](2026-07-05-upload-modal-polish.md). Все новые многословные wire-поля — **camelCase**, для консистентности с остальным контрактом (спеки местами писали `error_reason`/`effective_params` snake_case как русскоязычное сокращение — не буквальное имя поля).
+
+### 7.1 Новые таблицы (DDL)
+
+```sql
+CREATE TABLE target_revision (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  paragraph_id INTEGER REFERENCES paragraph(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  origin TEXT NOT NULL,            -- 'seed' | 'upload' | 'edit' | 'apply_edit' | 'translate' | 'restore'
+  created_at TEXT NOT NULL
+);
+CREATE INDEX idx_target_revision_para ON target_revision(paragraph_id, id);
+
+CREATE TABLE translator_config (   -- singleton, mirrors grounding_config
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
+);
+```
+
+`score` gains `revision_id INTEGER REFERENCES target_revision(id)` (nullable — historical pre-rev-5 rows stay `NULL`, honestly; never backfilled). Stamped at all three INSERT sites: `/evaluate`, `precompute._write_paragraph`, `seed.py`.
+
+**Migration:** `src/palimpsest/webapp/migrate.py::migrate(conn)` — additive, idempotent (`CREATE TABLE IF NOT EXISTS` ×2, guarded `ALTER TABLE score ADD COLUMN revision_id`, seeds `translator_config`'s default row only if its FK-target model already exists, backfills one `origin='seed'` revision per paragraph that has none). Runs on app startup (FastAPI lifespan, before serving) and via `python -m palimpsest.webapp.migrate`. `db.py::SCHEMA` carries the same DDL unconditionally for fresh DBs.
+
+### 7.2 New/changed REST
+
+```
+# revision history (score-history-best)
+GET  /api/paragraphs/{pid}/revisions
+     -> { revisions: [{id, origin, createdAt, text, aggregate: number|null, isBest, isCurrent}] }  # newest first
+POST /api/paragraphs/{pid}/restore {revisionId}
+     -> Paragraph                  # 404 unknown revision; 409 revision belongs to another paragraph
+
+# translator (S4)
+GET  /api/translator-config                     -> {modelName, prompt, params}       # mirrors grounding-config
+PUT  /api/translator-config      {same shape}    -> {modelName, prompt, params}       # params: whitelist §7.4
+POST /api/documents/{doc_id}/translate           -> 202 {status:'started', total}
+     # 403 seed_document; 409 translation_in_progress; 409 {detail:'no_api_key'|'budget_exhausted'} (pre-check)
+
+# export (S6)
+GET  /api/documents/{doc_id}/export?format=xlsx|md  -> file (Content-Disposition: attachment)
+     # 200 xlsx: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+     # 200 md:   text/markdown; charset=utf-8
+     # 404 unknown document; 422 unknown format
+
+# health limits (S3 §2.3)
+GET  /api/health -> {service, status, limits: {maxParagraphs, maxParaChars}}
+```
+
+`POST /api/documents` body gains an optional `translate: boolean` (default `false`):
+- `translate:true` ⇒ every `paragraphs[].target` MUST be empty (`""`) — a non-empty target on ANY paragraph → `422 {detail:'mixed_targets'}`. Server FORCES `precompute:false` regardless of the body's `precompute` value (translating into empty targets must never trigger a paid judge pass over garbage).
+- `translate:true` documents get `target=seed_target=''` at creation; the first `target_revision` (`origin='upload'`) is written once translate.py actually fills a paragraph in (`origin='translate'`), not at creation time.
+- Document DTO gains a `translation` block (present whenever `precompute` is, i.e. `origin==='upload'`): `{status:'running'|'done'|'failed', done, total, errorReason?}`, mirroring `precompute`'s shape.
+
+`GET /api/documents/{id}` paragraph DTO gains `best: {aggregate, revisionId, createdAt, isCurrent} | null` — the highest-`aggregate` scored revision (`kind IN ('seed','live')` only, `kind='cache'` excluded, tie-break newest); `null` if the paragraph has no scored revision yet.
+
+`precompute`/`translation` status blocks gain an optional `errorReason: 'no_api_key'|'budget_exhausted'|'all_failed'` — set when `done && succeeded===0` (precompute) or the run terminates with zero translated paragraphs (translate), so the frontend can show *why* instead of a bare unexplained banner.
+
+`GET /api/models` gains `effectiveParams: Record<string,unknown>` per row — `ModelParams.for_model()`'s output, i.e. what the capability filter actually sends to the provider (vs. raw `params`, which is whatever was saved).
+
+`PUT /api/models/{name}` `apiKey` semantics changed from a falsy-check to a **presence-check**: `apiKey` absent from the body ⇒ keep the existing key (unchanged); `apiKey` present (including `""`) ⇒ use it verbatim, so `{apiKey: ""}` now explicitly clears a previously-set key. Previously an empty string was indistinguishable from "omitted" and silently kept the old key (known_issues.md, now resolved).
+
+### 7.3 `_client_for` gains an explicit params override
+
+`app._client_for(conn, model_name, params_override: dict | None = None)` — when `params_override` is given, it REPLACES the model registry row's own `params_json` entirely (used by `translate.py` for `translator_config` params and by `_grounding_judge_live` for `grounding_config` params). Without a caller-supplied override, behavior is unchanged (the model's own row). This also fixes a pre-existing bug where `_grounding_judge_live` computed its budget *estimate* from `grounding_config.params_json` but built its actual `LLMClient` from the model row's own params — the grounding call's configured `max_tokens`/`temperature` were silently ignored (see [known_issues.md](../../known_issues.md)).
+
+### 7.4 Params whitelist (S1 §2.4)
+
+`POST/PUT /api/models`, `PUT /api/grounding-config`, `PUT /api/translator-config` all validate `params` against a fixed key whitelist before the existing secret-key guard's complement: `max_tokens` (int 1..32768), `temperature` (0..2), `top_p` (0..1), `top_k` (int), `min_p` (number), `seed` (int), `enable_thinking` (bool), `reasoning` (`{effort: low|medium|high}` and/or `{max_tokens: int>=0}`). An unrecognized key → `422 {"detail": "unknown param: <key>"}` — previously an unknown key was silently saved then silently dropped downstream by `ModelParams`'s `extra="ignore"`. The pre-existing secret-key guard (`400`) still runs first, since a key can be both secret-like AND off-whitelist (e.g. `api_key`).
+
 ## Changelog ревизии 2 (после адверсариального ревью)
 
 Адверсариальный разбор: 5 оптик × критика + скептик-верификация (28 находок выжило). Применено:
@@ -329,3 +404,5 @@ interface GlossaryEntry {
 ## Статус и гейт
 
 Ревизия 4. Механические CRITICAL/HIGH из verify-spec закрыты. Решения владельца: **#4 — курируемый срез ~15–20 показательных абзацев + опц. второй документ для A/B** (принято); глоссарий — `wikidataUrl` обязателен, `wikidataId` опционален (принято). **#1** (формулировка «детерминированность»), **#2** (сила MQM-заявки), **#3** (семантика судейского `terminology` vs `pairAccuracy`), **#5** (деплой) — **оставлены открытыми** (research/paper/scope), НЕ блокируют сборку сайта. **Гейт пройден → автономная реализация** (`writing-plans` → ветка `feat/demo` → execute).
+
+**Ревизия 5 (2026-07-05, wave-5):** дельта в § 7 выше — `target_revision`/`translator_config` таблицы + `score.revision_id`, ревизии/best-выбор, translate-фича, экспорт xlsx/md, params-whitelist + `effectiveParams`, `apiKey`-presence-check, `error_reason` в precompute/translation, `/api/health` limits. Реализовано и покрыто тестами backend-веткой этой волны; doc-parity в [webapp.md](../../subsystems/webapp.md) и [known_issues.md](../../known_issues.md) обновлена в том же коммите.

@@ -190,20 +190,20 @@ def test_apply_edit_rejects_sanitized_advice_issue(client):
     with db._lock:
         # A freshly created document (via POST /api/documents) has no seeded
         # criterion/model rows; issue.criterion_id -> criterion.model_name are
-        # FK-constrained, so insert both first (matches seed.py's shape,
-        # deviation from the plan's snippet which assumed a seeded fixture
-        # with 'cultural' already present).
+        # FK-constrained, so insert both first (matches seed.py's shape).
+        # 'cultural' was dropped from the live criteria (wave-4 Б4 / 2026-07-05
+        # settings-fixes §2.2) — this uses a live criterion id instead.
         conn.execute(
             "INSERT OR IGNORE INTO model(name,base_url,api_key,params_json) "
             "VALUES('test-model','http://test','','{}')")
         conn.execute(
             "INSERT OR IGNORE INTO criterion(id,name,model_name,prompt,scale_min,scale_max,weight,color,enabled) "
-            "VALUES('cultural','Cultural Adaptation','test-model','p',1.0,10.0,0.15,'#fb923c',1)")
+            "VALUES('accuracy','Accuracy','test-model','p',1.0,10.0,0.30,'#4d8dff',1)")
         iid = conn.execute(
             "INSERT INTO issue(paragraph_id,criterion_id,target_fragment,source_fragment,explanation,"
             "suggestion,severity,mqm_category,status,kind,created_at) "
             "VALUES(?,?,?,?,?,?,?,?, 'open','live', datetime('now'))",
-            (pid, "cultural", issue["targetFragment"], issue["sourceFragment"],
+            (pid, "accuracy", issue["targetFragment"], issue["sourceFragment"],
              issue["explanation"], issue["suggestion"], issue["severity"], None)).lastrowid
         conn.commit()
 

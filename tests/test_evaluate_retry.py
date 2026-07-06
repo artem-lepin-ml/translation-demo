@@ -137,15 +137,15 @@ def test_partial_reeval_keeps_prior_success(eval_client, monkeypatch):
     must not drop cultural's score."""
     conn = db.connect()
     conn.execute("INSERT INTO criterion(id,name,model_name,weight,scale_min,scale_max,enabled) "
-                 "VALUES('cultural','Cultural','m',1.0,1,10,1)")
+                 "VALUES('style','Style','m',1.0,1,10,1)")
     conn.commit()
     monkeypatch.setattr(app_mod, "judge_one", lambda *a, **kw: _judge_result(7.0))
     pid = _make_para(eval_client)
     full = eval_client.post(f"/api/paragraphs/{pid}/evaluate").json()
-    assert {s["criterionId"] for s in full["scores"]} == {"accuracy", "cultural"}
+    assert {s["criterionId"] for s in full["scores"]} == {"accuracy", "style"}
 
     # re-run only accuracy
     again = eval_client.post(f"/api/paragraphs/{pid}/evaluate",
                              json={"criterionIds": ["accuracy"]}).json()
-    assert {s["criterionId"] for s in again["scores"]} == {"accuracy", "cultural"}
+    assert {s["criterionId"] for s in again["scores"]} == {"accuracy", "style"}
     assert again["failedCriterionIds"] == []

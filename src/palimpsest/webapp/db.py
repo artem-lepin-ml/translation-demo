@@ -40,7 +40,8 @@ CREATE TABLE model (
 CREATE TABLE score (
   id INTEGER PRIMARY KEY, paragraph_id INTEGER REFERENCES paragraph(id) ON DELETE CASCADE,
   criterion_id TEXT REFERENCES criterion(id), value REAL, summary TEXT,
-  aggregate REAL, criteria_key TEXT, kind TEXT DEFAULT 'live', created_at TEXT
+  aggregate REAL, criteria_key TEXT, kind TEXT DEFAULT 'live', created_at TEXT,
+  revision_id INTEGER REFERENCES target_revision(id)
 );
 CREATE TABLE issue (
   id INTEGER PRIMARY KEY, paragraph_id INTEGER REFERENCES paragraph(id) ON DELETE CASCADE,
@@ -62,6 +63,20 @@ CREATE TABLE glossary (
   UNIQUE (term, context)
 );
 CREATE TABLE grounding_config (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
+);
+CREATE TABLE target_revision (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  paragraph_id INTEGER REFERENCES paragraph(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  origin TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX idx_target_revision_para ON target_revision(paragraph_id, id);
+CREATE TABLE translator_config (
   id INTEGER PRIMARY KEY CHECK (id = 1),
   model_name TEXT REFERENCES model(name),
   prompt TEXT,
@@ -100,3 +115,20 @@ def init_db(*, reset: bool = False) -> sqlite3.Connection:
 
 def row_to_dict(row: sqlite3.Row | None) -> dict | None:
     return dict(row) if row is not None else None
+
+
+def latest_revision_id(conn: sqlite3.Connection, paragraph_id: int) -> int | None:
+    """Id of the most recent ``target_revision`` row for a paragraph, or None if
+    the paragraph has never had one written (e.g. pre-migration history)."""
+    row = conn.execute(
+        "SELECT id FROM target_revision WHERE paragraph_id=? ORDER BY id DESC LIMIT 1",
+        (paragraph_id,)).fetchone()
+    return row["id"] if row else None
+
+
+def write_revision(conn: sqlite3.Connection, paragraph_id: int, text: str, origin: str, created_at: str) -> int:
+    """Insert a new ``target_revision`` row and return its id. Caller owns the
+    transaction/commit and the "did the text actually change" decision."""
+    return conn.execute(
+        "INSERT INTO target_revision(paragraph_id,text,origin,created_at) VALUES(?,?,?,?)",
+        (paragraph_id, text, origin, created_at)).lastrowid
