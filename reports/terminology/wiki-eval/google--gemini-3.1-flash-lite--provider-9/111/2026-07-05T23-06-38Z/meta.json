@@ -1,0 +1,30 @@
+{
+ "article_workers": 10,
+ "calls": {
+  "extract": 2644,
+  "judge": 5113
+ },
+ "config": "111",
+ "finished_at": "2026-07-06T01:41:47.208413+00:00",
+ "llm_max_in_flight_observed": 16,
+ "llm_semaphore": 16,
+ "max_judge_calls": 30000,
+ "max_usd": 12.0,
+ "model": "google/gemini-3.1-flash-lite",
+ "n_articles": 100,
+ "n_paragraphs": 2644,
+ "n_pred_mentions": 20960,
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "provider-9",
+ "run_id": "2026-07-05T23-06-38Z",
+ "spend": {
+  "extract": 0.4119799999999785,
+  "judge": 0.1853359999999858,
+  "total": 0.5973159999999772
+ },
+ "started_at": "2026-07-05T23:06:38.068220+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 9309.140193,
+ "wikidata_workers": 2
+}
