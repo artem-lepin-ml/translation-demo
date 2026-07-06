@@ -3702,3 +3702,52 @@
 {"title": "Арахозия", "index": 226, "surface": "арабов", "lemma": "арабы", "qid": "Q35323", "span_len": 1, "resolved_by": "exact_label"}
 {"title": "Арахозия", "index": 231, "surface": "Рухадж", "lemma": "Рухадж", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
 {"title": "Арахозия", "index": 232, "surface": "Арахосия", "lemma": "Арахосия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 0, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 2, "surface": "Цзи-ся", "lemma": "Цзи-ся", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Академия Цзися", "index": 36, "surface": "Линьцзы", "lemma": "Линьцзы", "qid": "Q225872", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 39, "surface": "Ци", "lemma": "Ци", "qid": "Q1207032", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 57, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 72, "surface": "моистов", "lemma": "моисты", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Академия Цзися", "index": 74, "surface": "конфуцианства", "lemma": "конфуцианство", "qid": "Q9581", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 75, "surface": "даосизма", "lemma": "даосизм", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Академия Цзися", "index": 76, "surface": "легизма", "lemma": "легизм", "qid": "Q238344", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 77, "surface": "мин цзя", "lemma": "мин цзя", "qid": "Q61906", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 79, "surface": "инь ян цзя", "lemma": "инь ян цзя", "qid": "Q1195540", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 82, "surface": "Мэн-цзы", "lemma": "Мэн-цзы", "qid": "Q188903", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 84, "surface": "Сюнь-цзы", "lemma": "Сюнь-цзы", "qid": "Q216072", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 85, "surface": "Тянь Пянь", "lemma": "Тянь Пянь", "qid": "Q2431072", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 88, "surface": "Хуань Юань", "lemma": "Хуань Юань", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 90, "surface": "Шэнь Дао", "lemma": "Шэнь Дао", "qid": "Q947699", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 92, "surface": "Сун Цзянь", "lemma": "Сун Цзянь", "qid": "Q9184985", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 94, "surface": "Инь Вэнь", "lemma": "Инь Вэнь", "qid": "Q16031704", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 96, "surface": "Тянь Ба", "lemma": "Тянь Ба", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Академия Цзися", "index": 99, "surface": "Эр Шо", "lemma": "Эр Шо", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 101, "surface": "Цзоу Янь", "lemma": "Цзоу Янь", "qid": "Q227022", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 104, "surface": "Цзоу Ши", "lemma": "Цзоу Ши", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Академия Цзися", "index": 108, "surface": "Сыма Цяня", "lemma": "Сыма Цянь", "qid": "Q9372", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 110, "surface": "Ши цзи", "lemma": "Ши цзи", "qid": "Q272530", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 119, "surface": "Сюань-ван", "lemma": "Сюань-ван", "qid": "Q55247", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 128, "surface": "шан-дафу", "lemma": "шан-дафу", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 131, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 139, "surface": "Гуань-цзы", "lemma": "Гуань-цзы", "qid": "Q1154573", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 147, "surface": "Янь-цзы чуньцю", "lemma": "Янь-цзы чуньцю", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 158, "surface": "Сыма фа", "lemma": "Сыма фа", "qid": "Q1051357", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 175, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 195, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 201, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 204, "surface": "ванов", "lemma": "ван", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Академия Цзися", "index": 205, "surface": "Ци", "lemma": "Ци", "qid": "Q1207032", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 219, "surface": "сяньшэн", "lemma": "сяньшэн", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Академия Цзися", "index": 266, "surface": "Сюань-ван", "lemma": "Сюань-ван", "qid": "Q55247", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 285, "surface": "Цзоу Янь", "lemma": "Цзоу Янь", "qid": "Q227022", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 287, "surface": "Чуньюй Кунь", "lemma": "Чуньюй Кунь", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 289, "surface": "Тянь Пянь", "lemma": "Тянь Пянь", "qid": "Q2431072", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 291, "surface": "Цзе Юй", "lemma": "Цзе Юй", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Академия Цзися", "index": 293, "surface": "Цзе-цзы", "lemma": "Цзе-цзы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 294, "surface": "Шэнь Дао", "lemma": "Шэнь Дао", "qid": "Q947699", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 296, "surface": "Хуань Юань", "lemma": "Хуань Юань", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 302, "surface": "шандафу", "lemma": "шандафу", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 316, "surface": "циская школа ученых Цзися", "lemma": "циская школа ученых Цзися", "qid": null, "span_len": 4, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 341, "surface": "Цзыбо", "lemma": "Цзыбо", "qid": "Q198370", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 343, "surface": "Шаньдун", "lemma": "Шаньдун", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Академия Цзися", "index": 418, "surface": "Цзи-ся", "lemma": "Цзи-ся", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
