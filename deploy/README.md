@@ -11,8 +11,9 @@
 3. Back up `demo.db` (`demo.db.bak-<unix-ts>`) before touching anything.
 4. `docker build` the image and restart **only** the `gse-demo` container — `gse-viewer` and any other container on `grader-net` are left alone. The container is started with `--env-file "$ENV_FILE"` (default `/opt/gse-demo/env`, root-owned mode 600 on the live host), so it keeps `DEMO_ADMIN_TOKEN` and anything else the owner keeps in that file across a rebuild; an explicit `-e OPENROUTER_API_KEY=...` is added on top when that var is set, overriding the file's copy per docker semantics.
 5. Run the additive schema migration (`python -m palimpsest.webapp.migrate`) against the live DB, via a one-shot container, before the new server starts serving requests.
-6. Disable the retired `cultural` (Cultural Adaptation) criterion on prod data — `UPDATE criterion SET enabled=0`, never `DELETE` (score/issue history referencing it is irreproducible — see the repo-root invariants).
-7. Force `temperature: 0` on the 5 demo OpenRouter model rows via the live API (judge determinism for the recorded demo), preserving every other param and the existing API key.
+6. Smoke-test the frontend's boot-critical GET endpoints inside the new container — `/api/documents`, `/api/criteria`, `/api/models`, `/api/grounding-config`, `/api/translator-config` — each must answer `200`; any other status names the failing endpoint and aborts the deploy (`exit 1`) before it reaches prod (this is the gate that would have caught the `grounding_config` migration gap — see [docs/known_issues.md](../docs/known_issues.md)).
+7. Disable the retired `cultural` (Cultural Adaptation) criterion on prod data — `UPDATE criterion SET enabled=0`, never `DELETE` (score/issue history referencing it is irreproducible — see the repo-root invariants).
+8. Force `temperature: 0` on the 5 demo OpenRouter model rows via the live API (judge determinism for the recorded demo), preserving every other param and the existing API key.
 
 Every step is idempotent — re-running the script after a partial failure is safe (git pull is a no-op if already up to date, the migration is additive-only, the criterion UPDATE is a no-op if already disabled, and the temperature PUT is a no-op if already 0).
 

@@ -201,7 +201,7 @@ export default function SettingsTab({
 
       {/* ─── Translator (S4 §3.4) — above Evaluators; single config, no add/remove ── */}
       <div className="va-settings-section-title">Translator</div>
-      {translatorConfig && (
+      {translatorConfig ? (
         <TranslatorCard
           config={translatorConfig}
           models={models}
@@ -216,6 +216,12 @@ export default function SettingsTab({
           }}
           error={translatorError}
         />
+      ) : (
+        // Config failed to load at boot (2026-07-06 prod incident) — the app
+        // still renders the document; only this card degrades.
+        <div className="va-inspector-warning" data-testid="translator-config-unavailable">
+          Translator config unavailable — reload the page to retry.
+        </div>
       )}
 
       {/* ─── Criteria (Evaluators) — full-width rows, Model Registry pattern ── */}
@@ -392,7 +398,7 @@ export default function SettingsTab({
 
       {/* ─── Grounding ───────────────────────────────────────────────────────── */}
       <div className="va-settings-section-title" style={{ marginTop: 32 }}>Grounding</div>
-      {groundingConfig && (
+      {groundingConfig ? (
         <GroundingEditor
           config={groundingConfig}
           models={models}
@@ -407,6 +413,12 @@ export default function SettingsTab({
           }}
           error={groundingError}
         />
+      ) : (
+        // Config failed to load at boot (2026-07-06 prod incident) — the app
+        // still renders the document; only this card degrades.
+        <div className="va-inspector-warning" data-testid="grounding-config-unavailable">
+          Grounding config unavailable — reload the page to retry.
+        </div>
       )}
 
       {editing && (
