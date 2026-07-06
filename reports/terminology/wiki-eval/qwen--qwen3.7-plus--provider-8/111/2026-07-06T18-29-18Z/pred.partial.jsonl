@@ -230,3 +230,70 @@
 {"title": "XXX династия", "index": 512, "surface": "Олимпиады", "lemma": "Олимпиада", "qid": "Q223134", "span_len": 1, "resolved_by": "llm_disambiguation"}
 {"title": "XXX династия", "index": 519, "surface": "Нектанеба", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
 {"title": "XXX династия", "index": 534, "surface": "Александру", "lemma": "Александр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 0, "surface": "Абдмилькат", "lemma": "Абдмилькат", "qid": "Q308132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 1, "surface": "Абдимилькат", "lemma": "Абдимилькат", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 2, "surface": "Абди-милкутти", "lemma": "Абди-милкутти", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 3, "surface": "Абди-милки", "lemma": "Абди-милки", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 16, "surface": "Сидона", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 225, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 233, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 240, "surface": "ассирийских анналов", "lemma": "ассирийские анналы", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 263, "surface": "Кар-Асархаддон", "lemma": "Кар-Асархаддон", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 265, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 279, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 281, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 303, "surface": "Абдимилькат", "lemma": "Абдимилькат", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 316, "surface": "Ниневию", "lemma": "Ниневия", "qid": "Q5680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 320, "surface": "тишриту", "lemma": "тишриту", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 324, "surface": "тирский", "lemma": "тирский", "qid": "Q18994100", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 331, "surface": "Сандуарри", "lemma": "Сандуарри", "qid": "Q48963483", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 366, "surface": "финикийцы", "lemma": "финикийцы", "qid": "Q1048468", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 368, "surface": "килицийцы", "lemma": "килицийцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 370, "surface": "сидонцы", "lemma": "сидонцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 378, "surface": "Вавилонию", "lemma": "Вавилония", "qid": "Q47690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 384, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 389, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 390, "surface": "Баалу I", "lemma": "Баал I", "qid": "Q112573", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 404, "surface": "Баала I", "lemma": "Баал I", "qid": "Q112573", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 411, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 413, "surface": "Марубба", "lemma": "Марубба", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 415, "surface": "Сарепта", "lemma": "Сарепта", "qid": "Q616837", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 418, "surface": "Сидона", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 422, "surface": "Финикии", "lemma": "Финикия", "qid": "Q41642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 423, "surface": "Леванта", "lemma": "Левант", "qid": "Q81483", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 425, "surface": "Кипра", "lemma": "Кипр", "qid": "Q644636", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 427, "surface": "Асархаддону", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 437, "surface": "Иудеи", "lemma": "Иудея", "qid": "Q104028", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 438, "surface": "Манассия", "lemma": "Манассия", "qid": "Q156328", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 442, "surface": "Акестор", "lemma": "Акестор", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 444, "surface": "Идалиона", "lemma": "Идалион", "qid": "Q1656624", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 445, "surface": "Пилагор", "lemma": "Пилагор", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 447, "surface": "Китр", "lemma": "Китр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 448, "surface": "Дамис", "lemma": "Дамис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 450, "surface": "Китиона", "lemma": "Китион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 451, "surface": "Этеандр", "lemma": "Этеандр", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 453, "surface": "Пафоса", "lemma": "Пафос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 455, "surface": "Адмит", "lemma": "Адмит", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 457, "surface": "Тамассоса", "lemma": "Тамассос", "qid": "Q1720688", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 461, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 480, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 486, "surface": "ассирийцами", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 487, "surface": "финикийских", "lemma": "финикийцы", "qid": "Q1048468", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 493, "surface": "Абдмилькат", "lemma": "Абдмилькат", "qid": "Q308132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 495, "surface": "Баал I", "lemma": "Баал I", "qid": "Q112573", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 501, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 515, "surface": "нубийцев", "lemma": "нубийцы", "qid": "Q15140604", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 520, "surface": "фараона", "lemma": "фараон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 521, "surface": "Тахарки", "lemma": "Тахарка", "qid": "Q315714", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 522, "surface": "Ушанхуру", "lemma": "Ушанхуру", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 527, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 529, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 539, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 542, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 555, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 562, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 574, "surface": "Нововавилонского царства", "lemma": "Нововавилонское царство", "qid": "Q624887", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 593, "surface": "Навуходоносора II", "lemma": "Навуходоносор II", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Абдмилькат", "index": 601, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 603, "surface": "Адмильката", "lemma": "Адмилькат", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 605, "surface": "Эшмуназор I", "lemma": "Эшмуназор I", "qid": "Q12104263", "span_len": 2, "resolved_by": "exact_label"}
