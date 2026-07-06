@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { selectPopoverIssues } from './VariantA';
-import type { Issue } from '../api-client';
+import { selectPopoverIssues, precomputeFailedMessage } from './VariantA';
+import type { Issue, PrecomputeStatus } from '../api-client';
 
 function iss(id: string, over: Partial<Issue> = {}): Issue {
   return {
@@ -47,5 +47,33 @@ describe('selectPopoverIssues (BUG-1: popover shows open issues only)', () => {
   it('still respects the activeCriteria filter alongside the open-status filter', () => {
     const paraIssues = [iss('1', { criterionId: 'fluency' })];
     expect(selectPopoverIssues(paraIssues, ['1'], allCriteria)).toEqual([]);
+  });
+});
+
+function precompute(over: Partial<PrecomputeStatus>): PrecomputeStatus {
+  return { status: 'done', done: 12, planned: 12, succeeded: 0, ...over };
+}
+
+describe('precomputeFailedMessage (S1 §2.6 — honest failure-reason banners)', () => {
+  it('names a missing API key', () => {
+    expect(precomputeFailedMessage(precompute({ errorReason: 'no_api_key' })))
+      .toBe('Precompute skipped: no API key configured');
+  });
+
+  it('names an exhausted budget', () => {
+    expect(precomputeFailedMessage(precompute({ errorReason: 'budget_exhausted' })))
+      .toBe('Precompute skipped: budget cap reached');
+  });
+
+  it('falls back to the generic message for an unrecognized/absent reason', () => {
+    expect(precomputeFailedMessage(precompute({ errorReason: 'all_failed' })))
+      .toBe('Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph');
+    expect(precomputeFailedMessage(precompute({ errorReason: undefined })))
+      .toBe('Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph');
+  });
+
+  it('falls back to the generic message for a null/undefined precompute status', () => {
+    expect(precomputeFailedMessage(null)).toBe('Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph');
+    expect(precomputeFailedMessage(undefined)).toBe('Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph');
   });
 });

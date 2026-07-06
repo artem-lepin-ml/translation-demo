@@ -1763,3 +1763,785 @@ textarea.va-prompt-textarea {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ═══ wave-5: glossary redesign (va-gl-*) ═══ */
+/* Spec: docs/superpowers/specs/2026-07-05-glossary-redesign-impl.md §3.
+   Ported 1:1 from the design canon
+   docs/superpowers/specs/2026-07-03-glossary-redesign-mockup.html — values
+   (colors, radii, paddings, font sizes) are copied verbatim, selectors are
+   renamed under the va-gl- namespace. The mockup's `.dot.g/.y/.r` verdict
+   dots are NOT duplicated here: they are pixel-identical to the existing
+   `.va-verdict-dot` (green|yellow|red) already in this file, reused as-is. */
+
+.va-gl-summary {
+  font-size: 12.5px;
+  color: var(--va-text-muted);
+  margin-bottom: 18px;
+}
+
+table.va-gl-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.va-gl-table th {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--va-text-muted);
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--va-border2);
+  font-weight: 600;
+}
+
+.va-gl-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--va-border);
+  vertical-align: middle;
+}
+
+.va-gl-table tr.va-gl-row {
+  cursor: pointer;
+}
+
+.va-gl-table tr.va-gl-row:hover td {
+  background: var(--va-surface);
+}
+
+.va-gl-dash {
+  color: var(--va-text-dim);
+}
+
+.va-gl-src {
+  font-style: italic;
+  color: var(--va-text-muted);
+}
+
+.va-gl-tgt {
+  font-weight: 600;
+}
+
+.va-gl-cat {
+  display: inline-block;
+  font-size: 10.5px;
+  color: var(--va-text-muted);
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border);
+  border-radius: 999px;
+  padding: 0 8px;
+  margin-left: 8px;
+  vertical-align: 1px;
+}
+
+a.va-gl-wd {
+  color: var(--va-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.va-gl-qid {
+  font-family: var(--va-font-mono);
+  font-size: 11.5px;
+  color: var(--va-text-muted);
+  margin-left: 6px;
+}
+
+.va-gl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
+.va-gl-badge.det {
+  background: rgba(61, 220, 132, 0.12);
+  color: var(--va-green);
+}
+
+.va-gl-badge.llm {
+  background: rgba(224, 175, 104, 0.12);
+  color: var(--va-yellow);
+}
+
+.va-gl-badge.rej {
+  background: rgba(247, 118, 142, 0.12);
+  color: var(--va-red);
+}
+
+.va-gl-badge.none {
+  background: rgba(65, 72, 104, 0.25);
+  color: var(--va-text-muted);
+}
+
+.va-gl-mentions {
+  font-family: var(--va-font-mono);
+  font-size: 12px;
+  color: var(--va-text-muted);
+}
+
+.va-gl-chev {
+  display: inline-block;
+  color: var(--va-text-dim);
+  font-size: 11px;
+  transition: transform 0.15s;
+}
+
+tr.va-gl-open .va-gl-chev {
+  transform: rotate(90deg);
+}
+
+/* ── expanded detail panel ── */
+tr.va-gl-detail > td {
+  background: var(--va-surface);
+  padding: 0;
+  border-bottom: 1px solid var(--va-border2);
+}
+
+.va-gl-panel {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.va-gl-blk h4 {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--va-text-muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.va-gl-ctx {
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius);
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  font-size: 13.5px;
+}
+
+.va-gl-ctx .va-gl-lang {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--va-text-dim);
+  margin-right: 8px;
+  font-family: var(--va-font-mono);
+}
+
+.va-gl-panel mark {
+  background: rgba(122, 162, 247, 0.25);
+  color: var(--va-text);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
+.va-gl-panel mark.t {
+  background: rgba(187, 154, 247, 0.25);
+}
+
+/* path stepper */
+.va-gl-path {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  overflow-x: auto;
+}
+
+.va-gl-step {
+  flex: 1;
+  min-width: 170px;
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border);
+  padding: 10px 12px;
+  position: relative;
+}
+
+.va-gl-step:first-child {
+  border-radius: var(--va-radius) 0 0 var(--va-radius);
+}
+
+.va-gl-step:last-child {
+  border-radius: 0 var(--va-radius) var(--va-radius) 0;
+}
+
+.va-gl-step + .va-gl-step {
+  border-left: none;
+}
+
+.va-gl-step .va-gl-step-n {
+  font-size: 10px;
+  font-family: var(--va-font-mono);
+  color: var(--va-text-dim);
+}
+
+.va-gl-step .va-gl-step-t {
+  font-size: 12px;
+  font-weight: 700;
+  margin: 2px 0 6px;
+}
+
+.va-gl-step .va-gl-step-b {
+  font-size: 12px;
+  color: var(--va-text-muted);
+}
+
+.va-gl-step .va-gl-step-b code {
+  font-family: var(--va-font-mono);
+  font-size: 11px;
+  color: var(--va-text);
+  background: var(--va-bg);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+.va-gl-step.done {
+  border-top: 2px solid var(--va-green);
+}
+
+.va-gl-step.warn {
+  border-top: 2px solid var(--va-yellow);
+}
+
+.va-gl-step.fail {
+  border-top: 2px solid var(--va-red);
+}
+
+.va-gl-step.skip {
+  border-top: 2px solid var(--va-border2);
+  opacity: 0.55;
+}
+
+.va-gl-hit {
+  color: var(--va-green);
+  font-family: var(--va-font-mono);
+  font-size: 11px;
+}
+
+.va-gl-miss {
+  color: var(--va-red);
+  font-family: var(--va-font-mono);
+  font-size: 11px;
+}
+
+/* candidates */
+table.va-gl-cand {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12.5px;
+}
+
+.va-gl-cand th {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--va-text-dim);
+  text-align: left;
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--va-border);
+}
+
+.va-gl-cand td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--va-border);
+  color: var(--va-text-muted);
+}
+
+.va-gl-cand tr.va-gl-chosen td {
+  background: rgba(61, 220, 132, 0.06);
+}
+
+.va-gl-cand tr.va-gl-chosen td:first-child {
+  border-left: 2px solid var(--va-green);
+}
+
+.va-gl-via {
+  display: inline-block;
+  font-size: 10.5px;
+  font-family: var(--va-font-mono);
+  border-radius: 3px;
+  padding: 0 5px;
+  background: rgba(122, 162, 247, 0.15);
+  color: var(--va-accent);
+}
+
+.va-gl-via.al {
+  background: rgba(187, 154, 247, 0.15);
+  color: var(--va-accent2);
+}
+
+.va-gl-via.no {
+  background: rgba(65, 72, 104, 0.25);
+  color: var(--va-text-dim);
+}
+
+.va-gl-pick {
+  font-weight: 700;
+  color: var(--va-green);
+}
+
+.va-gl-rejx {
+  color: var(--va-red);
+  font-weight: 700;
+}
+
+/* judge card */
+.va-gl-judge {
+  background: rgba(224, 175, 104, 0.06);
+  border: 1px solid rgba(224, 175, 104, 0.35);
+  border-radius: var(--va-radius);
+  padding: 10px 14px;
+  font-size: 12.5px;
+}
+
+.va-gl-judge .va-gl-judge-m {
+  font-family: var(--va-font-mono);
+  font-size: 11px;
+  color: var(--va-yellow);
+}
+
+.va-gl-judge .va-gl-judge-r {
+  color: var(--va-text-muted);
+  margin-top: 4px;
+}
+
+.va-gl-occ {
+  max-height: 120px;
+  overflow-y: auto;
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius);
+  background: var(--va-surface2);
+}
+
+.va-gl-occ div {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--va-border);
+  font-size: 12.5px;
+  color: var(--va-text-muted);
+}
+
+.va-gl-occ div:last-child {
+  border-bottom: none;
+}
+
+.va-gl-occ .va-gl-occ-p {
+  font-family: var(--va-font-mono);
+  font-size: 11px;
+  color: var(--va-accent);
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.va-gl-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .va-gl-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+.va-gl-legend {
+  margin-top: 22px;
+  font-size: 12px;
+  color: var(--va-text-dim);
+}
+
+/* ═══ wave-5: settings-upload-inspector ═══ */
+
+/* ─── Prompt Edit/Preview toggle (S1 §2.3, shared by EvaluatorEditor + TranslatorCard) ─── */
+
+.va-prompt-toggle {
+  display: inline-flex;
+  gap: 2px;
+  border: 1px solid var(--va-border2);
+  border-radius: 20px;
+  padding: 2px;
+  margin-left: 8px;
+  vertical-align: 1px;
+}
+
+.va-prompt-toggle button {
+  border: none;
+  background: transparent;
+  color: var(--va-text-muted);
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.va-prompt-toggle button.active {
+  background: var(--va-accent);
+  color: #131421;
+  font-weight: 600;
+}
+
+.va-prompt-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.va-char-count {
+  font-size: 11px;
+  color: var(--va-text-dim);
+  font-family: var(--va-font-mono);
+  margin-left: auto;
+}
+
+.va-unsaved {
+  font-size: 11px;
+  color: var(--va-yellow);
+}
+
+/* ─── Inline model params text (S1 §2.4 — replaces the raw "N params" badge) ─── */
+
+.va-inline-params {
+  font-family: var(--va-font-mono);
+  font-size: 11.5px;
+  color: var(--va-text-muted);
+}
+
+.va-inline-params b {
+  color: var(--va-text);
+}
+
+.va-effective-line {
+  font-family: var(--va-font-mono);
+  font-size: 11.5px;
+  color: var(--va-text-dim);
+  margin-top: 6px;
+}
+
+.va-effective-line b {
+  color: var(--va-text-muted);
+}
+
+/* ─── Translator card (S4 §3.4) ─── */
+
+.va-translator-card {
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.va-translator-params-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.va-applies-note {
+  font-size: 11px;
+  color: var(--va-text-dim);
+}
+
+/* ─── Upload modal polish (S3 §2.1-2.2, S4 §3.2) ─── */
+
+/* Redefines the earlier dashed/surface2 button to the flat va-btn-secondary
+ * look mandated by S3 §2.1 (append wins by source order at equal specificity). */
+.va-upload-file-btn {
+  background: transparent;
+  border: 1px solid var(--va-border2);
+  color: var(--va-text-muted);
+  font-weight: 400;
+}
+
+.va-upload-file-btn:hover {
+  color: var(--va-text);
+  border-color: var(--va-accent);
+  background: transparent;
+}
+
+.va-upload-file-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.va-upload-panel.va-upload-drop-active {
+  border: 1px dashed var(--va-accent);
+  background: rgba(122, 162, 247, 0.06);
+}
+
+.va-drop-flag {
+  display: inline-block;
+  font-size: 10px;
+  font-family: var(--va-font-mono);
+  color: var(--va-accent);
+  background: rgba(122, 162, 247, 0.12);
+  border-radius: 10px;
+  padding: 1px 8px;
+  margin-left: 8px;
+}
+
+.va-ai-translate-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 16px;
+  background: var(--va-bg);
+  min-height: 150px;
+  text-align: center;
+}
+
+.va-ai-translate-card .glyph {
+  font-size: 20px;
+  color: var(--va-accent2);
+}
+
+.va-ai-translate-card .msg {
+  font-size: 12.5px;
+  color: var(--va-text-muted);
+  line-height: 1.6;
+}
+
+.va-ai-translate-card .msg b {
+  color: var(--va-text);
+  font-family: var(--va-font-mono);
+  font-weight: 600;
+}
+
+.va-link-btn {
+  background: none;
+  border: none;
+  color: var(--va-accent);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+}
+
+.va-link-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.va-ai-translate-cta-row {
+  border-top: 1px solid var(--va-border);
+}
+
+.va-ai-translate-cta {
+  color: var(--va-accent);
+}
+
+/* ─── Document top-bar translation progress (S4 §3.3) ─── */
+
+.va-translate-progress-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.va-translating-badge {
+  font-size: 12px;
+  color: var(--va-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.va-progress-track {
+  width: 140px;
+  height: 4px;
+  background: var(--va-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.va-progress-fill {
+  height: 100%;
+  background: var(--va-accent);
+  border-radius: 2px;
+}
+
+.va-run-precompute-hint {
+  font-size: 11.5px;
+  color: var(--va-text-muted);
+}
+
+/* ─── Export button + popover (S6 §5) ─── */
+
+.va-export-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.va-export-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--va-surface2);
+  border: 1px solid var(--va-border2);
+  border-radius: var(--va-radius);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  min-width: 180px;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.va-export-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  color: var(--va-text);
+  cursor: pointer;
+}
+
+.va-export-menu-item:hover {
+  background: var(--va-surface);
+}
+
+.va-export-menu-item:not(:last-child) {
+  border-bottom: 1px solid var(--va-border);
+}
+
+/* ─── Best-marker on the paragraph score chip (S5 §3.1) ─── */
+
+.va-best-marker {
+  color: var(--va-yellow);
+  cursor: pointer;
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+/* ─── Revision history (S5 §3.2-3.3) ─── */
+
+.va-history-block {
+  border-top: 1px solid var(--va-border);
+  padding: 14px;
+}
+
+.va-history-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--va-text-muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.va-history-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--va-border);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.va-history-row:last-child {
+  border-bottom: none;
+}
+
+.va-history-row-best {
+  background: rgba(224, 175, 104, 0.06);
+}
+
+.va-history-origin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: var(--va-surface2);
+  color: var(--va-text-muted);
+  flex-shrink: 0;
+}
+
+.va-history-agg {
+  font-family: var(--va-font-mono);
+  font-weight: 700;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.va-history-time {
+  color: var(--va-text-dim);
+  flex: 1;
+}
+
+.va-history-tag {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--va-accent);
+  border: 1px solid var(--va-accent);
+  border-radius: 8px;
+  padding: 0 6px;
+}
+
+.va-history-best {
+  color: var(--va-yellow);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.va-history-restore {
+  padding: 3px 9px;
+  border-radius: var(--va-radius-sm);
+  background: transparent;
+  border: 1px solid var(--va-border2);
+  color: var(--va-text-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.va-history-restore:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.va-history-preview {
+  margin-top: 8px;
+  background: var(--va-bg);
+  border: 1px solid var(--va-border);
+  border-radius: var(--va-radius-sm);
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--va-text-muted);
+  max-height: 96px;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+/* ─── Cached mini-badge on a scored criterion (S5 §3.4) ─── */
+
+.va-cached-mini {
+  font-size: 9.5px;
+  font-family: var(--va-font-mono);
+  color: var(--va-text-dim);
+  border: 1px solid var(--va-border2);
+  border-radius: 8px;
+  padding: 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

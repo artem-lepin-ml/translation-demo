@@ -1,9 +1,21 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, within, waitFor } from '@testing-library/react';
 import InspectorPanel from './InspectorPanel';
-import type { Paragraph } from '../api-client';
+import * as apiClient from '../api-client';
+import type { Paragraph, Revision } from '../api-client';
 
-afterEach(cleanup);
+// HistoryBlock fetches GET /paragraphs/{id}/revisions on mount (component-owned
+// fetch, same pattern as SettingsTab's getBudget) — default to empty so tests
+// that don't care about revision history don't hit real fetch() in jsdom.
+vi.mock('../api-client', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../api-client')>();
+  return { ...actual, getRevisions: vi.fn().mockResolvedValue({ revisions: [] }) };
+});
+
+afterEach(() => {
+  cleanup();
+  vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions: [] });
+});
 
 describe('InspectorPanel error banner (H3)', () => {
   it('renders the evaluate failure', () => {
@@ -31,6 +43,7 @@ describe('InspectorPanel error banner (H3)', () => {
         onEvaluate={vi.fn()}
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
+        onRestoreRevision={vi.fn()}
       />,
     );
     expect(screen.getByText(/Evaluate failed/)).toBeTruthy();
@@ -72,6 +85,7 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         onEvaluate={onEvaluate}
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
+        onRestoreRevision={vi.fn()}
       />,
     );
     fireEvent.click(screen.getByTestId('evaluate-para'));
@@ -100,6 +114,7 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         onEvaluate={vi.fn()}
         onRetryFailed={onRetryFailed}
         visibleIssues={[]}
+        onRestoreRevision={vi.fn()}
       />,
     );
     expect(screen.getByText(/Failed: style, cultural/)).toBeTruthy();
@@ -125,6 +140,7 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         onEvaluate={vi.fn()}
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
+        onRestoreRevision={vi.fn()}
       />,
     );
     expect((screen.getByTestId('evaluate-para') as HTMLButtonElement).disabled).toBe(true);
@@ -152,6 +168,7 @@ describe('InspectorPanel stale hint and accept-all summary (explicit re-eval)', 
     onEvaluate: vi.fn(),
     onRetryFailed: vi.fn(),
     visibleIssues: [],
+    onRestoreRevision: vi.fn(),
   };
 
   it('shows the stale hint when evalState.stale', () => {
@@ -199,6 +216,7 @@ describe('InspectorPanel resolved/passive-note visibility (Б2)', () => {
     activeCriteria: new Set<string>(), criteria: [], isCollapsed: false,
     onToggleCollapse: vi.fn(), acceptAllSummary: null, onAccept: vi.fn(),
     onDismiss: vi.fn(), onAcceptAll: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
+    onRestoreRevision: vi.fn(),
     evalState: { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false },
   };
   const mk = (id: string, status: string, expl: string, suggestion = 's') => ({
@@ -296,6 +314,7 @@ describe('InspectorPanel criteria-key mismatch note (Б3.6)', () => {
     tab: 'scores' as const, onTabChange: vi.fn(), activeCriteria: new Set<string>(), criteria,
     isCollapsed: false, onToggleCollapse: vi.fn(), acceptAllSummary: null, onAccept: vi.fn(),
     onDismiss: vi.fn(), onAcceptAll: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
+    onRestoreRevision: vi.fn(),
     evalState, visibleIssues: [],
   };
   const mkParagraph = (latestKey: string, prevKey: string) => ({
@@ -310,8 +329,114 @@ describe('InspectorPanel criteria-key mismatch note (Б3.6)', () => {
     expect(screen.getByText('different criteria set')).toBeTruthy();
   });
 
+  it('shows a "cached" mini-badge on every scored criterion when the response was a cache fallback', () => {
+    render(
+      <InspectorPanel
+        {...base}
+        paragraph={mkParagraph('key-a', 'key-a')}
+        evalState={{ ...evalState, cached: true }}
+      />,
+    );
+    expect(screen.getByTitle('Offline fallback estimate, not a live judgment')).toBeTruthy();
+  });
+
+  it('does not show the "cached" mini-badge on a live (non-cache) response', () => {
+    render(<InspectorPanel {...base} paragraph={mkParagraph('key-a', 'key-a')} />);
+    expect(screen.queryByTitle('Offline fallback estimate, not a live judgment')).toBeNull();
+  });
+
   it('hides the "different criteria set" note when scores and scoresPrev criteriaKey match', () => {
     render(<InspectorPanel {...base} paragraph={mkParagraph('key-a', 'key-a')} />);
     expect(screen.queryByText('different criteria set')).toBeNull();
+  });
+});
+
+describe('InspectorPanel Revision history (S5 §3.2-3.3)', () => {
+  const criteria = [
+    { id: 'accuracy', name: 'Accuracy', modelName: 'm', prompt: '', scaleMin: 1, scaleMax: 10,
+      weight: 1, color: '#888', enabled: true },
+  ] as never;
+  const evalState = { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false };
+  const base = {
+    tab: 'scores' as const, onTabChange: vi.fn(), activeCriteria: new Set<string>(), criteria,
+    isCollapsed: false, onToggleCollapse: vi.fn(), acceptAllSummary: null, onAccept: vi.fn(),
+    onDismiss: vi.fn(), onAcceptAll: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
+    evalState, visibleIssues: [],
+  };
+  const paragraph = {
+    id: 1, idx: 0, source: 's', target: 't', issues: [],
+    scores: [{ criterionId: 'accuracy', value: 8, summary: '' }],
+    scoresPrev: null, scoresBaseline: null, aggregate: 8, aggregateBaseline: null, aggregatePrev: null,
+  } as unknown as Paragraph;
+
+  const revisions: Revision[] = [
+    { id: 3, origin: 'edit', createdAt: new Date().toISOString(), text: 'current text', aggregate: 7.9, isBest: false, isCurrent: true },
+    { id: 2, origin: 'translate', createdAt: new Date(Date.now() - 18 * 60000).toISOString(), text: 'best text', aggregate: 8.4, isBest: true, isCurrent: false },
+    { id: 1, origin: 'seed', createdAt: new Date(Date.now() - 2 * 3600000).toISOString(), text: 'seed text', aggregate: 6.5, isBest: false, isCurrent: false },
+  ];
+
+  it('renders revision rows with best marker, current tag, and a Best-N header summary', async () => {
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions });
+    render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} />);
+
+    const block = await screen.findByTestId('revision-history');
+    expect(within(block).getByText(/Best 8.4/, { selector: '.va-history-best' })).toBeTruthy();
+    expect(within(block).getByText('current')).toBeTruthy();
+    expect(within(block).getAllByText('⭰ Best').length).toBe(1); // the row badge (header uses "Best 8.4")
+    // Current revision cannot restore itself
+    expect((screen.getByTestId('history-restore-3') as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByTestId('history-restore-2') as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('shows "not scored" for a revision with no aggregate', async () => {
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({
+      revisions: [{ id: 1, origin: 'apply_edit', createdAt: new Date().toISOString(), text: 't', aggregate: null, isBest: false, isCurrent: true }],
+    });
+    render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} />);
+    const row = await screen.findByTestId('history-row-1');
+    expect(within(row).getByText(/not scored/)).toBeTruthy();
+  });
+
+  it('clicking Restore calls onRestoreRevision with the revision id', async () => {
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions });
+    const onRestoreRevision = vi.fn();
+    render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={onRestoreRevision} />);
+    await screen.findByTestId('revision-history');
+
+    fireEvent.click(screen.getByTestId('history-restore-2'));
+    expect(onRestoreRevision).toHaveBeenCalledWith(2);
+  });
+
+  it('clicking a row toggles a read-only text preview', async () => {
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions });
+    render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} />);
+    await screen.findByTestId('revision-history');
+
+    expect(screen.queryByTestId('history-preview')).toBeNull();
+    fireEvent.click(screen.getByTestId('history-row-2'));
+    expect(screen.getByTestId('history-preview').textContent).toBe('best text');
+    fireEvent.click(screen.getByTestId('history-row-2'));
+    expect(screen.queryByTestId('history-preview')).toBeNull();
+  });
+
+  it('caps the row list at 8 with a "+N more" expander', async () => {
+    const many: Revision[] = Array.from({ length: 11 }, (_, i) => ({
+      id: i + 1, origin: 'edit', createdAt: new Date().toISOString(), text: `t${i}`,
+      aggregate: 7, isBest: false, isCurrent: i === 0,
+    }));
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions: many });
+    render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} />);
+
+    await screen.findByTestId('revision-history');
+    expect(screen.getAllByTestId(/^history-row-/).length).toBe(8);
+    fireEvent.click(screen.getByTestId('history-show-more'));
+    await waitFor(() => expect(screen.getAllByTestId(/^history-row-/).length).toBe(11));
+  });
+
+  it('renders nothing when the paragraph has no revisions', async () => {
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions: [] });
+    render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} />);
+    await waitFor(() => expect(apiClient.getRevisions).toHaveBeenCalled());
+    expect(screen.queryByTestId('revision-history')).toBeNull();
   });
 });

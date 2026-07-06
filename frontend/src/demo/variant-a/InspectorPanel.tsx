@@ -10,7 +10,9 @@
  * Scores: per-criterion bars + aggregate; prev/baseline deltas
  */
 
-import type { Issue, Score, Criterion, Paragraph } from '../api-client';
+import { useEffect, useState } from 'react';
+import type { Issue, Score, Criterion, Paragraph, Revision, RevisionOrigin } from '../api-client';
+import { getRevisions } from '../api-client';
 import type { ParaEvalState } from '../store';
 
 interface Props {
@@ -34,6 +36,8 @@ interface Props {
   onRetryFailed: (criterionIds: string[]) => void;
   /** Issues already filtered by active criteria; status filtering (open-only) happens here */
   visibleIssues: Issue[];
+  /** Restore the selected paragraph's text to a past revision (S5 §3.3). */
+  onRestoreRevision: (revisionId: number) => void;
 }
 
 export default function InspectorPanel({
@@ -52,6 +56,7 @@ export default function InspectorPanel({
   onEvaluate,
   onRetryFailed,
   visibleIssues,
+  onRestoreRevision,
 }: Props) {
   const paraLabel = paragraph ? `§${paragraph.idx + 1}` : '§—';
   const openIssues = visibleIssues.filter((i) => i.status === 'open');
@@ -177,16 +182,20 @@ export default function InspectorPanel({
               />
             )}
             {tab === 'scores' && paragraph && (
-              <ScoresView
-                scores={paragraph.scores}
-                scoresPrev={paragraph.scoresPrev}
-                scoresBaseline={paragraph.scoresBaseline}
-                aggregate={paragraph.aggregate}
-                aggregateBaseline={paragraph.aggregateBaseline}
-                aggregatePrev={paragraph.aggregatePrev ?? null}
-                criteria={criteria}
-                isLoading={isLoading}
-              />
+              <>
+                <ScoresView
+                  scores={paragraph.scores}
+                  scoresPrev={paragraph.scoresPrev}
+                  scoresBaseline={paragraph.scoresBaseline}
+                  aggregate={paragraph.aggregate}
+                  aggregateBaseline={paragraph.aggregateBaseline}
+                  aggregatePrev={paragraph.aggregatePrev ?? null}
+                  criteria={criteria}
+                  isLoading={isLoading}
+                  cached={evalState.cached}
+                />
+                <HistoryBlock paragraph={paragraph} onRestore={onRestoreRevision} />
+              </>
             )}
           </div>
         </>
@@ -286,6 +295,7 @@ function ScoresView({
   aggregatePrev,
   criteria,
   isLoading,
+  cached,
 }: {
   scores: Score[];
   scoresPrev: Score[] | null;
@@ -295,6 +305,10 @@ function ScoresView({
   aggregatePrev: number | null;
   criteria: Criterion[];
   isLoading: boolean;
+  /** The whole /evaluate response was an offline-fallback cache read (S5
+   * §3.4) — cached is all-or-nothing per response (app.py `_cache_response`),
+   * so every enabled criterion shown here is equally "affected". */
+  cached: boolean;
 }) {
   function findScore(list: Score[] | null, criterionId: string): number | null {
     return list?.find((s) => s.criterionId === criterionId)?.value ?? null;
@@ -324,6 +338,11 @@ function ScoresView({
             <div className="va-insp-score-label-row">
               <span className="va-insp-score-dot" style={{ background: c.color }} />
               <span className="va-insp-score-label">{c.name}</span>
+              {cached && v !== null && (
+                <span className="va-cached-mini" title="Offline fallback estimate, not a live judgment">
+                  cached
+                </span>
+              )}
               <div className="va-insp-score-right">
                 {isLoading ? (
                   <span className="va-score-loading">…</span>
@@ -394,6 +413,124 @@ function ScoresView({
           </span>
         )}
       </div>
+    </div>
+  );
+}
+
+// ─── History block (S5 §3.2–3.3) ───────────────────────────────────────────────
+
+const MAX_HISTORY_ROWS = 8;
+
+function relativeTime(iso: string): string {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return iso;
+  const mins = Math.round((Date.now() - then) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+  const days = Math.round(hours / 24);
+  return `${days} day${days !== 1 ? 's' : ''} ago`;
+}
+
+function OriginIcon({ origin }: { origin: RevisionOrigin }) {
+  const p = { width: 11, height: 11, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+    strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  switch (origin) {
+    case 'seed':
+      return <svg {...p}><path d="M5 12c0-4 3-7 7-7s7 3 7 7-3 7-7 7" /><circle cx="9" cy="12" r="1.4" /></svg>;
+    case 'upload':
+      return <svg {...p}><path d="M12 15V4M12 4l-4.5 4.5M12 4l4.5 4.5" /><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>;
+    case 'edit':
+      return <svg {...p}><path d="M4 20l1-4L16 5l3 3L8 19l-4 1z" /></svg>;
+    case 'apply_edit':
+      return <svg {...p}><path d="M5 13l4 4L19 7" /></svg>;
+    case 'translate':
+      return <svg {...p}><circle cx="12" cy="12" r="8" /><path d="M4 12h16M12 4c2.5 2.5 2.5 13.5 0 16M12 4c-2.5 2.5-2.5 13.5 0 16" /></svg>;
+    case 'restore':
+      return <svg {...p}><path d="M4 4v6h6" /><path d="M4.5 15a8 8 0 1 0 2-9.5L4 10" /></svg>;
+    default:
+      return null;
+  }
+}
+
+function HistoryBlock({
+  paragraph,
+  onRestore,
+}: {
+  paragraph: Paragraph;
+  onRestore: (revisionId: number) => void;
+}) {
+  const [revisions, setRevisions] = useState<Revision[] | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [previewId, setPreviewId] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setRevisions(null);
+    setExpanded(false);
+    setPreviewId(null);
+    getRevisions(paragraph.id)
+      .then((r) => { if (!cancelled) setRevisions(r.revisions); })
+      .catch(() => { if (!cancelled) setRevisions([]); });
+    return () => { cancelled = true; };
+  }, [paragraph.id]);
+
+  if (!revisions || revisions.length === 0) return null;
+
+  const shown = expanded ? revisions : revisions.slice(0, MAX_HISTORY_ROWS);
+  const hiddenCount = revisions.length - shown.length;
+  const best = revisions.find((r) => r.isBest);
+
+  return (
+    <div className="va-history-block" data-testid="revision-history">
+      <div className="va-history-title">
+        Revision history
+        {best && best.aggregate !== null && (
+          <span className="va-history-best">⭰ Best {best.aggregate.toFixed(1)}</span>
+        )}
+      </div>
+      {shown.map((r) => (
+        <div
+          key={r.id}
+          className={`va-history-row${r.isBest ? ' va-history-row-best' : ''}`}
+          data-testid={`history-row-${r.id}`}
+          onClick={() => setPreviewId(previewId === r.id ? null : r.id)}
+        >
+          <span className="va-history-origin" title={r.origin}><OriginIcon origin={r.origin} /></span>
+          <span
+            className="va-history-agg"
+            style={r.aggregate === null
+              ? { color: 'var(--va-text-dim)' }
+              : r.isBest ? { color: 'var(--va-yellow)' } : undefined}
+          >
+            {r.aggregate !== null ? r.aggregate.toFixed(1) : '—'}
+          </span>
+          <span className="va-history-time">
+            {relativeTime(r.createdAt)}{r.aggregate === null ? ' · not scored' : ''}
+          </span>
+          {r.isCurrent && <span className="va-history-tag">current</span>}
+          {r.isBest && !r.isCurrent && <span className="va-history-best">⭰ Best</span>}
+          <button
+            className="va-history-restore"
+            data-testid={`history-restore-${r.id}`}
+            disabled={r.isCurrent}
+            onClick={(e) => { e.stopPropagation(); onRestore(r.id); }}
+          >
+            Restore
+          </button>
+        </div>
+      ))}
+      {hiddenCount > 0 && (
+        <button className="va-btn-secondary" data-testid="history-show-more" onClick={() => setExpanded(true)}>
+          +{hiddenCount} more
+        </button>
+      )}
+      {previewId !== null && (
+        <div className="va-history-preview" data-testid="history-preview">
+          {revisions.find((r) => r.id === previewId)?.text}
+        </div>
+      )}
     </div>
   );
 }

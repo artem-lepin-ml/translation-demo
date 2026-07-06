@@ -55,6 +55,18 @@ All classes are `va-`-prefixed. The reusable building blocks a new feature shoul
 | `va-score-chip` / `-loading` / `va-score-bar-shimmer` | Async-loading indicators (pulsing `…`, shimmer bar) — reuse for any "in progress" state |
 | `va-empty` | Italic dim placeholder ("No issues match the active criteria.") |
 | `va-inspector-warning` | Red-tinted failure banner (`rgba(--va-red)` bg, `--va-red` border+text) — the canonical error surface. Used by the inspector's failed-criteria/evaluate-failure banners and reused as-is by `SettingsTab`'s evaluator-editor for a 409 remove-conflict message |
+| `va-prompt-toggle` / `va-prompt-actions` / `va-char-count` / `va-unsaved` | Edit/Preview pill toggle for a criterion/translator prompt + its Save/Revert action row (wave-5 S1 §2.3) — shared by `EvaluatorEditor` and `TranslatorCard`, both in `SettingsTab.tsx` |
+| `va-inline-params` / `va-effective-line` | Readable inline model-params text (`max_tokens 1536 · temp 0`, first 3 + `+N`) and the read-only "Effective params" preview line below a params textarea (wave-5 S1 §2.4) — replaces the old raw `N params` badge |
+| `va-translator-card` / `va-translator-params-row` / `va-applies-note` | Settings "Translator" card, mirrors the Grounding card's shape (Model select + Params + Prompt), rendered above Evaluators (wave-5 S4 §3.4) |
+| `UploadIcon` (`frontend/src/demo/variant-a/upload/UploadIcon.tsx`) | Inline 16×16 SVG upload glyph (tray + arrow-up, `stroke=currentColor`) replacing the 📄 emoji on both Upload-modal panels; matching `DownloadIcon` inline in `VariantA.tsx` for Export (wave-5 S3 §2.1 / S6 §5) |
+| `va-upload-drop-active` / `va-drop-flag` | Dashed accent border + tinted bg + "drop to load" flag on a source/translation panel during dragover (wave-5 S3 §2.2) |
+| `va-ai-translate-card` / `va-link-btn` / `va-ai-translate-cta-row` | Upload-modal "AI translate" mode: placeholder card naming the translator model, back-toggle link button, and the CTA row offering to switch into that mode (wave-5 S4 §3.2) |
+| `va-progress-track` / `va-progress-fill` | Generic determinate progress bar (3–4px, `--va-accent` fill by inline `width`) — first consumer is the document-tab "Translating N/M…" badge (wave-5 S4 §3.3); reuse for any future bounded background-job indicator |
+| `va-translating-badge` / `va-translate-progress-wrap` / `va-run-precompute-hint` | Translation-status badge (running/done/failed) rendered next to the doc-switcher, mirroring the existing `va-precompute-badge` pattern (wave-5 S4 §3.3) |
+| `va-export-wrap` / `va-export-menu` / `va-export-menu-item` | Small popover menu anchored to the doc top-bar's Export button (`Excel (.xlsx)` / `Markdown (.md)`), disabled while the document is empty (wave-5 S6 §5) |
+| `va-best-marker` | Small yellow ⭰ glyph next to a paragraph's score chip when a past revision scored higher than the current one; click opens the Inspector's Scores tab (wave-5 S5 §3.1) |
+| `va-history-block` / `va-history-row` / `va-history-origin` / `va-history-agg` / `va-history-time` / `va-history-tag` / `va-history-best` / `va-history-restore` / `va-history-preview` | Inspector "Revision history" list under `ScoresView` — up to 8 rows (`+N more`), current/best tags, click-to-preview text, one-click Restore (wave-5 S5 §3.2–3.3) |
+| `va-cached-mini` | 10px mono badge on a scored criterion row marking an offline-fallback (`kind='cache'`) response, distinct from the paragraph-level `va-cached-badge` (wave-5 S5 §3.4) |
 
 Loading convention: buttons show `…` while a request is in flight (e.g. `{isLoading ? '…' : 'Accept'}` in `InspectorPanel.tsx`).
 
