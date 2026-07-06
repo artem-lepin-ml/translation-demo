@@ -1,0 +1,7 @@
+{
+ "n_articles_written": 100,
+ "n_fetch_failed": 0,
+ "n_malformed_html": 0,
+ "n_title_to_qid_failed": 0,
+ "n_titles": 100
+}

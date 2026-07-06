@@ -1,0 +1,30 @@
+{
+ "pred_dir": "reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z",
+ "model": "google/gemini-3.1-flash-lite",
+ "provider": "provider-9",
+ "config": "111",
+ "n_articles": 100,
+ "n_gt_tuples": 7959,
+ "n_grounded": 16709,
+ "source_counts": {
+  "wbsearchentities": 16274,
+  "cirrus": 231,
+  "wikipedia_langlink": 204
+ },
+ "sitelink_sourced": 204,
+ "sitelink_share_of_grounded": 0.012208989167514513,
+ "replay_inconsistent_count": 0,
+ "R_doc_full": {
+  "matched": 5493,
+  "total": 7959,
+  "value": 0.6901620806633999
+ },
+ "R_doc_clean": {
+  "matched": 5444,
+  "total": 7959,
+  "value": 0.6840055283327051
+ },
+ "R_doc_delta": -0.006156552330694787,
+ "recall_units_lost": 49,
+ "unique_forms_replayed": 6791
+}

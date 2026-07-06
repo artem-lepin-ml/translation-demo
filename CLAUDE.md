@@ -13,6 +13,9 @@ Think, plan and talk to subagents in English (token economy). ALL owner-facing o
 ### Core concept
 Spec-driven development. We craft a high-quality spec together; you then execute it fully autonomously (no interruptions, no check-ins). I review only specs, reviews and the docs/ documentation.
 
+### Finding unknowns
+Cross-cutting discovery playbook — turning unknown-unknowns into known-unknowns before/during/after implementation (blindspot pass, brainstorm/prototype, interview, references, implementation notes, pitch, quiz): [.claude/playbooks/finding-unknowns.md](.claude/playbooks/finding-unknowns.md). It underpins the 8-step flow rather than replacing it — the W-phases map onto the steps (W1–W5 → brainstorm/verify-spec/plan, W6 → execute, W7–W8 → verify/finish), and its unknowns taxonomy is the lens for deciding which step a task actually needs.
+
 ### Scenario A (I'm present and actively participating)
 
 1. **Brainstorm** — [brainstorming](.claude/skills/superpowers-brainstorming/SKILL.md) (+ [visual-companion](.claude/skills/superpowers-brainstorming/visual-companion.md) when there is UI/UX/design). Spec → [docs/superpowers/specs/](docs/superpowers/specs/). Goal: a spec with goal, scope, success criteria and the most correct plan to reach the goal, honoring every subtlety of the task and my global vision.
@@ -61,7 +64,7 @@ Canonical catalog of aspects, findings format and aggregation rules: `.claude/sk
 | Repo recon, search/grep, mechanical edits | Haiku 4.5 (`model: haiku`) | low |
 | e2e-tester (browser runs) | Sonnet 4.6 (`model: sonnet` in agent frontmatter) | high |
 
-Rules: (R1) subagents NEVER inherit the session model — set `model:` explicitly; aggregation is done by the orchestrator itself or a `model: opus` subagent; (R2) executors medium/high, aggregators high/xhigh — sparingly; (R3) Fable 5 may auto-reroute biology/cybersec-adjacent prompts to Opus 4.8 — if systematic, consciously switch the agent's model with a D-journal entry; (R4) escalation: Sonnet → Opus → Fable ("Fable — when the task would justify a senior contractor"); (R5) code: a ready plan/spec exists → ALWAYS Sonnet (not Opus and not Fable); no plan and the code is freeform → Opus.
+Rules: (R1) subagents NEVER inherit the session model — set `model:` explicitly; aggregation is done by the orchestrator itself or a `model: opus` subagent; (R2) executors medium/high, aggregators high/xhigh — sparingly; (R3) Fable 5 may auto-reroute biology/cybersec-adjacent prompts to Opus 4.8 — if systematic, consciously switch the agent's model with a D-journal entry; (R4) escalation: Sonnet → Opus → Fable ("Fable — when the task would justify a senior contractor"); (R5) code: a ready plan/spec exists → ALWAYS Sonnet (not Opus and not Fable); no plan and the code is freeform → Opus; (R6) parallel means parallel (owner, 2026-07-06): the Workflow tool caps per-run agent concurrency at min(16, CPU cores − 2) — on a 4-core cloud container that is only 2 concurrent agents — so check `nproc` BEFORE fanning out; if the cap would serialize the fan, split it into several CONCURRENT Workflow invocations or dispatch background Agent subagents directly (the workflow cap does not bind them), and keep only true data dependencies sequential inside one run.
 
 ### Dispatch map (task class → named agent)
 
@@ -127,6 +130,7 @@ Bundled, pending an owner decision (unique un-merged work, not on any keeper): `
 
 ### Dynamic workflow
 Use a hierarchical structure: chief aggregator → per-topic aggregators → several agents per topic. Choose the interaction format, agent roles and count yourself (usually 5–30). Use a dynamic workflow only when you understand why it beats a swarm or a naive single-agent run.
+Concurrency: rule R6 in § Model routing & dispatch (parallel means parallel; mind the Workflow per-run cap).
 
 ### Useful skills & MCP
 - Browser e2e, in order of preference: (1) **`playwright-cli` skill** — primary for interactive/adversarial runs (~4x cheaper than MCP: disk snapshots read selectively, `snapshot --depth/--scope`; named sessions `-s=<topic>` isolate parallel runs/worktrees); (2) **scripted `npx playwright test`** — cheapest for regression suites (model sees pass/fail + report, not DOM); (3) **playwright MCP** (`--isolated`) — fallback for interactive a11y-ref reasoning only; (4) **chrome-devtools MCP** — perf/network/console debugging, not e2e driving.

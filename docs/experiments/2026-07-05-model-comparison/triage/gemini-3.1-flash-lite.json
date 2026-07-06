@@ -1,0 +1,260 @@
+{
+  "model": "google/gemini-3.1-flash-lite",
+  "generated_at": "2026-07-05T19:13:44.067050+00:00",
+  "n_per_route": 10,
+  "sleep_s": 0.2,
+  "routes_requested": [
+    "auto",
+    "provider-9"
+  ],
+  "routes": {
+    "auto": {
+      "n_calls": 10,
+      "n_success": 10,
+      "success_rate": 1.0,
+      "latency_median_s": 1.5148362170000382,
+      "latency_p90_s": 1.6305091529998208,
+      "prompt_tokens_median": 5.0,
+      "completion_tokens_median": 1.0,
+      "cost_per_call": 2e-06,
+      "cost_source": "real",
+      "honest_tokens": true,
+      "dead": false,
+      "auto_variant": "no_extra_body",
+      "verdict": "candidate",
+      "calls": [
+        {
+          "ok": true,
+          "latency_s": 1.5827246990002095,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.6305091529998208,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.4811227959999087,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.5081323949998477,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.3166621330001362,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.336598172000322,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.4427418310001485,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.5215400390002287,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.543547762000344,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.6433176380000987,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        }
+      ]
+    },
+    "provider-9": {
+      "n_calls": 10,
+      "n_success": 10,
+      "success_rate": 1.0,
+      "latency_median_s": 1.4103800810000848,
+      "latency_p90_s": 1.8204599419996157,
+      "prompt_tokens_median": 5.0,
+      "completion_tokens_median": 1.0,
+      "cost_per_call": 2e-06,
+      "cost_source": "real",
+      "honest_tokens": true,
+      "dead": false,
+      "auto_variant": null,
+      "verdict": "candidate",
+      "calls": [
+        {
+          "ok": true,
+          "latency_s": 1.3503987959998085,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.8204599419996157,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.3626132170002165,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.4363794660002895,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.3843806959998801,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.5314431110000442,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.026237996999953,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.442628963000061,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.3163543919999938,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.3596505800001069,
+          "prompt_tokens": 5,
+          "completion_tokens": 1,
+          "cost_usd": 2e-06,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        }
+      ]
+    }
+  },
+  "selection": {
+    "chosen_route": "provider-9",
+    "rule_trace": "eligible=['auto', 'provider-9']; picked min cost/call=2e-06 (real), tie-break latency_median_s=1.4103800810000848",
+    "relaxed_reason": null
+  },
+  "temp0_check": {
+    "route": "provider-9",
+    "extra_body": {
+      "provider": "provider-9"
+    },
+    "ok": true,
+    "error_class": null,
+    "error_message": null
+  }
+}

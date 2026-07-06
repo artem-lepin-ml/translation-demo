@@ -1,0 +1,911 @@
+{
+ "recall": {
+  "m1": {
+   "matched": 855,
+   "total": 1443,
+   "value": 0.5925155925155925,
+   "ci_lo": 0.5669,
+   "ci_hi": 0.6176,
+   "underpowered": false
+  },
+  "m2": {
+   "matched": 878,
+   "total": 1443,
+   "value": 0.6084546084546084,
+   "ci_lo": 0.583,
+   "ci_hi": 0.6333,
+   "underpowered": false
+  },
+  "m3": {
+   "matched": 986,
+   "total": 1443,
+   "value": 0.6832986832986833,
+   "ci_lo": 0.6588,
+   "ci_hi": 0.7068,
+   "underpowered": false
+  }
+ },
+ "precision": {
+  "p1": {
+   "matched": 878,
+   "total": 2747,
+   "value": 0.31962140516927556,
+   "ci_lo": 0.3024,
+   "ci_hi": 0.3373,
+   "underpowered": false
+  },
+  "p2": {
+   "matched": 746,
+   "total": 1621,
+   "value": 0.4602097470697101,
+   "ci_lo": 0.4361,
+   "ci_hi": 0.4845,
+   "underpowered": false
+  }
+ },
+ "slices": {
+  "stratum": {
+   "achaemenid_iran": {
+    "recall": {
+     "m1": {
+      "matched": 72,
+      "total": 104,
+      "value": 0.6923076923076923,
+      "ci_lo": 0.5981,
+      "ci_hi": 0.7728,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 72,
+      "total": 104,
+      "value": 0.6923076923076923,
+      "ci_lo": 0.5981,
+      "ci_hi": 0.7728,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 74,
+      "total": 104,
+      "value": 0.7115384615384616,
+      "ci_lo": 0.6182,
+      "ci_hi": 0.7898,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 72,
+      "total": 85,
+      "value": 0.8470588235294118,
+      "ci_lo": 0.7557,
+      "ci_hi": 0.9084,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 71,
+      "total": 84,
+      "value": 0.8452380952380952,
+      "ci_lo": 0.753,
+      "ci_hi": 0.9073,
+      "underpowered": false
+     }
+    }
+   },
+   "assyria": {
+    "recall": {
+     "m1": {
+      "matched": 80,
+      "total": 108,
+      "value": 0.7407407407407407,
+      "ci_lo": 0.6508,
+      "ci_hi": 0.8141,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 80,
+      "total": 108,
+      "value": 0.7407407407407407,
+      "ci_lo": 0.6508,
+      "ci_hi": 0.8141,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 81,
+      "total": 108,
+      "value": 0.75,
+      "ci_lo": 0.6607,
+      "ci_hi": 0.8221,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 80,
+      "total": 91,
+      "value": 0.8791208791208791,
+      "ci_lo": 0.7964,
+      "ci_hi": 0.9311,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 66,
+      "total": 77,
+      "value": 0.8571428571428571,
+      "ci_lo": 0.762,
+      "ci_hi": 0.9183,
+      "underpowered": false
+     }
+    }
+   },
+   "china": {
+    "recall": {
+     "m1": {
+      "matched": 64,
+      "total": 115,
+      "value": 0.5565217391304348,
+      "ci_lo": 0.4654,
+      "ci_hi": 0.644,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 64,
+      "total": 115,
+      "value": 0.5565217391304348,
+      "ci_lo": 0.4654,
+      "ci_hi": 0.644,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 66,
+      "total": 115,
+      "value": 0.5739130434782609,
+      "ci_lo": 0.4826,
+      "ci_hi": 0.6605,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 64,
+      "total": 72,
+      "value": 0.8888888888888888,
+      "ci_lo": 0.7958,
+      "ci_hi": 0.9426,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 63,
+      "total": 71,
+      "value": 0.8873239436619719,
+      "ci_lo": 0.7931,
+      "ci_hi": 0.9418,
+      "underpowered": false
+     }
+    }
+   },
+   "egypt": {
+    "recall": {
+     "m1": {
+      "matched": 42,
+      "total": 88,
+      "value": 0.4772727272727273,
+      "ci_lo": 0.3761,
+      "ci_hi": 0.5804,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 43,
+      "total": 88,
+      "value": 0.48863636363636365,
+      "ci_lo": 0.3869,
+      "ci_hi": 0.5913,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 54,
+      "total": 88,
+      "value": 0.6136363636363636,
+      "ci_lo": 0.5092,
+      "ci_hi": 0.7086,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 43,
+      "total": 57,
+      "value": 0.7543859649122807,
+      "ci_lo": 0.629,
+      "ci_hi": 0.8477,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 41,
+      "total": 53,
+      "value": 0.7735849056603774,
+      "ci_lo": 0.6447,
+      "ci_hi": 0.8655,
+      "underpowered": false
+     }
+    }
+   },
+   "greece": {
+    "recall": {
+     "m1": {
+      "matched": 87,
+      "total": 167,
+      "value": 0.5209580838323353,
+      "ci_lo": 0.4456,
+      "ci_hi": 0.5954,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 90,
+      "total": 167,
+      "value": 0.5389221556886228,
+      "ci_lo": 0.4633,
+      "ci_hi": 0.6128,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 94,
+      "total": 167,
+      "value": 0.562874251497006,
+      "ci_lo": 0.4871,
+      "ci_hi": 0.6359,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 90,
+      "total": 97,
+      "value": 0.9278350515463918,
+      "ci_lo": 0.8585,
+      "ci_hi": 0.9646,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 84,
+      "total": 90,
+      "value": 0.9333333333333333,
+      "ci_lo": 0.8621,
+      "ci_hi": 0.9691,
+      "underpowered": false
+     }
+    }
+   },
+   "hittite": {
+    "recall": {
+     "m1": {
+      "matched": 152,
+      "total": 276,
+      "value": 0.5507246376811594,
+      "ci_lo": 0.4917,
+      "ci_hi": 0.6083,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 155,
+      "total": 276,
+      "value": 0.5615942028985508,
+      "ci_lo": 0.5026,
+      "ci_hi": 0.6189,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 188,
+      "total": 276,
+      "value": 0.6811594202898551,
+      "ci_lo": 0.624,
+      "ci_hi": 0.7333,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 155,
+      "total": 192,
+      "value": 0.8072916666666666,
+      "ci_lo": 0.7457,
+      "ci_hi": 0.8568,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 113,
+      "total": 141,
+      "value": 0.8014184397163121,
+      "ci_lo": 0.728,
+      "ci_hi": 0.8589,
+      "underpowered": false
+     }
+    }
+   },
+   "india": {
+    "recall": {
+     "m1": {
+      "matched": 59,
+      "total": 94,
+      "value": 0.6276595744680851,
+      "ci_lo": 0.5267,
+      "ci_hi": 0.7186,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 60,
+      "total": 94,
+      "value": 0.6382978723404256,
+      "ci_lo": 0.5375,
+      "ci_hi": 0.7282,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 64,
+      "total": 94,
+      "value": 0.6808510638297872,
+      "ci_lo": 0.5811,
+      "ci_hi": 0.7664,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 60,
+      "total": 70,
+      "value": 0.8571428571428571,
+      "ci_lo": 0.7566,
+      "ci_hi": 0.9205,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 55,
+      "total": 64,
+      "value": 0.859375,
+      "ci_lo": 0.7538,
+      "ci_hi": 0.9242,
+      "underpowered": false
+     }
+    }
+   },
+   "phoenicia": {
+    "recall": {
+     "m1": {
+      "matched": 99,
+      "total": 167,
+      "value": 0.592814371257485,
+      "ci_lo": 0.517,
+      "ci_hi": 0.6644,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 100,
+      "total": 167,
+      "value": 0.5988023952095808,
+      "ci_lo": 0.523,
+      "ci_hi": 0.6701,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 103,
+      "total": 167,
+      "value": 0.6167664670658682,
+      "ci_lo": 0.5412,
+      "ci_hi": 0.6871,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 100,
+      "total": 114,
+      "value": 0.8771929824561403,
+      "ci_lo": 0.8044,
+      "ci_hi": 0.9254,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 96,
+      "total": 110,
+      "value": 0.8727272727272727,
+      "ci_lo": 0.7976,
+      "ci_hi": 0.9227,
+      "underpowered": false
+     }
+    }
+   },
+   "rome": {
+    "recall": {
+     "m1": {
+      "matched": 127,
+      "total": 216,
+      "value": 0.5879629629629629,
+      "ci_lo": 0.5213,
+      "ci_hi": 0.6515,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 128,
+      "total": 216,
+      "value": 0.5925925925925926,
+      "ci_lo": 0.526,
+      "ci_hi": 0.6559,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 140,
+      "total": 216,
+      "value": 0.6481481481481481,
+      "ci_lo": 0.5824,
+      "ci_hi": 0.7087,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 128,
+      "total": 154,
+      "value": 0.8311688311688312,
+      "ci_lo": 0.7641,
+      "ci_hi": 0.8821,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 113,
+      "total": 136,
+      "value": 0.8308823529411765,
+      "ci_lo": 0.759,
+      "ci_hi": 0.8846,
+      "underpowered": false
+     }
+    }
+   },
+   "sumer": {
+    "recall": {
+     "m1": {
+      "matched": 73,
+      "total": 108,
+      "value": 0.6759259259259259,
+      "ci_lo": 0.5829,
+      "ci_hi": 0.7568,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 75,
+      "total": 108,
+      "value": 0.6944444444444444,
+      "ci_lo": 0.6021,
+      "ci_hi": 0.7734,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 84,
+      "total": 108,
+      "value": 0.7777777777777778,
+      "ci_lo": 0.6906,
+      "ci_hi": 0.8459,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 75,
+      "total": 85,
+      "value": 0.8823529411764706,
+      "ci_lo": 0.7968,
+      "ci_hi": 0.9348,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 60,
+      "total": 69,
+      "value": 0.8695652173913043,
+      "ci_lo": 0.7703,
+      "ci_hi": 0.9298,
+      "underpowered": false
+     }
+    }
+   }
+  },
+  "resolved_by": {
+   "exact_label": {
+    "recall": {
+     "m1": {
+      "matched": 433,
+      "total": 510,
+      "value": 0.8490196078431372,
+      "ci_lo": 0.8153,
+      "ci_hi": 0.8775,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 434,
+      "total": 510,
+      "value": 0.8509803921568627,
+      "ci_lo": 0.8175,
+      "ci_hi": 0.8793,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 442,
+      "total": 510,
+      "value": 0.8666666666666667,
+      "ci_lo": 0.8344,
+      "ci_hi": 0.8934,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 434,
+      "total": 1263,
+      "value": 0.3436262866191607,
+      "ci_lo": 0.3179,
+      "ci_hi": 0.3703,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 380,
+      "total": 779,
+      "value": 0.4878048780487805,
+      "ci_lo": 0.4528,
+      "ci_hi": 0.5229,
+      "underpowered": false
+     },
+     "p3": {
+      "matched": 434,
+      "total": 1263,
+      "value": 0.3436262866191607,
+      "ci_lo": 0.3179,
+      "ci_hi": 0.3703,
+      "underpowered": false
+     }
+    }
+   },
+   "judge_rejected": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 40,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0876,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 0,
+      "total": 40,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0876,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 0,
+      "total": 40,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0876,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "judge_unavailable": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 2,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.6576,
+      "underpowered": true
+     },
+     "m2": {
+      "matched": 0,
+      "total": 2,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.6576,
+      "underpowered": true
+     },
+     "m3": {
+      "matched": 0,
+      "total": 2,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.6576,
+      "underpowered": true
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "llm_disambiguation": {
+    "recall": {
+     "m1": {
+      "matched": 422,
+      "total": 507,
+      "value": 0.8323471400394478,
+      "ci_lo": 0.7974,
+      "ci_hi": 0.8623,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 433,
+      "total": 507,
+      "value": 0.854043392504931,
+      "ci_lo": 0.8206,
+      "ci_hi": 0.8821,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 437,
+      "total": 507,
+      "value": 0.8619329388560157,
+      "ci_lo": 0.8292,
+      "ci_hi": 0.8893,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 433,
+      "total": 1484,
+      "value": 0.2917789757412399,
+      "ci_lo": 0.2692,
+      "ci_hi": 0.3154,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 356,
+      "total": 844,
+      "value": 0.4218009478672986,
+      "ci_lo": 0.3889,
+      "ci_hi": 0.4554,
+      "underpowered": false
+     },
+     "p3": {
+      "matched": 433,
+      "total": 1484,
+      "value": 0.2917789757412399,
+      "ci_lo": 0.2692,
+      "ci_hi": 0.3154,
+      "underpowered": false
+     }
+    }
+   },
+   "no_candidates": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 75,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0487,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 0,
+      "total": 75,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0487,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 0,
+      "total": 75,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0487,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   }
+  },
+  "type": {
+   "named": {
+    "recall": {
+     "m1": {
+      "matched": 727,
+      "total": 982,
+      "value": 0.7403258655804481,
+      "ci_lo": 0.712,
+      "ci_hi": 0.7668,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 733,
+      "total": 982,
+      "value": 0.7464358452138493,
+      "ci_lo": 0.7183,
+      "ci_hi": 0.7727,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 779,
+      "total": 982,
+      "value": 0.7932790224032586,
+      "ci_lo": 0.7668,
+      "ci_hi": 0.8174,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 733,
+      "total": 837,
+      "value": 0.8757467144563919,
+      "ci_lo": 0.8517,
+      "ci_hi": 0.8964,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 644,
+      "total": 738,
+      "value": 0.8726287262872628,
+      "ci_lo": 0.8466,
+      "ci_hi": 0.8948,
+      "underpowered": false
+     }
+    }
+   },
+   "term": {
+    "recall": {
+     "m1": {
+      "matched": 128,
+      "total": 461,
+      "value": 0.27765726681127983,
+      "ci_lo": 0.2387,
+      "ci_hi": 0.3202,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 134,
+      "total": 461,
+      "value": 0.29067245119305857,
+      "ci_lo": 0.2511,
+      "ci_hi": 0.3337,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 154,
+      "total": 461,
+      "value": 0.33405639913232105,
+      "ci_lo": 0.2925,
+      "ci_hi": 0.3783,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 134,
+      "total": 180,
+      "value": 0.7444444444444445,
+      "ci_lo": 0.6761,
+      "ci_hi": 0.8026,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 121,
+      "total": 160,
+      "value": 0.75625,
+      "ci_lo": 0.6842,
+      "ci_hi": 0.8163,
+      "underpowered": false
+     }
+    }
+   }
+  }
+ },
+ "meta": {
+  "article_workers": 6,
+  "calls": {
+   "extract": 389,
+   "judge": 766
+  },
+  "config": "100",
+  "failed_paragraphs": [],
+  "finished_at": "2026-07-06T08:42:58.658597+00:00",
+  "llm_max_in_flight_observed": 8,
+  "llm_semaphore": 8,
+  "max_judge_calls": 30000,
+  "max_usd": 12.0,
+  "model": "google/gemini-3.1-flash-lite",
+  "n_articles": 20,
+  "n_failed_judge_calls": 0,
+  "n_failed_paragraphs": 0,
+  "n_paragraphs": 389,
+  "n_pred_mentions": 3542,
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "provider-9",
+  "run_id": "2026-07-06T08-36-27Z",
+  "spend": {
+   "extract": 0.0627199999999995,
+   "judge": 0.027898000000000384,
+   "total": 0.09061800000000193
+  },
+  "started_at": "2026-07-06T08:36:27.830469+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 390.828128,
+  "wikidata_workers": 2,
+  "n_gt_tuples": 1443,
+  "generated_at": "2026-07-06T09:06:05.817826+00:00"
+ }
+}
