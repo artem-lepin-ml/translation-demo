@@ -52,6 +52,48 @@ function defaultTestState(): TestState {
   return { loading: false, expanded: false, result: null };
 }
 
+/** api-client's fetch helpers throw a bare `METHOD path → status: body` Error
+ *  (see api-client.ts `del`/`post`/`put`). Pull the status + detail text back
+ *  out of that string so callers can show a human message instead of the raw
+ *  method/URL dump. Returns null when the message doesn't match that shape
+ *  (e.g. a network-level failure with no HTTP response at all). */
+function parseApiError(e: unknown): { status: number; detail: string } | null {
+  const message = e instanceof Error ? e.message : String(e);
+  const match = /→ (\d+): ([\s\S]*)$/.exec(message);
+  if (!match) return null;
+  const status = Number(match[1]);
+  const body = match[2].trim();
+  try {
+    const parsed = JSON.parse(body) as { detail?: unknown };
+    if (typeof parsed.detail === 'string') return { status, detail: parsed.detail };
+  } catch {
+    // Not a JSON body — fall through and use the raw text as-is.
+  }
+  return { status, detail: body };
+}
+
+/** Friendly Remove-model error text (spec 2026-07-05-settings-fixes.md §2.5):
+ *  a 409 "model referenced by a criterion" names the evaluator(s) still
+ *  pointing at the model instead of dumping `DELETE /models/... → 409: {...}`
+ *  at the owner; any other failure gets a short human message (status +
+ *  detail), never the raw method/URL. */
+function friendlyRemoveModelError(e: unknown, modelName: string, criteria: Criterion[]): string {
+  const parsed = parseApiError(e);
+  if (parsed?.status === 409 && parsed.detail === 'model referenced by a criterion') {
+    const names = criteria.filter((c) => c.modelName === modelName).map((c) => c.name);
+    if (names.length > 0) {
+      const label = names.length > 1 ? 'evaluators' : 'evaluator';
+      const quoted = names.map((n) => `"${n}"`).join(', ');
+      return `Model is used by ${label} ${quoted} — reassign it first`;
+    }
+    return 'Model is used by an evaluator — reassign it first';
+  }
+  if (parsed) {
+    return `Could not remove the model (${parsed.status}): ${parsed.detail}`;
+  }
+  return 'Could not remove the model — please try again.';
+}
+
 export default function SettingsTab({
   criteria,
   models,
@@ -133,14 +175,15 @@ export default function SettingsTab({
   }
 
   async function handleRemoveModel(name: string) {
-    if (!window.confirm(`Delete “${name}”?`)) return;
+    if (!window.confirm(`Delete "${name}"?`)) return;
     setModelError(null);
     try {
       await onRemoveModel(name);
     } catch (e) {
       // Surface the backend's own reason (e.g. "model referenced by a
-      // criterion") instead of silently doing nothing (S1 §2.5).
-      setModelError({ name, message: String(e) });
+      // criterion") as a human message naming the evaluator(s), instead of
+      // the raw `DELETE /models/... → 409: {...}` dump (S1 §2.5).
+      setModelError({ name, message: friendlyRemoveModelError(e, name, criteria) });
     }
   }
 
@@ -233,7 +276,7 @@ export default function SettingsTab({
                         }}
                         fieldError={fieldError?.id === c.id ? fieldError.message : null}
                         onRemove={async () => {
-                          if (!window.confirm(`Delete “${c.name}”?`)) return;
+                          if (!window.confirm(`Delete "${c.name}"?`)) return;
                           setFieldError(null);
                           try {
                             await onRemoveCriterion(c.id);

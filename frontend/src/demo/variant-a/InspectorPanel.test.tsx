@@ -399,12 +399,54 @@ describe('InspectorPanel Revision history (S5 §3.2-3.3)', () => {
 
   it('clicking Restore calls onRestoreRevision with the revision id', async () => {
     vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions });
-    const onRestoreRevision = vi.fn();
+    const onRestoreRevision = vi.fn().mockResolvedValue(undefined);
     render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={onRestoreRevision} />);
     await screen.findByTestId('revision-history');
+    const callsBeforeRestore = vi.mocked(apiClient.getRevisions).mock.calls.length;
 
     fireEvent.click(screen.getByTestId('history-restore-2'));
     expect(onRestoreRevision).toHaveBeenCalledWith(2);
+    await waitFor(() => expect(vi.mocked(apiClient.getRevisions).mock.calls.length).toBe(callsBeforeRestore + 1));
+  });
+
+  it('re-fetches the revisions list wholesale after a successful restore, instead of keeping the stale pre-restore array (wave5 §4.1)', async () => {
+    // Mount: server has 2 revisions (current edit + best seed). Restore
+    // succeeds and the backend now has a 3rd row (the new restore revision) —
+    // proving the fix re-fetches rather than locally splicing the old list.
+    const afterRestore: Revision[] = [
+      { id: 4, origin: 'restore', createdAt: new Date().toISOString(), text: 'best text', aggregate: null, isBest: false, isCurrent: true },
+      ...revisions,
+    ];
+    vi.mocked(apiClient.getRevisions)
+      .mockResolvedValueOnce({ revisions })
+      .mockResolvedValueOnce({ revisions: afterRestore });
+    const onRestoreRevision = vi.fn().mockResolvedValue(undefined);
+    render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={onRestoreRevision} />);
+    await screen.findByTestId('revision-history');
+    expect(screen.getAllByTestId(/^history-row-/).length).toBe(3);
+    const callsBeforeRestore = vi.mocked(apiClient.getRevisions).mock.calls.length;
+
+    fireEvent.click(screen.getByTestId('history-restore-2'));
+
+    // The restore call resolves before the re-fetch fires (no local splice
+    // in between) and the component ends up showing the freshly-fetched list.
+    await waitFor(() => expect(screen.getAllByTestId(/^history-row-/).length).toBe(4));
+    expect(screen.getByTestId('history-row-4')).toBeTruthy();
+    expect(vi.mocked(apiClient.getRevisions).mock.calls.length).toBe(callsBeforeRestore + 1);
+  });
+
+  it('does not refetch revisions when the restore itself fails', async () => {
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions });
+    const onRestoreRevision = vi.fn().mockRejectedValue(new Error('POST /paragraphs/1/restore → 500'));
+    render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={onRestoreRevision} />);
+    await screen.findByTestId('revision-history');
+    const callsBeforeRestore = vi.mocked(apiClient.getRevisions).mock.calls.length;
+
+    fireEvent.click(screen.getByTestId('history-restore-2'));
+    await waitFor(() => expect(onRestoreRevision).toHaveBeenCalled());
+    // Give any (incorrect) follow-up refetch a tick to happen, then assert it didn't.
+    await new Promise((r) => setTimeout(r, 0));
+    expect(vi.mocked(apiClient.getRevisions).mock.calls.length).toBe(callsBeforeRestore);
   });
 
   it('clicking a row toggles a read-only text preview', async () => {

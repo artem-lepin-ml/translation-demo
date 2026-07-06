@@ -178,47 +178,118 @@ function byAppearance(idxById: Map<number, number>) {
   };
 }
 
+// ─── Display-level Russian case-ending stemmer (heuristic fallback) ────────
+//
+// This is NOT lemmatization. It exists purely to patch grouping when the
+// upstream terminology module ships an unnormalized `source_lemma` — i.e.
+// `source_lemma === source_surface`, meaning the extractor never reduced the
+// word to its dictionary form at all (docs/reports/e2e/wave5-run.md §5, e.g.
+// `{"sourceSurface": "Тигра", "sourceLemma": "Тигра"}` next to a properly
+// grounded `{"sourceSurface": "Тигр", "sourceLemma": "Тигр"}`). Grouping
+// strictly by `source_lemma` then leaves inflected forms of the same word as
+// separate glossary rows — the exact duplicate-row complaint the redesign
+// was meant to fix. Strips at most one trailing case ending, longest-first,
+// from words over 4 chars, keeping a stem of >=3 chars. The real fix belongs
+// in the terminology module's lemma extraction upstream — see
+// docs/known_issues.md for the limits of this heuristic (it is not a
+// morphological analyzer and can both over- and under-stem).
+const RU_CASE_ENDINGS = [
+  'иями', 'ями', 'ами', 'иях', 'ях', 'ах', 'ием', 'ем', 'ом',
+  'ой', 'ей', 'ий', 'ый', 'ая', 'яя', 'ое', 'ее', 'ую', 'юю',
+  'ым', 'им', 'ых', 'их',
+  'а', 'я', 'о', 'е', 'у', 'ю', 'ы', 'и', 'ь',
+];
+
+function stripOneCaseEnding(word: string): string {
+  if (word.length <= 4) return word;
+  for (const ending of RU_CASE_ENDINGS) {
+    const stemLen = word.length - ending.length;
+    if (stemLen >= 3 && word.endsWith(ending)) return word.slice(0, stemLen);
+  }
+  return word;
+}
+
+/** One stemming pass per word (multi-word phrases stem word-by-word and
+ *  rejoin) — a phrase like "Среднем Тигре" stays its own distinct stem
+ *  ("средн тигр"), never colliding with the single-word "тигр". */
+function stemPhrase(phrase: string): string {
+  return phrase.toLowerCase().split(/\s+/).map(stripOneCaseEnding).join(' ');
+}
+
+/** Grouping-key component for one term: the normalized lemma lowercased when
+ *  the upstream extractor produced one, or the heuristic stem when it didn't
+ *  (`sourceLemma === sourceSurface`, i.e. lemma not normalized at all). Also
+ *  reports whether the heuristic path was actually used — the cross-bucket
+ *  merge below only ever applies to buckets that needed it. */
+function groupingStem(term: Term): { stem: string; isRaw: boolean } {
+  const lemma = term.sourceLemma || term.sourceSurface;
+  const isRaw = term.sourceLemma === term.sourceSurface;
+  return { stem: isRaw ? stemPhrase(lemma) : lemma.toLowerCase(), isRaw };
+}
+
 /**
  * Groups per-occurrence `term` rows into per-entity glossary rows (spec §2.1).
- * Key = (lemma, qid || 'ungrounded:' + lemma) so distinct entities that share
- * a lemma stay separate, while inflected surface forms of the same lemma
- * merge — fixes the "Тигр"/"Тигра" duplicate rows the flat table showed.
+ * Key = (stem, qid || 'ungrounded:' + stem) so distinct entities that share a
+ * stem stay separate, while inflected surface forms of the same word merge —
+ * fixes the "Тигр"/"Тигра" duplicate rows the flat table showed.
+ *
+ * A second, conservative pass then folds an *ungrounded* stem-group into a
+ * *grounded* one when their stems agree AND the ungrounded side actually hit
+ * the raw/unnormalized-lemma case (e.g. "Тигра" merges into "Тигр"/Q35591) —
+ * this is what closes the wave5 §5 gap, since an unnormalized lemma keeps
+ * the grounded and ungrounded mentions of the same word in two different
+ * per-term keys (one carries a qid, the other doesn't). The raw-only gate
+ * matters: an ungrounded candidate whose lemma was already properly
+ * normalized and simply failed to ground is a genuine "rejected" case (S2
+ * §2.1) and must stay separate from an unrelated grounded entity that
+ * happens to share the same lemma — this pass never touches that case. Two
+ * grounded groups are never merged into each other, and an ambiguous stem
+ * shared by more than one grounded qid is left unmerged — different
+ * real-world entities must never collapse into one row.
  */
 export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): GlossaryGroup[] {
   const idxById = new Map(paragraphs.map((p) => [p.id, p.idx]));
   const compareByAppearance = byAppearance(idxById);
 
   const byKey = new Map<string, TermWithTrace[]>();
+  const stemOfKey = new Map<string, string>();
+  const rawOfKey = new Map<string, boolean>();
   for (const term of terms) {
-    const lemma = (term.sourceLemma || term.sourceSurface).toLowerCase();
+    const { stem, isRaw } = groupingStem(term);
     const qid = term.grounded?.qid ?? null;
-    const key = `${lemma}::${qid ?? `ungrounded:${lemma}`}`;
+    const key = `${stem}::${qid ?? `ungrounded:${stem}`}`;
+    stemOfKey.set(key, stem);
+    rawOfKey.set(key, (rawOfKey.get(key) ?? false) || isRaw);
     const bucket = byKey.get(key);
     if (bucket) bucket.push(term);
     else byKey.set(key, [term]);
   }
 
-  const groups: GlossaryGroup[] = [];
-  for (const [key, bucket] of byKey) {
-    const mentions = [...bucket].sort(compareByAppearance);
+  function buildFields(mentions: TermWithTrace[]) {
     const primary = mentions[0];
-
     let difficulty: Verdict = primary.difficulty;
     let pair: Verdict | null = null;
     for (const m of mentions) {
       difficulty = worseVerdict(difficulty, m.difficulty);
       if (m.pairAccuracy) pair = pair ? worseVerdict(pair, m.pairAccuracy) : m.pairAccuracy;
     }
-
     // Translation = recommended||targetSurface of the first mention that has
     // a target mapping at all; siblings with no target of their own inherit
     // it. Only truly all-absent groups fall back to '—' (spec §2.1).
     const linked = mentions.find((m) => m.targetSurface);
     const translation = linked ? linked.recommended ?? linked.targetSurface : null;
+    return { difficulty, pair, translation };
+  }
 
+  const drafts: GlossaryGroup[] = [];
+  const stemOfDraft = new Map<GlossaryGroup, string>();
+  for (const [key, bucket] of byKey) {
+    const mentions = [...bucket].sort(compareByAppearance);
+    const primary = mentions[0];
+    const { difficulty, pair, translation } = buildFields(mentions);
     const grounded = mentions.find((m) => m.grounded)?.grounded ?? null;
 
-    groups.push({
+    const draft: GlossaryGroup = {
       key,
       lemma: (primary.sourceLemma || primary.sourceSurface).toLowerCase(),
       qid: primary.grounded?.qid ?? null,
@@ -230,7 +301,37 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
       pair,
       mentions,
       primary,
-    });
+    };
+    stemOfDraft.set(draft, stemOfKey.get(key)!);
+    drafts.push(draft);
+  }
+
+  // Index grounded drafts by stem; only a *single* grounded candidate per
+  // stem is eligible as a merge target (an ambiguous stem shared by two
+  // different qids must never guess which one an ungrounded mention meant).
+  const groundedByStem = new Map<string, GlossaryGroup[]>();
+  for (const d of drafts) {
+    if (!d.qid) continue;
+    const stem = stemOfDraft.get(d)!;
+    const list = groundedByStem.get(stem);
+    if (list) list.push(d); else groundedByStem.set(stem, [d]);
+  }
+
+  const groups: GlossaryGroup[] = [];
+  for (const d of drafts) {
+    if (d.qid) { groups.push(d); continue; }
+    const candidates = rawOfKey.get(d.key) ? groundedByStem.get(stemOfDraft.get(d)!) : undefined;
+    if (candidates && candidates.length === 1) {
+      const target = candidates[0];
+      const allMentions = [...target.mentions, ...d.mentions].sort(compareByAppearance);
+      const { difficulty, pair, translation } = buildFields(allMentions);
+      target.mentions = allMentions;
+      target.difficulty = difficulty;
+      target.pair = pair;
+      target.translation = translation;
+      continue; // folded into `target` — drop this standalone ungrounded row
+    }
+    groups.push(d);
   }
 
   groups.sort((a, b) => compareByAppearance(a.mentions[0], b.mentions[0]));

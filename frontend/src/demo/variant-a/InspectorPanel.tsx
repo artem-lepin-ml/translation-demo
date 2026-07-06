@@ -36,8 +36,11 @@ interface Props {
   onRetryFailed: (criterionIds: string[]) => void;
   /** Issues already filtered by active criteria; status filtering (open-only) happens here */
   visibleIssues: Issue[];
-  /** Restore the selected paragraph's text to a past revision (S5 §3.3). */
-  onRestoreRevision: (revisionId: number) => void;
+  /** Restore the selected paragraph's text to a past revision (S5 §3.3).
+   *  Returns a promise that resolves once the restore round-trip (and the
+   *  paragraph refresh it triggers) has completed, so HistoryBlock can
+   *  re-fetch the revision list only after the server state has settled. */
+  onRestoreRevision: (revisionId: number) => Promise<void>;
 }
 
 export default function InspectorPanel({
@@ -459,11 +462,12 @@ function HistoryBlock({
   onRestore,
 }: {
   paragraph: Paragraph;
-  onRestore: (revisionId: number) => void;
+  onRestore: (revisionId: number) => Promise<void>;
 }) {
   const [revisions, setRevisions] = useState<Revision[] | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [previewId, setPreviewId] = useState<number | null>(null);
+  const [restoringId, setRestoringId] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -475,6 +479,33 @@ function HistoryBlock({
       .catch(() => { if (!cancelled) setRevisions([]); });
     return () => { cancelled = true; };
   }, [paragraph.id]);
+
+  // The backend is authoritative immediately after a restore (GET
+  // /revisions already returns all rows) — the bug was purely client-side:
+  // this component kept whichever `revisions` array it had fetched on mount
+  // and never refetched, so a restore appeared to "lose" the intermediate
+  // revision until an unrelated reload. Fix: re-fetch and replace the whole
+  // list wholesale once the restore round-trip resolves — no local splicing
+  // of the previous array.
+  async function handleRestore(revisionId: number) {
+    setRestoringId(revisionId);
+    try {
+      await onRestore(revisionId);
+    } catch {
+      // Restore itself failed (network/5xx) — nothing changed server-side,
+      // so there is nothing to refresh; the caller surfaces its own error.
+      return;
+    } finally {
+      setRestoringId(null);
+    }
+    try {
+      const r = await getRevisions(paragraph.id);
+      setRevisions(r.revisions);
+    } catch {
+      // Refetch failed even though restore succeeded — keep showing the
+      // previous (pre-restore) list rather than blanking it to empty.
+    }
+  }
 
   if (!revisions || revisions.length === 0) return null;
 
@@ -514,10 +545,10 @@ function HistoryBlock({
           <button
             className="va-history-restore"
             data-testid={`history-restore-${r.id}`}
-            disabled={r.isCurrent}
-            onClick={(e) => { e.stopPropagation(); onRestore(r.id); }}
+            disabled={r.isCurrent || restoringId !== null}
+            onClick={(e) => { e.stopPropagation(); void handleRestore(r.id); }}
           >
-            Restore
+            {restoringId === r.id ? '…' : 'Restore'}
           </button>
         </div>
       ))}

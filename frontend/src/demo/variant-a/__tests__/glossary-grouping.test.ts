@@ -153,6 +153,101 @@ describe('groupTerms (S2 §2.1)', () => {
   });
 });
 
+describe('groupTerms — display-level stemmer fallback (wave5 §5, unnormalized source_lemma)', () => {
+  it('merges "Тигр" (grounded) with "Тигра" (ungrounded) when source_lemma === source_surface for both', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
+    const terms = [
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Тигр', sourceLemma: 'Тигр', grounded: wd({ qid: 'Q35591', label: 'Tigris' }), difficulty: 'yellow' }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Тигра', sourceLemma: 'Тигра', grounded: null, difficulty: 'red' }),
+    ];
+    const groups = groupTerms(terms, paragraphs);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].qid).toBe('Q35591'); // merged group shows the grounded qid
+    expect(groups[0].mentions).toHaveLength(2);
+    expect(groups[0].difficulty).toBe('red'); // worst-of across the merged mentions
+  });
+
+  it('merges "Евфрат" (grounded) with "Евфрата" (ungrounded) the same way', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
+    const terms = [
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Евфрат', sourceLemma: 'Евфрат', grounded: wd({ qid: 'Q39644', label: 'Euphrates' }) }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Евфрата', sourceLemma: 'Евфрата', grounded: null }),
+    ];
+    const groups = groupTerms(terms, paragraphs);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].qid).toBe('Q39644');
+    expect(groups[0].mentions).toHaveLength(2);
+  });
+
+  it('"Ура"/"Ур" stay separate: both <=4 chars so no ending is ever stripped, and their stems differ', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
+    const terms = [
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Ура', sourceLemma: 'Ура', grounded: wd({ qid: 'Q11701', label: 'Ur' }) }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Ур', sourceLemma: 'Ур', grounded: null }),
+    ];
+    const groups = groupTerms(terms, paragraphs);
+    expect(groups).toHaveLength(2); // 'ура' !== 'ур' — merge only happens when stems actually match
+  });
+
+  it('never merges two grounded groups into each other, even when their heuristic stems coincide', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
+    const terms = [
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Марса', sourceLemma: 'Марса', grounded: wd({ qid: 'Q111' }) }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Марс', sourceLemma: 'Марс', grounded: wd({ qid: 'Q222' }) }),
+    ];
+    const groups = groupTerms(terms, paragraphs);
+    expect(groups).toHaveLength(2); // same stem ('марс') but different qids — never collapse
+    expect(groups.map((g) => g.qid).sort()).toEqual(['Q111', 'Q222']);
+  });
+
+  it('leaves an ungrounded stem-group unmerged when it would be ambiguous between two grounded qids', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1), buildParagraph(3, 2)];
+    const terms = [
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Марса', sourceLemma: 'Марса', grounded: wd({ qid: 'Q111' }) }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Марс', sourceLemma: 'Марс', grounded: wd({ qid: 'Q222' }) }),
+      buildTerm({ id: 'c', paragraphId: 3, sourceSurface: 'Марсу', sourceLemma: 'Марсу', grounded: null }),
+    ];
+    const groups = groupTerms(terms, paragraphs);
+    // 3 rows: the two grounded qids stay put, and the ambiguous ungrounded
+    // stem-group ("марс" matches both) is left standalone rather than
+    // guessing which entity it belongs to.
+    expect(groups).toHaveLength(3);
+    expect(groups.filter((g) => g.qid === null)).toHaveLength(1);
+  });
+
+  it('does not stem an already-normalized lemma (sourceLemma !== sourceSurface bypasses the heuristic)', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const group = groupTerms(
+      [buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Тигра', sourceLemma: 'тигр', grounded: null })],
+      paragraphs,
+    )[0];
+    expect(group.lemma).toBe('тигр');
+  });
+
+  it('multi-word phrase "Среднем Тигре" stems per-word and stays a distinct row from "Тигр"', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
+    const terms = [
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Тигр', sourceLemma: 'Тигр', grounded: wd({ qid: 'Q35591' }) }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Среднем Тигре', sourceLemma: 'Среднем Тигре', grounded: null }),
+    ];
+    const groups = groupTerms(terms, paragraphs);
+    expect(groups).toHaveLength(2); // correct — a distinct phrase, not a duplicate of "Тигр"
+  });
+
+  it('summarizeGroups counts the merged pair as a single grounded row, not two', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
+    const terms = [
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Тигр', sourceLemma: 'Тигр', grounded: wd({ qid: 'Q35591' }) }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Тигра', sourceLemma: 'Тигра', grounded: null }),
+    ];
+    const summary = summarizeGroups(groupTerms(terms, paragraphs));
+    expect(summary.groups).toBe(1);
+    expect(summary.mentions).toBe(2);
+    expect(summary.deterministic).toBe(1);
+    expect(summary.notGrounded).toBe(0);
+  });
+});
+
 describe('summarizeGroups counters', () => {
   it('buckets rej + none together as "not grounded"', () => {
     const paragraphs = [buildParagraph(1, 0)];

@@ -69,7 +69,7 @@ describe('SettingsTab Remove confirm guard (LOW-b)', () => {
 
     fireEvent.click(screen.getByText('Remove'));
 
-    expect(window.confirm).toHaveBeenCalledWith(`Delete “${model.name}”?`);
+    expect(window.confirm).toHaveBeenCalledWith(`Delete "${model.name}"?`);
     expect(props.onRemoveModel).not.toHaveBeenCalled();
   });
 
@@ -93,7 +93,7 @@ describe('SettingsTab Remove confirm guard (LOW-b)', () => {
     const [evaluatorRemove] = screen.getAllByText('Remove');
     fireEvent.click(evaluatorRemove);
 
-    expect(window.confirm).toHaveBeenCalledWith(`Delete “${criterion.name}”?`);
+    expect(window.confirm).toHaveBeenCalledWith(`Delete "${criterion.name}"?`);
     expect(props.onRemoveCriterion).not.toHaveBeenCalled();
   });
 });
@@ -430,15 +430,55 @@ describe('SettingsTab Test button state (S1 §2.5)', () => {
   });
 });
 
-describe('SettingsTab Remove-model error surfacing (S1 §2.5)', () => {
-  it('shows the backend rejection text next to the row instead of failing silently', async () => {
+describe('SettingsTab Remove-model error surfacing (S1 §2.5, wave5 §4.2)', () => {
+  it('shows a friendly "used by evaluator" message on 409, not the raw method/URL/body dump', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const onRemoveModel = vi.fn().mockRejectedValue(new Error('DELETE /models/x → 409: model referenced by a criterion'));
+    const onRemoveModel = vi.fn().mockRejectedValue(
+      new Error(`DELETE /models/${encodeURIComponent(model.name)} → 409: {"detail":"model referenced by a criterion"}`),
+    );
     renderSettings({ onRemoveModel });
     fireEvent.click(screen.getByText('Remove'));
 
     const err = await screen.findByTestId(`model-field-error-${model.name}`);
-    expect(err.textContent).toContain('model referenced by a criterion');
+    expect(err.textContent).toBe(`Model is used by evaluator "${criterion.name}" — reassign it first`);
+    expect(err.textContent).not.toContain('DELETE');
+    expect(err.textContent).not.toContain('409');
+    expect(err.textContent).not.toContain('%2F');
+  });
+
+  it('lists multiple referencing evaluators comma-separated', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const fluency: Criterion = { ...criterion, id: 'fluency', name: 'Fluency' };
+    const onRemoveModel = vi.fn().mockRejectedValue(
+      new Error(`DELETE /models/${encodeURIComponent(model.name)} → 409: {"detail":"model referenced by a criterion"}`),
+    );
+    renderSettings({ onRemoveModel, criteria: [criterion, fluency] });
+    fireEvent.click(screen.getByText('Remove'));
+
+    const err = await screen.findByTestId(`model-field-error-${model.name}`);
+    expect(err.textContent).toBe('Model is used by evaluators "Accuracy", "Fluency" — reassign it first');
+  });
+
+  it('shows a short human message (status + detail) for any other error, never the raw dump', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const onRemoveModel = vi.fn().mockRejectedValue(
+      new Error(`DELETE /models/${encodeURIComponent(model.name)} → 500: {"detail":"internal error"}`),
+    );
+    renderSettings({ onRemoveModel });
+    fireEvent.click(screen.getByText('Remove'));
+
+    const err = await screen.findByTestId(`model-field-error-${model.name}`);
+    expect(err.textContent).toBe('Could not remove the model (500): internal error');
+  });
+
+  it('falls back to a generic message when the error has no parseable status at all', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const onRemoveModel = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+    renderSettings({ onRemoveModel });
+    fireEvent.click(screen.getByText('Remove'));
+
+    const err = await screen.findByTestId(`model-field-error-${model.name}`);
+    expect(err.textContent).toBe('Could not remove the model — please try again.');
   });
 });
 

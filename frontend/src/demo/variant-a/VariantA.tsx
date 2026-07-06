@@ -459,7 +459,7 @@ export default function VariantA() {
               className="va-icon-btn"
               title="Delete document"
               onClick={() => {
-                if (window.confirm(`Delete “${doc.title}”?`)) void deleteDoc(doc.id);
+                if (window.confirm(`Delete "${doc.title}"?`)) void deleteDoc(doc.id);
               }}
             >
               🗑
@@ -736,9 +736,9 @@ export default function VariantA() {
               onEvaluate={handleEvaluate}
               onRetryFailed={handleRetryFailed}
               visibleIssues={inspectorIssues}
-              onRestoreRevision={(revisionId) => {
+              onRestoreRevision={async (revisionId) => {
                 if (!selectedPara) return;
-                void restoreParagraphRevision(selectedPara.id, selectedParaIdx, revisionId);
+                await restoreParagraphRevision(selectedPara.id, selectedParaIdx, revisionId);
               }}
             />
           </>
