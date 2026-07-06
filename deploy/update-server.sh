@@ -22,9 +22,15 @@
 #      script's own environment
 #   5. run the additive schema migration (palimpsest.webapp.migrate) against
 #      the live DB before the new container starts serving
-#   6. disable the retired Cultural Adaptation criterion on PROD DATA
+#   6. smoke-test the frontend's boot-critical GET endpoints inside the new
+#      container (/api/documents, /api/criteria, /api/models,
+#      /api/grounding-config, /api/translator-config) — any non-200 aborts
+#      the deploy with the failing endpoint named (this is the gate a
+#      migrated-but-still-500ing endpoint, e.g. the grounding_config outage,
+#      should have caught before reaching prod)
+#   7. disable the retired Cultural Adaptation criterion on PROD DATA
 #      (UPDATE, never DELETE — score/issue history is irreproducible)
-#   7. force temperature=0 on the demo model rows via the live API (judge
+#   8. force temperature=0 on the demo model rows via the live API (judge
 #      determinism for the recorded demo)
 #
 # Caddy: no config change needed — gse-demo keeps the same container name,
@@ -50,36 +56,36 @@ log() { printf '\n[update-server] %s\n' "$1"; }
 cd "$REPO_DIR"
 
 if [ "$SKIP_GIT" != "1" ]; then
-    log "1/7 git pull origin $DEPLOY_BRANCH"
+    log "1/8 git pull origin $DEPLOY_BRANCH"
     git fetch origin "$DEPLOY_BRANCH"
     git checkout "$DEPLOY_BRANCH"
     git pull --ff-only origin "$DEPLOY_BRANCH"
 else
-    log "1/7 skipped (SKIP_GIT=1 — tree deployed by rsync)"
+    log "1/8 skipped (SKIP_GIT=1 — tree deployed by rsync)"
 fi
 
 if [ "$SKIP_NPM" != "1" ]; then
-    log "2/7 npm build (frontend/dist)"
+    log "2/8 npm build (frontend/dist)"
     (cd frontend && npm ci && npm run build)
 else
-    log "2/7 skipped (SKIP_NPM=1 — using prebuilt frontend/dist)"
+    log "2/8 skipped (SKIP_NPM=1 — using prebuilt frontend/dist)"
     if [ ! -d "$REPO_DIR/frontend/dist" ]; then
         log "ERROR: frontend/dist missing — build locally before rsync"
         exit 1
     fi
 fi
 
-log "3/7 backup demo.db"
+log "3/8 backup demo.db"
 if [ -f "$DATA_DIR/demo.db" ]; then
     cp "$DATA_DIR/demo.db" "$DATA_DIR/demo.db.bak-$(date +%s)"
 else
     echo "  (no existing demo.db at $DATA_DIR — first deploy, nothing to back up)"
 fi
 
-log "4/7 docker build $IMAGE_NAME"
+log "4/8 docker build $IMAGE_NAME"
 docker build -t "$IMAGE_NAME" .
 
-log "5/7 migrate the DB (one-shot container, before the new server starts)"
+log "5/8 migrate the DB (one-shot container, before the new server starts)"
 docker run --rm \
     -v "$DATA_DIR:/data" \
     -e PALIMPSEST_DB=/data/demo.db \
@@ -116,7 +122,35 @@ for _ in $(seq 1 30); do
     sleep 1
 done
 
-log "6/7 disable the retired Cultural Adaptation criterion (UPDATE, never DELETE)"
+log "6/8 smoke test: boot-critical GET endpoints must all answer 200"
+BOOT_CRITICAL_ENDPOINTS=(
+    /api/documents
+    /api/criteria
+    /api/models
+    /api/grounding-config
+    /api/translator-config
+)
+for ep in "${BOOT_CRITICAL_ENDPOINTS[@]}"; do
+    if ! docker exec "$CONTAINER_NAME" python -c "
+import sys
+import urllib.error
+import urllib.request
+
+try:
+    status = urllib.request.urlopen('http://localhost:$API_PORT$ep', timeout=5).status
+except urllib.error.HTTPError as e:
+    status = e.code
+if status != 200:
+    print(f'  $ep -> {status} (expected 200)', file=sys.stderr)
+    sys.exit(1)
+"; then
+        log "ERROR: smoke test failed for $ep — deploy aborted (frontend boot would break)"
+        exit 1
+    fi
+    log "  $ep -> 200"
+done
+
+log "7/8 disable the retired Cultural Adaptation criterion (UPDATE, never DELETE)"
 python3 - "$DATA_DIR/demo.db" <<'PY'
 import sqlite3
 import sys
@@ -129,7 +163,7 @@ print(f"  criterion 'cultural' rows updated: {conn.total_changes}")
 conn.close()
 PY
 
-log "7/7 force temperature=0 on the demo model rows via the live API"
+log "8/8 force temperature=0 on the demo model rows via the live API"
 MODELS=(
     "anthropic/claude-haiku-4.5"
     "anthropic/claude-sonnet-5"

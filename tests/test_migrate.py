@@ -7,6 +7,7 @@ import json
 import sqlite3
 
 import pytest
+from fastapi.testclient import TestClient
 
 from palimpsest.webapp import db, migrate
 from palimpsest.webapp.model_matrix import DEFAULT_CRITERION_MODEL
@@ -167,6 +168,219 @@ def test_migrated_schema_equivalent_to_fresh_seed(old_conn, tmp_path, monkeypatc
     for table, cols in fresh_tables.items():
         assert table in migrated_tables, f"missing table after migrate: {table}"
         assert cols <= migrated_tables[table], f"missing columns in {table}: {cols - migrated_tables[table]}"
+
+
+# The schema as it actually exists on prod TODAY (confirmed live via `docker
+# exec` against gse-demo, 2026-07-06): target_revision/translator_config/
+# score.revision_id/glossary already migrated in, but grounding_config was
+# NEVER added (db.py SCHEMA gained it as a fresh-DB table without a matching
+# migrate.py step) and term.trace_json is likewise absent — this is the exact
+# drift that caused the GET /api/grounding-config 500 in prod.
+PROD_SHAPED_SCHEMA = """
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE document (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, source_lang TEXT, target_lang TEXT,
+  source_model TEXT, seed_model TEXT, seed_prompt_variant TEXT,
+  version INTEGER DEFAULT 0, origin TEXT DEFAULT 'seed', created_at TEXT
+);
+CREATE TABLE paragraph (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, document_id INTEGER REFERENCES document(id) ON DELETE CASCADE,
+  idx INTEGER, source TEXT, target TEXT, seed_target TEXT
+);
+CREATE TABLE criterion (
+  id TEXT PRIMARY KEY, name TEXT, model_name TEXT REFERENCES model(name),
+  prompt TEXT, scale_min REAL, scale_max REAL, weight REAL, color TEXT, enabled INTEGER DEFAULT 1
+);
+CREATE TABLE model (
+  name TEXT PRIMARY KEY, base_url TEXT, api_key TEXT, params_json TEXT
+);
+CREATE TABLE score (
+  id INTEGER PRIMARY KEY, paragraph_id INTEGER REFERENCES paragraph(id) ON DELETE CASCADE,
+  criterion_id TEXT REFERENCES criterion(id), value REAL, summary TEXT,
+  aggregate REAL, criteria_key TEXT, kind TEXT DEFAULT 'live', created_at TEXT,
+  revision_id INTEGER REFERENCES target_revision(id)
+);
+CREATE TABLE issue (
+  id INTEGER PRIMARY KEY, paragraph_id INTEGER REFERENCES paragraph(id) ON DELETE CASCADE,
+  criterion_id TEXT REFERENCES criterion(id), target_fragment TEXT, source_fragment TEXT,
+  explanation TEXT, suggestion TEXT, severity TEXT, mqm_category TEXT,
+  status TEXT DEFAULT 'open', kind TEXT DEFAULT 'live', created_at TEXT
+);
+CREATE TABLE term (
+  id INTEGER PRIMARY KEY, paragraph_id INTEGER REFERENCES paragraph(id) ON DELETE CASCADE,
+  source_surface TEXT, source_lemma TEXT, context TEXT, char_start INTEGER, char_end INTEGER,
+  difficulty TEXT, grounded_json TEXT, candidates_json TEXT,
+  target_surface TEXT, pair_accuracy TEXT, recommended TEXT, note TEXT,
+  UNIQUE (paragraph_id, char_start, char_end)
+);
+CREATE TABLE glossary (
+  id INTEGER PRIMARY KEY, term TEXT, context TEXT, target_equivalent TEXT,
+  wikidata_url TEXT NOT NULL, wikidata_id TEXT,
+  UNIQUE (term, context)
+);
+CREATE TABLE target_revision (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  paragraph_id INTEGER REFERENCES paragraph(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  origin TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX idx_target_revision_para ON target_revision(paragraph_id, id);
+CREATE TABLE translator_config (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
+);
+"""
+
+
+@pytest.fixture()
+def prod_conn(tmp_path):
+    """A DB shaped exactly like the live prod DB before this fix: every table
+    that migrate.py already knew how to add is present (target_revision,
+    translator_config + its singleton row, score.revision_id, glossary) —
+    only grounding_config (missing table) and term.trace_json (missing
+    column) are absent, reproducing the prod 500 root cause precisely."""
+    path = tmp_path / "prod.db"
+    conn = sqlite3.connect(str(path))
+    conn.row_factory = sqlite3.Row
+    conn.executescript(PROD_SHAPED_SCHEMA)
+    conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
+                 (DEFAULT_CRITERION_MODEL, "https://openrouter.ai/api/v1", "k", "{}"))
+    conn.execute("INSERT INTO criterion(id,name,model_name,prompt,scale_min,scale_max,weight,color,enabled) "
+                 "VALUES('accuracy','Accuracy',?,'p',1.0,10.0,0.3,'#4d8dff',1)",
+                 (DEFAULT_CRITERION_MODEL,))
+    conn.execute(
+        "INSERT INTO translator_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
+        (DEFAULT_CRITERION_MODEL, "some prompt", "{}"))
+    doc_id = conn.execute(
+        "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,created_at) "
+        "VALUES('T','ru','en','user',0,'upload','2026-01-01T00:00:00Z')").lastrowid
+    pid = conn.execute(
+        "INSERT INTO paragraph(document_id,idx,source,target,seed_target) VALUES(?,?,?,?,?)",
+        (doc_id, 0, "s", "t", "t")).lastrowid
+    conn.execute(
+        "INSERT INTO term(paragraph_id,source_surface,source_lemma,context,char_start,char_end,"
+        "difficulty,target_surface,pair_accuracy,recommended,note) "
+        "VALUES(?,'surf','lemma','ctx',0,4,'green','tgt','green',NULL,'')", (pid,))
+    conn.execute(
+        "INSERT INTO target_revision(paragraph_id,text,origin,created_at) VALUES(?,?,?,?)",
+        (pid, "t", "seed", "2026-01-01T00:00:00Z"))
+    conn.commit()
+    return conn
+
+
+def test_migrate_adds_grounding_config_table_and_seeds_row(prod_conn):
+    migrate.migrate(prod_conn)
+    tables = _tables(prod_conn)
+    assert "grounding_config" in tables
+    row = prod_conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
+    assert row is not None
+    assert row["model_name"] == DEFAULT_CRITERION_MODEL
+    assert json.loads(row["params_json"]) == {"max_tokens": 512, "temperature": 0}
+    assert row["prompt"]                          # non-empty judge prompt
+
+
+def test_migrate_skips_grounding_config_seed_when_model_absent(tmp_path):
+    path = tmp_path / "prod2.db"
+    conn = sqlite3.connect(str(path))
+    conn.row_factory = sqlite3.Row
+    conn.executescript(PROD_SHAPED_SCHEMA)
+    conn.commit()
+    migrate.migrate(conn)
+    assert "grounding_config" in _tables(conn)
+    row = conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
+    assert row is None                             # no FK target → left unseeded, honestly
+
+
+def test_migrate_adds_term_trace_json_column_with_default(prod_conn):
+    migrate.migrate(prod_conn)
+    cols = _tables(prod_conn)["term"]
+    assert "trace_json" in cols
+    row = prod_conn.execute("SELECT trace_json FROM term LIMIT 1").fetchone()
+    assert row["trace_json"] == "{}"               # pre-existing row backfilled by ALTER's DEFAULT
+
+
+def test_migrate_keeps_glossary_table(prod_conn):
+    migrate.migrate(prod_conn)
+    assert "glossary" in _tables(prod_conn)
+
+
+def test_migrate_prod_shaped_idempotent_double_run(prod_conn):
+    migrate.migrate(prod_conn)
+    tables_1 = _tables(prod_conn)
+    gc_1 = prod_conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
+    migrate.migrate(prod_conn)                     # run again — must be a no-op
+    tables_2 = _tables(prod_conn)
+    gc_2 = prod_conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
+    assert tables_1 == tables_2
+    assert dict(gc_1) == dict(gc_2)
+    cols = [r["name"] for r in prod_conn.execute("PRAGMA table_info(term)")]
+    assert cols.count("trace_json") == 1           # ALTER TABLE didn't run twice
+
+
+def test_migrated_prod_shaped_schema_equivalent_to_fresh_seed(prod_conn, tmp_path, monkeypatch):
+    migrate.migrate(prod_conn)
+    migrated_tables = _tables(prod_conn)
+
+    from palimpsest.webapp import db as db_mod
+    monkeypatch.setattr(db_mod, "DB_PATH", tmp_path / "fresh2.db")
+    monkeypatch.setattr(db_mod, "_conn", None)
+    fresh_conn = db_mod.init_db(reset=True)
+    fresh_tables = _tables(fresh_conn)
+
+    for table, cols in fresh_tables.items():
+        assert table in migrated_tables, f"missing table after migrate: {table}"
+        assert cols <= migrated_tables[table], f"missing columns in {table}: {cols - migrated_tables[table]}"
+
+
+def test_grounding_config_endpoint_200_on_migrated_prod_shaped_db(tmp_path, monkeypatch):
+    """Regression test for the prod 500: a DB file that starts in the exact
+    prod-shaped state (no grounding_config table, no term.trace_json) must
+    still serve GET /api/grounding-config with 200 once the app boots — the
+    app's own startup lifespan runs migrate() before any request is served,
+    so this never hits the sqlite3.OperationalError('no such table:
+    grounding_config') that caused the outage."""
+    db_path = tmp_path / "prod_boot.db"
+    setup_conn = sqlite3.connect(str(db_path))
+    setup_conn.row_factory = sqlite3.Row
+    setup_conn.executescript(PROD_SHAPED_SCHEMA)
+    setup_conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
+                        (DEFAULT_CRITERION_MODEL, "https://openrouter.ai/api/v1", "k", "{}"))
+    setup_conn.commit()
+    setup_conn.close()
+
+    monkeypatch.setattr(db, "DB_PATH", db_path)
+    monkeypatch.setattr(db, "_conn", None)
+
+    from palimpsest.webapp.app import app
+    with TestClient(app) as client:                # __enter__ runs the lifespan → migrate()
+        resp = client.get("/api/grounding-config")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["modelName"] == DEFAULT_CRITERION_MODEL
+
+
+def test_grounding_config_endpoint_200_when_table_missing_and_no_default_model(tmp_path, monkeypatch):
+    """Same boot path, but with no model row at all — the FK-safety guard
+    leaves grounding_config unseeded (empty table), and the endpoint must
+    still return 200 with a null/default config, never 500."""
+    db_path = tmp_path / "prod_boot_no_model.db"
+    setup_conn = sqlite3.connect(str(db_path))
+    setup_conn.executescript(PROD_SHAPED_SCHEMA)
+    setup_conn.commit()
+    setup_conn.close()
+
+    monkeypatch.setattr(db, "DB_PATH", db_path)
+    monkeypatch.setattr(db, "_conn", None)
+
+    from palimpsest.webapp.app import app
+    with TestClient(app) as client:
+        resp = client.get("/api/grounding-config")
+    assert resp.status_code == 200
+    assert resp.json() == {"modelName": None, "prompt": "", "params": {}}
 
 
 def test_migrate_cli_help_runs():
