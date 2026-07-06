@@ -108,7 +108,11 @@ intervals on R_doc.**
 |---|---|---|---|---|---|---|
 | gemini-3.1-flash-lite | **0.690** [0.680–0.700] | 0.630 | 0.610 | 0.300 | 0.451 | 7,959 |
 | deepseek-v4-flash | **0.614** [0.604–0.625] | 0.524 | 0.509 | 0.305 | 0.458 | 7,959 |
-| qwen3.7-plus | \placeholder{run in progress} | | | | | 7,959 |
+| qwen3.7-plus[^qwen] | --- (invalidated) | --- | --- | --- | --- | 7,959 |
+
+[^qwen]: Run invalidated by provider-side instability; scores withheld rather
+than reported. See "Provider reliability as a validity threat" at the end of
+this section.
 
 On document-level recall, gemini-3.1-flash-lite reaches 0.690 and
 deepseek-v4-flash 0.614, with narrow intervals over 7,959 gold mentions.
@@ -225,6 +229,30 @@ disclose them rather than curate the corpus to its result. We assign mention
 type by surface capitalisation alone, without cross-tabulation against the
 extractor's own category, so the capitalised/lowercase split is a proxy for
 proper-noun versus common-noun terminology rather than a verified partition.
+
+**Provider reliability as a validity threat.** qwen3.7-plus completed its run
+mechanically, but we exclude it from Table 1: an overnight 429 storm at the
+provider corrupted the run silently instead of failing it outright. The
+run's own checkpoint reported 99 of 100 articles complete, while the
+prediction file held only 36; a resume recovered 29 more, for a final
+coverage of 65 of 100 articles. Judge-unavailability affected 735 groundings
+in this run, against 12 for gemini-3.1-flash-lite. Per-article extraction
+counts track the outage directly: a mean of 39.6 predictions per article over
+the first 30 articles processed, against 136.9 over the last 30, and 1,168
+predictions on the one article completed after the outage cleared, against
+1,044 for gemini-3.1-flash-lite on that same article. Forensic document-level
+recall over these corrupted predictions would read 0.164; we report that
+figure only as diagnostic evidence of the failure, not as a result, and it is
+not part of Table 1. gpt-5.5 is absent from the comparison for a related
+reason: no route to the provider stayed stable for the length of the
+experiment window, with both the pinned route and the automatic fallback
+returning 429 for more than 16 hours despite continuous probing. The lesson
+generalises beyond this run. Silent corruption under a provider outage is not
+visible until someone checks article coverage against the prediction file, so
+integrity gates on article-coverage completeness and on judge-availability
+need to run before a score is read at all. Any entity-grounding evaluation
+that re-queries live infrastructure at evaluation time inherits that
+infrastructure's failure modes.
 
 # 7 Related Work
 
