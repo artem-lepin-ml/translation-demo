@@ -5,12 +5,21 @@
 # meant for CI or for any other host.
 #
 # What it does, in order (safe to re-run — every step is idempotent):
-#   1. git pull the target branch (default: dev-demo)
-#   2. npm build the frontend
+#   1. git pull the target branch (default: dev-demo) — skipped when
+#      SKIP_GIT=1 (the live /opt/gse-demo/app is a plain rsynced tree with
+#      no .git; flow: build locally, rsync the tree over, then run this
+#      script with SKIP_GIT=1 SKIP_NPM=1 — see deploy/README.md)
+#   2. npm build the frontend — skipped when SKIP_NPM=1 (the live host has
+#      no node/npm; frontend/dist must be built locally and rsynced in —
+#      the script fails loudly if it is missing)
 #   3. back up demo.db
 #   4. docker build the gse-demo image and rebuild/restart ONLY that
 #      container — gse-viewer and any other container on grader-net are
-#      never touched
+#      never touched. The container is started with --env-file "$ENV_FILE"
+#      (default /opt/gse-demo/env, root-owned mode 600 on the live host —
+#      this is how it carries DEMO_ADMIN_TOKEN across a rebuild), plus an
+#      explicit -e OPENROUTER_API_KEY override when that var is set in this
+#      script's own environment
 #   5. run the additive schema migration (palimpsest.webapp.migrate) against
 #      the live DB before the new container starts serving
 #   6. disable the retired Cultural Adaptation criterion on PROD DATA
@@ -26,24 +35,39 @@ set -euo pipefail
 
 REPO_DIR="${REPO_DIR:-$HOME/translation-demo}"
 DEPLOY_BRANCH="${DEPLOY_BRANCH:-dev-demo}"
-DATA_DIR="${DATA_DIR:-/srv/gse-demo/data}"          # host dir mounted at /data in the container
+SKIP_GIT="${SKIP_GIT:-0}"                           # 1 = skip git pull (tree deployed by rsync, no .git)
+SKIP_NPM="${SKIP_NPM:-0}"                           # 1 = skip npm build (no node on host; frontend/dist rsynced in)
+DATA_DIR="${DATA_DIR:-/opt/gse-demo/data}"          # host dir mounted at /data in the container — verified against the live gse-demo mount on 2026-07-06
 CONTAINER_NAME="${CONTAINER_NAME:-gse-demo}"
 IMAGE_NAME="${IMAGE_NAME:-gse-demo}"
 NETWORK_NAME="${NETWORK_NAME:-grader-net}"
 API_PORT="${API_PORT:-8000}"
+ENV_FILE="${ENV_FILE:-/opt/gse-demo/env}"           # root-owned, mode 600 on the live host — carries DEMO_ADMIN_TOKEN + OPENROUTER_API_KEY
 OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"
 
 log() { printf '\n[update-server] %s\n' "$1"; }
 
 cd "$REPO_DIR"
 
-log "1/7 git pull origin $DEPLOY_BRANCH"
-git fetch origin "$DEPLOY_BRANCH"
-git checkout "$DEPLOY_BRANCH"
-git pull --ff-only origin "$DEPLOY_BRANCH"
+if [ "$SKIP_GIT" != "1" ]; then
+    log "1/7 git pull origin $DEPLOY_BRANCH"
+    git fetch origin "$DEPLOY_BRANCH"
+    git checkout "$DEPLOY_BRANCH"
+    git pull --ff-only origin "$DEPLOY_BRANCH"
+else
+    log "1/7 skipped (SKIP_GIT=1 — tree deployed by rsync)"
+fi
 
-log "2/7 npm build (frontend/dist)"
-(cd frontend && npm ci && npm run build)
+if [ "$SKIP_NPM" != "1" ]; then
+    log "2/7 npm build (frontend/dist)"
+    (cd frontend && npm ci && npm run build)
+else
+    log "2/7 skipped (SKIP_NPM=1 — using prebuilt frontend/dist)"
+    if [ ! -d "$REPO_DIR/frontend/dist" ]; then
+        log "ERROR: frontend/dist missing — build locally before rsync"
+        exit 1
+    fi
+fi
 
 log "3/7 backup demo.db"
 if [ -f "$DATA_DIR/demo.db" ]; then
@@ -65,10 +89,21 @@ docker run --rm \
 log "restart ONLY $CONTAINER_NAME (gse-viewer / other grader-net containers untouched)"
 docker stop "$CONTAINER_NAME" 2>/dev/null || true
 docker rm "$CONTAINER_NAME" 2>/dev/null || true
+
+ENV_ARGS=()
+if [ -r "$ENV_FILE" ]; then
+    ENV_ARGS+=(--env-file "$ENV_FILE")
+elif [ -f "$ENV_FILE" ]; then
+    log "WARNING: $ENV_FILE exists but is not readable by $(whoami) — env vars from it (e.g. DEMO_ADMIN_TOKEN) will be MISSING from the container. Run this script as a user that can read the file (it is root-owned mode 600 on the live host)."
+fi
+if [ -n "$OPENROUTER_API_KEY" ]; then
+    ENV_ARGS+=(-e "OPENROUTER_API_KEY=$OPENROUTER_API_KEY")
+fi
+
 docker run -d --name "$CONTAINER_NAME" \
     --network "$NETWORK_NAME" \
     -v "$DATA_DIR:/data" \
-    -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" \
+    "${ENV_ARGS[@]}" \
     "$IMAGE_NAME"
 
 log "waiting for $CONTAINER_NAME to answer on :$API_PORT"
