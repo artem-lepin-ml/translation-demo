@@ -10,7 +10,7 @@ Up-link: [docs/subsystems/webapp.md](../subsystems/webapp.md) · process: global
 
 ## Real seed data (single source)
 
-`data/seed/seed_paragraphs.jsonl` — 15 body paragraphs from the book opening (RU source `data/pilot/pilot_original.md`, EN target the `gemma_par_by_par` translation), rebuilt by [scripts/rebuild_seed_texts.py](../../scripts/rebuild_seed_texts.py) as part of [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md) (was: 16 curated paragraphs from the pilot run, `gpt-5.4-mini` par-by-par, top-by-issue-density). Seed-refresh Phases A–C are complete: each record carries genuine LLM-judge baselines (`openai/gpt-5.4-mini`) for 5 seeded criteria plus real terminology (haiku-4.5 extract + subagent G3/P3 grounding/pairing, 204 terms — see [terminology stage doc](../stages/terminology.md) Status). The `term` table's real difficulty/pairAccuracy verdicts reach the DB via a separate step, `uv run python scripts/load_terms.py`, run **after** `python -m palimpsest.webapp.seed` — `seed.py` alone still writes its placeholder `VERDICTS[i % 3]` rotation for difficulty/pairAccuracy (see [webapp.md](../subsystems/webapp.md) `seed.py` row and [known_issues.md](../known_issues.md)).
+`data/seed/seed_paragraphs.jsonl` — 15 body paragraphs from the book opening (RU source `data/pilot/pilot_original.md`, EN target the `gemma_par_by_par` translation), rebuilt by [scripts/rebuild_seed_texts.py](../../scripts/rebuild_seed_texts.py) as part of [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md) (was: 16 curated paragraphs from the pilot run, `gpt-5.4-mini` par-by-par, top-by-issue-density). Seed-refresh Phases A–C are complete: each record carries genuine LLM-judge baselines (`openai/gpt-5.4-mini`) for 4 seeded criteria plus real terminology (haiku-4.5 extract + subagent G3/P3 grounding/pairing, 204 terms — see [terminology stage doc](../stages/terminology.md) Status). The `term` table's real difficulty/pairAccuracy verdicts reach the DB via a separate step, `uv run python scripts/load_terms.py`, run **after** `python -m palimpsest.webapp.seed` — `seed.py` alone still writes its placeholder `VERDICTS[i % 3]` rotation for difficulty/pairAccuracy (see [webapp.md](../subsystems/webapp.md) `seed.py` row and [known_issues.md](../known_issues.md)).
 
 Served as one document:
 
@@ -19,7 +19,7 @@ Served as one document:
 | Document title | `Mesopotamia — ancient Near East (pilot)` |
 | Language pair | ru → en |
 | Paragraphs | 15 |
-| Criteria (evaluators) seeded | 5 — accuracy, fluency, style, cultural, terminology (`consistency` present in source data but **not** seeded as an evaluator) |
+| Criteria (evaluators) seeded | 4 — accuracy, fluency, style, terminology (Cultural Adaptation dropped wave-4 Б4; `consistency` present in source data but **not** seeded as an evaluator) |
 | Issues (seed) | real, from `/evaluate`-generated baselines (see [terminology stage doc](../stages/terminology.md) and [known_issues.md](../known_issues.md) for the advice-guard corpus) |
 | Terms | 204, difficulty 🟢62/🟡31/🔴111 — real G3/P3 output, `data/seed/terminology_out.json`, loaded via `scripts/load_terms.py` |
 | Paragraph 1 aggregate (baseline) | real, from the regenerated 15-paragraph seed (no longer the pre-refresh 6.44/10 figure) |
@@ -37,7 +37,7 @@ This is the seeded document (`origin='seed'`), always present and never deletabl
 3. **Terminology two-signal** — open Glossary tab and a source-term: `difficulty` dot (🟢 grounded / 🟡 ambiguous / 🔴 not-found) on the RU term; `pairAccuracy` on the RU↔EN pair (null when difficulty=red); Wikidata link present on glossary rows.
 4. **Improvement loop (the headline)** — accept a suggested fix on a paragraph → target text updates → re-score runs → aggregate rises and shows ▲delta with a `cached` badge.
 5. **Reset** — Reset button → document returns to seed baseline (target text and scores restored; accepted edits gone).
-6. **Settings** — 5 evaluators render with model · weight · prompt; model registry shows masked API key (no plaintext secret on screen).
+6. **Settings** — 4 evaluators render with model · weight · prompt; model registry shows masked API key (no plaintext secret on screen).
 7. **Ranking** — paragraphs sortable by each criterion and by aggregate.
 
 ## Journey: upload a custom pair (all must pass)

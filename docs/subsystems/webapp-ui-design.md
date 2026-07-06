@@ -67,6 +67,7 @@ All classes are `va-`-prefixed. The reusable building blocks a new feature shoul
 | `va-best-marker` | Small yellow ⭰ glyph next to a paragraph's score chip when a past revision scored higher than the current one; click opens the Inspector's Scores tab (wave-5 S5 §3.1) |
 | `va-history-block` / `va-history-row` / `va-history-origin` / `va-history-agg` / `va-history-time` / `va-history-tag` / `va-history-best` / `va-history-restore` / `va-history-preview` | Inspector "Revision history" list under `ScoresView` — up to 8 rows (`+N more`), current/best tags, click-to-preview text, one-click Restore (wave-5 S5 §3.2–3.3) |
 | `va-cached-mini` | 10px mono badge on a scored criterion row marking an offline-fallback (`kind='cache'`) response, distinct from the paragraph-level `va-cached-badge` (wave-5 S5 §3.4) |
+| `va-gl-*` (`va-gl-table`, `-row`, `-detail`, `-badge det\|llm\|rej\|none`, `-step done\|warn\|fail\|skip`, `-cand`, `-judge`, `-occ`, `-cat`, `-qid`, `-via`, …) | Glossary redesign namespace (wave-5 S2, [spec](../superpowers/specs/2026-07-05-glossary-redesign-impl.md)): grouped-row table, accordion detail panel (context/path-stepper/candidates/judge card/mentions), grounding badge tones, path-stepper step states. Ported verbatim from [2026-07-03-glossary-redesign-mockup.html](../superpowers/specs/2026-07-03-glossary-redesign-mockup.html) — no new values invented. |
 
 Loading convention: buttons show `…` while a request is in flight (e.g. `{isLoading ? '…' : 'Accept'}` in `InspectorPanel.tsx`).
 

@@ -111,6 +111,7 @@ def _term_dict(r) -> dict:
         "candidates": json.loads(r["candidates_json"]) if r["candidates_json"] else [],
         "targetSurface": r["target_surface"], "pairAccuracy": _norm_verdict(r["pair_accuracy"]),
         "recommended": r["recommended"], "note": r["note"],
+        "traceJson": json.loads(r["trace_json"]) if r["trace_json"] else {},
     }
 
 

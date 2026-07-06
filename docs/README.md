@@ -7,7 +7,7 @@ Up-link: [README.md](../README.md)
 | [docs/goals/demo-positioning.md](goals/demo-positioning.md) | Positioning — what the demo is, who it's for (EMNLP demo-track, supervisor, live audiences), quality bar, working rules |
 | [docs/subsystems/webapp.md](subsystems/webapp.md) | Demo eval web app — FastAPI+SQLite backend, React/TipTap frontend, DB schema, API surface, how to run |
 | [docs/subsystems/webapp-ui-design.md](subsystems/webapp-ui-design.md) | Frontend visual design system (variant-a) — dark-theme tokens, `va-*` component classes, reference screenshots, the extend-don't-reinvent rule |
-| [docs/superpowers/specs/2026-06-30-demo-contracts.md](superpowers/specs/2026-06-30-demo-contracts.md) | Rev-4 contract spec — wire-DTO types, SQLite DDL, REST endpoints (single source of truth for API/data contracts) |
+| [docs/superpowers/specs/2026-06-30-demo-contracts.md](superpowers/specs/2026-06-30-demo-contracts.md) | Rev-5 contract spec — wire-DTO types, SQLite DDL, REST endpoints (single source of truth for API/data contracts) |
 | [docs/superpowers/specs/2026-07-01-model-registry-design.md](superpowers/specs/2026-07-01-model-registry-design.md) | Model Registry design spec (v2, post `/verify-spec`) — model matrix, params filtering, budget guard |
 | [docs/superpowers/plans/2026-07-01-model-registry.md](superpowers/plans/2026-07-01-model-registry.md) | Model Registry implementation plan (task breakdown) |
 | [docs/superpowers/specs/2026-07-02-custom-pair-upload-design.md](superpowers/specs/2026-07-02-custom-pair-upload-design.md) | Custom pair upload — design spec (rev-4): API, DDL delta, file-ingest contract, UI flow, precompute |
