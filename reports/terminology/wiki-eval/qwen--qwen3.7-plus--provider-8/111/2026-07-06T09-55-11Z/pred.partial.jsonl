@@ -5123,3 +5123,699 @@
 {"title": "Хатти", "index": 787, "surface": "Урарту", "lemma": "Урарту", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
 {"title": "Хатти", "index": 791, "surface": "хеттские", "lemma": "хетты", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
 {"title": "Хатти", "index": 796, "surface": "Урарту", "lemma": "Урарту", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 0, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 1, "surface": "Лули", "lemma": "Лули", "qid": "Q115830", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 3, "surface": "Lu-li-i", "lemma": "Lu-li-i", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Элулай", "index": 5, "surface": "’Ελουλαϊος", "lemma": "’Ελουλαϊος", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 6, "surface": "Λύλας", "lemma": "Λύλας", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 14, "surface": "финикийский", "lemma": "финикийский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Элулай", "index": 16, "surface": "Сидона", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 25, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 37, "surface": "Элулае", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 41, "surface": "ассирийского", "lemma": "ассирийский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Элулай", "index": 52, "surface": "Лули", "lemma": "Лули", "qid": "Q115830", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 54, "surface": "Элулае", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 58, "surface": "Иудейских древностях", "lemma": "Иудейские древности", "qid": "Q1232616", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 60, "surface": "Иосифа Флавия", "lemma": "Иосиф Флавий", "qid": "Q134461", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 69, "surface": "Менандром Эфесским", "lemma": "Менандр Эфесский", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 73, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 201, "surface": "ассирийских", "lemma": "ассирийский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Элулай", "index": 207, "surface": "Элулаем", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 209, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 217, "surface": "Тиглатпаласаре III", "lemma": "Тиглатпаласар III", "qid": "Q210074", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 229, "surface": "тирского", "lemma": "тирский", "qid": "Q18994100", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 232, "surface": "Китиона", "lemma": "Китион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 242, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 249, "surface": "Тиглатпаласара III", "lemma": "Тиглатпаласар III", "qid": "Q210074", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 261, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 263, "surface": "Сидона", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 268, "surface": "ассирийских", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 280, "surface": "Тиглатпаласара III", "lemma": "Тиглатпаласар III", "qid": "Q210074", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 282, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 290, "surface": "Салманасара V", "lemma": "Салманасар V", "qid": "Q310640", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 298, "surface": "Тахарка", "lemma": "Тахарка", "qid": "Q315714", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 300, "surface": "Израиля", "lemma": "Израиль", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 301, "surface": "Осия", "lemma": "Осия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 307, "surface": "Финикии", "lemma": "Финикия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 309, "surface": "Леванта", "lemma": "Левант", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 348, "surface": "тирских", "lemma": "тирский", "qid": "Q18994100", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 363, "surface": "Арвада", "lemma": "Арвад", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 365, "surface": "Библа", "lemma": "Библ", "qid": "Q173532", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 369, "surface": "тирцы", "lemma": "тирцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 385, "surface": "Салманасара V", "lemma": "Салманасар V", "qid": "Q310640", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 389, "surface": "Самарию", "lemma": "Самария", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 397, "surface": "Тир", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 404, "surface": "Тир", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 426, "surface": "тирского", "lemma": "тирский", "qid": "Q18994100", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 434, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 435, "surface": "Акко", "lemma": "Акко", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 437, "surface": "Ушу", "lemma": "Ушу", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 441, "surface": "Салманасара V", "lemma": "Салманасар V", "qid": "Q310640", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 470, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 476, "surface": "Ассирии", "lemma": "Ассирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 483, "surface": "Саргон II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 499, "surface": "Самария", "lemma": "Самария", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 504, "surface": "Саргон II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 507, "surface": "Северное Израильское царство", "lemma": "Северное Израильское царство", "qid": "Q230407", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 523, "surface": "Ассирии", "lemma": "Ассирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 527, "surface": "Саргоном II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 529, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 535, "surface": "Сидоном", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 536, "surface": "Акко", "lemma": "Акко", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 538, "surface": "Ушу", "lemma": "Ушу", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 551, "surface": "Саргона II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 554, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 558, "surface": "ассирийскому", "lemma": "ассирийский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Элулай", "index": 563, "surface": "тирцев", "lemma": "тирцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 564, "surface": "ассирийцы", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 569, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 581, "surface": "Саргона II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 589, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 593, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 605, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 607, "surface": "Газы", "lemma": "Газа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 608, "surface": "Ганноном", "lemma": "Ганнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 616, "surface": "Саргона II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 624, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 632, "surface": "тирскими", "lemma": "тирский", "qid": "Q18994100", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 635, "surface": "Кипре", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 646, "surface": "Китионе", "lemma": "Китион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 649, "surface": "Саргона II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 653, "surface": "Финикии", "lemma": "Финикия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 655, "surface": "Леванта", "lemma": "Левант", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 674, "surface": "ассирийскому", "lemma": "ассирийский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Элулай", "index": 676, "surface": "Синаххерибу", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 680, "surface": "Призме Синаххериба", "lemma": "Призма Синаххериба", "qid": "Q578076", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 688, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 690, "surface": "Иудейского царства", "lemma": "Иудейское царство", "qid": "Q48685", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 692, "surface": "Езекия", "lemma": "Езекия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 694, "surface": "Библа", "lemma": "Библ", "qid": "Q173532", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 695, "surface": "Урумилк I", "lemma": "Урумилк I", "qid": "Q48963451", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 697, "surface": "Арвада", "lemma": "Арвад", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 698, "surface": "Абдэл", "lemma": "Абдэл", "qid": "Q48963424", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 699, "surface": "Ашкелона", "lemma": "Ашкелон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 700, "surface": "Сидкия", "lemma": "Сидкия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 701, "surface": "Цумура", "lemma": "Цумур", "qid": "Q26437960", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 702, "surface": "Менахем", "lemma": "Менахем", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 704, "surface": "Ашдода", "lemma": "Ашдод", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 705, "surface": "Митинти", "lemma": "Митинти", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 712, "surface": "египетский", "lemma": "египетский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 713, "surface": "фараон", "lemma": "фараон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 717, "surface": "Аравии", "lemma": "Аравия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 724, "surface": "Аммона", "lemma": "Аммон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 725, "surface": "Буду-илу", "lemma": "Буду-илу", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 727, "surface": "Моава", "lemma": "Моав", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 728, "surface": "Камусу-надби", "lemma": "Камусу-надби", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 731, "surface": "Эдома", "lemma": "Эдом", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 732, "surface": "Айарам", "lemma": "Айарам", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 738, "surface": "Синаххериба", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 741, "surface": "Вавилонии", "lemma": "Вавилония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 742, "surface": "Мардук-апла-иддин II", "lemma": "Мардук-апла-иддин II", "qid": "Q356505", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 745, "surface": "эламитами", "lemma": "эламиты", "qid": "Q9252262", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 747, "surface": "ассирийцы", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 751, "surface": "Вавилонии", "lemma": "Вавилония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 752, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 764, "surface": "Синаххериба", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 768, "surface": "Синаххерибом", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 778, "surface": "Финикию", "lemma": "Финикия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 782, "surface": "Альтаку", "lemma": "Альтаку", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 784, "surface": "Экрона", "lemma": "Экрон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 788, "surface": "египетские", "lemma": "египетские", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 790, "surface": "аравийские", "lemma": "аравийские", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 811, "surface": "Иерусалим", "lemma": "Иерусалим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 828, "surface": "Синаххериба", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 829, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 832, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 834, "surface": "Китион", "lemma": "Китион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 839, "surface": "тирцы", "lemma": "тирцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 843, "surface": "Салманасара V", "lemma": "Салманасар V", "qid": "Q310640", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 847, "surface": "Урумилк I", "lemma": "Урумилк I", "qid": "Q48963451", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 849, "surface": "Абдэл", "lemma": "Абдэл", "qid": "Q48963424", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 856, "surface": "ассирийского", "lemma": "ассирийский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Элулай", "index": 874, "surface": "тирского", "lemma": "тирский", "qid": "Q18994100", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 878, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 883, "surface": "Итобаал", "lemma": "Итобаал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 885, "surface": "Акко", "lemma": "Акко", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 892, "surface": "Тиро-Сидонского царства", "lemma": "Тиро-Сидонское царство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 910, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 922, "surface": "Элулая", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 935, "surface": "Китионе", "lemma": "Китион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 940, "surface": "Синаххериба", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Элулай", "index": 946, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 950, "surface": "Кипре", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 962, "surface": "Иосифа Флавия", "lemma": "Иосиф Флавий", "qid": "Q134461", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 965, "surface": "Элулай", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 975, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 990, "surface": "Элулая", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 1003, "surface": "Элулая", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 1004, "surface": "Тиром", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 1010, "surface": "ассирийских", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 1018, "surface": "Элулая", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 1028, "surface": "Итобаал", "lemma": "Итобаал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Элулай", "index": 1034, "surface": "сидонским", "lemma": "сидоняне", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Элулай", "index": 1042, "surface": "Элулая", "lemma": "Элулай", "qid": "Q117872121", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 1046, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Элулай", "index": 1048, "surface": "Баал I", "lemma": "Баал I", "qid": "Q112573", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 904, "surface": "Филомел", "lemma": "Филомел", "qid": "Q4484273", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 906, "surface": "Дельфы", "lemma": "Дельфы", "qid": "Q75459", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 913, "surface": "фокидское", "lemma": "фокидский", "qid": "Q2637650", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 927, "surface": "Греции", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 935, "surface": "фокидян", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 941, "surface": "дельфийцев", "lemma": "дельфийцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 945, "surface": "Филомел", "lemma": "Филомел", "qid": "Q4484273", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 949, "surface": "Дельфийского храма", "lemma": "Дельфийский храм", "qid": "Q10751359", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 974, "surface": "амфиктионов", "lemma": "амфиктионы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Фокидский союз", "index": 977, "surface": "беотийцев", "lemma": "беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Фокидский союз", "index": 981, "surface": "фокидянам", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 984, "surface": "Священная война", "lemma": "Священная война", "qid": "Q1249270", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1098, "surface": "Ономарх", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1103, "surface": "фокидском", "lemma": "фокидский", "qid": "Q2637650", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1119, "surface": "Фокиде", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1123, "surface": "Дельф", "lemma": "Дельфы", "qid": "Q75459", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1128, "surface": "дельфийского", "lemma": "дельфийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1141, "surface": "фокидской", "lemma": "фокидский", "qid": "Q2637650", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1160, "surface": "Ономарх", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1174, "surface": "спартанского", "lemma": "спартанский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1176, "surface": "Архидама", "lemma": "Архидам", "qid": "Q31790239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1178, "surface": "ферских", "lemma": "ферский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1181, "surface": "Фессалии", "lemma": "Фессалия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1194, "surface": "Ономарх", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1198, "surface": "Локриде", "lemma": "Локрида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1200, "surface": "Фроний", "lemma": "Фроний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1216, "surface": "Средней Греции", "lemma": "Средняя Греция", "qid": "Q190600", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1219, "surface": "Северную", "lemma": "Северная Греция", "qid": "Q3563983", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1223, "surface": "локров", "lemma": "локры", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1224, "surface": "Ономарх", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1227, "surface": "Дориду", "lemma": "Дорида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1232, "surface": "Беотию", "lemma": "Беотия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1236, "surface": "Орхомен", "lemma": "Орхомен", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1241, "surface": "Херонеи", "lemma": "Херонея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1244, "surface": "Ономарх", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1254, "surface": "Фессалию", "lemma": "Фессалия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1259, "surface": "македонский", "lemma": "македонский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1261, "surface": "Филипп II", "lemma": "Филипп II", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1266, "surface": "македонянами", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1268, "surface": "Ономарх", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1269, "surface": "Фаилл", "lemma": "Фаилл", "qid": "Q16555097", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1275, "surface": "Фессалию", "lemma": "Фессалия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1278, "surface": "Ономарх", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1291, "surface": "фессалийцев", "lemma": "фессалийцы", "qid": "Q3984995", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1293, "surface": "Филиппа", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1295, "surface": "Фессалия", "lemma": "Фессалия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1299, "surface": "Фокидского союза", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1306, "surface": "Греции", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1314, "surface": "Дельфах", "lemma": "Дельфы", "qid": "Q75459", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1323, "surface": "амфиктионов", "lemma": "амфиктионы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Фокидский союз", "index": 1328, "surface": "Фокиды", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1332, "surface": "Беотию", "lemma": "Беотия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1333, "surface": "Ономарх", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1335, "surface": "Коронею", "lemma": "Коронея", "qid": "Q593295", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1336, "surface": "Корсий", "lemma": "Корсий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1338, "surface": "Тилфоссей", "lemma": "Тилфоссей", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 1342, "surface": "Беотии", "lemma": "Беотия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1343, "surface": "Беотийский союз", "lemma": "Беотийский союз", "qid": "Q833665", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1355, "surface": "Филипп", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1359, "surface": "Фессалию", "lemma": "Фессалия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1361, "surface": "Ономарха", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1371, "surface": "Фермопилами", "lemma": "Фермопилы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1373, "surface": "Ферами", "lemma": "Феры", "qid": "Q1330631", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1375, "surface": "Крокусовом поле", "lemma": "Крокусово поле", "qid": "Q63806485", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1379, "surface": "Пагасейского залива", "lemma": "Пагасейский залив", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 1384, "surface": "македонянами", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1392, "surface": "фокидянами", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1405, "surface": "Фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1418, "surface": "афинских", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1423, "surface": "фокидских", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1433, "surface": "Ономарха", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1441, "surface": "Крокусовом поле", "lemma": "Крокусово поле", "qid": "Q63806485", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1453, "surface": "фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1457, "surface": "Фессалию", "lemma": "Фессалия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1458, "surface": "Северную и Западную Локриду", "lemma": "Северная и Западная Локрида", "qid": null, "span_len": 4, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 1462, "surface": "Фаилл", "lemma": "Фаилл", "qid": "Q16555097", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1464, "surface": "Ономарха", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1479, "surface": "дельфийские сокровища", "lemma": "дельфийские сокровища", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 1488, "surface": "Беотийцы", "lemma": "Беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1495, "surface": "Фаилла", "lemma": "Фаилл", "qid": "Q16555097", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1500, "surface": "Орхоменом", "lemma": "Орхомен", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1502, "surface": "Кефиса", "lemma": "Кефис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1505, "surface": "Коронее", "lemma": "Коронея", "qid": "Q593295", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1507, "surface": "фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1512, "surface": "Западную Беотию", "lemma": "Западная Беотия", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 1514, "surface": "Филипп II", "lemma": "Филипп II", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1520, "surface": "Средней Греции", "lemma": "Средняя Греция", "qid": "Q190600", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1528, "surface": "полисов", "lemma": "полис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1529, "surface": "Греции", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1531, "surface": "спартанцев", "lemma": "спартанцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1534, "surface": "ахейцев", "lemma": "ахейцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1538, "surface": "афинян", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1545, "surface": "Фаилла", "lemma": "Фаилл", "qid": "Q16555097", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1551, "surface": "Фермопилы", "lemma": "Фермопилы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1555, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1558, "surface": "Фаилл", "lemma": "Фаилл", "qid": "Q16555097", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1581, "surface": "Спарте", "lemma": "Спарта", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1587, "surface": "Мегалополем", "lemma": "Мегалополь", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1592, "surface": "фиванцы", "lemma": "фиванцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1596, "surface": "Мегалополю", "lemma": "Мегалополь", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1597, "surface": "Фаилл", "lemma": "Фаилл", "qid": "Q16555097", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1602, "surface": "Северную Локриду", "lemma": "Северная Локрида", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 1606, "surface": "Нарик", "lemma": "Нарик", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1610, "surface": "беотийцев", "lemma": "беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Фокидский союз", "index": 1612, "surface": "Фокиду", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1613, "surface": "Фаилл", "lemma": "Фаилл", "qid": "Q16555097", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1619, "surface": "Аб", "lemma": "Абы", "qid": "Q304823", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1625, "surface": "фокидских", "lemma": "фокидский", "qid": "Q2637650", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1632, "surface": "Нарика", "lemma": "Нарик", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1638, "surface": "Нарик", "lemma": "Нарик", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1644, "surface": "Фаилл", "lemma": "Фаилл", "qid": "Q16555097", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1652, "surface": "Ономарха", "lemma": "Ономарх", "qid": "Q2584301", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1655, "surface": "Фалеку", "lemma": "Фалек", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1658, "surface": "Мнасею", "lemma": "Мнасей", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1663, "surface": "Беотии", "lemma": "Беотия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1664, "surface": "Фалек", "lemma": "Фалек", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1670, "surface": "Херонею", "lemma": "Херонея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1676, "surface": "Беотийцы", "lemma": "беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1683, "surface": "Фокиду", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1700, "surface": "Фокида", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1702, "surface": "Беотия", "lemma": "Беотия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1707, "surface": "дельфийская сокровищница", "lemma": "дельфийская сокровищница", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 1716, "surface": "Афин", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1722, "surface": "Эвбее", "lemma": "Эвбея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1723, "surface": "Фалек", "lemma": "Фалек", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1728, "surface": "афинянами", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1733, "surface": "Беотийцы", "lemma": "беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1739, "surface": "Филиппу", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1745, "surface": "Фалек", "lemma": "Фалек", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1751, "surface": "стратега", "lemma": "стратег", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1756, "surface": "дельфийских", "lemma": "дельфийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1762, "surface": "беотийцев", "lemma": "беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Фокидский союз", "index": 1764, "surface": "стратеги", "lemma": "стратег", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1767, "surface": "Динократ", "lemma": "Динократ", "qid": "Q1183320", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1768, "surface": "Каллий", "lemma": "Каллий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1770, "surface": "Софан", "lemma": "Софан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1786, "surface": "Фалека", "lemma": "Фалек", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1789, "surface": "фокидское", "lemma": "фокидский", "qid": "Q2637650", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1795, "surface": "Спарты", "lemma": "Спарта", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1797, "surface": "Афин", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1802, "surface": "Фроний", "lemma": "Фроний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1803, "surface": "Альпон", "lemma": "Альпон", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 1805, "surface": "Никею", "lemma": "Никея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1808, "surface": "Фермопильскому проходу", "lemma": "Фермопильский проход", "qid": "Q194450", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1812, "surface": "фокидянами", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1819, "surface": "Афин", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1825, "surface": "Филиппом", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1837, "surface": "Македонией", "lemma": "Македония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1843, "surface": "Фокидского союза", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1853, "surface": "триер", "lemma": "триера", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1859, "surface": "Проксена", "lemma": "Проксен", "qid": "Q97181741", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1860, "surface": "Спартанцы", "lemma": "спартанцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1864, "surface": "Фокиду", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1869, "surface": "гоплитов", "lemma": "гоплит", "qid": "Q175249", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1873, "surface": "Архидама", "lemma": "Архидам", "qid": "Q31790239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1877, "surface": "Фокиде", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1882, "surface": "Фалек", "lemma": "Фалек", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1887, "surface": "фокидских", "lemma": "фокидский", "qid": "Q2637650", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1891, "surface": "Афин", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1893, "surface": "афинские", "lemma": "афинский", "qid": "Q4072761", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1895, "surface": "спартанские", "lemma": "спартанский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1900, "surface": "фокидянам", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1905, "surface": "Фермопилы", "lemma": "Фермопилы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1908, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1922, "surface": "Афины", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1926, "surface": "Филиппом", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1937, "surface": "Филократов мир", "lemma": "Филократов мир", "qid": "Q1456419", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1942, "surface": "Фокиде", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1947, "surface": "Галос", "lemma": "Галос", "qid": "Q4734643", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1949, "surface": "Фессалии", "lemma": "Фессалия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1956, "surface": "фокидян", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1957, "surface": "Фалек", "lemma": "Фалек", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1961, "surface": "Филиппом", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1965, "surface": "Филократова мира", "lemma": "Филократов мир", "qid": "Q1456419", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 1969, "surface": "Филиппу", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1974, "surface": "Фермопил", "lemma": "Фермопилы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 1985, "surface": "Пелопоннес", "lemma": "Пелопоннес", "qid": "Q78967", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1987, "surface": "Коринф", "lemma": "Коринф", "qid": "Q103011", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 1990, "surface": "Фокидский союз", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2005, "surface": "Филиппу", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2006, "surface": "Македонский", "lemma": "Македонский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2011, "surface": "фокидянами", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2016, "surface": "Дельфийской амфиктионии", "lemma": "Дельфийская амфиктиония", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 2020, "surface": "амфиктионов", "lemma": "амфиктион", "qid": "Q17521225", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2022, "surface": "фокидян", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2036, "surface": "Фокиды", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2038, "surface": "фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2047, "surface": "Локриде", "lemma": "Локрида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2049, "surface": "Беотии", "lemma": "Беотия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2066, "surface": "фокидских", "lemma": "фокидский", "qid": "Q2637650", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2078, "surface": "фокидянам", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2092, "surface": "Дельфийскому храму", "lemma": "Дельфийский храм", "qid": "Q10751359", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2096, "surface": "Фокиды", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2128, "surface": "стадия", "lemma": "стадий", "qid": "Q1645966", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2132, "surface": "македонские", "lemma": "македонский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2134, "surface": "беотийские", "lemma": "беотийский", "qid": "Q833665", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2136, "surface": "Фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2140, "surface": "Совете амфиктионов", "lemma": "Совет амфиктионов", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 2145, "surface": "Дельфийское святилище", "lemma": "Дельфийское святилище", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 2159, "surface": "амфиктионов", "lemma": "амфиктионы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Фокидский союз", "index": 2161, "surface": "македонского царя", "lemma": "македонский царь", "qid": "Q622602", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2165, "surface": "фессалийцами", "lemma": "фессалийцы", "qid": "Q3984995", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2167, "surface": "беотийцами", "lemma": "беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2173, "surface": "Пифийских празднеств", "lemma": "Пифийские празднества", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 2180, "surface": "Филиппом", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2184, "surface": "Амфиктионии", "lemma": "Амфиктиония", "qid": "Q182875", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2192, "surface": "фокидян", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2196, "surface": "Дельфах", "lemma": "Дельфы", "qid": "Q75459", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2199, "surface": "Амфиктионии", "lemma": "Амфиктиония", "qid": "Q182875", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2200, "surface": "Фокидское государство", "lemma": "Фокидское государство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 2207, "surface": "беотийцы", "lemma": "беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2212, "surface": "македонский царь", "lemma": "македонский царь", "qid": "Q622602", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2219, "surface": "Фессалию", "lemma": "Фессалия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2227, "surface": "Средней Греции", "lemma": "Средняя Греция", "qid": "Q190600", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2233, "surface": "Фокиде", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2248, "surface": "Филиппа", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2250, "surface": "греческими", "lemma": "греческие", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Фокидский союз", "index": 2255, "surface": "Фокиды", "lemma": "Фокида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2265, "surface": "Филипп", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2270, "surface": "афиняне", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2272, "surface": "беотийцы", "lemma": "беотийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2277, "surface": "фокидских", "lemma": "фокидские", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 2285, "surface": "Фокидского союза", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2290, "surface": "Филипп", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2300, "surface": "талантов", "lemma": "талант", "qid": "Q190139", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2301, "surface": "Фокидский союз", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2309, "surface": "греков", "lemma": "греки", "qid": "Q539051", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2312, "surface": "битве при Херонее", "lemma": "битва при Херонее", "qid": "Q3636387", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2322, "surface": "Фивам", "lemma": "Фивы", "qid": "Q11225429", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2323, "surface": "фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2328, "surface": "Александром", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2329, "surface": "Фив", "lemma": "Фивы", "qid": "Q11225429", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2338, "surface": "Александра", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2339, "surface": "Фокидский союз", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2347, "surface": "Ламийской войне", "lemma": "Ламийская война", "qid": "Q28365", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2350, "surface": "Ламией", "lemma": "Ламия", "qid": "Q192980", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2355, "surface": "Антипатра", "lemma": "Антипатр", "qid": "Q204760", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2357, "surface": "эллинистический период", "lemma": "эллинистический период", "qid": "Q428995", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2359, "surface": "Фокидский союз", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2367, "surface": "Грецию", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2368, "surface": "галатов", "lemma": "галаты", "qid": "Q11073103", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2373, "surface": "Дельф", "lemma": "Дельфы", "qid": "Q75459", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2380, "surface": "фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2383, "surface": "Дельфийскую амфиктионию", "lemma": "Дельфийская амфиктиония", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 2391, "surface": "Фокидский союз", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2396, "surface": "Этолийского союза", "lemma": "Этолийский союз", "qid": "Q245273", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2407, "surface": "Македонией", "lemma": "Македония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2408, "surface": "Эллинского союза", "lemma": "Эллинский союз", "qid": "Q4531296", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2410, "surface": "фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2413, "surface": "этолийцев", "lemma": "этолийцы", "qid": "Q20551604", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2421, "surface": "Ахейской войны", "lemma": "Ахейская война", "qid": "Q6861027", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2423, "surface": "фокидяне", "lemma": "фокидяне", "qid": "Q21095133", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2426, "surface": "Локридой", "lemma": "Локрида", "qid": "Q659791", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2427, "surface": "Беотией", "lemma": "Беотия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2429, "surface": "Эвбеей", "lemma": "Эвбея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2431, "surface": "ахейцев", "lemma": "ахейцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Фокидский союз", "index": 2433, "surface": "Рима", "lemma": "Рим", "qid": "Q220", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2436, "surface": "Ахейского союза", "lemma": "Ахейский союз", "qid": "Q244796", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2438, "surface": "римлянами", "lemma": "римляне", "qid": "Q1651392", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Фокидский союз", "index": 2445, "surface": "Фокидский союз", "lemma": "Фокидский союз", "qid": "Q2637650", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2450, "surface": "греческие", "lemma": "греческие", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Фокидский союз", "index": 2459, "surface": "римским сенатом", "lemma": "римский сенат", "qid": "Q130614", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Фокидский союз", "index": 2462, "surface": "общефокейское собрание", "lemma": "общефокейское собрание", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Фокидский союз", "index": 2479, "surface": "Павсания", "lemma": "Павсаний", "qid": "Q192931", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 162, "surface": "египтян", "lemma": "египтяне", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 167, "surface": "Александр", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 169, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 194, "surface": "Нила", "lemma": "Нил", "qid": "Q3392", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 196, "surface": "Александрии", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 200, "surface": "сатрапии", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 201, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 207, "surface": "номарху", "lemma": "номарх", "qid": "Q732358", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 208, "surface": "Клеомену", "lemma": "Клеомен", "qid": "Q1245141", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 210, "surface": "Навкратиса", "lemma": "Навкратис", "qid": "Q137721", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 211, "surface": "Александр", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 216, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 230, "surface": "Александра", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 232, "surface": "Вавилоне", "lemma": "Вавилон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 245, "surface": "диадохами", "lemma": "диадохи", "qid": "Q201546", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 260, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 262, "surface": "Птолемею I", "lemma": "Птолемей I", "qid": "Q168261", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 281, "surface": "Птолемеем", "lemma": "Птолемей", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 284, "surface": "Египтом", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 289, "surface": "римлянами", "lemma": "римляне", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 290, "surface": "Птолемея I", "lemma": "Птолемей I", "qid": "Q168261", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 308, "surface": "диадохов", "lemma": "диадох", "qid": "Q4160999", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 315, "surface": "Александр Македонский", "lemma": "Александр Македонский", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 331, "surface": "Александрии", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 333, "surface": "Александра", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 337, "surface": "Египту", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 347, "surface": "Птолемея II", "lemma": "Птолемей II", "qid": "Q39576", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 349, "surface": "Арсиноя II", "lemma": "Арсиноя II", "qid": "Q40234", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 374, "surface": "Древнего Египта", "lemma": "Древний Египет", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 381, "surface": "Птолемеев", "lemma": "Птолемеи", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 391, "surface": "Птолемея I", "lemma": "Птолемей I", "qid": "Q168261", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 393, "surface": "Птолемее II", "lemma": "Птолемей II", "qid": "Q39576", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 402, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 408, "surface": "Птолемее III", "lemma": "Птолемей III", "qid": "Q39602", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 418, "surface": "Птолемеев", "lemma": "Птолемеи", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 420, "surface": "Киренаика", "lemma": "Киренаика", "qid": "Q165198", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 421, "surface": "Кипр", "lemma": "Кипр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 422, "surface": "Иудея", "lemma": "Иудея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 423, "surface": "Южная Сирия", "lemma": "Южная Сирия", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 427, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 430, "surface": "Фракии", "lemma": "Фракия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 432, "surface": "Геллеспонта", "lemma": "Геллеспонт", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 434, "surface": "Эгейского моря", "lemma": "Эгейское море", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 439, "surface": "Птолемея IV Филопатора", "lemma": "Птолемей IV Филопатор", "qid": "Q39595", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 448, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 451, "surface": "египетских", "lemma": "египетский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 459, "surface": "Александриец", "lemma": "александриец", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 460, "surface": "Сосибий", "lemma": "Сосибий", "qid": "Q2303686", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 463, "surface": "Агафокл", "lemma": "Агафокл", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 470, "surface": "Птолемее IV", "lemma": "Птолемей IV", "qid": "Q39595", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 476, "surface": "Птолемее V Эпифане", "lemma": "Птолемей V Эпифан", "qid": "Q39957", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 493, "surface": "Тлеполем", "lemma": "Тлеполем", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 504, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 505, "surface": "Антиох III Великий", "lemma": "Антиох III Великий", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 510, "surface": "Селевкидов", "lemma": "Селевкиды", "qid": "Q705904", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 512, "surface": "Филипп V македонский", "lemma": "Филипп V Македонский", "qid": "Q237248", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 516, "surface": "Македонии", "lemma": "Македония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 524, "surface": "Эгейском море", "lemma": "Эгейское море", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 526, "surface": "Карию", "lemma": "Кария", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 527, "surface": "Южную Сирию", "lemma": "Южная Сирия", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 529, "surface": "Палестину", "lemma": "Палестина", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 531, "surface": "Келесирию", "lemma": "Келесирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 535, "surface": "Римом", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 545, "surface": "Антиоха IV Эпифана", "lemma": "Антиох IV Эпифан", "qid": "Q3356", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 551, "surface": "Птолемея VI Филометра", "lemma": "Птолемей VI Филометр", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 560, "surface": "Птолемея VIII Эвергета", "lemma": "Птолемей VIII Эвергет", "qid": "Q3350", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 566, "surface": "Птолемей VI", "lemma": "Птолемей VI", "qid": "Q39952", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 570, "surface": "Рима", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 576, "surface": "Египте", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 580, "surface": "битве при Антиохии", "lemma": "битва при Антиохии", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 589, "surface": "Птолемей VIII", "lemma": "Птолемей VIII", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 603, "surface": "Птолемея VI", "lemma": "Птолемей VI", "qid": "Q39952", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 605, "surface": "Клеопатрой II", "lemma": "Клеопатра II", "qid": "Q40247", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 609, "surface": "Кипр", "lemma": "Кипр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 620, "surface": "Птолемей VIII", "lemma": "Птолемей VIII", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 635, "surface": "Птолемея VIII", "lemma": "Птолемей VIII", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 651, "surface": "Клеопатра III", "lemma": "Клеопатра III", "qid": "Q40003", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 660, "surface": "Птолемея X Александра I", "lemma": "Птолемей X Александр I", "qid": null, "span_len": 4, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 671, "surface": "Птолемея IX Сотера II", "lemma": "Птолемей IX Сотер II", "qid": null, "span_len": 4, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 675, "surface": "Клеопатра III", "lemma": "Клеопатра III", "qid": "Q40003", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 695, "surface": "Кипра", "lemma": "Кипр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 696, "surface": "Птолемея X", "lemma": "Птолемей X", "qid": "Q3345", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 701, "surface": "Птолемей IX", "lemma": "Птолемей IX", "qid": "Q3340", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 710, "surface": "Кипр", "lemma": "Кипр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 720, "surface": "Сирию", "lemma": "Сирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 722, "surface": "Палестину", "lemma": "Палестина", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 726, "surface": "Клеопатрой III", "lemma": "Клеопатра III", "qid": "Q40003", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 734, "surface": "Птолемей X", "lemma": "Птолемей X", "qid": "Q3345", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 740, "surface": "Египте", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 744, "surface": "Птолемей IX", "lemma": "Птолемей IX", "qid": "Q3340", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 748, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 750, "surface": "Птолемея IX", "lemma": "Птолемей IX", "qid": "Q3340", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 753, "surface": "Береника III", "lemma": "Береника III", "qid": "Q231688", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 759, "surface": "Птолемея X", "lemma": "Птолемей X", "qid": "Q3345", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 781, "surface": "Птолемея XI Александра II", "lemma": "Птолемей XI Александр II", "qid": "Q39996", "span_len": 4, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 796, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 804, "surface": "Птолемеев", "lemma": "Птолемеи", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 807, "surface": "Рима", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 814, "surface": "Птолемея IX", "lemma": "Птолемей IX", "qid": "Q3340", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 817, "surface": "Птолемей XII Неос Дионис", "lemma": "Птолемей XII Неос Дионис", "qid": "Q39991", "span_len": 4, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 821, "surface": "Авлет", "lemma": "Авлет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 822, "surface": "Римская республика", "lemma": "Римская республика", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 829, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 835, "surface": "царя Египта", "lemma": "царь Египта", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 850, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 852, "surface": "Риму", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 857, "surface": "Юлия Цезаря", "lemma": "Юлий Цезарь", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 860, "surface": "Птолемею XII", "lemma": "Птолемей XII", "qid": "Q39991", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 877, "surface": "Цезаря", "lemma": "Цезарь", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 891, "surface": "Кипр", "lemma": "Кипр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 899, "surface": "Птолемея IX", "lemma": "Птолемей IX", "qid": "Q3340", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 903, "surface": "римской провинцией", "lemma": "римская провинция", "qid": "Q182547", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 914, "surface": "Птолемей XII", "lemma": "Птолемей XII", "qid": "Q39991", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 918, "surface": "Рим", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 923, "surface": "Клеопатра VI Трифаена", "lemma": "Клеопатра VI Трифаена", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 931, "surface": "Египтом", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 932, "surface": "Береника IV", "lemma": "Береника IV", "qid": "Q40022", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 957, "surface": "Птолемей XII", "lemma": "Птолемей XII", "qid": "Q39991", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 964, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 970, "surface": "Риме", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 972, "surface": "Птолемей XII", "lemma": "Птолемей XII", "qid": "Q39991", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 979, "surface": "римлянам", "lemma": "римляне", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 990, "surface": "Птолемей XIII", "lemma": "Птолемей XIII", "qid": "Q39938", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 994, "surface": "Клеопатра VII", "lemma": "Клеопатра VII", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1000, "surface": "Египтом", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1002, "surface": "Птолемеев", "lemma": "Птолемеи", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1007, "surface": "греко-македонские", "lemma": "греко-македонский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1011, "surface": "египетские", "lemma": "египетский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1035, "surface": "Птолемеев", "lemma": "Птолемеи", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1038, "surface": "Александра", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1040, "surface": "царский журнал", "lemma": "царский журнал", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1049, "surface": "родственников", "lemma": "родственник", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1050, "surface": "равных по почёту родственникам", "lemma": "равный по почёту родственнику", "qid": null, "span_len": 4, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1054, "surface": "первых друзей", "lemma": "первый друг", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1056, "surface": "равных первым друзьям", "lemma": "равный первому другу", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1059, "surface": "друзей", "lemma": "друг", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1060, "surface": "преемников", "lemma": "преемник", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1070, "surface": "диойкета", "lemma": "диойкет", "qid": "Q1226867", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1092, "surface": "Диойкет", "lemma": "диойкет", "qid": "Q1226867", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1109, "surface": "Аполлоний", "lemma": "Аполлоний", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1112, "surface": "Птолемея II", "lemma": "Птолемей II", "qid": "Q39576", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1119, "surface": "полисов", "lemma": "полис", "qid": "Q148837", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1122, "surface": "хору", "lemma": "хора", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1136, "surface": "номы", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1152, "surface": "топархии", "lemma": "топархия", "qid": "Q8351478", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1160, "surface": "комы", "lemma": "кома", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1162, "surface": "Геродота", "lemma": "Геродот", "qid": "Q26825", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1164, "surface": "Страбона", "lemma": "Страбон", "qid": "Q45936", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1170, "surface": "арура", "lemma": "арура", "qid": "Q495983", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1177, "surface": "греков", "lemma": "греки", "qid": "Q539051", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1183, "surface": "египтян", "lemma": "египтяне", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1202, "surface": "Нилом", "lemma": "Нил", "qid": "Q3392", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1207, "surface": "номархов", "lemma": "номарх", "qid": "Q732358", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1210, "surface": "стратегам", "lemma": "стратег", "qid": "Q335954", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1220, "surface": "нома", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1222, "surface": "царским секретарём", "lemma": "царский секретарь", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1229, "surface": "топархиях", "lemma": "топархия", "qid": "Q8351478", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1231, "surface": "комах", "lemma": "кома", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1237, "surface": "диойкета", "lemma": "диойкет", "qid": "Q1226867", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1251, "surface": "диойкету", "lemma": "диойкет", "qid": "Q1226867", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1255, "surface": "номе", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1257, "surface": "эконом", "lemma": "эконом", "qid": "Q7078465", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1267, "surface": "Инструкция эконому", "lemma": "Инструкция эконому", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1283, "surface": "эконом", "lemma": "эконом", "qid": "Q7078465", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1296, "surface": "контролёр", "lemma": "контролёр", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1302, "surface": "трапеза", "lemma": "трапеза", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1306, "surface": "трапезитом", "lemma": "трапезит", "qid": "Q4462180", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1328, "surface": "тесавр", "lemma": "тесавр", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1338, "surface": "ситолога", "lemma": "ситолог", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1350, "surface": "тесавр", "lemma": "тесавр", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1356, "surface": "эллинистическом", "lemma": "эллинистический", "qid": "Q2320005", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1357, "surface": "Египте", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1361, "surface": "Державы Селевкидов", "lemma": "Держава Селевкидов", "qid": "Q93180", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1363, "surface": "полисы", "lemma": "полис", "qid": "Q148837", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1375, "surface": "Александрия", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1376, "surface": "Навкратис", "lemma": "Навкратис", "qid": "Q137721", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1381, "surface": "Птолемаида", "lemma": "Птолемаида", "qid": "Q1302772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1383, "surface": "Птолемеем I", "lemma": "Птолемей I", "qid": "Q168261", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1399, "surface": "Мемфис", "lemma": "Мемфис", "qid": "Q5715", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1400, "surface": "Фивы", "lemma": "Фивы", "qid": "Q101583", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1401, "surface": "Гермополь", "lemma": "Гермополь", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1402, "surface": "Гераклеополь", "lemma": "Гераклеополь", "qid": "Q249480", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1409, "surface": "хоре", "lemma": "хора", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1415, "surface": "нома", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1424, "surface": "филы", "lemma": "фила", "qid": "Q607608", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1432, "surface": "демы", "lemma": "дем", "qid": "Q672490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1445, "surface": "Греции", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1447, "surface": "Навкратисе", "lemma": "Навкратис", "qid": "Q137721", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1449, "surface": "Птолемаиде", "lemma": "Птолемаида", "qid": "Q1302772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1459, "surface": "Александрии", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1477, "surface": "македоняне", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1478, "surface": "греки", "lemma": "греки", "qid": "Q539051", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1479, "surface": "фракийцы", "lemma": "фракийцы", "qid": "Q144964", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1480, "surface": "критяне", "lemma": "критяне", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1481, "surface": "иранцы", "lemma": "иранцы", "qid": "Q397297", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1484, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1486, "surface": "иудеи", "lemma": "иудеи", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1487, "surface": "сирийцы", "lemma": "сирийцы", "qid": "Q878607", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1489, "surface": "египтяне", "lemma": "египтяне", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1504, "surface": "политевмы", "lemma": "политевма", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1531, "surface": "Александрия", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1542, "surface": "Страбон", "lemma": "Страбон", "qid": "Q45936", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1556, "surface": "Египте", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1589, "surface": "Александрия", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1595, "surface": "Дейнократа Родосского", "lemma": "Дейнократ Родосский", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1611, "surface": "Птолемеев", "lemma": "Птолемеи", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1613, "surface": "Мусейон", "lemma": "Мусейон", "qid": "Q3326166", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1616, "surface": "Александра Македонского", "lemma": "Александр Македонский", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1619, "surface": "Птолемеев", "lemma": "Птолемеи", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1667, "surface": "архиерей", "lemma": "архиерей", "qid": "Q29182", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1675, "surface": "эпистат", "lemma": "эпистат", "qid": "Q990084", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1695, "surface": "синоды", "lemma": "синод", "qid": "Q111161", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1713, "surface": "Египте", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1724, "surface": "Фиваиде", "lemma": "Фиваида", "qid": "Q768515", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1728, "surface": "Гора", "lemma": "Гор", "qid": "Q84122", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1730, "surface": "Эдфу", "lemma": "Эдфу", "qid": "Q239107", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1732, "surface": "Исиды", "lemma": "Исида", "qid": "Q79876", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1735, "surface": "Филы", "lemma": "Филы", "qid": "Q245062", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1777, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1803, "surface": "Податной устав", "lemma": "Податной устав", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1810, "surface": "Египетское эллинистическое право", "lemma": "Египетское эллинистическое право", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1817, "surface": "греческого", "lemma": "греческий", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1819, "surface": "древнеегипетского", "lemma": "древнеегипетский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1822, "surface": "египетского", "lemma": "египетский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1824, "surface": "греческого", "lemma": "греческий", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1832, "surface": "полисов", "lemma": "полис", "qid": "Q148837", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1834, "surface": "хоры", "lemma": "хора", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1837, "surface": "греками", "lemma": "греки", "qid": "Q539051", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1839, "surface": "египтянами", "lemma": "египтяне", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1851, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1858, "surface": "Птолемейского Египта", "lemma": "Птолемейский Египет", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 1865, "surface": "эллинистический период", "lemma": "эллинистический период", "qid": "Q428995", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1882, "surface": "Птолемеев", "lemma": "Птолемеи", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1894, "surface": "диадохов", "lemma": "диадохи", "qid": "Q201546", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1901, "surface": "Империя Селевкидов", "lemma": "Империя Селевкидов", "qid": "Q93180", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1906, "surface": "Птолемея III", "lemma": "Птолемей III", "qid": "Q39602", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1919, "surface": "Птолемея", "lemma": "Птолемей", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1921, "surface": "Киренаикой", "lemma": "Киренаика", "qid": "Q165198", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1922, "surface": "Келесирией", "lemma": "Келесирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1924, "surface": "Кипром", "lemma": "Кипр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1929, "surface": "Анатолии", "lemma": "Анатолия", "qid": "Q51614", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1931, "surface": "Фракии", "lemma": "Фракия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1933, "surface": "Эгейского моря", "lemma": "Эгейское море", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1936, "surface": "Крита", "lemma": "Крит", "qid": "Q34374", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1952, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 1958, "surface": "Александрии", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1959, "surface": "Пелузий", "lemma": "Пелузий", "qid": "Q1145715", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 1961, "surface": "Дельте", "lemma": "Дельта", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 1963, "surface": "Элефантине", "lemma": "Элефантина", "qid": "Q284009", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 1965, "surface": "Верхнем Египте", "lemma": "Верхний Египет", "qid": "Q203751", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2009, "surface": "матимои", "lemma": "матимои", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Эллинистический Египет", "index": 2025, "surface": "эллинистического периода", "lemma": "эллинистический период", "qid": "Q428995", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2027, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 2048, "surface": "Александрия", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2054, "surface": "Александрийская библиотека", "lemma": "Александрийская библиотека", "qid": "Q435", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2063, "surface": "Мусейона", "lemma": "Мусейон", "qid": "Q3326166", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2068, "surface": "Пергамской", "lemma": "Пергамская библиотека", "qid": "Q856590", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2120, "surface": "Аврелиан", "lemma": "Аврелиан", "qid": "Q46780", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2122, "surface": "Александрию", "lemma": "Александрия", "qid": "Q87", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2140, "surface": "Каллимах", "lemma": "Каллимах", "qid": "Q192417", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2142, "surface": "Кирены", "lemma": "Кирена", "qid": "Q44112", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2159, "surface": "Александрийской библиотеки", "lemma": "Александрийская библиотека", "qid": "Q435", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2177, "surface": "Аполлоний Родосский", "lemma": "Аполлоний Родосский", "qid": "Q192638", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2192, "surface": "Аргонавтика", "lemma": "Аргонавтика", "qid": "Q739529", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2201, "surface": "Феокрит", "lemma": "Феокрит", "qid": "Q219484", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2214, "surface": "Геронд", "lemma": "Геронд", "qid": "Q99305536", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2217, "surface": "Эллинистический Египет", "lemma": "Эллинистический Египет", "qid": "Q2320005", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2229, "surface": "Египте", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 2247, "surface": "III веке до н. э.", "lemma": "III век до н. э.", "qid": "Q25321", "span_len": 5, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2252, "surface": "египетский", "lemma": "египетский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 2254, "surface": "Манефон", "lemma": "Манефон", "qid": "Q174380", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2267, "surface": "Себеннита", "lemma": "Себеннит", "qid": "Q1243772", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2269, "surface": "Историю Египта", "lemma": "История Египта", "qid": "Q380724", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2275, "surface": "греческом", "lemma": "греческий", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Эллинистический Египет", "index": 2296, "surface": "Манефон", "lemma": "Манефон", "qid": "Q174380", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2301, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Эллинистический Египет", "index": 2310, "surface": "династии", "lemma": "династия", "qid": "Q164950", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Эллинистический Египет", "index": 2396, "surface": "Птолемее I", "lemma": "Птолемей I", "qid": "Q168261", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Эллинистический Египет", "index": 2402, "surface": "Сараписа", "lemma": "Сарапис", "qid": "Q214554", "span_len": 1, "resolved_by": "exact_label"}
