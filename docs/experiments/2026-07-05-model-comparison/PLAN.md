@@ -27,3 +27,6 @@ Recall M2 (span-overlap, primary) on gt_v2 at comparable precision P1; decision 
   `--max-usd 12`, `--llm-workers 16`, article-workers scaled to saturate; staggered starts;
   per-run Wikidata-cache copies (cross-process file-append race avoidance). Revised cost
   forecast: ≈ $26 total for the matrix.
+- **Routing revision (2026-07-05 23:16 UTC):** the qwen `auto` pick was reverted to an explicit
+  `provider-8` pin after CloseRouter's circuit-breaker turned `auto` into a hard 503
+  (`no_available_provider`: the only upstream was auto-suppressed). All qwen relaunches run pinned.
