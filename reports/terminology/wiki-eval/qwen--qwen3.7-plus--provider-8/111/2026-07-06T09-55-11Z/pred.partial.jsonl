@@ -4924,3 +4924,202 @@
 {"title": "Хайаса", "index": 1213, "surface": "армянского народа", "lemma": "армянский народ", "qid": "Q79797", "span_len": 2, "resolved_by": "exact_label"}
 {"title": "Хайаса", "index": 1223, "surface": "армянского этноса", "lemma": "армянский этнос", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
 {"title": "Хайаса", "index": 1226, "surface": "Армянском нагорье", "lemma": "Армянское нагорье", "qid": "Q211263", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 0, "surface": "Линейное письмо Б", "lemma": "Линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 6, "surface": "критского письма", "lemma": "критское письмо", "qid": "Q4241360", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Линейное письмо Б", "index": 18, "surface": "древнегреческом языке", "lemma": "древнегреческий язык", "qid": "Q35497", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 22, "surface": "микенской культуры", "lemma": "микенская культура", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 29, "surface": "Крите", "lemma": "Крит", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 37, "surface": "Микенской Греции", "lemma": "Микенская Греция", "qid": "Q181264", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 40, "surface": "Микен", "lemma": "Микены", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 41, "surface": "Пилоса", "lemma": "Пилос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 42, "surface": "Тиринфа", "lemma": "Тиринф", "qid": "Q217379", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 43, "surface": "Коринфа", "lemma": "Коринф", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 44, "surface": "Закинфа", "lemma": "Закинф", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 51, "surface": "греков", "lemma": "греки", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 53, "surface": "Крите", "lemma": "Крит", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 56, "surface": "Финального дворцового периода", "lemma": "Финальный дворцовый период", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 60, "surface": "Кноссе", "lemma": "Кносс", "qid": "Q173527", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 67, "surface": "позднеминойский период", "lemma": "позднеминойский период", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 83, "surface": "линейного письма А", "lemma": "линейное письмо А", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 87, "surface": "Кноссе", "lemma": "Кносс", "qid": "Q173527", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 90, "surface": "линейного А", "lemma": "линейное А", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 105, "surface": "линейного Б", "lemma": "линейное Б", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 117, "surface": "Ханьи", "lemma": "Ханья", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 118, "surface": "о. Крит", "lemma": "о. Крит", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 126, "surface": "линейным А", "lemma": "линейное А", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 130, "surface": "линейным Б", "lemma": "линейное Б", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 144, "surface": "Gg5", "lemma": "Gg5", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 146, "surface": "KH Ar 4", "lemma": "KH Ar 4", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 156, "surface": "Ханья", "lemma": "Ханья", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 158, "surface": "Кносс", "lemma": "Кносс", "qid": "Q173527", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 163, "surface": "Крите", "lemma": "Крит", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 165, "surface": "линейное А", "lemma": "линейное А", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 168, "surface": "Б", "lemma": "линейное Б", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 181, "surface": "Эвансом", "lemma": "Эванс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 183, "surface": "Линейного Б", "lemma": "Линейное Б", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 195, "surface": "Крита", "lemma": "Крит", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 211, "surface": "материке", "lemma": "материк", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 212, "surface": "линейное письмо Б", "lemma": "линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 219, "surface": "Кноссе", "lemma": "Кносс", "qid": "Q173527", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 229, "surface": "линейного письма Б", "lemma": "линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 235, "surface": "линейном письме А", "lemma": "линейное письмо А", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 260, "surface": "Линейного А", "lemma": "Линейное А", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 264, "surface": "RO", "lemma": "RO", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 290, "surface": "линейном Б", "lemma": "линейное Б", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 296, "surface": "линейного А", "lemma": "линейное А", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 308, "surface": "линейным письмом Б", "lemma": "линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 365, "surface": "линейным письмом А", "lemma": "линейное письмо А", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 376, "surface": "Крита", "lemma": "Крит", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 382, "surface": "ахейцами", "lemma": "ахейцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 388, "surface": "линейное письмо А", "lemma": "линейное письмо А", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 397, "surface": "минойском", "lemma": "минойский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 399, "surface": "Линейное письмо Б", "lemma": "линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 407, "surface": "греков", "lemma": "греки", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 440, "surface": "античности", "lemma": "античность", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 441, "surface": "грекам", "lemma": "греки", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 450, "surface": "Плутарх", "lemma": "Плутарх", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 454, "surface": "спартанском", "lemma": "спартанский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 456, "surface": "Агесилае II", "lemma": "Агесилай II", "qid": "Q271850", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 466, "surface": "египетским", "lemma": "египетский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 504, "surface": "Беллерофонте", "lemma": "Беллерофонт", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 514, "surface": "финикийского", "lemma": "финикийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 517, "surface": "малоазийских", "lemma": "малоазийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 519, "surface": "греческий", "lemma": "греческий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 526, "surface": "линейным письмом Б", "lemma": "линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 543, "surface": "минойского", "lemma": "минойский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 546, "surface": "греческого", "lemma": "греческий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 551, "surface": "аккадская", "lemma": "аккадский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 552, "surface": "клинопись", "lemma": "клинопись", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 555, "surface": "шумеризмов", "lemma": "шумеризм", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 556, "surface": "японская", "lemma": "японский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 557, "surface": "иероглифика", "lemma": "иероглифика", "qid": "Q193762", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 559, "surface": "китаизмов", "lemma": "китаизм", "qid": "Q11565510", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 561, "surface": "кириллица", "lemma": "кириллица", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 569, "surface": "греческих", "lemma": "греческий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 572, "surface": "Линейное письмо Б", "lemma": "Линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 581, "surface": "Артуром Эвансом", "lemma": "Артур Эванс", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 594, "surface": "Бедржих Грозный", "lemma": "Бедржих Грозный", "qid": "Q311931", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 597, "surface": "Владимир Георгиев", "lemma": "Владимир Георгиев", "qid": "Q3622579", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 611, "surface": "Эрнст Зиттиг", "lemma": "Эрнст Зиттиг", "qid": "Q1360232", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 623, "surface": "Алиса Кобер", "lemma": "Алиса Кобер", "qid": "Q2633581", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 634, "surface": "линейного Б", "lemma": "линейное Б", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 667, "surface": "Кобер", "lemma": "Кобер", "qid": "Q21510408", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 675, "surface": "Майкл Вентрис", "lemma": "Майкл Вентрис", "qid": "Q259378", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 683, "surface": "Дж. Майерс", "lemma": "Дж. Майерс", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 695, "surface": "Кобер", "lemma": "Кобер", "qid": "Q21510408", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 697, "surface": "Вентриса", "lemma": "Вентрис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 713, "surface": "Вентриса", "lemma": "Вентрис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 719, "surface": "Э. Беннетта", "lemma": "Э. Беннетт", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 726, "surface": "А. Кобер", "lemma": "А. Кобер", "qid": "Q2633581", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Линейное письмо Б", "index": 731, "surface": "Беннетт", "lemma": "Беннетт", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Линейное письмо Б", "index": 736, "surface": "кносских", "lemma": "кносский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 738, "surface": "пилосских", "lemma": "пилосский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 743, "surface": "Вентрис", "lemma": "Вентрис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 757, "surface": "греческий язык", "lemma": "греческий язык", "qid": "Q9129", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Линейное письмо Б", "index": 770, "surface": "этрусскому", "lemma": "этрусский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 774, "surface": "Би-Би-Си", "lemma": "Би-Би-Си", "qid": "Q9531", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 787, "surface": "древнегреческому языку", "lemma": "древнегреческий язык", "qid": "Q35497", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 796, "surface": "Джон Чедвик", "lemma": "Джон Чедвик", "qid": "Q51515", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 801, "surface": "Вентрис", "lemma": "Вентрис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 805, "surface": "Чедвика", "lemma": "Чедвик", "qid": "Q16865467", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 811, "surface": "микенского диалекта", "lemma": "микенский диалект", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 823, "surface": "Вентрисом", "lemma": "Вентрис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 832, "surface": "Карлом Блегеном", "lemma": "Карл Блеген", "qid": "Q552469", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 841, "surface": "Вентриса", "lemma": "Вентрис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 843, "surface": "Чедвика", "lemma": "Чедвик", "qid": "Q16865467", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 845, "surface": "Беннетта", "lemma": "Беннетт", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Линейное письмо Б", "index": 848, "surface": "линейного письма Б", "lemma": "линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 862, "surface": "Вентриса", "lemma": "Вентрис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 900, "surface": "Кносса", "lemma": "Кносс", "qid": "Q173527", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 901, "surface": "Чедвик", "lemma": "Чедвик", "qid": "Q16865467", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 902, "surface": "Годар", "lemma": "Годар", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 903, "surface": "Киллен", "lemma": "Киллен", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 904, "surface": "Оливье", "lemma": "Оливье", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 905, "surface": "Саккони", "lemma": "Саккони", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 906, "surface": "Сакелларакис", "lemma": "Сакелларакис", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 910, "surface": "Хосе Мелена", "lemma": "Хосе Мелена", "qid": "Q12260662", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 912, "surface": "Университет Страны Басков", "lemma": "Университет Страны Басков", "qid": "Q1232428", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 931, "surface": "Матильда Чивитилло", "lemma": "Матильда Чивитилло", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 935, "surface": "Ракеле Пьерини", "lemma": "Ракеле Пьерини", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 942, "surface": "Х. Мелена", "lemma": "Х. Мелена", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 948, "surface": "Пилоса", "lemma": "Пилос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 953, "surface": "Крита", "lemma": "Крит", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 955, "surface": "микенской Греции", "lemma": "микенская Греция", "qid": "Q181264", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 959, "surface": "С. Я. Лурье", "lemma": "С. Я. Лурье", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 969, "surface": "Вестнике древней истории", "lemma": "Вестник древней истории", "qid": "Q3224523", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 976, "surface": "Львов", "lemma": "Львов", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 979, "surface": "микенологии", "lemma": "микенология", "qid": "Q26425130", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 981, "surface": "Ленинграде", "lemma": "Ленинград", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 983, "surface": "Н. Н. Казанский", "lemma": "Н. Н. Казанский", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 990, "surface": "Предметно-понятийный словарь микенского диалекта", "lemma": "Предметно-понятийный словарь микенского диалекта", "qid": null, "span_len": 4, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 995, "surface": "Ю. В. Откупщиков", "lemma": "Ю. В. Откупщиков", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Линейное письмо Б", "index": 1000, "surface": "Львов", "lemma": "Львов", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 1002, "surface": "С. Я. Шарыпкин", "lemma": "С. Я. Шарыпкин", "qid": "Q9335497", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 1012, "surface": "Артуром Эвансом", "lemma": "Артур Эванс", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 1015, "surface": "Кноссе", "lemma": "Кносс", "qid": "Q173527", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 1017, "surface": "Крите", "lemma": "Крит", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 1019, "surface": "Карлом Блегеном", "lemma": "Карл Блеген", "qid": "Q552469", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 1022, "surface": "Константиносом Куруньотисом", "lemma": "Константинос Куруньотис", "qid": "Q3559321", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 1025, "surface": "Дворце Нестора", "lemma": "Дворец Нестора", "qid": "Q2047396", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Линейное письмо Б", "index": 1028, "surface": "Пилоса", "lemma": "Пилос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 1036, "surface": "микенских", "lemma": "микенский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Линейное письмо Б", "index": 1083, "surface": "линейного письма Б", "lemma": "линейное письмо Б", "qid": "Q190102", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 420, "surface": "хеттов", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 422, "surface": "лувийцев", "lemma": "лувийцы", "qid": "Q726807", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 424, "surface": "Малую Азию", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 485, "surface": "Хаттское", "lemma": "Хаттское", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хатти", "index": 494, "surface": "бог Грозы", "lemma": "бог Грозы", "qid": "Q206561", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 497, "surface": "богиня Солнца", "lemma": "богиня Солнца", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Хатти", "index": 514, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 516, "surface": "хурритов", "lemma": "хурриты", "qid": "Q190394", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 519, "surface": "хеттов", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 524, "surface": "хаттами", "lemma": "хатты", "qid": "Q7322482", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 534, "surface": "Хеттской державы", "lemma": "Хеттская держава", "qid": "Q4496560", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 548, "surface": "хеттская", "lemma": "хеттская", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 556, "surface": "Средиземноморском побережье", "lemma": "Средиземноморское побережье", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 560, "surface": "Римской империи", "lemma": "Римская империя", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 563, "surface": "хетто-лувийские", "lemma": "хетто-лувийские", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 587, "surface": "хеттами", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 608, "surface": "Хеттского государства", "lemma": "Хеттское государство", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 613, "surface": "Тувана", "lemma": "Тувана", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 614, "surface": "Гургум", "lemma": "Гургум", "qid": "Q143737", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 615, "surface": "Табал", "lemma": "Табал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 616, "surface": "Хатти", "lemma": "Хатти", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 617, "surface": "Самаль", "lemma": "Самаль", "qid": "Q21507946", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 620, "surface": "хеттов", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хатти", "index": 626, "surface": "каппадокийцы", "lemma": "каппадокийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 629, "surface": "Тиглатпаласар I", "lemma": "Тиглатпаласар I", "qid": "Q296295", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 645, "surface": "Евфрату", "lemma": "Евфрат", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 647, "surface": "Средиземному морю", "lemma": "Средиземное море", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 650, "surface": "Великих Хатти", "lemma": "Великие Хатти", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Хатти", "index": 653, "surface": "Мелиде", "lemma": "Мелида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 655, "surface": "Каркемише", "lemma": "Каркемиш", "qid": "Q283680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 663, "surface": "Сирию", "lemma": "Сирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 669, "surface": "Ассирии", "lemma": "Ассирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 670, "surface": "Ашшурнацирапал II", "lemma": "Ашшурнацирапал II", "qid": "Q193290", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 676, "surface": "Евфрату", "lemma": "Евфрат", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 686, "surface": "Каркемиш", "lemma": "Каркемиш", "qid": "Q283680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 689, "surface": "хеттские", "lemma": "хеттские", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 693, "surface": "Средиземного моря", "lemma": "Средиземное море", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 702, "surface": "Салманасар III", "lemma": "Салманасар III", "qid": "Q211928", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 712, "surface": "Каркемиша", "lemma": "Каркемиш", "qid": "Q283680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 713, "surface": "Хаттины", "lemma": "Хаттина", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 714, "surface": "Бит-Адини", "lemma": "Бит-Адини", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хатти", "index": 716, "surface": "Сам’ала", "lemma": "Сам’ал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 718, "surface": "хеттское", "lemma": "хеттский", "qid": "Q35668", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 722, "surface": "Каркемиш", "lemma": "Каркемиш", "qid": "Q283680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 726, "surface": "Сирия", "lemma": "Сирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 730, "surface": "ассирийской", "lemma": "ассирийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 741, "surface": "Дамаска", "lemma": "Дамаск", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 743, "surface": "Хамата", "lemma": "Хамат", "qid": "Q4495225", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 746, "surface": "ассирийскому", "lemma": "ассирийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 758, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 763, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 765, "surface": "Дамаск", "lemma": "Дамаск", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 774, "surface": "Ададнерари III", "lemma": "Ададнерари III", "qid": "Q313127", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 777, "surface": "Хамат", "lemma": "Хамат", "qid": "Q4495225", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хатти", "index": 779, "surface": "Дамаск", "lemma": "Дамаск", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 782, "surface": "Ассирии", "lemma": "Ассирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 787, "surface": "Урарту", "lemma": "Урарту", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 791, "surface": "хеттские", "lemma": "хетты", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хатти", "index": 796, "surface": "Урарту", "lemma": "Урарту", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
