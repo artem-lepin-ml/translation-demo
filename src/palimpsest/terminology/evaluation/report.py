@@ -3,9 +3,12 @@
 ``render_html`` turns a ``metrics.aggregate``-shaped dict into an HTML
 fragment (project report palette, Tokyo Night dark, inline CSS only) showing
 recall (3 modes), precision (P1/P2 unsliced, P3 only inside the
-``resolved_by`` slice per spec Sec.4), and the stratum/resolved_by/type slice
-tables with raw n + Wilson CI; cells below the underpowered threshold
-(``metrics.UNDERPOWERED_THRESHOLD``, n<30) are greyed and flagged.
+``resolved_by`` slice per spec Sec.4, plus the "P3\\exact" headline cell when
+``metrics["precision"]`` carries a ``"p3_ex"`` key — see
+``evaluation.metrics.aggregate_corpus``'s ``label_exists`` parameter), and
+the stratum/resolved_by/type slice tables with raw n + Wilson CI; cells
+below the underpowered threshold (``metrics.UNDERPOWERED_THRESHOLD``, n<30)
+are greyed and flagged.
 
 ``methodology_draft`` returns the EN paper-draft paragraph verbatim, per the
 project's "preserve chat formulations" convention. Canonical copy also in
@@ -16,7 +19,12 @@ from __future__ import annotations
 import html as _html
 
 MODE_LABELS = {"m1": "M1 strict", "m2": "M2 span-overlap", "m3": "M3 document"}
-PRECISION_LABELS = {"p1": "P1 base", "p2": "P2 unique-word", "p3": "P3 label-justified"}
+PRECISION_LABELS = {
+    "p1": "P1 base",
+    "p2": "P2 unique-word",
+    "p3": "P3 label-justified",
+    "p3_ex": "P3 label-justified (excl. exact-label path)",
+}
 
 
 def _fmt_value(cell: dict) -> str:
@@ -60,7 +68,7 @@ def _recall_table(recall: dict, *, title: str) -> str:
 def _precision_table(precision: dict, *, title: str) -> str:
     rows = "".join(
         f"<tr><td>{PRECISION_LABELS.get(variant, variant)}</td>{_cell_td(precision[variant])}</tr>"
-        for variant in ("p1", "p2", "p3")
+        for variant in ("p1", "p2", "p3", "p3_ex")
         if variant in precision
     )
     return (
@@ -136,7 +144,18 @@ def render_html(metrics: dict, meta: dict) -> str:
 
     parts.append("<h2>Overall</h2>")
     parts.append(_recall_table(metrics.get("recall", {}), title="Recall (primary metric)"))
-    parts.append(_precision_table(metrics.get("precision", {}), title="Precision (P1/P2, unsliced)"))
+    precision = metrics.get("precision", {})
+    precision_title = "Precision (P1/P2, unsliced)"
+    precision_note = ""
+    if "p3_ex" in precision:
+        precision_title = "Precision (P1/P2 unsliced; P3\\exact headline)"
+        precision_note = (
+            '<p class="note">P3\\exact = label-justified precision over every prediction '
+            "EXCEPT those resolved via exact_label (that path is tautologically justified "
+            "by construction, spec Sec.4); the denominator excludes exact-label predictions, "
+            "so this headline is not tautological.</p>"
+        )
+    parts.append(precision_note + _precision_table(precision, title=precision_title))
 
     slices = metrics.get("slices", {})
     for axis in ("stratum", "resolved_by", "type"):

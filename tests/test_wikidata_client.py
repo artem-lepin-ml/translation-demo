@@ -128,6 +128,69 @@ def test_fetch_concurrent_identical_miss_never_corrupts_cache(tmp_path, monkeypa
         assert rec["value"] == {"ok": True}
 
 
+# ── usage counters (run-metadata evidence: wiki_eval.py meta.json "wikidata") ──
+
+
+def test_counters_track_network_calls_cache_hits_and_seconds(tmp_path, monkeypatch):
+    """n_calls/n_network_calls count only genuine network round-trips,
+    n_cache_hits counts only cache hits, and total_network_seconds
+    accumulates real wall-clock time spent in the (fake) network call --
+    zero on a cache hit, positive after a miss."""
+
+    def fake_urlopen(req, timeout=None, context=None):
+        time.sleep(0.02)
+        return _FakeResponse({"ok": True})
+
+    monkeypatch.setattr(wikidata_mod.urllib.request, "urlopen", fake_urlopen)
+
+    cache_path = tmp_path / "cache.jsonl"
+    wd = WikidataClient(cache_path=cache_path)
+
+    assert wd.n_calls == wd.n_network_calls == 0
+    assert wd.n_cache_hits == 0
+    assert wd.total_network_seconds == 0.0
+
+    wd._fetch(wikidata_mod.API, {"action": "test", "q": "1"})  # miss -> 1 network call
+    wd._fetch(wikidata_mod.API, {"action": "test", "q": "1"})  # hit -> cached, no network call
+    wd._fetch(wikidata_mod.API, {"action": "test", "q": "2"})  # miss -> 1 network call
+
+    assert wd.n_calls == 2
+    assert wd.n_network_calls == 2  # alias of n_calls under the usage-counters' naming
+    assert wd.n_cache_hits == 1
+    assert wd.total_network_seconds >= 0.04  # two ~0.02s round trips, cache hit costs ~0
+
+
+def test_cache_hit_counter_is_thread_safe(tmp_path, monkeypatch):
+    """Many threads hammering the SAME already-cached key must each register
+    as exactly one cache hit -- no lost updates under concurrency (same
+    _cache_lock that already protects the in-memory dict, per the class
+    docstring)."""
+
+    def fake_urlopen(req, timeout=None, context=None):
+        return _FakeResponse({"ok": True})
+
+    monkeypatch.setattr(wikidata_mod.urllib.request, "urlopen", fake_urlopen)
+
+    wd = WikidataClient(cache_path=tmp_path / "cache.jsonl")
+    wd._fetch(wikidata_mod.API, {"action": "warm"})  # prime the cache: 1 network call
+
+    n_threads = 10
+    n_per_thread = 20
+
+    def worker() -> None:
+        for _ in range(n_per_thread):
+            wd._fetch(wikidata_mod.API, {"action": "warm"})
+
+    threads = [threading.Thread(target=worker) for _ in range(n_threads)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert wd.n_calls == 1  # still just the one priming miss
+    assert wd.n_cache_hits == n_threads * n_per_thread
+
+
 # ── 429/5xx retry with Retry-After-honoring backoff (2026-07-05 canary fix) ──
 
 

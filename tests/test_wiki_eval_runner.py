@@ -1468,3 +1468,112 @@ def test_cli_run_resume_flag_default_and_value():
 
     args2 = wiki_eval._build_parser().parse_args(["run", "--resume", "/tmp/some-run-dir"])
     assert args2.resume == "/tmp/some-run-dir"
+
+
+# ── Wikidata usage counters surfaced in meta.json ───────────────────────────
+
+
+def test_cmd_run_surfaces_wikidata_counters_in_meta_json(monkeypatch, tmp_path):
+    """_run_one_config's counters dict carries a "wikidata" sub-dict (calls/
+    cache_hits/seconds off its shared WikidataClient); cmd_run merges the
+    whole counters dict into meta via **counters, so it must land in
+    meta.json verbatim -- same evidence contract as the existing LLM
+    "calls" (extract/judge) split."""
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        counters = _fake_counters()
+        counters["n_articles"] = 1
+        counters["wikidata"] = {"calls": 7, "cache_hits": 3, "seconds": 0.456}
+        return [{"title": "Article A", "index": 0, "qid": "Q1"}], counters
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+    monkeypatch.setattr(wiki_eval, "OUT_ROOT", tmp_path / "out")
+
+    args = wiki_eval._build_parser().parse_args(["run", "--gt", str(gt_path), "--max-usd", "5"])
+    rc = wiki_eval.cmd_run(args)
+    assert rc == 0
+
+    out_dir = list((tmp_path / "out").glob("*/*/*"))[0]
+    meta = json.loads((out_dir / "meta.json").read_text(encoding="utf-8"))
+    assert meta["wikidata"] == {"calls": 7, "cache_hits": 3, "seconds": 0.456}
+
+
+# ── cmd_report --p3 CLI wiring ──────────────────────────────────────────────
+
+
+def test_cli_report_p3_flag_default_and_set():
+    args = wiki_eval._build_parser().parse_args(["report", "--pred", "/tmp/some-run-dir"])
+    assert args.p3 is False
+
+    args2 = wiki_eval._build_parser().parse_args(["report", "--pred", "/tmp/some-run-dir", "--p3"])
+    assert args2.p3 is True
+
+
+def test_cmd_report_without_p3_flag_never_builds_a_wikidata_client(monkeypatch, tmp_path):
+    """Default (no --p3): cmd_report must not construct a WikidataClient at
+    all -- no accidental network use on the plain reporting path."""
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    pred_dir = tmp_path / "run"
+    pred_dir.mkdir()
+    (pred_dir / "pred.jsonl").write_text("", encoding="utf-8")
+
+    def boom(*a, **kw):
+        raise AssertionError("WikidataClient must not be constructed without --p3")
+
+    monkeypatch.setattr(wiki_eval, "WikidataClient", boom)
+
+    args = wiki_eval._build_parser().parse_args(
+        ["report", "--gt", str(gt_path), "--pred", str(pred_dir)],
+    )
+    rc = wiki_eval.cmd_report(args)
+    assert rc == 0
+
+    metrics = json.loads((pred_dir / "metrics.json").read_text(encoding="utf-8"))
+    assert "p3_ex" not in metrics["precision"]
+
+
+def test_cmd_report_with_p3_flag_builds_client_and_activates_p3_ex(monkeypatch, tmp_path):
+    """--p3: cmd_report must build a WikidataClient + the real label_exists
+    predicate and thread it through metrics.aggregate_corpus, so the
+    resulting metrics.json carries the "p3_ex" headline cell."""
+    gt_path = tmp_path / "gt.jsonl"
+    with gt_path.open("w", encoding="utf-8") as fh:
+        fh.write(json.dumps({
+            "title": "Article A", "stratum": "typical",
+            "gt_tuples": [[0, "a", "Q1", 1]],
+        }) + "\n")
+
+    pred_dir = tmp_path / "run"
+    pred_dir.mkdir()
+    with (pred_dir / "pred.jsonl").open("w", encoding="utf-8") as fh:
+        fh.write(json.dumps({
+            "title": "Article A", "index": 0, "surface": "a", "qid": "Q1",
+            "span_len": 1, "resolved_by": "exact_label",
+        }) + "\n")
+        fh.write(json.dumps({
+            "title": "Article A", "index": 5, "surface": "b", "qid": "Q2",
+            "span_len": 1, "resolved_by": "llm_disambiguation",
+        }) + "\n")
+
+    monkeypatch.setattr(wiki_eval, "_label_exists_fn", lambda wd: (lambda s: s == "b"))
+
+    class _StubWikidataClient:
+        def __init__(self, *a, **kw):
+            pass
+
+    monkeypatch.setattr(wiki_eval, "WikidataClient", _StubWikidataClient)
+
+    args = wiki_eval._build_parser().parse_args([
+        "report", "--gt", str(gt_path), "--pred", str(pred_dir), "--p3",
+    ])
+    rc = wiki_eval.cmd_report(args)
+    assert rc == 0
+
+    metrics = json.loads((pred_dir / "metrics.json").read_text(encoding="utf-8"))
+    p3_ex = metrics["precision"]["p3_ex"]
+    assert p3_ex["total"] == 1  # only the llm_disambiguation prediction (index 5)
+    assert p3_ex["matched"] == 1  # justified via the stubbed label_exists("b") -> True

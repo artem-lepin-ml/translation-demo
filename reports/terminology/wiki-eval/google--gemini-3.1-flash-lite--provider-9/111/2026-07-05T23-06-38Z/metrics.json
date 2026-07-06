@@ -41,6 +41,14 @@
    "ci_lo": 0.4412,
    "ci_hi": 0.4614,
    "underpowered": false
+  },
+  "p3_ex": {
+   "matched": 5399,
+   "total": 10272,
+   "value": 0.5256035825545171,
+   "ci_lo": 0.5159,
+   "ci_hi": 0.5352,
+   "underpowered": false
   }
  },
  "slices": {
@@ -552,11 +560,11 @@
       "underpowered": false
      },
      "p3": {
-      "matched": 2260,
+      "matched": 3787,
       "total": 6437,
-      "value": 0.3510952306975299,
-      "ci_lo": 0.3395,
-      "ci_hi": 0.3628,
+      "value": 0.5883175392263477,
+      "ci_lo": 0.5762,
+      "ci_hi": 0.6003,
       "underpowered": false
      }
     }
@@ -714,11 +722,11 @@
       "underpowered": false
      },
      "p3": {
-      "matched": 2684,
+      "matched": 5369,
       "total": 10270,
-      "value": 0.26134371957156766,
-      "ci_lo": 0.2529,
-      "ci_hi": 0.2699,
+      "value": 0.5227848101265823,
+      "ci_lo": 0.5131,
+      "ci_hi": 0.5324,
       "underpowered": false
      }
     }
@@ -903,6 +911,6 @@
   "wall_clock_s": 9309.140193,
   "wikidata_workers": 2,
   "n_gt_tuples": 7959,
-  "generated_at": "2026-07-06T01:42:29.559005+00:00"
+  "generated_at": "2026-07-06T10:30:16.926522+00:00"
  }
 }

@@ -989,6 +989,17 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         "n_failed_paragraphs": tracker.n_failed_paragraphs,
         "failed_paragraphs": tracker.failed_paragraphs,
         "n_failed_judge_calls": tracker.n_failed_judge_calls,
+        # Wikidata usage evidence (run-metadata counters): merged into
+        # cmd_run's meta.json via `**counters`, alongside "calls" for the LLM
+        # side (extract/judge, already tracked by BudgetGuard). `getattr`
+        # defaults keep this safe against the plain `object()`/minimal fakes
+        # several existing tests inject as `wd` when they don't care about
+        # Wikidata behavior at all (e.g. checkpoint/semaphore-sizing tests).
+        "wikidata": {
+            "calls": getattr(wd, "n_network_calls", 0),
+            "cache_hits": getattr(wd, "n_cache_hits", 0),
+            "seconds": round(getattr(wd, "total_network_seconds", 0.0), 3),
+        },
     }
     return pred_records, counters
 
@@ -1158,6 +1169,20 @@ def _type_of_for_article(gt_tuples: list[tuple]) -> dict[int, str]:
 def cmd_report(args) -> int:
     gt_records = _load_gt(Path(args.gt))
 
+    # --p3: activate P3 label-justified precision with the REAL Wikidata-label
+    # predicate (spec Sec.4 / owner directive "чтобы было чисто" -- P3 must be
+    # informative, not tautological). Network use is bounded: `label_exists`
+    # (scripts/wiki_eval.py::_label_exists_fn) is called at most once per
+    # unique unmatched prediction surface, cached both in its own closure dict
+    # and in the shared on-disk Wikidata cache -- thousands of lookups at
+    # most, against the free wbsearchentities endpoint. Default (no --p3)
+    # reproduces the prior stub (`label_exists=lambda _s: False`, P3≡P1)
+    # exactly -- see metrics.aggregate_corpus's `label_exists` parameter.
+    label_exists = None
+    if getattr(args, "p3", False):
+        wd = WikidataClient(cache_path=WIKIDATA_CACHE)
+        label_exists = _label_exists_fn(wd)
+
     pred_dir = Path(args.pred)
     pred_path = pred_dir / "pred.jsonl"
     all_pred_records = [json.loads(l) for l in pred_path.open(encoding="utf-8") if l.strip()] if pred_path.exists() else []
@@ -1184,7 +1209,7 @@ def cmd_report(args) -> int:
             }
         )
 
-    result = M.aggregate_corpus(articles)
+    result = M.aggregate_corpus(articles, label_exists=label_exists)
 
     n_gt_tuples = sum(len(a["gt_tuples"]) for a in articles)
     meta = {
@@ -1215,6 +1240,15 @@ def cmd_report(args) -> int:
     print(f"wrote {metrics_out}")
     print(f"wrote {report_out}")
     print(f"recall m2 = {result['recall']['m2']['value']}")
+    if "p3_ex" in result["precision"]:
+        p3_ex = result["precision"]["p3_ex"]
+        print(f"P3\\exact (headline, excl. exact-label path) = {p3_ex['value']} "
+              f"(matched={p3_ex['matched']} n={p3_ex['total']})")
+        for value, slice_result in sorted(result["slices"]["resolved_by"].items()):
+            p3_slice = slice_result["precision"].get("p3")
+            if p3_slice is not None:
+                print(f"  P3[resolved_by={value}] = {p3_slice['value']} "
+                      f"(matched={p3_slice['matched']} n={p3_slice['total']})")
     return 0
 
 
@@ -1291,6 +1325,12 @@ def _build_parser() -> argparse.ArgumentParser:
     p_report.add_argument("--gt", default=str(DEFAULT_GT))
     p_report.add_argument("--pred", required=True, help="run dir containing pred.jsonl, e.g. reports/terminology/wiki-eval/<model-slug>/111/<run_id>")
     p_report.add_argument("--ablation", action="store_true", help="reserved for a future multi-config comparison report")
+    p_report.add_argument("--p3", action="store_true",
+                           help="activate P3 label-justified precision with the real "
+                                "wd.search_entities label predicate (bounded, cached "
+                                "network calls): real (not stubbed) P3 per resolved_by "
+                                "slice, plus the non-tautological 'P3\\exact' headline "
+                                "cell (excl. exact-label path)")
     p_report.set_defaults(func=cmd_report)
 
     return ap

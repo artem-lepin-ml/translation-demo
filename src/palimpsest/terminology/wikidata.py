@@ -59,7 +59,12 @@ class WikidataClient:
                  network_concurrency: int = DEFAULT_NETWORK_CONCURRENCY) -> None:
         self.timeout = timeout
         self._ctx = _ssl_context()
-        self.n_calls = 0  # network calls only (cache hits excluded)
+        self.n_calls = 0  # network calls only (cache hits excluded) -- kept for existing callers
+        # Usage counters (run-metadata evidence, wiki_eval.py meta.json "wikidata" block):
+        # thread-safe under the same `_cache_lock` as `n_calls` -- lightweight bookkeeping
+        # only, no behavior change to `_fetch`'s control flow.
+        self.n_cache_hits = 0
+        self.total_network_seconds = 0.0
         self.cache_path = Path(cache_path) if cache_path else None
         self._cache: dict[str, dict] = {}
         self._cache_lock = threading.Lock()
@@ -71,12 +76,20 @@ class WikidataClient:
                     rec = json.loads(line)
                     self._cache[rec["key"]] = rec["value"]
 
+    @property
+    def n_network_calls(self) -> int:
+        """Alias of ``n_calls`` under the usage-counters' naming (meta.json's
+        ``wikidata.calls``); kept as a property rather than a second counter
+        so there is exactly one write site to stay consistent."""
+        return self.n_calls
+
     # ── low-level ────────────────────────────────────────────────────────────
     def _fetch(self, base: str, params: dict) -> dict:
         params = {**params, "format": "json", "maxlag": "5"}
         key = base + "?" + urllib.parse.urlencode(sorted(params.items()))
         with self._cache_lock:
             if key in self._cache:
+                self.n_cache_hits += 1
                 return self._cache[key]
         url = base + "?" + urllib.parse.urlencode(params)
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
@@ -88,6 +101,7 @@ class WikidataClient:
         # fetch, not a correctness bug -- per the minimal-locking directive.
         with self._network_sem:
             for attempt in range(5):
+                call_started = time.monotonic()
                 try:
                     with self._cache_lock:
                         self.n_calls += 1
@@ -95,15 +109,21 @@ class WikidataClient:
                         raw = resp.read()
                     data = json.loads(raw) if raw else {}
                 except urllib.error.HTTPError as exc:  # 429/5xx → back off; other 4xx is deterministic
+                    with self._cache_lock:
+                        self.total_network_seconds += time.monotonic() - call_started
                     if (exc.code == 429 or exc.code >= 500) and attempt < 4:
                         time.sleep(_retry_after(exc.headers, attempt))
                         continue
                     raise
                 except (json.JSONDecodeError, urllib.error.URLError) as exc:  # empty/malformed body, transient net
+                    with self._cache_lock:
+                        self.total_network_seconds += time.monotonic() - call_started
                     if attempt < 4:
                         time.sleep(min(5, 2 ** attempt))
                         continue
                     raise RuntimeError(f"Wikidata fetch failed after retries: {exc}") from exc
+                with self._cache_lock:
+                    self.total_network_seconds += time.monotonic() - call_started
                 # maxlag returns HTTP 200 with an error body — retry, and NEVER cache an error
                 if isinstance(data, dict) and data.get("error"):
                     if data["error"].get("code") == "maxlag" and attempt < 4:
