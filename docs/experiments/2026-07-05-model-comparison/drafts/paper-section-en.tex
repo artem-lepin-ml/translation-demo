@@ -88,9 +88,13 @@
 % Placeholder front matter -- not present in the source section; fill from
 % the full-paper manuscript.
 \acmConference[Conf'26]{TODO: full-paper venue}{TODO: dates}{TODO: location}
-\settopmatter{printacmref=false}
+\settopmatter{printacmref=false} % suppress the ACM reference/copyright block (no camera-ready rights info yet)
+% \footnotetextcopyrightpermission is a documented acmart internal used in several
+% acmart-based repos to blank the copyright-permission footnote alongside the line
+% above; left in place but UNVERIFIED against an actual acmart.cls (no toolchain in
+% this container) -- if compilation reports it undefined, delete this line only,
+% \settopmatter above is independently sufficient.
 \renewcommand\footnotetextcopyrightpermission[1]{}
-\pagestyle{plain}
 
 \begin{document}
 
