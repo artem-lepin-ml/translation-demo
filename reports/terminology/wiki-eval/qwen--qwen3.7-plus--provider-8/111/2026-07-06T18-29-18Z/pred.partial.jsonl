@@ -695,3 +695,138 @@
 {"title": "Ахеменидские сатрапии", "index": 238, "surface": "Сатибарзан", "lemma": "Сатибарзан", "qid": "Q541172", "span_len": 1, "resolved_by": "exact_label"}
 {"title": "Ахеменидские сатрапии", "index": 239, "surface": "Сузиана", "lemma": "Сузиана", "qid": "Q2369687", "span_len": 1, "resolved_by": "exact_label"}
 {"title": "Ахеменидские сатрапии", "index": 241, "surface": "Абулит", "lemma": "Абулит", "qid": "Q335949", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 0, "surface": "Азиатская экспедиция", "lemma": "Азиатская экспедиция", "qid": "Q18396317", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 5, "surface": "Филиппа II Македонского", "lemma": "Филипп II Македонский", "qid": "Q130650", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 9, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 22, "surface": "Персией", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 27, "surface": "Коринфского конгресса", "lemma": "Коринфский конгресс", "qid": "Q18399631", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 41, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 48, "surface": "персами", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 49, "surface": "афинских", "lemma": "афинский", "qid": "Q4072761", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 65, "surface": "греки", "lemma": "греки", "qid": "Q539051", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 86, "surface": "македонского", "lemma": "македонский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 95, "surface": "Перинфу", "lemma": "Перинф", "qid": "Q11815679", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 100, "surface": "Фракию", "lemma": "Фракия", "qid": "Q41741", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 105, "surface": "Ох", "lemma": "Ох", "qid": "Q6048491", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 114, "surface": "спартанцам", "lemma": "спартанцы", "qid": "Q369194", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 118, "surface": "Пелопоннесской войне", "lemma": "Пелопоннесская война", "qid": "Q33745", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 128, "surface": "Греции", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 133, "surface": "персами", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 145, "surface": "Ксенофонт", "lemma": "Ксенофонт", "qid": "Q129772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 151, "surface": "Ясона Ферского", "lemma": "Ясон Ферский", "qid": "Q456945", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 159, "surface": "Олимпийских играх", "lemma": "Олимпийские игры", "qid": "Q5389", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 161, "surface": "Лисий", "lemma": "Лисий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 163, "surface": "эллинов", "lemma": "эллин", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 168, "surface": "Персию", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 174, "surface": "Исократ", "lemma": "Исократ", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 176, "surface": "Панегирике", "lemma": "Панегирик", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 179, "surface": "греков", "lemma": "грек", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 195, "surface": "Филиппу II", "lemma": "Филипп II", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 199, "surface": "Филократова мира", "lemma": "Филократов мир", "qid": "Q1456419", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 207, "surface": "Персии", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 217, "surface": "Багой", "lemma": "Багой", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 220, "surface": "Артаксеркса III", "lemma": "Артаксеркс III", "qid": "Q192867", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 229, "surface": "Арсеса", "lemma": "Арсес", "qid": "Q260783", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 258, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 259, "surface": "Дарий III Кодоман", "lemma": "Дарий III Кодоман", "qid": "Q102865", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 262, "surface": "Филиппу", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 311, "surface": "Филипп", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 313, "surface": "Дельфийский оракул", "lemma": "Дельфийский оракул", "qid": "Q682558", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 320, "surface": "пифия", "lemma": "пифия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 335, "surface": "Македонский", "lemma": "Македонский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 344, "surface": "персы", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 370, "surface": "Геллеспонт", "lemma": "Геллеспонт", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 372, "surface": "Абидос", "lemma": "Абидос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 376, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 381, "surface": "Пармениона", "lemma": "Парменион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 382, "surface": "Аттала", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 384, "surface": "Аминты", "lemma": "Аминта", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 399, "surface": "Кизика", "lemma": "Кизик", "qid": "Q615449", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 401, "surface": "Эфеса", "lemma": "Эфес", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 405, "surface": "персов", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 410, "surface": "Коринфскому союзу", "lemma": "Коринфский союз", "qid": "Q332337", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 413, "surface": "Тенедос", "lemma": "Тенедос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 414, "surface": "Лесбос", "lemma": "Лесбос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 416, "surface": "Хиос", "lemma": "Хиос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 420, "surface": "персов", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 432, "surface": "Ментор Родосский", "lemma": "Ментор Родосский", "qid": "Q553304", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 438, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 443, "surface": "персов", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 444, "surface": "Мемнон", "lemma": "Мемнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 457, "surface": "македонянам", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 462, "surface": "Сардам", "lemma": "Сарды", "qid": "Q232615", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 467, "surface": "Мемнона", "lemma": "Мемнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 475, "surface": "Дария III", "lemma": "Дарий III", "qid": "Q102865", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 487, "surface": "битве при Магнесии-на-Меандре", "lemma": "битва при Магнесии-на-Меандре", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 490, "surface": "Мемнон", "lemma": "Мемнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 496, "surface": "Полиэн", "lemma": "Полиэн", "qid": "Q537755", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 502, "surface": "Пармениона", "lemma": "Парменион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 504, "surface": "Аттала", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 517, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 525, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 545, "surface": "Мемнон", "lemma": "Мемнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 552, "surface": "Мемнон", "lemma": "Мемнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 554, "surface": "горы Иды", "lemma": "гора Ида", "qid": "Q83659", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 560, "surface": "Кизик", "lemma": "Кизик", "qid": "Q615449", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 568, "surface": "Гринею", "lemma": "Гриней", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 573, "surface": "Мемнона", "lemma": "Мемнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 576, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 583, "surface": "Филиппа II", "lemma": "Филипп II", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 595, "surface": "Аттал", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 598, "surface": "Александра", "lemma": "Александр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 613, "surface": "Афинами", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 615, "surface": "персами", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 625, "surface": "македонской", "lemma": "македонский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 628, "surface": "Геллеспонту", "lemma": "Геллеспонт", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 632, "surface": "Атталом", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 637, "surface": "Александра", "lemma": "Александр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 639, "surface": "Аттал", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 647, "surface": "Аттал", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 653, "surface": "Александру", "lemma": "Александр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 662, "surface": "Демосфена", "lemma": "Демосфен", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 677, "surface": "Гекатея", "lemma": "Гекатей", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 682, "surface": "Аттала", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 684, "surface": "Диодору Сицилийскому", "lemma": "Диодор Сицилийский", "qid": "Q171241", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 686, "surface": "Гекатею", "lemma": "Гекатей", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 692, "surface": "Аттала", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 694, "surface": "Македонию", "lemma": "Македония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 703, "surface": "Пармениона", "lemma": "Парменион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 704, "surface": "Аттал", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 713, "surface": "Македонскую", "lemma": "Македонская", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 721, "surface": "Аттала", "lemma": "Аттал", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 722, "surface": "Парменион", "lemma": "Парменион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 728, "surface": "персидскому", "lemma": "персидский", "qid": "Q124317785", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 730, "surface": "Мемнона", "lemma": "Мемнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 734, "surface": "Питаны", "lemma": "Питана", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 736, "surface": "Эолии", "lemma": "Эолия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 740, "surface": "Александра", "lemma": "Александр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 743, "surface": "Македонию", "lemma": "Македония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 745, "surface": "Каллас", "lemma": "Каллас", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 751, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 759, "surface": "Троаде", "lemma": "Троада", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 764, "surface": "персидских", "lemma": "персидский", "qid": "Q124317785", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 768, "surface": "Мемнона Родосского", "lemma": "Мемнон Родосский", "qid": "Q319378", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 773, "surface": "Кизик", "lemma": "Кизик", "qid": "Q615449", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 777, "surface": "Ретейон", "lemma": "Ретейон", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 779, "surface": "Каласа", "lemma": "Калас", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 781, "surface": "Мемнона", "lemma": "Мемнон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 788, "surface": "Полиэна", "lemma": "Полиэн", "qid": "Q537755", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 797, "surface": "македонский", "lemma": "македонский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 805, "surface": "Калас", "lemma": "Калас", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 806, "surface": "Кизика", "lemma": "Кизик", "qid": "Q615449", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 809, "surface": "Азии", "lemma": "Азия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 810, "surface": "Калас", "lemma": "Калас", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 815, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 817, "surface": "Ретейон", "lemma": "Ретейон", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 819, "surface": "Абидос", "lemma": "Абидос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 826, "surface": "Александр Македонский", "lemma": "Александр Македонский", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 832, "surface": "Парменион", "lemma": "Парменион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 836, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 842, "surface": "Персы", "lemma": "Персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 853, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 855, "surface": "Абидос", "lemma": "Абидос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 858, "surface": "Ретий", "lemma": "Ретий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 864, "surface": "македонская", "lemma": "македонская", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 877, "surface": "Геллеспонт", "lemma": "Геллеспонт", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 884, "surface": "Александр", "lemma": "Александр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 898, "surface": "Азию", "lemma": "Азия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
