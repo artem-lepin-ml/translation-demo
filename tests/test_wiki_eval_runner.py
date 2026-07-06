@@ -13,6 +13,7 @@ file.
 """
 from __future__ import annotations
 
+import json
 import sys
 import threading
 from pathlib import Path
@@ -571,7 +572,9 @@ def test_run_one_config_sizes_llm_semaphore_from_llm_workers(monkeypatch, tmp_pa
     monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
     monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
     monkeypatch.setattr(wiki_eval, "_process_articles_parallel", lambda articles, **kw: ([], 0))
-    monkeypatch.setattr(wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object())
+    monkeypatch.setattr(
+        wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object(),
+    )
     monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
 
     guard = wiki_eval.BudgetGuard(max_usd=10.0)
@@ -594,7 +597,9 @@ def test_run_one_config_default_llm_workers_matches_constant(monkeypatch, tmp_pa
     monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
     monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
     monkeypatch.setattr(wiki_eval, "_process_articles_parallel", lambda articles, **kw: ([], 0))
-    monkeypatch.setattr(wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object())
+    monkeypatch.setattr(
+        wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object(),
+    )
     monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
 
     guard = wiki_eval.BudgetGuard(max_usd=10.0)
@@ -970,3 +975,360 @@ def test_run_one_config_surfaces_failure_counters_in_meta(monkeypatch, tmp_path)
     assert counters["failed_paragraphs"] == [{"title": "Some Article", "paragraph_index": 4}]
     assert counters["n_failed_judge_calls"] == 1
     assert captured["tracker"] is not None  # the same FailureTracker instance was threaded through
+
+
+# ── Checkpointer (per-article on-disk checkpointing) ────────────────────────
+#
+# Container-restart resilience patch: the container hosting long `run`
+# invocations has been restarted twice in 1.5h, killing multi-hour runs --
+# pred records were held only in memory and written to disk once at the very
+# end, so every restart lost ALL paid LLM work. Checkpointer writes each
+# completed article's records + a progress line immediately, so a killed
+# container loses at most the article(s) in flight when it died.
+
+
+def _read_jsonl(path: Path) -> list[dict]:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    return [json.loads(line) for line in lines if line.strip()]
+
+
+def test_checkpointer_appends_partial_pred_and_progress_lines(tmp_path):
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    guard.spent = 1.25
+    checkpoint = wiki_eval.Checkpointer(tmp_path, n_total=3, guard=guard)
+
+    checkpoint.record("Article A", [{"title": "Article A", "index": 0, "qid": "Q1"}])
+    guard.spent = 2.5
+    checkpoint.record("Article B", [
+        {"title": "Article B", "index": 0, "qid": "Q2"},
+        {"title": "Article B", "index": 1, "qid": "Q3"},
+    ])
+
+    partial_lines = _read_jsonl(tmp_path / "pred.partial.jsonl")
+    assert [r["title"] for r in partial_lines] == ["Article A", "Article B", "Article B"]
+
+    progress_lines = _read_jsonl(tmp_path / "progress.jsonl")
+    assert progress_lines == [
+        {"article": "Article A", "done": 1, "of": 3, "spent": 1.25},
+        {"article": "Article B", "done": 2, "of": 3, "spent": 2.5},
+    ]
+
+
+def test_checkpointer_seeds_n_done_from_resume_and_defaults_spent_without_guard(tmp_path):
+    checkpoint = wiki_eval.Checkpointer(tmp_path, n_total=5, n_done=2)
+    checkpoint.record("Article C", [{"title": "Article C"}])
+
+    progress_lines = _read_jsonl(tmp_path / "progress.jsonl")
+    assert progress_lines == [{"article": "Article C", "done": 3, "of": 5, "spent": 0.0}]
+
+
+def test_checkpointer_thread_safe_under_concurrent_article_completion(tmp_path):
+    """Hammer record() from many threads at once (mirroring several article
+    workers finishing back-to-back) -- no lost writes, no scrambled `done`
+    counter."""
+    checkpoint = wiki_eval.Checkpointer(tmp_path, n_total=20)
+    titles = [f"Article {i}" for i in range(20)]
+
+    threads = [threading.Thread(target=checkpoint.record, args=(t, [{"title": t}])) for t in titles]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    partial_lines = _read_jsonl(tmp_path / "pred.partial.jsonl")
+    assert sorted(r["title"] for r in partial_lines) == sorted(titles)
+
+    progress_lines = _read_jsonl(tmp_path / "progress.jsonl")
+    # every increment landed exactly once, none lost or duplicated
+    assert sorted(p["done"] for p in progress_lines) == list(range(1, 21))
+
+
+# ── _process_articles_parallel: checkpoint wiring ───────────────────────────
+
+
+def test_process_articles_parallel_checkpoints_each_completed_article():
+    """checkpoint.record must fire once per completed article, from inside
+    process_one (the completing worker thread) -- this is what makes on-disk
+    progress reflect real completion order rather than pool.map's
+    submission-order yield."""
+    recorded: list[tuple[str, list[dict]]] = []
+    lock = threading.Lock()
+
+    class FakeCheckpoint:
+        def record(self, title, records):
+            with lock:
+                recorded.append((title, records))
+
+    def fake_predict_tuples(article_text, paragraphs, extract_fn, ground_fn, *,
+                             judge, judge_cache, scope_id, canonicalize):
+        return {
+            "tuples": [],
+            "records": [{"index": 0, "surface": scope_id, "lemma": None,
+                          "qid": "Q1", "span_len": 1, "resolved_by": "exact_label"}],
+        }
+
+    original = wiki_eval.predict.predict_tuples
+    wiki_eval.predict.predict_tuples = fake_predict_tuples
+    try:
+        articles = [(t, ["p1"], "p1") for t in ("a", "b", "c")]
+        pred_records, _ = wiki_eval._process_articles_parallel(
+            articles, article_workers=3, extract_fn=lambda p: [], judge=None,
+            canonicalize=lambda q: q, wd=None,
+            config=wiki_eval._config_from_bits("111"), guard=None,
+            checkpoint=FakeCheckpoint(),
+        )
+    finally:
+        wiki_eval.predict.predict_tuples = original
+
+    assert sorted(t for t, _ in recorded) == ["a", "b", "c"]
+    for title, records in recorded:
+        assert [r["title"] for r in records] == [title]
+    assert len(pred_records) == 3
+
+
+def test_process_articles_parallel_without_checkpoint_is_unaffected():
+    """checkpoint=None (default) must not attempt any I/O -- every
+    pre-existing caller/test of this function keeps working unchanged."""
+
+    def fake_predict_tuples(article_text, paragraphs, extract_fn, ground_fn, *,
+                             judge, judge_cache, scope_id, canonicalize):
+        return {"tuples": [], "records": []}
+
+    original = wiki_eval.predict.predict_tuples
+    wiki_eval.predict.predict_tuples = fake_predict_tuples
+    try:
+        pred_records, n = wiki_eval._process_articles_parallel(
+            [("a", ["p1"], "p1")], article_workers=1, extract_fn=lambda p: [], judge=None,
+            canonicalize=lambda q: q, wd=None,
+            config=wiki_eval._config_from_bits("111"), guard=None,
+        )
+    finally:
+        wiki_eval.predict.predict_tuples = original
+    assert pred_records == []
+    assert n == 1
+
+
+# ── _run_one_config: out_dir/skip_titles/n_done_start wiring ────────────────
+
+
+def test_run_one_config_builds_checkpoint_from_out_dir_and_seeds_n_done(monkeypatch, tmp_path):
+    captured: dict = {}
+
+    def fake_process_articles_parallel(articles, **kw):
+        captured["checkpoint"] = kw.get("checkpoint")
+        captured["n_articles_seen"] = len(articles)
+        return [], 0
+
+    monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
+    monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
+    monkeypatch.setattr(wiki_eval, "_process_articles_parallel", fake_process_articles_parallel)
+    monkeypatch.setattr(
+        wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object(),
+    )
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    wiki_eval._run_one_config(
+        "111", [{"title": "A"}, {"title": "B"}], str(tmp_path), dry_run=False, guard=guard,
+        out_dir=tmp_path, skip_titles=frozenset({"A"}), n_done_start=1,
+    )
+
+    checkpoint = captured["checkpoint"]
+    assert isinstance(checkpoint, wiki_eval.Checkpointer)
+    assert checkpoint.n_total == 2  # full gt_records count, not just the remaining article
+    assert checkpoint.n_done == 1  # seeded from n_done_start
+    assert captured["n_articles_seen"] == 0  # "A" has no cached HTML, also skip_titles-filtered
+
+
+def test_run_one_config_without_out_dir_builds_no_checkpoint(monkeypatch, tmp_path):
+    captured: dict = {}
+
+    def fake_process_articles_parallel(articles, **kw):
+        captured["checkpoint"] = kw.get("checkpoint")
+        return [], 0
+
+    monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
+    monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
+    monkeypatch.setattr(wiki_eval, "_process_articles_parallel", fake_process_articles_parallel)
+    monkeypatch.setattr(
+        wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object(),
+    )
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    wiki_eval._run_one_config("111", [], str(tmp_path), dry_run=False, guard=guard)
+    assert captured["checkpoint"] is None
+
+
+def test_run_one_config_skip_titles_excludes_articles_with_cached_html(monkeypatch, tmp_path):
+    """skip_titles must filter BEFORE the html-cache-existence check -- an
+    already-checkpointed article must never be reprocessed (re-billed) even
+    though its cached HTML is still present on disk."""
+    done_html = tmp_path / f"{wiki_eval.wiki_gt._safe_filename('Done Article')}.html"
+    new_html = tmp_path / f"{wiki_eval.wiki_gt._safe_filename('New Article')}.html"
+    done_html.write_text("<p>x</p>", encoding="utf-8")
+    new_html.write_text("<p>y</p>", encoding="utf-8")
+
+    captured: dict = {}
+
+    def fake_process_articles_parallel(articles, **kw):
+        captured["titles"] = [a[0] for a in articles]
+        return [], 0
+
+    monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
+    monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
+    monkeypatch.setattr(wiki_eval, "_process_articles_parallel", fake_process_articles_parallel)
+    monkeypatch.setattr(
+        wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object(),
+    )
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    wiki_eval._run_one_config(
+        "111", [{"title": "Done Article"}, {"title": "New Article"}], str(tmp_path),
+        dry_run=False, guard=guard, out_dir=tmp_path, skip_titles=frozenset({"Done Article"}),
+    )
+    assert captured["titles"] == ["New Article"]
+
+
+# ── cmd_run: checkpoint dir-at-start + --resume ─────────────────────────────
+
+
+def _write_gt_jsonl(path: Path, titles: list[str]) -> None:
+    with path.open("w", encoding="utf-8") as fh:
+        for t in titles:
+            rec = {"title": t, "gt_tuples": [], "stratum": "typical"}
+            fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
+def _fake_counters() -> dict:
+    return {
+        "n_articles": 2, "n_paragraphs": 2, "n_pred_mentions": 2,
+        "llm_max_in_flight_observed": 1, "n_failed_paragraphs": 0,
+        "failed_paragraphs": [], "n_failed_judge_calls": 0,
+    }
+
+
+def test_cmd_run_creates_out_dir_before_processing_and_deletes_partial(monkeypatch, tmp_path):
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A", "Article B"])
+
+    captured: dict = {}
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        out_dir = Path(kw["out_dir"])
+        captured["out_dir_existed_during_call"] = out_dir.is_dir()
+        # Simulate a partial file left behind by checkpointing mid-run.
+        (out_dir / "pred.partial.jsonl").write_text(
+            json.dumps({"title": "Article A", "index": 0, "qid": "Q1"}) + "\n", encoding="utf-8",
+        )
+        records = [
+            {"title": "Article A", "index": 0, "qid": "Q1"},
+            {"title": "Article B", "index": 0, "qid": "Q2"},
+        ]
+        return records, _fake_counters()
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+    monkeypatch.setattr(wiki_eval, "OUT_ROOT", tmp_path / "out")
+
+    args = wiki_eval._build_parser().parse_args(["run", "--gt", str(gt_path), "--max-usd", "5"])
+    rc = wiki_eval.cmd_run(args)
+
+    assert rc == 0
+    assert captured["out_dir_existed_during_call"] is True  # run dir created at START, not the end
+
+    out_dirs = list((tmp_path / "out").glob("*/*/*"))
+    assert len(out_dirs) == 1
+    out_dir = out_dirs[0]
+    assert (out_dir / "pred.jsonl").exists()
+    assert (out_dir / "meta.json").exists()
+    assert not (out_dir / "pred.partial.jsonl").exists()  # deleted on clean completion
+
+    meta = json.loads((out_dir / "meta.json").read_text(encoding="utf-8"))
+    assert "resumed_from_n_articles" not in meta  # fresh run, --resume not used
+
+
+def test_cmd_run_resume_skips_done_titles_seeds_guard_and_merges(monkeypatch, tmp_path):
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A", "Article B"])
+
+    resume_dir = tmp_path / "prior_run"
+    resume_dir.mkdir()
+    (resume_dir / "pred.partial.jsonl").write_text(
+        json.dumps({"title": "Article A", "index": 0, "qid": "Q1"}) + "\n", encoding="utf-8",
+    )
+    progress_line = {"article": "Article A", "done": 1, "of": 2, "spent": 3.5}
+    (resume_dir / "progress.jsonl").write_text(json.dumps(progress_line) + "\n", encoding="utf-8")
+
+    captured: dict = {}
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        captured["skip_titles"] = kw["skip_titles"]
+        captured["n_done_start"] = kw["n_done_start"]
+        captured["guard_spent_at_call"] = guard.spent
+        captured["out_dir"] = Path(kw["out_dir"])
+        new_record = {"title": "Article B", "index": 0, "qid": "Q2"}
+        return [new_record], _fake_counters()
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(gt_path), "--resume", str(resume_dir), "--max-usd", "5",
+    ])
+    rc = wiki_eval.cmd_run(args)
+
+    assert rc == 0
+    assert captured["skip_titles"] == frozenset({"Article A"})
+    assert captured["n_done_start"] == 1
+    assert captured["guard_spent_at_call"] == 3.5  # seeded from progress.jsonl's last line
+    assert captured["out_dir"] == resume_dir  # reused, not a fresh OUT_ROOT path
+
+    assert (resume_dir / "pred.jsonl").exists()
+    pred_records = _read_jsonl(resume_dir / "pred.jsonl")
+    assert [r["title"] for r in pred_records] == ["Article A", "Article B"]  # merged, gt order
+
+    assert not (resume_dir / "pred.partial.jsonl").exists()  # deleted on clean completion
+
+    meta = json.loads((resume_dir / "meta.json").read_text(encoding="utf-8"))
+    assert meta["resumed_from_n_articles"] == 1
+    assert meta["run_id"] == resume_dir.name  # run_id reused, not a fresh timestamp
+
+
+def test_cmd_run_resume_without_prior_partial_file_behaves_like_fresh_run(monkeypatch, tmp_path):
+    """--resume pointing at a dir with no pred.partial.jsonl yet (e.g. the
+    very first article hadn't finished before the restart) must not crash --
+    it degenerates to processing every article, same as a fresh run, just
+    reusing the given dir/run_id."""
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    resume_dir = tmp_path / "prior_run_empty"
+    resume_dir.mkdir()
+
+    captured: dict = {}
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        captured["skip_titles"] = kw["skip_titles"]
+        captured["n_done_start"] = kw["n_done_start"]
+        return [{"title": "Article A", "index": 0, "qid": "Q1"}], _fake_counters()
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(gt_path), "--resume", str(resume_dir),
+    ])
+    rc = wiki_eval.cmd_run(args)
+
+    assert rc == 0
+    assert captured["skip_titles"] == frozenset()
+    assert captured["n_done_start"] == 0
+    meta = json.loads((resume_dir / "meta.json").read_text(encoding="utf-8"))
+    assert meta["resumed_from_n_articles"] == 0  # --resume was used, just with nothing done yet
+
+
+def test_cli_run_resume_flag_default_and_value():
+    args = wiki_eval._build_parser().parse_args(["run"])
+    assert args.resume is None
+
+    args2 = wiki_eval._build_parser().parse_args(["run", "--resume", "/tmp/some-run-dir"])
+    assert args2.resume == "/tmp/some-run-dir"

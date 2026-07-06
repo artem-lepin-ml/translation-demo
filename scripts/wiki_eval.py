@@ -722,10 +722,61 @@ def cmd_build_gt(args) -> int:
 # ── run ───────────────────────────────────────────────────────────────────────
 
 
+class Checkpointer:
+    """Per-article on-disk checkpoint (container-restart resilience patch):
+    the container hosting long ``run`` invocations has been restarted twice
+    in 1.5h, killing multi-hour runs -- pred records were held only in memory
+    and written to disk once at the very end, so every restart lost ALL paid
+    LLM work for that run. This writes each completed article's pred records
+    to ``<out_dir>/pred.partial.jsonl`` (one JSON line per record, same
+    schema as the final ``pred.jsonl``) and a progress line to
+    ``<out_dir>/progress.jsonl`` the moment that article finishes --
+    ``record()`` is called from inside ``_process_articles_parallel``'s
+    ``process_one``, i.e. from the completing worker thread itself, NOT from
+    the main thread's ``pool.map`` loop (which only yields results in
+    submission order, well after earlier-submitted-but-slower articles
+    block it). ``_lock`` serializes both files' writes plus the ``n_done``
+    counter since several article workers can finish back-to-back; each
+    write is flushed immediately so a killed container never loses more
+    than the article(s) still in flight at kill time.
+
+    ``--resume`` (``cmd_run``) reads ``pred.partial.jsonl`` back to skip
+    already-done titles and seeds a fresh ``BudgetGuard`` from
+    ``progress.jsonl``'s last recorded ``spent`` -- see ``cmd_run``.
+    ``pred.partial.jsonl`` is deleted once ``cmd_run`` finishes cleanly and
+    has written the merged final ``pred.jsonl``.
+    """
+
+    def __init__(self, out_dir: Path, *, n_total: int, n_done: int = 0,
+                 guard: BudgetGuard | None = None) -> None:
+        self.pred_path = out_dir / "pred.partial.jsonl"
+        self.progress_path = out_dir / "progress.jsonl"
+        self.n_total = n_total
+        self.n_done = n_done
+        self.guard = guard
+        self._lock = threading.Lock()
+
+    def record(self, title: str, records: list[dict]) -> None:
+        with self._lock:
+            with self.pred_path.open("a", encoding="utf-8") as fh:
+                for r in records:
+                    fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+                fh.flush()
+            self.n_done += 1
+            spent = self.guard.spent if self.guard is not None else 0.0
+            with self.progress_path.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(
+                    {"article": title, "done": self.n_done, "of": self.n_total, "spent": spent},
+                    ensure_ascii=False,
+                ) + "\n")
+                fh.flush()
+
+
 def _process_articles_parallel(
     articles: list[tuple[str, list[str], str]], *, article_workers: int,
     extract_fn, judge, canonicalize, wd: WikidataClient, config: GroundingConfig,
     guard: BudgetGuard | None, tracker: FailureTracker | None = None,
+    checkpoint: Checkpointer | None = None,
 ) -> tuple[list[dict], int]:
     """Article-level parallelism (ticket 002b): process every ``(title,
     paragraphs, article_text)`` triple in ``articles`` CONCURRENTLY, up to
@@ -750,6 +801,13 @@ def _process_articles_parallel(
     map`` submits every task immediately but yields results positionally, the
     same order-preserving guarantee ``_parallel_extract_fn`` already relies on
     for paragraphs, applied here one level up for articles.
+
+    ``checkpoint`` (container-restart resilience patch, optional): when given,
+    ``checkpoint.record(title, records)`` is called from inside
+    ``process_one`` -- the completing worker thread -- the instant that one
+    article's records are ready, so on-disk progress reflects REAL completion
+    order, not ``pool.map``'s submission-order yield. ``None`` (default)
+    keeps every pre-existing caller/test of this function unchanged.
     """
 
     def process_one(item: tuple[str, list[str], str]) -> tuple[list[dict], int]:
@@ -780,6 +838,8 @@ def _process_articles_parallel(
             judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
         )
         records = [{"title": title, **r} for r in result["records"]]
+        if checkpoint is not None:
+            checkpoint.record(title, records)
         return records, len(paragraphs)
 
     pred_records: list[dict] = []
@@ -796,7 +856,10 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
                      article_workers: int = DEFAULT_ARTICLE_WORKERS,
                      llm_workers: int = DEFAULT_LLM_WORKERS,
                      wikidata_cache: str | Path = WIKIDATA_CACHE,
-                     wikidata_workers: int = DEFAULT_NETWORK_CONCURRENCY) -> tuple[list[dict], dict]:
+                     wikidata_workers: int = DEFAULT_NETWORK_CONCURRENCY,
+                     out_dir: str | Path | None = None,
+                     skip_titles: frozenset[str] = frozenset(),
+                     n_done_start: int = 0) -> tuple[list[dict], dict]:
     config = _config_from_bits(bits)
     wd = WikidataClient(cache_path=wikidata_cache, network_concurrency=wikidata_workers)
     canonicalize = _canonicalize_fn(wd)
@@ -838,9 +901,23 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
     judge = _build_judge(guard, llm_semaphore, model=model, provider=provider, tracker=tracker)
     extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider)
 
+    # Checkpointer (container-restart resilience patch): built only when the
+    # caller (cmd_run) hands us a run dir -- ``n_done_start``/``skip_titles``
+    # come from --resume (0/empty on a fresh run). ``n_total`` is the FULL
+    # gt_records count (not just the remaining/filtered articles) so
+    # progress.jsonl's "of" field reads as real end-to-end progress across a
+    # resume boundary, e.g. done=41/100 rather than resetting to 1/60.
+    checkpoint = None
+    if out_dir is not None:
+        checkpoint = Checkpointer(
+            Path(out_dir), n_total=len(gt_records), n_done=n_done_start, guard=guard,
+        )
+
     articles: list[tuple[str, list[str], str]] = []
     for rec in gt_records:
         title = rec["title"]
+        if title in skip_titles:  # --resume: already checkpointed in a prior invocation
+            continue
         html_path = Path(cache_dir) / f"{wiki_gt._safe_filename(title)}.html"
         if not html_path.exists():
             continue
@@ -852,6 +929,7 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
     pred_records, n_paragraphs_total = _process_articles_parallel(
         articles, article_workers=article_workers, extract_fn=extract_fn, judge=judge,
         canonicalize=canonicalize, wd=wd, config=config, guard=guard, tracker=tracker,
+        checkpoint=checkpoint,
     )
 
     counters = {
@@ -892,24 +970,75 @@ def cmd_run(args) -> int:
         print(f"\nForecast ${est_cost:.4f} is within --max-usd ${args.max_usd:.2f}. Dry run only -- nothing written.")
         return 0
 
+    model = args.model or CLOSEROUTER_MODEL
+    provider = args.provider or CLOSEROUTER_PROVIDER
+    slug = model_slug(model, provider)
+
+    # --resume (container-restart resilience patch): reuse a prior run's dir
+    # and run_id, skip articles it already finished (by title, read back from
+    # its pred.partial.jsonl), and seed THIS invocation's guard from
+    # progress.jsonl's last recorded spend -- so a killed container loses at
+    # most the article(s) in flight when it died, never the whole run.
+    resume_dir = getattr(args, "resume", None)
+    old_pred_records: list[dict] = []
+    skip_titles: set[str] = set()
+    resumed_from_n_articles: int | None = None
+    run_id: str | None = None
+    if resume_dir:
+        out_dir = Path(resume_dir)
+        run_id = out_dir.name
+        partial_path = out_dir / "pred.partial.jsonl"
+        if partial_path.exists():
+            old_pred_records = [
+                json.loads(line) for line in partial_path.open(encoding="utf-8") if line.strip()
+            ]
+        skip_titles = {r["title"] for r in old_pred_records}
+        resumed_from_n_articles = len(skip_titles)
+        progress_path = out_dir / "progress.jsonl"
+        if progress_path.exists():
+            progress_text = progress_path.read_text(encoding="utf-8")
+            progress_lines = [line for line in progress_text.splitlines() if line.strip()]
+            if progress_lines:
+                guard.spent = json.loads(progress_lines[-1])["spent"]
+
     started_at = datetime.now(timezone.utc)
-    pred_records, counters = _run_one_config(
+    if run_id is None:
+        run_id = started_at.strftime("%Y-%m-%dT%H-%M-%SZ")
+        out_dir = OUT_ROOT / slug / args.config / run_id
+    # Created at START, not at the end (checkpoint patch): _process_articles_
+    # parallel needs somewhere to append pred.partial.jsonl/progress.jsonl as
+    # each article finishes, well before this invocation itself completes.
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    new_pred_records, counters = _run_one_config(
         args.config, gt_records, args.cache, dry_run=False, guard=guard,
         model=args.model, provider=args.provider, article_workers=args.article_workers,
         llm_workers=args.llm_workers, wikidata_cache=args.wikidata_cache,
         wikidata_workers=args.wikidata_workers,
+        out_dir=out_dir, skip_titles=frozenset(skip_titles), n_done_start=len(skip_titles),
     )
     finished_at = datetime.now(timezone.utc)
 
-    model = args.model or CLOSEROUTER_MODEL
-    provider = args.provider or CLOSEROUTER_PROVIDER
-    slug = model_slug(model, provider)
-    run_id = started_at.strftime("%Y-%m-%dT%H-%M-%SZ")
-    out_dir = OUT_ROOT / slug / args.config / run_id
-    out_dir.mkdir(parents=True, exist_ok=True)
+    # Merge resumed + newly-produced records, then replay gt_records' input
+    # order (checkpoint patch): pred.partial.jsonl only guarantees REAL
+    # completion order across however many invocations wrote to it, which is
+    # not deterministic across article workers -- grouping by title and
+    # replaying gt_records' order restores the same deterministic layout
+    # `run` always gave before checkpointing existed.
+    records_by_title: dict[str, list[dict]] = defaultdict(list)
+    for r in old_pred_records + new_pred_records:
+        records_by_title[r["title"]].append(r)
+    pred_records = [r for rec in gt_records for r in records_by_title.get(rec["title"], [])]
+
     with (out_dir / "pred.jsonl").open("w", encoding="utf-8") as fh:
         for r in pred_records:
             fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+    # Clean completion (checkpoint patch): the merged, authoritative pred.jsonl
+    # is now on disk, so the partial file that made this resumable is spent.
+    partial_path = out_dir / "pred.partial.jsonl"
+    if partial_path.exists():
+        partial_path.unlink()
 
     meta = {
         "model": model,
@@ -938,6 +1067,8 @@ def cmd_run(args) -> int:
         "wall_clock_s": (finished_at - started_at).total_seconds(),
         **counters,
     }
+    if resumed_from_n_articles is not None:
+        meta["resumed_from_n_articles"] = resumed_from_n_articles
     (out_dir / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
 
     print(f"model={model}  provider={provider}  config={args.config}  run_id={run_id}  {counters}")
@@ -1083,6 +1214,10 @@ def _build_parser() -> argparse.ArgumentParser:
                              "bound; matrix runs pass 2 so 4 parallel processes stay under the "
                              "API's rate limit -- 2026-07-05 canary 429-storm adaptation)")
     p_run.add_argument("--dry-run", action="store_true", help="print cost forecast only, write nothing")
+    p_run.add_argument("--resume", default=None,
+                        help="resume a prior run dir: skip articles already in its "
+                             "pred.partial.jsonl (by title), reuse its run_id, and seed the "
+                             "budget guard from progress.jsonl's last recorded spend")
     p_run.set_defaults(func=cmd_run)
 
     p_ablate = sub.add_parser("ablate", help="loop `run` over all 8 configs, sharing the judge cache")
