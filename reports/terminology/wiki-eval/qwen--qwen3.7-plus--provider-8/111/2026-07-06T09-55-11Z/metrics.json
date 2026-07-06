@@ -1,0 +1,9372 @@
+{
+ "recall": {
+  "m1": {
+   "matched": 454,
+   "total": 7959,
+   "value": 0.05704234200276417,
+   "ci_lo": 0.0522,
+   "ci_hi": 0.0624,
+   "underpowered": false
+  },
+  "m2": {
+   "matched": 463,
+   "total": 7959,
+   "value": 0.05817313732881015,
+   "ci_lo": 0.0532,
+   "ci_hi": 0.0635,
+   "underpowered": false
+  },
+  "m3": {
+   "matched": 736,
+   "total": 7959,
+   "value": 0.09247392888553839,
+   "ci_lo": 0.0863,
+   "ci_hi": 0.099,
+   "underpowered": false
+  }
+ },
+ "precision": {
+  "p1": {
+   "matched": 463,
+   "total": 1530,
+   "value": 0.3026143790849673,
+   "ci_lo": 0.2801,
+   "ci_hi": 0.3261,
+   "underpowered": false
+  },
+  "p2": {
+   "matched": 420,
+   "total": 996,
+   "value": 0.42168674698795183,
+   "ci_lo": 0.3914,
+   "ci_hi": 0.4526,
+   "underpowered": false
+  }
+ },
+ "slices": {
+  "stratum": {
+   "achaemenid_iran": {
+    "recall": {
+     "m1": {
+      "matched": 40,
+      "total": 713,
+      "value": 0.056100981767180924,
+      "ci_lo": 0.0415,
+      "ci_hi": 0.0755,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 40,
+      "total": 713,
+      "value": 0.056100981767180924,
+      "ci_lo": 0.0415,
+      "ci_hi": 0.0755,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 44,
+      "total": 713,
+      "value": 0.061711079943899017,
+      "ci_lo": 0.0463,
+      "ci_hi": 0.0818,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 40,
+      "total": 46,
+      "value": 0.8695652173913043,
+      "ci_lo": 0.7433,
+      "ci_hi": 0.9388,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 39,
+      "total": 45,
+      "value": 0.8666666666666667,
+      "ci_lo": 0.7382,
+      "ci_hi": 0.9374,
+      "underpowered": false
+     }
+    }
+   },
+   "assyria": {
+    "recall": {
+     "m1": {
+      "matched": 108,
+      "total": 879,
+      "value": 0.12286689419795221,
+      "ci_lo": 0.1028,
+      "ci_hi": 0.1462,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 109,
+      "total": 879,
+      "value": 0.12400455062571103,
+      "ci_lo": 0.1038,
+      "ci_hi": 0.1474,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 163,
+      "total": 879,
+      "value": 0.18543799772468714,
+      "ci_lo": 0.1611,
+      "ci_hi": 0.2125,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 109,
+      "total": 111,
+      "value": 0.9819819819819819,
+      "ci_lo": 0.9367,
+      "ci_hi": 0.995,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 98,
+      "total": 100,
+      "value": 0.98,
+      "ci_lo": 0.93,
+      "ci_hi": 0.9945,
+      "underpowered": false
+     }
+    }
+   },
+   "china": {
+    "recall": {
+     "m1": {
+      "matched": 37,
+      "total": 458,
+      "value": 0.08078602620087336,
+      "ci_lo": 0.0592,
+      "ci_hi": 0.1094,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 37,
+      "total": 458,
+      "value": 0.08078602620087336,
+      "ci_lo": 0.0592,
+      "ci_hi": 0.1094,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 43,
+      "total": 458,
+      "value": 0.09388646288209607,
+      "ci_lo": 0.0704,
+      "ci_hi": 0.1241,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 37,
+      "total": 43,
+      "value": 0.8604651162790697,
+      "ci_lo": 0.7274,
+      "ci_hi": 0.9344,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 33,
+      "total": 37,
+      "value": 0.8918918918918919,
+      "ci_lo": 0.7529,
+      "ci_hi": 0.9571,
+      "underpowered": false
+     }
+    }
+   },
+   "egypt": {
+    "recall": {
+     "m1": {
+      "matched": 22,
+      "total": 579,
+      "value": 0.037996545768566495,
+      "ci_lo": 0.0252,
+      "ci_hi": 0.0569,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 22,
+      "total": 579,
+      "value": 0.037996545768566495,
+      "ci_lo": 0.0252,
+      "ci_hi": 0.0569,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 24,
+      "total": 579,
+      "value": 0.04145077720207254,
+      "ci_lo": 0.028,
+      "ci_hi": 0.0609,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 22,
+      "total": 25,
+      "value": 0.88,
+      "ci_lo": 0.7004,
+      "ci_hi": 0.9583,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 22,
+      "total": 25,
+      "value": 0.88,
+      "ci_lo": 0.7004,
+      "ci_hi": 0.9583,
+      "underpowered": true
+     }
+    }
+   },
+   "greece": {
+    "recall": {
+     "m1": {
+      "matched": 113,
+      "total": 1506,
+      "value": 0.0750332005312085,
+      "ci_lo": 0.0628,
+      "ci_hi": 0.0894,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 113,
+      "total": 1506,
+      "value": 0.0750332005312085,
+      "ci_lo": 0.0628,
+      "ci_hi": 0.0894,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 174,
+      "total": 1506,
+      "value": 0.11553784860557768,
+      "ci_lo": 0.1004,
+      "ci_hi": 0.1327,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 113,
+      "total": 130,
+      "value": 0.8692307692307693,
+      "ci_lo": 0.8005,
+      "ci_hi": 0.9167,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 104,
+      "total": 121,
+      "value": 0.859504132231405,
+      "ci_lo": 0.7865,
+      "ci_hi": 0.9104,
+      "underpowered": false
+     }
+    }
+   },
+   "hittite": {
+    "recall": {
+     "m1": {
+      "matched": 16,
+      "total": 649,
+      "value": 0.02465331278890601,
+      "ci_lo": 0.0152,
+      "ci_hi": 0.0397,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 16,
+      "total": 649,
+      "value": 0.02465331278890601,
+      "ci_lo": 0.0152,
+      "ci_hi": 0.0397,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 18,
+      "total": 649,
+      "value": 0.02773497688751926,
+      "ci_lo": 0.0176,
+      "ci_hi": 0.0434,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 16,
+      "total": 17,
+      "value": 0.9411764705882353,
+      "ci_lo": 0.7302,
+      "ci_hi": 0.9895,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 15,
+      "total": 16,
+      "value": 0.9375,
+      "ci_lo": 0.7167,
+      "ci_hi": 0.9889,
+      "underpowered": true
+     }
+    }
+   },
+   "india": {
+    "recall": {
+     "m1": {
+      "matched": 90,
+      "total": 843,
+      "value": 0.10676156583629894,
+      "ci_lo": 0.0877,
+      "ci_hi": 0.1294,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 92,
+      "total": 843,
+      "value": 0.10913404507710557,
+      "ci_lo": 0.0898,
+      "ci_hi": 0.132,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 106,
+      "total": 843,
+      "value": 0.1257413997627521,
+      "ci_lo": 0.105,
+      "ci_hi": 0.1498,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 92,
+      "total": 96,
+      "value": 0.9583333333333334,
+      "ci_lo": 0.8977,
+      "ci_hi": 0.9837,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 88,
+      "total": 92,
+      "value": 0.9565217391304348,
+      "ci_lo": 0.8935,
+      "ci_hi": 0.983,
+      "underpowered": false
+     }
+    }
+   },
+   "phoenicia": {
+    "recall": {
+     "m1": {
+      "matched": 26,
+      "total": 1036,
+      "value": 0.025096525096525095,
+      "ci_lo": 0.0172,
+      "ci_hi": 0.0365,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 26,
+      "total": 1036,
+      "value": 0.025096525096525095,
+      "ci_lo": 0.0172,
+      "ci_hi": 0.0365,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 35,
+      "total": 1036,
+      "value": 0.033783783783783786,
+      "ci_lo": 0.0244,
+      "ci_hi": 0.0466,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 26,
+      "total": 28,
+      "value": 0.9285714285714286,
+      "ci_lo": 0.7735,
+      "ci_hi": 0.9802,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 26,
+      "total": 28,
+      "value": 0.9285714285714286,
+      "ci_lo": 0.7735,
+      "ci_hi": 0.9802,
+      "underpowered": true
+     }
+    }
+   },
+   "rome": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 683,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0056,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 0,
+      "total": 683,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0056,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 0,
+      "total": 683,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0056,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "sumer": {
+    "recall": {
+     "m1": {
+      "matched": 2,
+      "total": 613,
+      "value": 0.0032626427406199023,
+      "ci_lo": 0.0009,
+      "ci_hi": 0.0118,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 2,
+      "total": 613,
+      "value": 0.0032626427406199023,
+      "ci_lo": 0.0009,
+      "ci_hi": 0.0118,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 3,
+      "total": 613,
+      "value": 0.004893964110929853,
+      "ci_lo": 0.0017,
+      "ci_hi": 0.0143,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 2,
+      "total": 2,
+      "value": 1.0,
+      "ci_lo": 0.3424,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 2,
+      "total": 2,
+      "value": 1.0,
+      "ci_lo": 0.3424,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   }
+  },
+  "resolved_by": {
+   "exact_label": {
+    "recall": {
+     "m1": {
+      "matched": 368,
+      "total": 393,
+      "value": 0.9363867684478372,
+      "ci_lo": 0.9078,
+      "ci_hi": 0.9565,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 370,
+      "total": 393,
+      "value": 0.9414758269720102,
+      "ci_lo": 0.9137,
+      "ci_hi": 0.9607,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 370,
+      "total": 393,
+      "value": 0.9414758269720102,
+      "ci_lo": 0.9137,
+      "ci_hi": 0.9607,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 370,
+      "total": 1096,
+      "value": 0.3375912408759124,
+      "ci_lo": 0.3102,
+      "ci_hi": 0.3661,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 341,
+      "total": 739,
+      "value": 0.4614343707713126,
+      "ci_lo": 0.4258,
+      "ci_hi": 0.4975,
+      "underpowered": false
+     },
+     "p3": {
+      "matched": 370,
+      "total": 1096,
+      "value": 0.3375912408759124,
+      "ci_lo": 0.3102,
+      "ci_hi": 0.3661,
+      "underpowered": false
+     }
+    }
+   },
+   "judge_rejected": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 11,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.2588,
+      "underpowered": true
+     },
+     "m2": {
+      "matched": 0,
+      "total": 11,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.2588,
+      "underpowered": true
+     },
+     "m3": {
+      "matched": 0,
+      "total": 11,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.2588,
+      "underpowered": true
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "judge_unavailable": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 431,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0088,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 0,
+      "total": 431,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0088,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 0,
+      "total": 431,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0088,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "llm_disambiguation": {
+    "recall": {
+     "m1": {
+      "matched": 85,
+      "total": 104,
+      "value": 0.8173076923076923,
+      "ci_lo": 0.7322,
+      "ci_hi": 0.8798,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 86,
+      "total": 104,
+      "value": 0.8269230769230769,
+      "ci_lo": 0.7429,
+      "ci_hi": 0.8876,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 87,
+      "total": 104,
+      "value": 0.8365384615384616,
+      "ci_lo": 0.7537,
+      "ci_hi": 0.8954,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 86,
+      "total": 415,
+      "value": 0.20722891566265061,
+      "ci_lo": 0.171,
+      "ci_hi": 0.2488,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 75,
+      "total": 248,
+      "value": 0.3024193548387097,
+      "ci_lo": 0.2486,
+      "ci_hi": 0.3622,
+      "underpowered": false
+     },
+     "p3": {
+      "matched": 86,
+      "total": 415,
+      "value": 0.20722891566265061,
+      "ci_lo": 0.171,
+      "ci_hi": 0.2488,
+      "underpowered": false
+     }
+    }
+   },
+   "no_candidates": {
+    "recall": {
+     "m1": {
+      "matched": 1,
+      "total": 36,
+      "value": 0.027777777777777776,
+      "ci_lo": 0.0049,
+      "ci_hi": 0.1417,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 1,
+      "total": 36,
+      "value": 0.027777777777777776,
+      "ci_lo": 0.0049,
+      "ci_hi": 0.1417,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 1,
+      "total": 36,
+      "value": 0.027777777777777776,
+      "ci_lo": 0.0049,
+      "ci_hi": 0.1417,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 1,
+      "total": 2,
+      "value": 0.5,
+      "ci_lo": 0.0945,
+      "ci_hi": 0.9055,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 1,
+      "total": 2,
+      "value": 0.5,
+      "ci_lo": 0.0945,
+      "ci_hi": 0.9055,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 1,
+      "total": 2,
+      "value": 0.5,
+      "ci_lo": 0.0945,
+      "ci_hi": 0.9055,
+      "underpowered": true
+     }
+    }
+   }
+  },
+  "type": {
+   "named": {
+    "recall": {
+     "m1": {
+      "matched": 367,
+      "total": 5309,
+      "value": 0.06912789602561688,
+      "ci_lo": 0.0626,
+      "ci_hi": 0.0763,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 368,
+      "total": 5309,
+      "value": 0.06931625541533246,
+      "ci_lo": 0.0628,
+      "ci_hi": 0.0765,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 463,
+      "total": 5309,
+      "value": 0.0872103974383123,
+      "ci_lo": 0.0799,
+      "ci_hi": 0.0951,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 368,
+      "total": 403,
+      "value": 0.913151364764268,
+      "ci_lo": 0.8816,
+      "ci_hi": 0.9369,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 347,
+      "total": 380,
+      "value": 0.9131578947368421,
+      "ci_lo": 0.8805,
+      "ci_hi": 0.9375,
+      "underpowered": false
+     }
+    }
+   },
+   "term": {
+    "recall": {
+     "m1": {
+      "matched": 87,
+      "total": 2650,
+      "value": 0.03283018867924528,
+      "ci_lo": 0.0267,
+      "ci_hi": 0.0403,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 89,
+      "total": 2650,
+      "value": 0.033584905660377355,
+      "ci_lo": 0.0274,
+      "ci_hi": 0.0411,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 138,
+      "total": 2650,
+      "value": 0.052075471698113204,
+      "ci_lo": 0.0442,
+      "ci_hi": 0.0612,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 89,
+      "total": 95,
+      "value": 0.9368421052631579,
+      "ci_lo": 0.869,
+      "ci_hi": 0.9707,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 81,
+      "total": 87,
+      "value": 0.9310344827586207,
+      "ci_lo": 0.8576,
+      "ci_hi": 0.968,
+      "underpowered": false
+     }
+    }
+   }
+  }
+ },
+ "meta": {
+  "article_workers": 10,
+  "calls": {
+   "extract": 2644,
+   "judge": 1138
+  },
+  "config": "111",
+  "failed_paragraphs": [
+   {
+    "paragraph_index": 0,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Абдмилькат"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Абдмилькат"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Академия Цзися"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Абдмилькат"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Академия Цзися"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Академия Цзися"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Абдмилькат"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Академия Цзися"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Абдмилькат"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Абдмилькат"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Академия Цзися"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Академия Цзися"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Абдмилькат"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Азиатская экспедиция (336—334 до н. э.)"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Арслантепе (Мелид)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Ашшур-этель-илани"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Восстания в державе Ахеменидов (521—516 до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Восстания в державе Ахеменидов (521—516 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Восстания в державе Ахеменидов (521—516 до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Второй Афинский морской союз"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Второй Афинский морской союз"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Восстания в державе Ахеменидов (521—516 до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Восстания в державе Ахеменидов (521—516 до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Восстания в державе Ахеменидов (521—516 до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Восстания в державе Ахеменидов (521—516 до н. э.)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Второй Афинский морской союз"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Ашшур (город)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Второй Афинский морской союз"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Второй Афинский морской союз"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Второй Афинский морской союз"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Второй Афинский морской союз"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Второй Афинский морской союз"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Армия империи Хань"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Гандхара"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Гандхара"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Гандхара"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Гандхара"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Веды"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Беотийский союз"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Ашока"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Ашшурбанапал"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Данайцы"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Данайцы"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Данайцы"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Данайцы"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Данайцы"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Данайцы"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Данайцы"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 57,
+    "title": "Гаруда"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Древнегреческая религия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Древнегреческая религия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Древнегреческая религия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Древнегреческая религия"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Древнегреческая религия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 57,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 58,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 59,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 60,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 61,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 62,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 63,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 64,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 65,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 66,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 67,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 68,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 69,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 70,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 72,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 71,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 73,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 74,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 75,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 76,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 77,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 78,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 79,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 80,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 81,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 82,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 84,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 83,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 85,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 86,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 87,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 88,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 89,
+    "title": "Древняя Греция"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Калинга (государство)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Калинга (государство)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Калинга (государство)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 57,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 59,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 58,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 60,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 61,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 63,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 62,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 64,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 66,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 65,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 67,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 68,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 69,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 70,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 57,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 58,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 59,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 61,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 60,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Осада Тира"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Первая династия Ура"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Поздняя Цинь"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Объединение Китая царством Цинь"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 59,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 60,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Пергамский алтарь"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Путешествия Уну-Амона"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Путешествия Уну-Амона"
+   },
+   {
+    "paragraph_index": 70,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Путешествия Уну-Амона"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Путешествия Уну-Амона"
+   },
+   {
+    "paragraph_index": 73,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 75,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 74,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Персидские походы в Египет (385—342 до н. э.)"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Период Вёсен и Осеней"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Новоассирийское царство"
+   },
+   {
+    "paragraph_index": 88,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 89,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 90,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 91,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 95,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 96,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 98,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 97,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 99,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 100,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 102,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 101,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 103,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 104,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 105,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 106,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 107,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 108,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 109,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 110,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 111,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 114,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 113,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 112,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 115,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 116,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 117,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 118,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 119,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 120,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 121,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 122,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 123,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 124,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 126,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 125,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 127,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 128,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 130,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 129,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 131,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 132,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 133,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 134,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 135,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 136,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 137,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 138,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 139,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 140,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 141,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 142,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 143,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 145,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 146,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 144,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 147,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 149,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 150,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 148,
+    "title": "Микенская цивилизация"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 57,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Царская дорога"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Царская дорога"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Царская дорога"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Царская дорога"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Хираньякашипу"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Царская дорога"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Цзинь (царство)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Цзинь (царство)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Цзинь (царство)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Цзинь (царство)"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Царская дорога"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Царская дорога"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Чжаньго цэ"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Чжаньго цэ"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Цинь (царство)"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Шестая Сирийская война"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Шестая Сирийская война"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Шестая Сирийская война"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Шестая Сирийская война"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Шамши-Адад I"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Шульги"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 59,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 57,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 58,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 61,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 60,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 63,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 62,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 64,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 65,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 67,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 66,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 68,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 69,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 70,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 71,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 72,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 73,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 75,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 74,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 77,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 79,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 76,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 78,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 80,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 81,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 82,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 83,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 85,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 84,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 86,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 87,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 88,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 89,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 91,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 90,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 92,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 95,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 94,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 93,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 96,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 97,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 98,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 99,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 100,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 101,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 102,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 103,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 104,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 105,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 106,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 107,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 108,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 109,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 110,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 111,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 112,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 113,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 115,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 114,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 128,
+    "title": "Яффа"
+   }
+  ],
+  "finished_at": "2026-07-06T14:41:04.161007+00:00",
+  "llm_max_in_flight_observed": 4,
+  "llm_semaphore": 4,
+  "max_judge_calls": 30000,
+  "max_usd": 12.0,
+  "model": "qwen/qwen3.7-plus",
+  "n_articles": 100,
+  "n_failed_judge_calls": 866,
+  "n_failed_paragraphs": 2115,
+  "n_paragraphs": 2644,
+  "n_pred_mentions": 3889,
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "provider-8",
+  "run_id": "2026-07-06T09-55-11Z",
+  "spend": {
+   "extract": 1.2020334399999986,
+   "judge": 0.43931983999999347,
+   "total": 1.641353280000085
+  },
+  "started_at": "2026-07-06T09:55:11.293499+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 17152.867508,
+  "wikidata_workers": 2,
+  "n_gt_tuples": 7959,
+  "generated_at": "2026-07-06T14:44:02.613866+00:00"
+ }
+}
