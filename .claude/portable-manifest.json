@@ -18,7 +18,6 @@
         ".claude/skills/lessons",
         ".claude/skills/verify-spec",
         ".claude/skills/verify-pr",
-        ".claude/skills/graphify",
         ".claude/skills/looper",
         ".claude/skills/playwright-cli",
         ".claude/skills/grilling",
@@ -27,6 +26,7 @@
         ".claude/skills/handoff",
         ".claude/hooks",
         ".claude/rules",
+        ".claude/playbooks",
         ".claude/agents-bench",
         ".claude/commands"
       ],

@@ -1,5 +1,7 @@
 # Wiki-evaluation of NER + Wikidata grounding — design (E1 + E2)
 
+> ⚠️ **Superseded in part (2026-07-05).** The corpus-selection design here — E-D2/E-D3 (50 *hard* + 50 *typical* strata, anchor-ambiguity `hardness` ranking, hard seeds) — is retired. Current corpus: thematic-section selection v2, see [docs/stages/wiki-eval.md § Corpus](../../stages/wiki-eval.md). Matching, metrics, precision variants, reporting and the CLI sections remain current.
+
 Up-link: [docs/superpowers/](../) · pipeline: [docs/pipeline.md](../../pipeline.md) · depends on [G6 label_first spec](2026-07-03-grounding-label-first-design.md). Owner-facing design report: `scratchpad/report-g6-design/eval-design.html`.
 
 ## 1. Goal & scope

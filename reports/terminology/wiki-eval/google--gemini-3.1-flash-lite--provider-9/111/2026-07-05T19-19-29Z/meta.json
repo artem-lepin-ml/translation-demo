@@ -1,0 +1,26 @@
+{
+ "calls": {
+  "extract": 113,
+  "judge": 121
+ },
+ "config": "111",
+ "finished_at": "2026-07-05T19:33:35.610215+00:00",
+ "max_judge_calls": 900,
+ "max_usd": 1.0,
+ "model": "google/gemini-3.1-flash-lite",
+ "n_articles": 1,
+ "n_paragraphs": 113,
+ "n_pred_mentions": 789,
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "provider-9",
+ "run_id": "2026-07-05T19-19-29Z",
+ "spend": {
+  "extract": 0.017188000000000012,
+  "judge": 0.004264000000000002,
+  "total": 0.021452000000000176
+ },
+ "started_at": "2026-07-05T19:19:29.088153+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 846.522062
+}

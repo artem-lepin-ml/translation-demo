@@ -32,7 +32,27 @@ GOLD_SOURCES = ROOT / "data/seed/gold_sources"
 CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
 OUT_ROOT = ROOT / "reports/terminology/g6"
 
-JUDGE_MODEL = "gpt-4o-mini"
+# Judge provider mirrors scripts/wiki_eval.py: default CloseRouter gateway running
+# google/gemini-3.1-flash-lite @ provider-9, env-overridable. openai-direct
+# gpt-4o-mini remains a fallback. WAF User-Agent handled in palimpsest.llm.client.
+WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "closerouter")
+CLOSEROUTER_MODEL = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
+CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
+if WIKI_EVAL_PROVIDER == "closerouter":
+    JUDGE_MODEL = CLOSEROUTER_MODEL
+    JUDGE_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+    JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
+    JUDGE_EXTRA_BODY = {"provider": CLOSEROUTER_PROVIDER}
+elif WIKI_EVAL_PROVIDER == "openrouter":
+    JUDGE_MODEL = CLOSEROUTER_MODEL
+    JUDGE_BASE_URL = "https://openrouter.ai/api/v1"
+    JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
+    JUDGE_EXTRA_BODY = None
+else:
+    JUDGE_MODEL = "gpt-4o-mini"
+    JUDGE_BASE_URL = "https://api.openai.com/v1"
+    JUDGE_API_KEY_ENV = "OPENAI_API_KEY"
+    JUDGE_EXTRA_BODY = None
 JUDGE_MAX_TOKENS = 512
 # Conservative per-call price estimate (gpt-4o-mini list price, USD/token) used
 # only for the pre-call budget reservation and --dry-run forecast — settled
@@ -150,29 +170,30 @@ class BudgetGuard:
 
 
 def _build_judge(guard: BudgetGuard):
-    """Lazy-import LLMClient (no direct `openai` import outside
-    palimpsest.llm.client by design), pointed at OpenAI direct per the task brief
-    (the repo-default OpenRouter base/key are dead)."""
+    """Lazy-import LLMClient (no direct `openai` import outside palimpsest.llm.client
+    by design). Judge runs on the provider selected above (default CloseRouter
+    gemini-3.1-flash-lite @ provider-9), returning None when its key is unset."""
     from palimpsest.llm.client import LLMClient, LLMConfig
 
     _load_dotenv()
-    api_key = os.environ.get("OPENAI_API_KEY")
+    api_key = os.environ.get(JUDGE_API_KEY_ENV)
     if not api_key:
         return None
 
     client = LLMClient(LLMConfig(
         model=JUDGE_MODEL,
-        base_url="https://api.openai.com/v1",
+        base_url=JUDGE_BASE_URL,
         api_key=api_key,
         temperature=0,
         max_tokens=JUDGE_MAX_TOKENS,
+        extra_body=JUDGE_EXTRA_BODY,
     ))
 
     def judge(prompt: str) -> dict:
         if not guard.can_reserve(EST_COST_PER_JUDGE_CALL):
             raise RuntimeError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_JUDGE_CALL)
-        result = client.complete(
+        result = client.complete_retrying(
             system="You are a Wikidata disambiguation judge. Return strict JSON only.",
             user=prompt,
         )
@@ -407,7 +428,7 @@ def main() -> int:
     guard = BudgetGuard(args.max_usd)
     judge = _build_judge(guard)
     if judge is None:
-        print("WARNING: OPENAI_API_KEY not found — falling back to judge=None. "
+        print(f"WARNING: {JUDGE_API_KEY_ENV} not found — falling back to judge=None. "
               "Every escalation will be classified as judge_unavailable; "
               "deterministic exact_label/no_candidates paths are still valid.")
 

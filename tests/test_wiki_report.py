@@ -109,6 +109,20 @@ def test_render_html_is_valid_looking_html_fragment():
     assert html.count("<div") == html.count("</div>")
 
 
+def test_render_html_renders_p3_ex_headline_when_present():
+    metrics = _fixture_metrics()
+    metrics["precision"]["p3_ex"] = _cell(40, 55)
+    html = render_html(metrics, _fixture_meta())
+    assert "P3 label-justified (excl. exact-label path)" in html
+    assert "0.727" in html  # 40/55 rounded to 3 decimals
+    assert "excl" in html.lower()  # explanatory note present
+
+
+def test_render_html_omits_p3_ex_row_when_absent():
+    html = render_html(_fixture_metrics(), _fixture_meta())  # no "p3_ex" key
+    assert "P3 label-justified (excl. exact-label path)" not in html
+
+
 def test_methodology_draft_returns_nonempty_string_matching_spec_phrase():
     text = methodology_draft()
     assert isinstance(text, str)

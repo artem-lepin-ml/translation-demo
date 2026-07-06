@@ -1,0 +1,809 @@
+{
+ "seed": 42,
+ "nmin": 30,
+ "cutoff_ce": 500,
+ "metric": "unique ns0 article links in <p> body",
+ "rule": "ns0 + earliest-date<500CE (undated kept) + P31 blacklist {film,painting,museum} + hard bind: first fixed-order section, used once",
+ "sections": [
+  {
+   "section": "Месопотамия (Шумер)",
+   "category": "Категория:Шумер",
+   "pool_exclusive": 213,
+   "examined": 50,
+   "dropped_gate": 5,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Ибби-Суэн",
+     "links": 56,
+     "year": -2050,
+     "qid": "Q352752",
+     "url": "https://ru.wikipedia.org/wiki/%D0%98%D0%B1%D0%B1%D0%B8-%D0%A1%D1%83%D1%8D%D0%BD"
+    },
+    {
+     "title": "Первая династия Ура",
+     "links": 43,
+     "year": null,
+     "qid": "Q11942754",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D0%B2%D0%B0%D1%8F_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F_%D0%A3%D1%80%D0%B0"
+    },
+    {
+     "title": "Шульги",
+     "links": 67,
+     "year": null,
+     "qid": "Q315893",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A8%D1%83%D0%BB%D1%8C%D0%B3%D0%B8"
+    },
+    {
+     "title": "Урукагина",
+     "links": 32,
+     "year": -2500,
+     "qid": "Q315698",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A3%D1%80%D1%83%D0%BA%D0%B0%D0%B3%D0%B8%D0%BD%D0%B0"
+    },
+    {
+     "title": "Первая династия Страны Моря",
+     "links": 31,
+     "year": -1732,
+     "qid": "Q7440601",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D0%B2%D0%B0%D1%8F_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F_%D0%A1%D1%82%D1%80%D0%B0%D0%BD%D1%8B_%D0%9C%D0%BE%D1%80%D1%8F"
+    },
+    {
+     "title": "Нур-Адад",
+     "links": 39,
+     "year": -1900,
+     "qid": "Q887036",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9D%D1%83%D1%80-%D0%90%D0%B4%D0%B0%D0%B4"
+    },
+    {
+     "title": "Касситская династия",
+     "links": 108,
+     "year": -1595,
+     "qid": "Q16630263",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%81%D1%81%D0%B8%D1%82%D1%81%D0%BA%D0%B0%D1%8F_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F"
+    },
+    {
+     "title": "Ибаль-пи-Эль II",
+     "links": 47,
+     "year": -1800,
+     "qid": "Q3147384",
+     "url": "https://ru.wikipedia.org/wiki/%D0%98%D0%B1%D0%B0%D0%BB%D1%8C-%D0%BF%D0%B8-%D0%AD%D0%BB%D1%8C_II"
+    },
+    {
+     "title": "Урук",
+     "links": 85,
+     "year": -3200,
+     "qid": "Q168518",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A3%D1%80%D1%83%D0%BA"
+    },
+    {
+     "title": "Лугальзагеси",
+     "links": 41,
+     "year": null,
+     "qid": "Q316241",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9B%D1%83%D0%B3%D0%B0%D0%BB%D1%8C%D0%B7%D0%B0%D0%B3%D0%B5%D1%81%D0%B8"
+    }
+   ]
+  },
+  {
+   "section": "Древний Египет",
+   "category": "Категория:Древний Египет",
+   "pool_exclusive": 333,
+   "examined": 26,
+   "dropped_gate": 0,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Зимрида (правитель Сидона)",
+     "links": 31,
+     "year": -1350,
+     "qid": "Q8072208",
+     "url": "https://ru.wikipedia.org/wiki/%D0%97%D0%B8%D0%BC%D1%80%D0%B8%D0%B4%D0%B0_%28%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_%D0%A1%D0%B8%D0%B4%D0%BE%D0%BD%D0%B0%29"
+    },
+    {
+     "title": "Стигия",
+     "links": 50,
+     "year": null,
+     "qid": "Q2887221",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B8%D0%B3%D0%B8%D1%8F"
+    },
+    {
+     "title": "KV35YL",
+     "links": 37,
+     "year": -1370,
+     "qid": "Q516435",
+     "url": "https://ru.wikipedia.org/wiki/KV35YL"
+    },
+    {
+     "title": "Шестая Сирийская война",
+     "links": 47,
+     "year": -170,
+     "qid": "Q372338",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A8%D0%B5%D1%81%D1%82%D0%B0%D1%8F_%D0%A1%D0%B8%D1%80%D0%B8%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D0%B2%D0%BE%D0%B9%D0%BD%D0%B0"
+    },
+    {
+     "title": "XXX династия",
+     "links": 33,
+     "year": -380,
+     "qid": "Q386303",
+     "url": "https://ru.wikipedia.org/wiki/XXX_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F"
+    },
+    {
+     "title": "XXVII династия",
+     "links": 38,
+     "year": -525,
+     "qid": "Q926624",
+     "url": "https://ru.wikipedia.org/wiki/XXVII_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F"
+    },
+    {
+     "title": "Эллинистический Египет",
+     "links": 150,
+     "year": -305,
+     "qid": "Q2320005",
+     "url": "https://ru.wikipedia.org/wiki/%D0%AD%D0%BB%D0%BB%D0%B8%D0%BD%D0%B8%D1%81%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%95%D0%B3%D0%B8%D0%BF%D0%B5%D1%82"
+    },
+    {
+     "title": "Тронное имя фараона",
+     "links": 40,
+     "year": null,
+     "qid": "Q1413565",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A2%D1%80%D0%BE%D0%BD%D0%BD%D0%BE%D0%B5_%D0%B8%D0%BC%D1%8F_%D1%84%D0%B0%D1%80%D0%B0%D0%BE%D0%BD%D0%B0"
+    },
+    {
+     "title": "Персидские походы в Египет (385—342 до н. э.)",
+     "links": 72,
+     "year": -385,
+     "qid": "Q18407741",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D1%81%D0%B8%D0%B4%D1%81%D0%BA%D0%B8%D0%B5_%D0%BF%D0%BE%D1%85%D0%BE%D0%B4%D1%8B_%D0%B2_%D0%95%D0%B3%D0%B8%D0%BF%D0%B5%D1%82_%28385%E2%80%94342_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Гелиополиты",
+     "links": 34,
+     "year": null,
+     "qid": "Q6573004",
+     "url": "https://ru.wikipedia.org/wiki/%D0%93%D0%B5%D0%BB%D0%B8%D0%BE%D0%BF%D0%BE%D0%BB%D0%B8%D1%82%D1%8B"
+    }
+   ]
+  },
+  {
+   "section": "Ассирия",
+   "category": "Категория:Ассирия",
+   "pool_exclusive": 146,
+   "examined": 28,
+   "dropped_gate": 0,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Элулай",
+     "links": 75,
+     "year": null,
+     "qid": "Q117872121",
+     "url": "https://ru.wikipedia.org/wiki/%D0%AD%D0%BB%D1%83%D0%BB%D0%B0%D0%B9"
+    },
+    {
+     "title": "Ашшур-этель-илани",
+     "links": 33,
+     "year": -700,
+     "qid": "Q362680",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D1%88%D1%88%D1%83%D1%80-%D1%8D%D1%82%D0%B5%D0%BB%D1%8C-%D0%B8%D0%BB%D0%B0%D0%BD%D0%B8"
+    },
+    {
+     "title": "Ашшур (город)",
+     "links": 81,
+     "year": -2500,
+     "qid": "Q200200",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D1%88%D1%88%D1%83%D1%80_%28%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%29"
+    },
+    {
+     "title": "Царская дорога",
+     "links": 53,
+     "year": -500,
+     "qid": "Q220796",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A6%D0%B0%D1%80%D1%81%D0%BA%D0%B0%D1%8F_%D0%B4%D0%BE%D1%80%D0%BE%D0%B3%D0%B0"
+    },
+    {
+     "title": "Мугаллу",
+     "links": 43,
+     "year": null,
+     "qid": "Q120278963",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B3%D0%B0%D0%BB%D0%BB%D1%83"
+    },
+    {
+     "title": "Новоассирийское царство",
+     "links": 50,
+     "year": -911,
+     "qid": "Q10914393",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9D%D0%BE%D0%B2%D0%BE%D0%B0%D1%81%D1%81%D0%B8%D1%80%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B5_%D1%86%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE"
+    },
+    {
+     "title": "Шамши-Адад I",
+     "links": 74,
+     "year": -1860,
+     "qid": "Q254523",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A8%D0%B0%D0%BC%D1%88%D0%B8-%D0%90%D0%B4%D0%B0%D0%B4_I"
+    },
+    {
+     "title": "Ашшурбанапал",
+     "links": 174,
+     "year": -685,
+     "qid": "Q171191",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D1%88%D1%88%D1%83%D1%80%D0%B1%D0%B0%D0%BD%D0%B0%D0%BF%D0%B0%D0%BB"
+    },
+    {
+     "title": "Абдмилькат",
+     "links": 50,
+     "year": -700,
+     "qid": "Q308132",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D0%B1%D0%B4%D0%BC%D0%B8%D0%BB%D1%8C%D0%BA%D0%B0%D1%82"
+    },
+    {
+     "title": "Синаххериб",
+     "links": 108,
+     "year": -745,
+     "qid": "Q207140",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%BD%D0%B0%D1%85%D1%85%D0%B5%D1%80%D0%B8%D0%B1"
+    }
+   ]
+  },
+  {
+   "section": "Хеттское царство",
+   "category": "Категория:Хеттское царство",
+   "pool_exclusive": 91,
+   "examined": 40,
+   "dropped_gate": 0,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Арслантепе (Мелид)",
+     "links": 128,
+     "year": null,
+     "qid": "Q705132",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29"
+    },
+    {
+     "title": "Мурсили II",
+     "links": 36,
+     "year": -1400,
+     "qid": "Q314378",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D1%80%D1%81%D0%B8%D0%BB%D0%B8_II"
+    },
+    {
+     "title": "Хатти",
+     "links": 51,
+     "year": null,
+     "qid": "Q13053139",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A5%D0%B0%D1%82%D1%82%D0%B8"
+    },
+    {
+     "title": "Тудхалия IV",
+     "links": 44,
+     "year": -1300,
+     "qid": "Q314361",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A2%D1%83%D0%B4%D1%85%D0%B0%D0%BB%D0%B8%D1%8F_IV"
+    },
+    {
+     "title": "Муваталлис II",
+     "links": 37,
+     "year": -1300,
+     "qid": "Q311650",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9C%D1%83%D0%B2%D0%B0%D1%82%D0%B0%D0%BB%D0%BB%D0%B8%D1%81_II"
+    },
+    {
+     "title": "Хайаса",
+     "links": 59,
+     "year": -1501,
+     "qid": "Q599590",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A5%D0%B0%D0%B9%D0%B0%D1%81%D0%B0"
+    },
+    {
+     "title": "Цальпува",
+     "links": 34,
+     "year": null,
+     "qid": "Q145237",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A6%D0%B0%D0%BB%D1%8C%D0%BF%D1%83%D0%B2%D0%B0"
+    },
+    {
+     "title": "Лувийский язык",
+     "links": 37,
+     "year": null,
+     "qid": "Q10713",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9B%D1%83%D0%B2%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9_%D1%8F%D0%B7%D1%8B%D0%BA"
+    },
+    {
+     "title": "Ишува",
+     "links": 54,
+     "year": -1500,
+     "qid": "Q1489916",
+     "url": "https://ru.wikipedia.org/wiki/%D0%98%D1%88%D1%83%D0%B2%D0%B0"
+    },
+    {
+     "title": "Древнехеттское царство",
+     "links": 34,
+     "year": -1650,
+     "qid": "Q12406731",
+     "url": "https://ru.wikipedia.org/wiki/%D0%94%D1%80%D0%B5%D0%B2%D0%BD%D0%B5%D1%85%D0%B5%D1%82%D1%82%D1%81%D0%BA%D0%BE%D0%B5_%D1%86%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE"
+    }
+   ]
+  },
+  {
+   "section": "Финикия",
+   "category": "Категория:Финикия",
+   "pool_exclusive": 29,
+   "examined": 16,
+   "dropped_gate": 0,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Сур (город)",
+     "links": 138,
+     "year": -2750,
+     "qid": "Q82070",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A1%D1%83%D1%80_%28%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%29"
+    },
+    {
+     "title": "Осада Тира (314—313 до н. э.)",
+     "links": 45,
+     "year": -314,
+     "qid": "Q815218",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9E%D1%81%D0%B0%D0%B4%D0%B0_%D0%A2%D0%B8%D1%80%D0%B0_%28314%E2%80%94313_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Теория открытия финикийцами Америки",
+     "links": 53,
+     "year": null,
+     "qid": "Q7782427",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F_%D0%BE%D1%82%D0%BA%D1%80%D1%8B%D1%82%D0%B8%D1%8F_%D1%84%D0%B8%D0%BD%D0%B8%D0%BA%D0%B8%D0%B9%D1%86%D0%B0%D0%BC%D0%B8_%D0%90%D0%BC%D0%B5%D1%80%D0%B8%D0%BA%D0%B8"
+    },
+    {
+     "title": "Кесария Палестинская",
+     "links": 77,
+     "year": -13,
+     "qid": "Q319242",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B5%D1%81%D0%B0%D1%80%D0%B8%D1%8F_%D0%9F%D0%B0%D0%BB%D0%B5%D1%81%D1%82%D0%B8%D0%BD%D1%81%D0%BA%D0%B0%D1%8F"
+    },
+    {
+     "title": "Путешествия Уну-Амона",
+     "links": 38,
+     "year": -1000,
+     "qid": "Q1579541",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9F%D1%83%D1%82%D0%B5%D1%88%D0%B5%D1%81%D1%82%D0%B2%D0%B8%D1%8F_%D0%A3%D0%BD%D1%83-%D0%90%D0%BC%D0%BE%D0%BD%D0%B0"
+    },
+    {
+     "title": "Осада Тира (586—573 до н. э.)",
+     "links": 53,
+     "year": -586,
+     "qid": "Q11794916",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9E%D1%81%D0%B0%D0%B4%D0%B0_%D0%A2%D0%B8%D1%80%D0%B0_%28586%E2%80%94573_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Осада Тира",
+     "links": 57,
+     "year": -332,
+     "qid": "Q815233",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9E%D1%81%D0%B0%D0%B4%D0%B0_%D0%A2%D0%B8%D1%80%D0%B0"
+    },
+    {
+     "title": "Тель-Абу-Хавам",
+     "links": 120,
+     "year": null,
+     "qid": "Q694326",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D0%BB%D1%8C-%D0%90%D0%B1%D1%83-%D0%A5%D0%B0%D0%B2%D0%B0%D0%BC"
+    },
+    {
+     "title": "Яффа",
+     "links": 365,
+     "year": null,
+     "qid": "Q180294",
+     "url": "https://ru.wikipedia.org/wiki/%D0%AF%D1%84%D1%84%D0%B0"
+    },
+    {
+     "title": "Финикийцы",
+     "links": 73,
+     "year": null,
+     "qid": "Q1048468",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A4%D0%B8%D0%BD%D0%B8%D0%BA%D0%B8%D0%B9%D1%86%D1%8B"
+    }
+   ]
+  },
+  {
+   "section": "Древний Иран (Ахемениды)",
+   "category": "Категория:Держава Ахеменидов",
+   "pool_exclusive": 127,
+   "examined": 29,
+   "dropped_gate": 0,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Восстания в державе Ахеменидов (521—516 до н. э.)",
+     "links": 60,
+     "year": -521,
+     "qid": "Q97660078",
+     "url": "https://ru.wikipedia.org/wiki/%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%B8%D1%8F_%D0%B2_%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%B2%D0%B5_%D0%90%D1%85%D0%B5%D0%BC%D0%B5%D0%BD%D0%B8%D0%B4%D0%BE%D0%B2_%28521%E2%80%94516_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Гандхара",
+     "links": 56,
+     "year": -750,
+     "qid": "Q213651",
+     "url": "https://ru.wikipedia.org/wiki/%D0%93%D0%B0%D0%BD%D0%B4%D1%85%D0%B0%D1%80%D0%B0"
+    },
+    {
+     "title": "Согдиана",
+     "links": 164,
+     "year": null,
+     "qid": "Q486244",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D0%B3%D0%B4%D0%B8%D0%B0%D0%BD%D0%B0"
+    },
+    {
+     "title": "Кария",
+     "links": 128,
+     "year": null,
+     "qid": "Q193214",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%80%D0%B8%D1%8F"
+    },
+    {
+     "title": "Азиатская экспедиция (336—334 до н. э.)",
+     "links": 53,
+     "year": -336,
+     "qid": "Q18396317",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D0%B7%D0%B8%D0%B0%D1%82%D1%81%D0%BA%D0%B0%D1%8F_%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D0%B4%D0%B8%D1%86%D0%B8%D1%8F_%28336%E2%80%94334_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Кипрская война (390—380 до н. э.)",
+     "links": 39,
+     "year": -390,
+     "qid": "Q18398876",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D0%BF%D1%80%D1%81%D0%BA%D0%B0%D1%8F_%D0%B2%D0%BE%D0%B9%D0%BD%D0%B0_%28390%E2%80%94380_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Ахеменидские сатрапии",
+     "links": 47,
+     "year": null,
+     "qid": "Q909782",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D1%85%D0%B5%D0%BC%D0%B5%D0%BD%D0%B8%D0%B4%D1%81%D0%BA%D0%B8%D0%B5_%D1%81%D0%B0%D1%82%D1%80%D0%B0%D0%BF%D0%B8%D0%B8"
+    },
+    {
+     "title": "Македония при Ахеменидах",
+     "links": 35,
+     "year": -512,
+     "qid": "Q23640713",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D0%BA%D0%B5%D0%B4%D0%BE%D0%BD%D0%B8%D1%8F_%D0%BF%D1%80%D0%B8_%D0%90%D1%85%D0%B5%D0%BC%D0%B5%D0%BD%D0%B8%D0%B4%D0%B0%D1%85"
+    },
+    {
+     "title": "Амударьинский клад",
+     "links": 38,
+     "year": -550,
+     "qid": "Q1246609",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4"
+    },
+    {
+     "title": "Спартано-персидская война",
+     "links": 31,
+     "year": -399,
+     "qid": "Q174904",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B0%D1%80%D1%82%D0%B0%D0%BD%D0%BE-%D0%BF%D0%B5%D1%80%D1%81%D0%B8%D0%B4%D1%81%D0%BA%D0%B0%D1%8F_%D0%B2%D0%BE%D0%B9%D0%BD%D0%B0"
+    }
+   ]
+  },
+  {
+   "section": "Древняя Индия",
+   "category": "Категория:Древняя Индия",
+   "pool_exclusive": 117,
+   "examined": 34,
+   "dropped_gate": 1,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Калан (мудрец)",
+     "links": 45,
+     "year": -398,
+     "qid": "Q929260",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%BB%D0%B0%D0%BD_%28%D0%BC%D1%83%D0%B4%D1%80%D0%B5%D1%86%29"
+    },
+    {
+     "title": "Пушьямитра Шунга",
+     "links": 41,
+     "year": -300,
+     "qid": "Q119973",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9F%D1%83%D1%88%D1%8C%D1%8F%D0%BC%D0%B8%D1%82%D1%80%D0%B0_%D0%A8%D1%83%D0%BD%D0%B3%D0%B0"
+    },
+    {
+     "title": "Ашока",
+     "links": 89,
+     "year": -304,
+     "qid": "Q8589",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D1%88%D0%BE%D0%BA%D0%B0"
+    },
+    {
+     "title": "Хираньякашипу",
+     "links": 80,
+     "year": null,
+     "qid": "Q1368474",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A5%D0%B8%D1%80%D0%B0%D0%BD%D1%8C%D1%8F%D0%BA%D0%B0%D1%88%D0%B8%D0%BF%D1%83"
+    },
+    {
+     "title": "Веды",
+     "links": 156,
+     "year": -1500,
+     "qid": "Q39950",
+     "url": "https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D0%B4%D1%8B"
+    },
+    {
+     "title": "Гаруда",
+     "links": 84,
+     "year": null,
+     "qid": "Q188676",
+     "url": "https://ru.wikipedia.org/wiki/%D0%93%D0%B0%D1%80%D1%83%D0%B4%D0%B0"
+    },
+    {
+     "title": "Арахозия",
+     "links": 32,
+     "year": null,
+     "qid": "Q624638",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%B0%D1%85%D0%BE%D0%B7%D0%B8%D1%8F"
+    },
+    {
+     "title": "Камарупа",
+     "links": 104,
+     "year": 350,
+     "qid": "Q1194765",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%BC%D0%B0%D1%80%D1%83%D0%BF%D0%B0"
+    },
+    {
+     "title": "Индо-Греческое царство",
+     "links": 135,
+     "year": -180,
+     "qid": "Q215643",
+     "url": "https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D0%B4%D0%BE-%D0%93%D1%80%D0%B5%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5_%D1%86%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE"
+    },
+    {
+     "title": "Калинга (государство)",
+     "links": 37,
+     "year": -300,
+     "qid": "Q1150706",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%BB%D0%B8%D0%BD%D0%B3%D0%B0_%28%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE%29"
+    }
+   ]
+  },
+  {
+   "section": "Древний Китай",
+   "category": "Категория:Древний Китай",
+   "pool_exclusive": 152,
+   "examined": 27,
+   "dropped_gate": 1,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Поздняя Цинь",
+     "links": 69,
+     "year": 384,
+     "qid": "Q1730130",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%B7%D0%B4%D0%BD%D1%8F%D1%8F_%D0%A6%D0%B8%D0%BD%D1%8C"
+    },
+    {
+     "title": "Завоевание царства Шу царством Вэй",
+     "links": 56,
+     "year": 263,
+     "qid": "Q1196063",
+     "url": "https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%B2%D0%BE%D0%B5%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5_%D1%86%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B0_%D0%A8%D1%83_%D1%86%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE%D0%BC_%D0%92%D1%8D%D0%B9"
+    },
+    {
+     "title": "Период Вёсен и Осеней",
+     "links": 59,
+     "year": -771,
+     "qid": "Q185047",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D0%B8%D0%BE%D0%B4_%D0%92%D1%91%D1%81%D0%B5%D0%BD_%D0%B8_%D0%9E%D1%81%D0%B5%D0%BD%D0%B5%D0%B9"
+    },
+    {
+     "title": "Академия Цзися",
+     "links": 43,
+     "year": -318,
+     "qid": "Q571744",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D1%8F_%D0%A6%D0%B7%D0%B8%D1%81%D1%8F"
+    },
+    {
+     "title": "Цинь (царство)",
+     "links": 68,
+     "year": -905,
+     "qid": "Q34756",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A6%D0%B8%D0%BD%D1%8C_%28%D1%86%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE%29"
+    },
+    {
+     "title": "Су Цинь",
+     "links": 33,
+     "year": null,
+     "qid": "Q716543",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A1%D1%83_%D0%A6%D0%B8%D0%BD%D1%8C"
+    },
+    {
+     "title": "Армия империи Хань",
+     "links": 35,
+     "year": null,
+     "qid": "Q55604219",
+     "url": "https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%BC%D0%B8%D1%8F_%D0%B8%D0%BC%D0%BF%D0%B5%D1%80%D0%B8%D0%B8_%D0%A5%D0%B0%D0%BD%D1%8C"
+    },
+    {
+     "title": "Чжаньго цэ",
+     "links": 33,
+     "year": null,
+     "qid": "Q197396",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A7%D0%B6%D0%B0%D0%BD%D1%8C%D0%B3%D0%BE_%D1%86%D1%8D"
+    },
+    {
+     "title": "Цзинь (царство)",
+     "links": 44,
+     "year": -1100,
+     "qid": "Q912043",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A6%D0%B7%D0%B8%D0%BD%D1%8C_%28%D1%86%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE%29"
+    },
+    {
+     "title": "Объединение Китая царством Цинь",
+     "links": 43,
+     "year": -230,
+     "qid": "Q2986801",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%8A%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5_%D0%9A%D0%B8%D1%82%D0%B0%D1%8F_%D1%86%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE%D0%BC_%D0%A6%D0%B8%D0%BD%D1%8C"
+    }
+   ]
+  },
+  {
+   "section": "Древняя Греция",
+   "category": "Категория:Древняя Греция",
+   "pool_exclusive": 335,
+   "examined": 32,
+   "dropped_gate": 1,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Пергамский алтарь",
+     "links": 114,
+     "year": null,
+     "qid": "Q158058",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D0%B3%D0%B0%D0%BC%D1%81%D0%BA%D0%B8%D0%B9_%D0%B0%D0%BB%D1%82%D0%B0%D1%80%D1%8C"
+    },
+    {
+     "title": "Древнегреческая религия",
+     "links": 50,
+     "year": null,
+     "qid": "Q855270",
+     "url": "https://ru.wikipedia.org/wiki/%D0%94%D1%80%D0%B5%D0%B2%D0%BD%D0%B5%D0%B3%D1%80%D0%B5%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D1%80%D0%B5%D0%BB%D0%B8%D0%B3%D0%B8%D1%8F"
+    },
+    {
+     "title": "Беотийский союз",
+     "links": 65,
+     "year": -700,
+     "qid": "Q833665",
+     "url": "https://ru.wikipedia.org/wiki/%D0%91%D0%B5%D0%BE%D1%82%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9_%D1%81%D0%BE%D1%8E%D0%B7"
+    },
+    {
+     "title": "Фокидский союз",
+     "links": 82,
+     "year": null,
+     "qid": "Q2637650",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D0%BA%D0%B8%D0%B4%D1%81%D0%BA%D0%B8%D0%B9_%D1%81%D0%BE%D1%8E%D0%B7"
+    },
+    {
+     "title": "Микенская цивилизация",
+     "links": 320,
+     "year": -1600,
+     "qid": "Q181264",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B8%D0%BA%D0%B5%D0%BD%D1%81%D0%BA%D0%B0%D1%8F_%D1%86%D0%B8%D0%B2%D0%B8%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F"
+    },
+    {
+     "title": "Мистерии",
+     "links": 79,
+     "year": null,
+     "qid": "Q505821",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B8%D1%81%D1%82%D0%B5%D1%80%D0%B8%D0%B8"
+    },
+    {
+     "title": "Данайцы",
+     "links": 42,
+     "year": null,
+     "qid": "Q488836",
+     "url": "https://ru.wikipedia.org/wiki/%D0%94%D0%B0%D0%BD%D0%B0%D0%B9%D1%86%D1%8B"
+    },
+    {
+     "title": "Древняя Греция",
+     "links": 383,
+     "year": -1200,
+     "qid": "Q11772",
+     "url": "https://ru.wikipedia.org/wiki/%D0%94%D1%80%D0%B5%D0%B2%D0%BD%D1%8F%D1%8F_%D0%93%D1%80%D0%B5%D1%86%D0%B8%D1%8F"
+    },
+    {
+     "title": "Второй Афинский морской союз",
+     "links": 41,
+     "year": -377,
+     "qid": "Q2338980",
+     "url": "https://ru.wikipedia.org/wiki/%D0%92%D1%82%D0%BE%D1%80%D0%BE%D0%B9_%D0%90%D1%84%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BC%D0%BE%D1%80%D1%81%D0%BA%D0%BE%D0%B9_%D1%81%D0%BE%D1%8E%D0%B7"
+    },
+    {
+     "title": "Линейное письмо Б",
+     "links": 63,
+     "year": -1450,
+     "qid": "Q190102",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9B%D0%B8%D0%BD%D0%B5%D0%B9%D0%BD%D0%BE%D0%B5_%D0%BF%D0%B8%D1%81%D1%8C%D0%BC%D0%BE_%D0%91"
+    }
+   ]
+  },
+  {
+   "section": "Древний Рим",
+   "category": "Категория:Древний Рим",
+   "pool_exclusive": 768,
+   "examined": 40,
+   "dropped_gate": 1,
+   "n_found": 10,
+   "picks": [
+    {
+     "title": "Гай Сосий (консул)",
+     "links": 33,
+     "year": -79,
+     "qid": "Q705416",
+     "url": "https://ru.wikipedia.org/wiki/%D0%93%D0%B0%D0%B9_%D0%A1%D0%BE%D1%81%D0%B8%D0%B9_%28%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%29"
+    },
+    {
+     "title": "Римляне",
+     "links": 150,
+     "year": null,
+     "qid": "Q1651392",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A0%D0%B8%D0%BC%D0%BB%D1%8F%D0%BD%D0%B5"
+    },
+    {
+     "title": "Дауния",
+     "links": 30,
+     "year": null,
+     "qid": "Q93086174",
+     "url": "https://ru.wikipedia.org/wiki/%D0%94%D0%B0%D1%83%D0%BD%D0%B8%D1%8F"
+    },
+    {
+     "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)",
+     "links": 76,
+     "year": -270,
+     "qid": "Q710851",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B2%D0%B8%D0%BD%D1%82_%D0%A4%D1%83%D0%BB%D1%8C%D0%B2%D0%B8%D0%B9_%D0%A4%D0%BB%D0%B0%D0%BA%D0%BA_%28%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB_237_%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Марк Фульвий Флакк (консул 264 года до н. э.)",
+     "links": 34,
+     "year": -350,
+     "qid": "Q1284890",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%80%D0%BA_%D0%A4%D1%83%D0%BB%D1%8C%D0%B2%D0%B8%D0%B9_%D0%A4%D0%BB%D0%B0%D0%BA%D0%BA_%28%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB_264_%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Луций Марций Цензорин (консул 39 года до н. э.)",
+     "links": 43,
+     "year": -89,
+     "qid": "Q1873622",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9B%D1%83%D1%86%D0%B8%D0%B9_%D0%9C%D0%B0%D1%80%D1%86%D0%B8%D0%B9_%D0%A6%D0%B5%D0%BD%D0%B7%D0%BE%D1%80%D0%B8%D0%BD_%28%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB_39_%D0%B3%D0%BE%D0%B4%D0%B0_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29"
+    },
+    {
+     "title": "Список префектов Рима",
+     "links": 121,
+     "year": null,
+     "qid": "Q1253382",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_%D0%BF%D1%80%D0%B5%D1%84%D0%B5%D0%BA%D1%82%D0%BE%D0%B2_%D0%A0%D0%B8%D0%BC%D0%B0"
+    },
+    {
+     "title": "Кесарево безумие",
+     "links": 30,
+     "year": null,
+     "qid": "Q1150040",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B5%D1%81%D0%B0%D1%80%D0%B5%D0%B2%D0%BE_%D0%B1%D0%B5%D0%B7%D1%83%D0%BC%D0%B8%D0%B5"
+    },
+    {
+     "title": "Керченский пролив",
+     "links": 66,
+     "year": null,
+     "qid": "Q187890",
+     "url": "https://ru.wikipedia.org/wiki/%D0%9A%D0%B5%D1%80%D1%87%D0%B5%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BF%D1%80%D0%BE%D0%BB%D0%B8%D0%B2"
+    },
+    {
+     "title": "Сокровища Сеусо",
+     "links": 39,
+     "year": null,
+     "qid": "Q831539",
+     "url": "https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D0%BA%D1%80%D0%BE%D0%B2%D0%B8%D1%89%D0%B0_%D0%A1%D0%B5%D1%83%D1%81%D0%BE"
+    }
+   ]
+  }
+ ]
+}

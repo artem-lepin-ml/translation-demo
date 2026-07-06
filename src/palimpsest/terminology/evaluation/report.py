@@ -3,19 +3,28 @@
 ``render_html`` turns a ``metrics.aggregate``-shaped dict into an HTML
 fragment (project report palette, Tokyo Night dark, inline CSS only) showing
 recall (3 modes), precision (P1/P2 unsliced, P3 only inside the
-``resolved_by`` slice per spec Sec.4), and the stratum/resolved_by/type slice
-tables with raw n + Wilson CI; cells below the underpowered threshold
-(``metrics.UNDERPOWERED_THRESHOLD``, n<30) are greyed and flagged.
+``resolved_by`` slice per spec Sec.4, plus the "P3\\exact" headline cell when
+``metrics["precision"]`` carries a ``"p3_ex"`` key — see
+``evaluation.metrics.aggregate_corpus``'s ``label_exists`` parameter), and
+the stratum/resolved_by/type slice tables with raw n + Wilson CI; cells
+below the underpowered threshold (``metrics.UNDERPOWERED_THRESHOLD``, n<30)
+are greyed and flagged.
 
-``methodology_draft`` returns spec Sec.7's EN paper-draft paragraph verbatim,
-per the project's "preserve chat formulations" convention.
+``methodology_draft`` returns the EN paper-draft paragraph verbatim, per the
+project's "preserve chat formulations" convention. Canonical copy also in
+docs/stages/wiki-eval.md § Methodology; keep byte-identical.
 """
 from __future__ import annotations
 
 import html as _html
 
 MODE_LABELS = {"m1": "M1 strict", "m2": "M2 span-overlap", "m3": "M3 document"}
-PRECISION_LABELS = {"p1": "P1 base", "p2": "P2 unique-word", "p3": "P3 label-justified"}
+PRECISION_LABELS = {
+    "p1": "P1 base",
+    "p2": "P2 unique-word",
+    "p3": "P3 label-justified",
+    "p3_ex": "P3 label-justified (excl. exact-label path)",
+}
 
 
 def _fmt_value(cell: dict) -> str:
@@ -59,7 +68,7 @@ def _recall_table(recall: dict, *, title: str) -> str:
 def _precision_table(precision: dict, *, title: str) -> str:
     rows = "".join(
         f"<tr><td>{PRECISION_LABELS.get(variant, variant)}</td>{_cell_td(precision[variant])}</tr>"
-        for variant in ("p1", "p2", "p3")
+        for variant in ("p1", "p2", "p3", "p3_ex")
         if variant in precision
     )
     return (
@@ -135,7 +144,18 @@ def render_html(metrics: dict, meta: dict) -> str:
 
     parts.append("<h2>Overall</h2>")
     parts.append(_recall_table(metrics.get("recall", {}), title="Recall (primary metric)"))
-    parts.append(_precision_table(metrics.get("precision", {}), title="Precision (P1/P2, unsliced)"))
+    precision = metrics.get("precision", {})
+    precision_title = "Precision (P1/P2, unsliced)"
+    precision_note = ""
+    if "p3_ex" in precision:
+        precision_title = "Precision (P1/P2 unsliced; P3\\exact headline)"
+        precision_note = (
+            '<p class="note">P3\\exact = label-justified precision over every prediction '
+            "EXCEPT those resolved via exact_label (that path is tautologically justified "
+            "by construction, spec Sec.4); the denominator excludes exact-label predictions, "
+            "so this headline is not tautological.</p>"
+        )
+    parts.append(precision_note + _precision_table(precision, title=precision_title))
 
     slices = metrics.get("slices", {})
     for axis in ("stratum", "resolved_by", "type"):
@@ -147,42 +167,51 @@ def render_html(metrics: dict, meta: dict) -> str:
 
 
 def methodology_draft() -> str:
-    """Spec Sec.7's EN paper-draft methodology paragraph, verbatim.
+    """EN paper-draft methodology paragraph, verbatim.
 
     Kept verbatim per the project's "preserve chat formulations" convention —
-    do not paraphrase or reflow; copy any future spec edit here byte-for-byte.
+    do not paraphrase or reflow. Canonical copy also in
+    docs/stages/wiki-eval.md § Methodology; keep byte-identical.
     """
     return (
         "**Evaluation against Wikipedia link annotations.** We evaluate the "
         "terminology extraction-and-grounding component against human hyperlink "
-        "annotations on 100 full Russian Wikipedia history articles, stratified "
-        "into 50 *hard* pages (top-ranked by a deterministic anchor-ambiguity "
-        "score that measures intrinsic lexical polysemy, not system difficulty) "
-        "and 50 *typical* pages sampled uniformly from the same history-category "
-        "pool. Each internal link whose target carries a Wikidata item yields a "
-        "gold tuple *(token index, surface, QID)*; chronology targets (years, "
-        "centuries) are excluded by target *P31*. We compare gold and predicted "
-        "tuple sets under three matching modes — strict index, span overlap "
-        "(primary), and document-level *(lemma, QID)* — normalizing surfaces "
-        "with a shared casefold/ё-е/dash normalizer; the strict mode is a "
-        "deliberate lower bound sensitive to multi-word anchor boundaries. "
-        "Because human annotation is precise but incomplete, we treat "
-        "**recall** as the primary metric; precision, measured against "
-        "Wikipedia's non-exhaustive \"don't over-link\" convention, is a "
-        "conservative lower bound and is reported under three complementary "
-        "denominators: raw, unique-word (to offset the convention of not "
-        "linking repeat mentions), and label-justified (a prediction absent "
-        "from gold is credited when its surface exists as a Wikidata label — "
-        "reported only per resolution path, since on the deterministic "
-        "exact-label path it holds by construction). Reporting is sliced by "
-        "stratum, by the system's own resolution path (exact-label vs. "
-        "LLM-disambiguated), and by entity type (named vs. lowercase term), "
-        "each with per-cell Wilson 95 % confidence intervals; underpowered "
-        "cells are flagged and differences within the interval are not "
-        "interpreted. A full ablation over the three retrieval/matching "
-        "toggles (lemma expansion, search fallbacks, alias matching) estimates "
-        "each component's marginal contribution via leave-one-in / "
-        "leave-one-out. This gives a transparent, reproducible measurement of "
-        "a deterministic-first grounding system without recourse to a "
-        "black-box entity linker as the reference."
+        "annotations on 100 full Russian Wikipedia articles on ancient history, "
+        "organised into ten fixed thematic sections (Sumer/Mesopotamia, Ancient "
+        "Egypt, Assyria, the Hittite kingdom, Phoenicia, Achaemenid Iran, Ancient "
+        "India, Ancient China, Ancient Greece, Ancient Rome), ten articles per "
+        "section. Candidates from each section's category subtree pass a "
+        "deterministic gate — at least 30 unique main-namespace links in body "
+        "paragraphs, an earliest associated Wikidata date before 500 CE with "
+        "undated pages kept, and a small instance-of blacklist for off-topic "
+        "media pages — with a fixed random seed and first-section binding for "
+        "pages reachable from several sections; because Wikipedia's category "
+        "partition is noisy, a small off-period residue (≈3/100) survives the "
+        "gate and is disclosed rather than curated post hoc. Each internal link "
+        "whose target carries a Wikidata item yields a gold tuple *(token index, "
+        "surface, QID)*; chronology targets (years, centuries) are excluded by "
+        "target *P31*. We compare gold and predicted tuple sets under three "
+        "matching modes — strict index, span overlap (primary), and "
+        "document-level *(lemma, QID)* — normalizing surfaces with a shared "
+        "casefold/ё-е/dash normalizer; the strict mode is a deliberate lower "
+        "bound sensitive to multi-word anchor boundaries. Because human "
+        "annotation is precise but incomplete, we treat **recall** as the "
+        "primary metric; precision, measured against Wikipedia's non-exhaustive "
+        "\"don't over-link\" convention, is a conservative lower bound and is "
+        "reported under three complementary denominators: raw, unique-word (to "
+        "offset the convention of not linking repeat mentions), and "
+        "label-justified (a prediction absent from gold is credited when its "
+        "surface exists as a Wikidata label — reported only per resolution "
+        "path, since on the deterministic exact-label path it holds by "
+        "construction). Reporting is sliced by thematic section, by the "
+        "system's own resolution path (exact-label vs. LLM-disambiguated), and "
+        "by entity type (named vs. lowercase term), each with per-cell Wilson "
+        "95 % confidence intervals; underpowered cells are flagged and "
+        "differences within the interval are not interpreted. A full ablation "
+        "over the three retrieval/matching toggles (lemma expansion, search "
+        "fallbacks, alias matching) estimates each component's marginal "
+        "contribution via leave-one-in / leave-one-out. This gives a "
+        "transparent, reproducible measurement of a deterministic-first "
+        "grounding system without recourse to a black-box entity linker as "
+        "the reference."
     )
