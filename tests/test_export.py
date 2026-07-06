@@ -6,6 +6,7 @@ import io
 import openpyxl
 
 from palimpsest.webapp import db
+from palimpsest.webapp.export import SCORE_GREEN
 
 from .conftest import _body
 
@@ -79,6 +80,9 @@ def test_export_xlsx_score_thresholds_colored(client):
     wb = openpyxl.load_workbook(io.BytesIO(r.content))
     ws = wb["Translation"]
     assert ws["D3"].value == 9.0
+    # score 9.0 >= 8 → green band (_score_color); rgb carries an alpha prefix
+    # openpyxl adds on save/reload, so match on the hex tail, not the full ARGB.
+    assert ws["D3"].font.color.rgb.upper().endswith(SCORE_GREEN)
 
 
 def test_export_md_table_and_escaping(client):

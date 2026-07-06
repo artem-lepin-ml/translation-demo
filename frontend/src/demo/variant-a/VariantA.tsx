@@ -352,8 +352,9 @@ export default function VariantA() {
   }
 
   async function handleReset() {
+    const resetTarget = doc?.origin === 'upload' ? 'its originally uploaded state' : 'its seed state';
     const ok = window.confirm(
-      'Reset the document to its seed state?\n' +
+      `Reset the document to ${resetTarget}?\n` +
       'All accepted edits, dismissals and live scores will be lost.',
     );
     if (!ok) return;

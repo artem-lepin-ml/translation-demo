@@ -1,6 +1,16 @@
-import { describe, expect, it } from 'vitest';
-import { selectPopoverIssues, precomputeFailedMessage } from './VariantA';
-import type { Issue, PrecomputeStatus } from '../api-client';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import VariantA, { selectPopoverIssues, precomputeFailedMessage } from './VariantA';
+import { useDemoStore } from '../store';
+import type { DemoStore } from '../store';
+import type { Document, Issue, Paragraph, PrecomputeStatus } from '../api-client';
+
+vi.mock('../store', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../store')>();
+  return { ...actual, useDemoStore: vi.fn() };
+});
 
 function iss(id: string, over: Partial<Issue> = {}): Issue {
   return {
@@ -75,5 +85,148 @@ describe('precomputeFailedMessage (S1 §2.6 — honest failure-reason banners)',
   it('falls back to the generic message for a null/undefined precompute status', () => {
     expect(precomputeFailedMessage(null)).toBe('Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph');
     expect(precomputeFailedMessage(undefined)).toBe('Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph');
+  });
+});
+
+// ─── Export menu (S6 §5 / audit-fix regression guard) ──────────────────────
+
+function makeParagraph(id: number): Paragraph {
+  return {
+    id, idx: 0, source: 'src', target: 'tgt',
+    scores: [], scoresPrev: null, scoresBaseline: null,
+    aggregate: null, aggregateBaseline: null,
+    issues: [], terms: [],
+  };
+}
+
+function makeDoc(paragraphs: Paragraph[]): Document {
+  return {
+    id: 7,
+    title: 'Doc',
+    sourceLang: 'ru',
+    targetLang: 'en',
+    nParagraphs: paragraphs.length,
+    origin: 'seed',
+    sourceModel: 'm',
+    aggregate: null,
+    paragraphs,
+  };
+}
+
+function makeStore(doc: Document): DemoStore {
+  return {
+    document: doc,
+    documents: [{ id: doc.id, title: doc.title, sourceLang: doc.sourceLang, targetLang: doc.targetLang, nParagraphs: doc.nParagraphs, origin: doc.origin }],
+    criteria: [],
+    models: [],
+    groundingConfig: null,
+    translatorConfig: null,
+    documentLoading: false,
+    documentError: null,
+    paraEvalState: {},
+    selectedParaIdx: 0,
+    inspectorTab: 'issues',
+    inspectorCollapsed: false,
+    activeCriteria: new Set(),
+    showTerms: false,
+    hoveredTermId: null,
+    uploadModalOpen: false,
+    init: vi.fn().mockResolvedValue(undefined),
+    setSelectedParaIdx: vi.fn(),
+    setInspectorTab: vi.fn(),
+    setInspectorCollapsed: vi.fn(),
+    toggleCriterion: vi.fn(),
+    setShowTerms: vi.fn(),
+    setHoveredTermId: vi.fn(),
+    openUploadModal: vi.fn(),
+    closeUploadModal: vi.fn(),
+    refreshDocuments: vi.fn().mockResolvedValue(undefined),
+    switchDocument: vi.fn().mockResolvedValue(undefined),
+    createDoc: vi.fn().mockResolvedValue(undefined),
+    deleteDoc: vi.fn().mockResolvedValue(undefined),
+    refreshDocument: vi.fn().mockResolvedValue(undefined),
+    acceptIssue: vi.fn().mockResolvedValue(undefined),
+    applyIssueEdit: vi.fn().mockResolvedValue('applied'),
+    dismissIssue: vi.fn().mockResolvedValue(undefined),
+    acceptAllIssues: vi.fn().mockResolvedValue({ applied: 0, outdated: 0 }),
+    evaluateParagraph: vi.fn().mockResolvedValue(undefined),
+    saveParagraphTarget: vi.fn().mockResolvedValue(undefined),
+    resetDoc: vi.fn().mockResolvedValue(undefined),
+    addCriterion: vi.fn().mockResolvedValue(undefined),
+    saveCriterion: vi.fn().mockResolvedValue(undefined),
+    removeCriterion: vi.fn().mockResolvedValue(undefined),
+    addModel: vi.fn().mockResolvedValue(undefined),
+    saveModel: vi.fn().mockResolvedValue(undefined),
+    removeModel: vi.fn().mockResolvedValue(undefined),
+    testModel: vi.fn().mockResolvedValue({ ok: true, extracted: [], reference: [], matched: 0, total: 0, share: 0 }),
+    saveGroundingConfig: vi.fn().mockResolvedValue(undefined),
+    saveTranslatorConfig: vi.fn().mockResolvedValue(undefined),
+    retryTranslate: vi.fn().mockResolvedValue(undefined),
+    runFirstParagraphsEvaluate: vi.fn().mockResolvedValue(undefined),
+    restoreParagraphRevision: vi.fn().mockResolvedValue(undefined),
+  };
+}
+
+function renderVariantA(paragraphs: Paragraph[]) {
+  vi.mocked(useDemoStore).mockReturnValue(makeStore(makeDoc(paragraphs)));
+  return render(<VariantA />);
+}
+
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
+
+describe('Export control (audit-fix HIGH: dropdown items were unclickable)', () => {
+  it('disables the Export button when the document has no paragraphs', () => {
+    renderVariantA([]);
+    expect((screen.getByTestId('export-btn') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('opens the menu on click, with both formats present and correctly wired', () => {
+    renderVariantA([makeParagraph(1)]);
+    expect((screen.getByTestId('export-btn') as HTMLButtonElement).disabled).toBe(false);
+
+    fireEvent.click(screen.getByTestId('export-btn'));
+    expect(screen.getByTestId('export-menu')).toBeTruthy();
+    expect(screen.getByTestId('export-xlsx')).toBeTruthy();
+    expect(screen.getByTestId('export-md')).toBeTruthy();
+  });
+
+  it('clicking a menu item downloads the correct format for the current document', () => {
+    renderVariantA([makeParagraph(1)]);
+    fireEvent.click(screen.getByTestId('export-btn'));
+
+    const hrefs: string[] = [];
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(function (this: HTMLAnchorElement) { hrefs.push(this.getAttribute('href') ?? ''); });
+
+    fireEvent.click(screen.getByTestId('export-xlsx'));
+    expect(hrefs).toEqual(['/api/documents/7/export?format=xlsx']);
+
+    fireEvent.click(screen.getByTestId('export-btn'));
+    fireEvent.click(screen.getByTestId('export-md'));
+    expect(hrefs).toEqual(['/api/documents/7/export?format=xlsx', '/api/documents/7/export?format=md']);
+
+    clickSpy.mockRestore();
+  });
+
+  it('closes the menu on an outside (backdrop) click — click-outside-to-close still works', () => {
+    const { container } = renderVariantA([makeParagraph(1)]);
+    fireEvent.click(screen.getByTestId('export-btn'));
+    expect(screen.getByTestId('export-menu')).toBeTruthy();
+
+    fireEvent.click(container.querySelector('.va-popover-backdrop')!);
+    expect(screen.queryByTestId('export-menu')).toBeNull();
+  });
+
+  it('regression guard: .va-export-menu must outrank .va-popover-backdrop in z-index, or the ' +
+    'transparent click-outside layer intercepts real mouse clicks on the menu items (audit-fix HIGH)', () => {
+    const css = readFileSync(path.join(import.meta.dirname, 'variant-a.css'), 'utf-8');
+    const backdropZ = Number(/\.va-popover-backdrop\s*\{[^}]*z-index:\s*(\d+)/.exec(css)?.[1]);
+    const menuZ = Number(/\.va-export-menu\s*\{[^}]*z-index:\s*(\d+)/.exec(css)?.[1]);
+    expect(Number.isNaN(backdropZ)).toBe(false);
+    expect(Number.isNaN(menuZ)).toBe(false);
+    expect(menuZ).toBeGreaterThan(backdropZ);
   });
 });

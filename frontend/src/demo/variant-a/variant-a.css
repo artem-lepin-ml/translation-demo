@@ -2396,7 +2396,10 @@ table.va-gl-cand {
   border-radius: var(--va-radius);
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
   min-width: 180px;
-  z-index: 5;
+  /* Must outrank .va-popover-backdrop (z-index: 100) or the backdrop
+     intercepts clicks meant for the menu items — same convention as
+     .va-popover (z-index: 101). */
+  z-index: 101;
   overflow: hidden;
 }
 
