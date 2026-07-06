@@ -1,0 +1,996 @@
+{
+  "model": "openai/gpt-5.5",
+  "generated_at": "2026-07-05T19:15:52.761385+00:00",
+  "n_per_route": 10,
+  "sleep_s": 0.2,
+  "routes_requested": [
+    "auto",
+    "provider-1",
+    "provider-2",
+    "provider-3",
+    "provider-4",
+    "provider-5",
+    "provider-6",
+    "provider-7",
+    "provider-8",
+    "provider-9",
+    "provider-10",
+    "provider-11",
+    "provider-12"
+  ],
+  "routes": {
+    "auto": {
+      "n_calls": 10,
+      "n_success": 9,
+      "success_rate": 0.9,
+      "latency_median_s": 3.3064667359999476,
+      "latency_p90_s": 12.652870380999957,
+      "prompt_tokens_median": 21,
+      "completion_tokens_median": 16,
+      "cost_per_call": 1.11e-05,
+      "cost_source": "estimated",
+      "honest_tokens": true,
+      "dead": false,
+      "auto_variant": "no_extra_body",
+      "verdict": "candidate",
+      "calls": [
+        {
+          "ok": true,
+          "latency_s": 3.741457452999839,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.8887375039998915,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.6421035990001656,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 3.262520185000085,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 3.5254099140001927,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 3.1460367550002957,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 6.172877610999876,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 12.652870380999957,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 3.3064667359999476,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": false,
+          "latency_s": 0.579121252999812,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "RateLimitError",
+          "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': 'cd29a09c-ae",
+          "http_status": 429
+        }
+      ]
+    },
+    "provider-1": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.7489443565000329,
+      "latency_p90_s": 0.8258368550000341,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.6720518580000316,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.8258368550000341,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-2": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.6072305095001411,
+      "latency_p90_s": 0.6238423960003274,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.6238423960003274,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5906186229999548,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-3": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5153063980001207,
+      "latency_p90_s": 0.5457414820002668,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5457414820002668,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.4848713139999745,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-4": {
+      "n_calls": 10,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.6924645874998987,
+      "latency_p90_s": 0.869365660999847,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": false,
+      "auto_variant": null,
+      "verdict": "failed",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.869365660999847,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.6590275100002145,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.6904209619997346,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.6823971139997411,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.9690050030003476,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.6945082130000628,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.757528880999871,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.6500223240000196,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.7805329379998511,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5783939269999792,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Model not found. Check available models at GET /v1/models or your API provider's website\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'model_not_found', 'raw': {'code': 'model_not",
+          "http_status": 400
+        }
+      ]
+    },
+    "provider-5": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5478070925000793,
+      "latency_p90_s": 0.5537119800001165,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5419022050000422,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5537119800001165,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-6": {
+      "n_calls": 10,
+      "n_success": 10,
+      "success_rate": 1.0,
+      "latency_median_s": 2.78229079200014,
+      "latency_p90_s": 3.3462797970000793,
+      "prompt_tokens_median": 4395.0,
+      "completion_tokens_median": 5.0,
+      "cost_per_call": 0.00132,
+      "cost_source": "estimated",
+      "honest_tokens": false,
+      "dead": false,
+      "auto_variant": null,
+      "verdict": "padded",
+      "calls": [
+        {
+          "ok": true,
+          "latency_s": 2.535972812000182,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 3.3462797970000793,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.680209778000062,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.7571460069998466,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.7618952900002114,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 4.566762072000074,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.7864075440002125,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.8791110619999927,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.778174040000067,
+          "prompt_tokens": 4395,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 3.3153025090000483,
+          "prompt_tokens": 4395,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        }
+      ]
+    },
+    "provider-7": {
+      "n_calls": 10,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5677551859998857,
+      "latency_p90_s": 0.7745013749999998,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": false,
+      "auto_variant": null,
+      "verdict": "failed",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.7745013749999998,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.7811771520000548,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5771049639997727,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5584054079999987,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5854664949997641,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5775779929999771,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5341374800000267,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5435623410003245,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5334240839997619,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5270057909997377,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 502 - {'type': 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/', 'title': 'Error 502: Bad gateway', 'status': 502, 'detail': 'The origin web server returned an invalid or incomplete response to Cloudflare. This typically indic",
+          "http_status": 502
+        }
+      ]
+    },
+    "provider-8": {
+      "n_calls": 10,
+      "n_success": 10,
+      "success_rate": 1.0,
+      "latency_median_s": 2.7748921924999195,
+      "latency_p90_s": 7.499974517999817,
+      "prompt_tokens_median": 21.0,
+      "completion_tokens_median": 16.5,
+      "cost_per_call": 1.125e-05,
+      "cost_source": "estimated",
+      "honest_tokens": true,
+      "dead": false,
+      "auto_variant": null,
+      "verdict": "candidate",
+      "calls": [
+        {
+          "ok": true,
+          "latency_s": 7.520833986000071,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 4.020687025999905,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 7.23537143600015,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.356683756000166,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.9295106230001693,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.6202737619996697,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 7.499974517999817,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.334658705000038,
+          "prompt_tokens": 21,
+          "completion_tokens": 17,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 2.2893608499998663,
+          "prompt_tokens": 21,
+          "completion_tokens": 16,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        },
+        {
+          "ok": true,
+          "latency_s": 1.8171206839997467,
+          "prompt_tokens": 21,
+          "completion_tokens": 5,
+          "cost_usd": null,
+          "error_class": null,
+          "error_message": null,
+          "http_status": null
+        }
+      ]
+    },
+    "provider-9": {
+      "n_calls": 10,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.997247692999963,
+      "latency_p90_s": 1.0775305939996542,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": false,
+      "auto_variant": null,
+      "verdict": "failed",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 1.357001443000172,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.9383820819998618,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 1.0020825530000366,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.9460044380002728,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 1.0298649639998985,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 1.0775305939996542,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 1.0233481469999788,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.9924128329998894,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.9294488969999293,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        },
+        {
+          "ok": false,
+          "latency_s": 0.981895970000096,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "BadRequestError",
+          "error_message": "Error code: 400 - {'error': {'code': 'invalid_request', 'message': \"Invalid 'max_output_tokens': value 8 is below the minimum allowed (16). Please use a value >= 16.\", 'status': 400, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 400, 'upstream_code': 'Bad Request', 'raw': {'code': 'Bad ",
+          "http_status": 400
+        }
+      ]
+    },
+    "provider-10": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5483459255001435,
+      "latency_p90_s": 0.5820007639999858,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5820007639999858,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5146910870003012,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-11": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5214432255002066,
+      "latency_p90_s": 0.5216176530002485,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.5216176530002485,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5212687980001647,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        }
+      ]
+    },
+    "provider-12": {
+      "n_calls": 2,
+      "n_success": 0,
+      "success_rate": 0.0,
+      "latency_median_s": 0.5720484994999424,
+      "latency_p90_s": 0.5734791019999648,
+      "prompt_tokens_median": null,
+      "completion_tokens_median": null,
+      "cost_per_call": null,
+      "cost_source": "unknown",
+      "honest_tokens": null,
+      "dead": true,
+      "auto_variant": null,
+      "verdict": "dead",
+      "calls": [
+        {
+          "ok": false,
+          "latency_s": 0.57061789699992,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        },
+        {
+          "ok": false,
+          "latency_s": 0.5734791019999648,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "cost_usd": null,
+          "error_class": "InternalServerError",
+          "error_message": "Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['openai/gpt-5.5'], 'route_candidate_counts': {'resolved_models': 5, 'endpoint_rows': 5, 'filtere",
+          "http_status": 503
+        }
+      ]
+    }
+  },
+  "selection": {
+    "chosen_route": "auto",
+    "rule_trace": "eligible=['auto', 'provider-8']; picked min cost/call=1.11e-05 (estimated), tie-break latency_median_s=3.3064667359999476",
+    "relaxed_reason": null
+  },
+  "temp0_check": {
+    "route": "auto",
+    "extra_body": null,
+    "ok": true,
+    "error_class": null,
+    "error_message": null
+  }
+}

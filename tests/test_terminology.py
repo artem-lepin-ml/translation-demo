@@ -338,6 +338,44 @@ def test_candidates_wikipedia_langlink_last_resort():
     assert [c["qid"] for c in gen["candidates"]] == ["Q312060"]
 
 
+def test_candidates_use_sitelink_false_skips_wikipedia_rung_cirrus_still_fires():
+    # sitelink rung disabled; the (independent) cirrus rung still recovers hits.
+    wd = _FakeWD(search={}, cirrus={"Саргона": [{"id": "Q199461"}]},
+                 entities={"Q199461": _entity("Q199461", "Sargon of Akkad", "Саргон", p31=("Q5",), enwiki="Sargon")})
+    config = GroundingConfig(use_sitelink=False)
+    gen = generate_candidates(wd, TermMention(surface="Саргона", lemma="Саргона"), config)
+    assert gen["source"] == "cirrus"
+    assert [c["qid"] for c in gen["candidates"]] == ["Q199461"]
+
+    # entity only reachable via the sitelink rung -> stays unresolved, and the
+    # rung is never even attempted (no "wikipedia_wikibase_item" query logged).
+    wd2 = _FakeWD(search={}, cirrus={}, wiki={"Урукагина": "Q312060"},
+                  entities={"Q312060": _entity("Q312060", "Urukagina", "Урукагина", p31=("Q5",), enwiki="Urukagina")})
+    gen2 = generate_candidates(wd2, TermMention(surface="Уруинимгину", lemma="Урукагина"), config)
+    assert gen2["source"] == "none"
+    assert gen2["candidates"] == []
+    assert not any(q["mechanism"] == "wikipedia_wikibase_item" for q in gen2["queries"])
+
+
+def test_candidates_use_cirrus_false_skips_cirrus_rung_sitelink_still_fires():
+    # cirrus rung disabled; the (independent) sitelink rung still recovers hits.
+    wd = _FakeWD(search={}, cirrus={}, wiki={"Урукагина": "Q312060"},
+                 entities={"Q312060": _entity("Q312060", "Urukagina", "Урукагина", p31=("Q5",), enwiki="Urukagina")})
+    config = GroundingConfig(use_cirrus=False)
+    gen = generate_candidates(wd, TermMention(surface="Уруинимгину", lemma="Урукагина"), config)
+    assert gen["source"] == "wikipedia_langlink"
+    assert [c["qid"] for c in gen["candidates"]] == ["Q312060"]
+
+    # entity only reachable via cirrus -> stays unresolved, and the rung is
+    # never even attempted (no "cirrus" query logged).
+    wd2 = _FakeWD(search={}, cirrus={"Саргона": [{"id": "Q199461"}]},
+                  entities={"Q199461": _entity("Q199461", "Sargon of Akkad", "Саргон", p31=("Q5",), enwiki="Sargon")})
+    gen2 = generate_candidates(wd2, TermMention(surface="Саргона", lemma="Саргона"), config)
+    assert gen2["source"] == "none"
+    assert gen2["candidates"] == []
+    assert not any(q["mechanism"] == "cirrus" for q in gen2["queries"])
+
+
 def test_candidates_redirect_canonicalized_to_target_qid():
     # search returns a redirect id; the enriched entity carries the canonical id
     wd = _FakeWD(search={"Тест": [{"id": "Q_OLD"}]},
@@ -583,6 +621,20 @@ def test_label_first_use_fallbacks_false_cirrus_only_term_stays_no_candidates():
     assert result.difficulty == "red"
     assert result.trace["resolved_by"] == "no_candidates"
     assert calls == []  # fallback never attempted -> no candidates -> no judge call
+
+
+def test_grounding_config_use_fallbacks_compat_sets_and_reads_both_split_fields():
+    # deprecated use_fallbacks alias still sets/reads both use_cirrus and use_sitelink.
+    assert GroundingConfig().use_fallbacks is True                    # default: both on
+    off = GroundingConfig(use_fallbacks=False)
+    assert (off.use_cirrus, off.use_sitelink) == (False, False)
+    assert off.use_fallbacks is False
+    on = GroundingConfig(use_fallbacks=True)
+    assert (on.use_cirrus, on.use_sitelink) == (True, True)
+    assert on.use_fallbacks is True
+    # split fields set independently -> the derived compat read is False
+    split = GroundingConfig(use_cirrus=True, use_sitelink=False)
+    assert split.use_fallbacks is False
 
 
 def test_label_first_match_aliases_false_forces_escalation_instead_of_exact():

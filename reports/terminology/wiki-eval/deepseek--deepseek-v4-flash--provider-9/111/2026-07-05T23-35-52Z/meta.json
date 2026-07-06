@@ -1,0 +1,466 @@
+{
+ "article_workers": 10,
+ "calls": {
+  "extract": 2644,
+  "judge": 4785
+ },
+ "config": "111",
+ "failed_paragraphs": [
+  {
+   "paragraph_index": 4,
+   "title": "Абдмилькат"
+  },
+  {
+   "paragraph_index": 3,
+   "title": "Абдмилькат"
+  },
+  {
+   "paragraph_index": 0,
+   "title": "Арслантепе (Мелид)"
+  },
+  {
+   "paragraph_index": 8,
+   "title": "Арслантепе (Мелид)"
+  },
+  {
+   "paragraph_index": 11,
+   "title": "Арслантепе (Мелид)"
+  },
+  {
+   "paragraph_index": 13,
+   "title": "Арслантепе (Мелид)"
+  },
+  {
+   "paragraph_index": 14,
+   "title": "Арслантепе (Мелид)"
+  },
+  {
+   "paragraph_index": 6,
+   "title": "Ашшур (город)"
+  },
+  {
+   "paragraph_index": 9,
+   "title": "Ашшур (город)"
+  },
+  {
+   "paragraph_index": 5,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 19,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 11,
+   "title": "Восстания в державе Ахеменидов (521—516 до н. э.)"
+  },
+  {
+   "paragraph_index": 22,
+   "title": "Веды"
+  },
+  {
+   "paragraph_index": 23,
+   "title": "Веды"
+  },
+  {
+   "paragraph_index": 25,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 27,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 29,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 30,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 32,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 2,
+   "title": "Гелиополиты"
+  },
+  {
+   "paragraph_index": 18,
+   "title": "Гаруда"
+  },
+  {
+   "paragraph_index": 41,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 44,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 45,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 47,
+   "title": "Гаруда"
+  },
+  {
+   "paragraph_index": 48,
+   "title": "Ашшурбанапал"
+  },
+  {
+   "paragraph_index": 61,
+   "title": "Древняя Греция"
+  },
+  {
+   "paragraph_index": 10,
+   "title": "Ишува"
+  },
+  {
+   "paragraph_index": 7,
+   "title": "Калан (мудрец)"
+  },
+  {
+   "paragraph_index": 2,
+   "title": "Касситская династия"
+  },
+  {
+   "paragraph_index": 6,
+   "title": "Касситская династия"
+  },
+  {
+   "paragraph_index": 15,
+   "title": "Касситская династия"
+  },
+  {
+   "paragraph_index": 18,
+   "title": "Касситская династия"
+  },
+  {
+   "paragraph_index": 20,
+   "title": "Касситская династия"
+  },
+  {
+   "paragraph_index": 34,
+   "title": "Касситская династия"
+  },
+  {
+   "paragraph_index": 36,
+   "title": "Касситская династия"
+  },
+  {
+   "paragraph_index": 18,
+   "title": "Кесария Палестинская"
+  },
+  {
+   "paragraph_index": 58,
+   "title": "Касситская династия"
+  },
+  {
+   "paragraph_index": 1,
+   "title": "Линейное письмо Б"
+  },
+  {
+   "paragraph_index": 9,
+   "title": "Лувийский язык"
+  },
+  {
+   "paragraph_index": 9,
+   "title": "Микенская цивилизация"
+  },
+  {
+   "paragraph_index": 60,
+   "title": "Микенская цивилизация"
+  },
+  {
+   "paragraph_index": 2,
+   "title": "Муваталлис II"
+  },
+  {
+   "paragraph_index": 5,
+   "title": "Мурсили II"
+  },
+  {
+   "paragraph_index": 7,
+   "title": "Мурсили II"
+  },
+  {
+   "paragraph_index": 7,
+   "title": "Мугаллу"
+  },
+  {
+   "paragraph_index": 16,
+   "title": "Новоассирийское царство"
+  },
+  {
+   "paragraph_index": 8,
+   "title": "Объединение Китая царством Цинь"
+  },
+  {
+   "paragraph_index": 12,
+   "title": "Объединение Китая царством Цинь"
+  },
+  {
+   "paragraph_index": 32,
+   "title": "Новоассирийское царство"
+  },
+  {
+   "paragraph_index": 11,
+   "title": "Осада Тира"
+  },
+  {
+   "paragraph_index": 29,
+   "title": "Объединение Китая царством Цинь"
+  },
+  {
+   "paragraph_index": 6,
+   "title": "Осада Тира (314—313 до н. э.)"
+  },
+  {
+   "paragraph_index": 3,
+   "title": "Первая династия Страны Моря"
+  },
+  {
+   "paragraph_index": 4,
+   "title": "Первая династия Страны Моря"
+  },
+  {
+   "paragraph_index": 1,
+   "title": "Период Вёсен и Осеней"
+  },
+  {
+   "paragraph_index": 3,
+   "title": "Поздняя Цинь"
+  },
+  {
+   "paragraph_index": 5,
+   "title": "Путешествия Уну-Амона"
+  },
+  {
+   "paragraph_index": 7,
+   "title": "Поздняя Цинь"
+  },
+  {
+   "paragraph_index": 10,
+   "title": "Поздняя Цинь"
+  },
+  {
+   "paragraph_index": 2,
+   "title": "Пушьямитра Шунга"
+  },
+  {
+   "paragraph_index": 3,
+   "title": "Пушьямитра Шунга"
+  },
+  {
+   "paragraph_index": 4,
+   "title": "Пушьямитра Шунга"
+  },
+  {
+   "paragraph_index": 7,
+   "title": "Римляне"
+  },
+  {
+   "paragraph_index": 15,
+   "title": "Римляне"
+  },
+  {
+   "paragraph_index": 19,
+   "title": "Синаххериб"
+  },
+  {
+   "paragraph_index": 8,
+   "title": "Пушьямитра Шунга"
+  },
+  {
+   "paragraph_index": 23,
+   "title": "Синаххериб"
+  },
+  {
+   "paragraph_index": 25,
+   "title": "Римляне"
+  },
+  {
+   "paragraph_index": 0,
+   "title": "Согдиана"
+  },
+  {
+   "paragraph_index": 29,
+   "title": "Римляне"
+  },
+  {
+   "paragraph_index": 28,
+   "title": "Синаххериб"
+  },
+  {
+   "paragraph_index": 11,
+   "title": "Согдиана"
+  },
+  {
+   "paragraph_index": 20,
+   "title": "Согдиана"
+  },
+  {
+   "paragraph_index": 48,
+   "title": "Синаххериб"
+  },
+  {
+   "paragraph_index": 50,
+   "title": "Синаххериб"
+  },
+  {
+   "paragraph_index": 3,
+   "title": "Стигия"
+  },
+  {
+   "paragraph_index": 7,
+   "title": "Сур (город)"
+  },
+  {
+   "paragraph_index": 1,
+   "title": "Тудхалия IV"
+  },
+  {
+   "paragraph_index": 3,
+   "title": "Тудхалия IV"
+  },
+  {
+   "paragraph_index": 1,
+   "title": "Урук"
+  },
+  {
+   "paragraph_index": 8,
+   "title": "Фокидский союз"
+  },
+  {
+   "paragraph_index": 7,
+   "title": "Хайаса"
+  },
+  {
+   "paragraph_index": 36,
+   "title": "Фокидский союз"
+  },
+  {
+   "paragraph_index": 5,
+   "title": "Хираньякашипу"
+  },
+  {
+   "paragraph_index": 0,
+   "title": "Цальпува"
+  },
+  {
+   "paragraph_index": 6,
+   "title": "Цальпува"
+  },
+  {
+   "paragraph_index": 12,
+   "title": "Цальпува"
+  },
+  {
+   "paragraph_index": 9,
+   "title": "Цинь (царство)"
+  },
+  {
+   "paragraph_index": 3,
+   "title": "Чжаньго цэ"
+  },
+  {
+   "paragraph_index": 11,
+   "title": "Цинь (царство)"
+  },
+  {
+   "paragraph_index": 6,
+   "title": "Шестая Сирийская война"
+  },
+  {
+   "paragraph_index": 8,
+   "title": "Шестая Сирийская война"
+  },
+  {
+   "paragraph_index": 20,
+   "title": "Шамши-Адад I"
+  },
+  {
+   "paragraph_index": 5,
+   "title": "Шульги"
+  },
+  {
+   "paragraph_index": 7,
+   "title": "Шульги"
+  },
+  {
+   "paragraph_index": 6,
+   "title": "Элулай"
+  },
+  {
+   "paragraph_index": 9,
+   "title": "Элулай"
+  },
+  {
+   "paragraph_index": 8,
+   "title": "Эллинистический Египет"
+  },
+  {
+   "paragraph_index": 20,
+   "title": "Эллинистический Египет"
+  },
+  {
+   "paragraph_index": 26,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 31,
+   "title": "Эллинистический Египет"
+  },
+  {
+   "paragraph_index": 28,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 31,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 75,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 76,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 85,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 122,
+   "title": "Яффа"
+  }
+ ],
+ "finished_at": "2026-07-06T03:06:20.048669+00:00",
+ "llm_max_in_flight_observed": 16,
+ "llm_semaphore": 16,
+ "max_judge_calls": 30000,
+ "max_usd": 12.0,
+ "model": "deepseek/deepseek-v4-flash",
+ "n_articles": 100,
+ "n_failed_judge_calls": 238,
+ "n_failed_paragraphs": 108,
+ "n_paragraphs": 2644,
+ "n_pred_mentions": 16931,
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "provider-9",
+ "run_id": "2026-07-05T23-35-52Z",
+ "spend": {
+  "extract": 0.39994199999998004,
+  "judge": 0.16399400000000067,
+  "total": 0.5639359999999571
+ },
+ "started_at": "2026-07-05T23:35:52.112714+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 12627.935955,
+ "wikidata_workers": 2
+}

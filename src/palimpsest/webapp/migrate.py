@@ -18,11 +18,13 @@ import sqlite3
 from datetime import datetime, timezone
 
 from .. import paths
+from ..terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_PROMPT
 from . import db
 from .model_matrix import DEFAULT_CRITERION_MODEL
 
 TRANSLATOR_PROMPT_FILE = paths.PROMPTS / "translator" / "default.md"
 TRANSLATOR_DEFAULT_PARAMS = {"max_tokens": 2048, "temperature": 0.3}
+GROUNDING_DEFAULT_PARAMS = {"max_tokens": 512, "temperature": 0}
 
 
 def _now() -> str:
@@ -74,6 +76,48 @@ def _create_translator_config(conn: sqlite3.Connection) -> None:
         (DEFAULT_CRITERION_MODEL, prompt, json.dumps(TRANSLATOR_DEFAULT_PARAMS)))
 
 
+def _create_grounding_config(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS grounding_config ("
+        "id INTEGER PRIMARY KEY CHECK (id = 1),"
+        "model_name TEXT REFERENCES model(name),"
+        "prompt TEXT,"
+        "params_json TEXT)"
+    )
+    row = conn.execute("SELECT 1 FROM grounding_config WHERE id=1").fetchone()
+    if row is not None:
+        return
+    # Same FK-safety guard as _create_translator_config: model_name is
+    # FK-constrained, so only seed the default row when its target model
+    # already exists. GET /api/grounding-config already tolerates an absent
+    # row (returns a null/default config, never 500).
+    model_exists = conn.execute(
+        "SELECT 1 FROM model WHERE name=?", (DEFAULT_CRITERION_MODEL,)).fetchone()
+    if not model_exists:
+        return
+    conn.execute(
+        "INSERT INTO grounding_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
+        (DEFAULT_CRITERION_MODEL, DEFAULT_GROUNDING_JUDGE_PROMPT, json.dumps(GROUNDING_DEFAULT_PARAMS)))
+
+
+def _create_glossary(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS glossary ("
+        "id INTEGER PRIMARY KEY,"
+        "term TEXT, context TEXT, target_equivalent TEXT,"
+        "wikidata_url TEXT NOT NULL, wikidata_id TEXT,"
+        "UNIQUE (term, context))"
+    )
+
+
+def _add_term_trace_json_column(conn: sqlite3.Connection) -> None:
+    if not _has_column(conn, "term", "trace_json"):
+        # NOT NULL DEFAULT '{}' matches db.py SCHEMA and backfills every
+        # existing row with '{}' in the same ALTER TABLE (SQLite fills a
+        # constant default into pre-existing rows) — no separate backfill step.
+        conn.execute("ALTER TABLE term ADD COLUMN trace_json TEXT NOT NULL DEFAULT '{}'")
+
+
 def _add_score_revision_column(conn: sqlite3.Connection) -> None:
     if not _has_column(conn, "score", "revision_id"):
         conn.execute(
@@ -101,6 +145,9 @@ def migrate(conn: sqlite3.Connection) -> None:
     """Run every additive step, in order, and commit once at the end."""
     _create_target_revision(conn)
     _create_translator_config(conn)
+    _create_grounding_config(conn)
+    _create_glossary(conn)
+    _add_term_trace_json_column(conn)
     _add_score_revision_column(conn)
     _backfill_paragraph_revisions(conn)
     conn.commit()

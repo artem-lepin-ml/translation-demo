@@ -26,6 +26,7 @@
         ".claude/skills/handoff",
         ".claude/hooks",
         ".claude/rules",
+        ".claude/playbooks",
         ".claude/agents-bench",
         ".claude/commands"
       ],

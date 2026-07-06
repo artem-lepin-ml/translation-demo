@@ -1,0 +1,911 @@
+{
+ "recall": {
+  "m1": {
+   "matched": 897,
+   "total": 1443,
+   "value": 0.6216216216216216,
+   "ci_lo": 0.5963,
+   "ci_hi": 0.6463,
+   "underpowered": false
+  },
+  "m2": {
+   "matched": 923,
+   "total": 1443,
+   "value": 0.6396396396396397,
+   "ci_lo": 0.6145,
+   "ci_hi": 0.664,
+   "underpowered": false
+  },
+  "m3": {
+   "matched": 1035,
+   "total": 1443,
+   "value": 0.7172557172557172,
+   "ci_lo": 0.6935,
+   "ci_hi": 0.7399,
+   "underpowered": false
+  }
+ },
+ "precision": {
+  "p1": {
+   "matched": 923,
+   "total": 2800,
+   "value": 0.3296428571428571,
+   "ci_lo": 0.3125,
+   "ci_hi": 0.3473,
+   "underpowered": false
+  },
+  "p2": {
+   "matched": 784,
+   "total": 1667,
+   "value": 0.47030593881223753,
+   "ci_lo": 0.4464,
+   "ci_hi": 0.4943,
+   "underpowered": false
+  }
+ },
+ "slices": {
+  "stratum": {
+   "achaemenid_iran": {
+    "recall": {
+     "m1": {
+      "matched": 76,
+      "total": 104,
+      "value": 0.7307692307692307,
+      "ci_lo": 0.6384,
+      "ci_hi": 0.8067,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 76,
+      "total": 104,
+      "value": 0.7307692307692307,
+      "ci_lo": 0.6384,
+      "ci_hi": 0.8067,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 78,
+      "total": 104,
+      "value": 0.75,
+      "ci_lo": 0.6589,
+      "ci_hi": 0.8233,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 76,
+      "total": 86,
+      "value": 0.8837209302325582,
+      "ci_lo": 0.799,
+      "ci_hi": 0.9356,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 75,
+      "total": 85,
+      "value": 0.8823529411764706,
+      "ci_lo": 0.7968,
+      "ci_hi": 0.9348,
+      "underpowered": false
+     }
+    }
+   },
+   "assyria": {
+    "recall": {
+     "m1": {
+      "matched": 80,
+      "total": 108,
+      "value": 0.7407407407407407,
+      "ci_lo": 0.6508,
+      "ci_hi": 0.8141,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 80,
+      "total": 108,
+      "value": 0.7407407407407407,
+      "ci_lo": 0.6508,
+      "ci_hi": 0.8141,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 81,
+      "total": 108,
+      "value": 0.75,
+      "ci_lo": 0.6607,
+      "ci_hi": 0.8221,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 80,
+      "total": 90,
+      "value": 0.8888888888888888,
+      "ci_lo": 0.8074,
+      "ci_hi": 0.9385,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 66,
+      "total": 76,
+      "value": 0.868421052631579,
+      "ci_lo": 0.7745,
+      "ci_hi": 0.9269,
+      "underpowered": false
+     }
+    }
+   },
+   "china": {
+    "recall": {
+     "m1": {
+      "matched": 68,
+      "total": 115,
+      "value": 0.591304347826087,
+      "ci_lo": 0.4999,
+      "ci_hi": 0.6768,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 68,
+      "total": 115,
+      "value": 0.591304347826087,
+      "ci_lo": 0.4999,
+      "ci_hi": 0.6768,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 73,
+      "total": 115,
+      "value": 0.6347826086956522,
+      "ci_lo": 0.5437,
+      "ci_hi": 0.7171,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 68,
+      "total": 76,
+      "value": 0.8947368421052632,
+      "ci_lo": 0.8058,
+      "ci_hi": 0.9457,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 67,
+      "total": 75,
+      "value": 0.8933333333333333,
+      "ci_lo": 0.8034,
+      "ci_hi": 0.945,
+      "underpowered": false
+     }
+    }
+   },
+   "egypt": {
+    "recall": {
+     "m1": {
+      "matched": 43,
+      "total": 88,
+      "value": 0.48863636363636365,
+      "ci_lo": 0.3869,
+      "ci_hi": 0.5913,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 44,
+      "total": 88,
+      "value": 0.5,
+      "ci_lo": 0.3977,
+      "ci_hi": 0.6023,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 55,
+      "total": 88,
+      "value": 0.625,
+      "ci_lo": 0.5206,
+      "ci_hi": 0.7189,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 44,
+      "total": 58,
+      "value": 0.7586206896551724,
+      "ci_lo": 0.6347,
+      "ci_hi": 0.8504,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 42,
+      "total": 54,
+      "value": 0.7777777777777778,
+      "ci_lo": 0.6506,
+      "ci_hi": 0.868,
+      "underpowered": false
+     }
+    }
+   },
+   "greece": {
+    "recall": {
+     "m1": {
+      "matched": 92,
+      "total": 167,
+      "value": 0.5508982035928144,
+      "ci_lo": 0.4752,
+      "ci_hi": 0.6244,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 95,
+      "total": 167,
+      "value": 0.5688622754491018,
+      "ci_lo": 0.493,
+      "ci_hi": 0.6416,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 99,
+      "total": 167,
+      "value": 0.592814371257485,
+      "ci_lo": 0.517,
+      "ci_hi": 0.6644,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 95,
+      "total": 100,
+      "value": 0.95,
+      "ci_lo": 0.8882,
+      "ci_hi": 0.9785,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 88,
+      "total": 93,
+      "value": 0.946236559139785,
+      "ci_lo": 0.8803,
+      "ci_hi": 0.9768,
+      "underpowered": false
+     }
+    }
+   },
+   "hittite": {
+    "recall": {
+     "m1": {
+      "matched": 166,
+      "total": 276,
+      "value": 0.6014492753623188,
+      "ci_lo": 0.5427,
+      "ci_hi": 0.6574,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 169,
+      "total": 276,
+      "value": 0.6123188405797102,
+      "ci_lo": 0.5537,
+      "ci_hi": 0.6679,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 204,
+      "total": 276,
+      "value": 0.7391304347826086,
+      "ci_lo": 0.6843,
+      "ci_hi": 0.7874,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 169,
+      "total": 201,
+      "value": 0.8407960199004975,
+      "ci_lo": 0.7839,
+      "ci_hi": 0.8849,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 124,
+      "total": 149,
+      "value": 0.8322147651006712,
+      "ci_lo": 0.764,
+      "ci_hi": 0.8837,
+      "underpowered": false
+     }
+    }
+   },
+   "india": {
+    "recall": {
+     "m1": {
+      "matched": 62,
+      "total": 94,
+      "value": 0.6595744680851063,
+      "ci_lo": 0.5592,
+      "ci_hi": 0.7474,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 63,
+      "total": 94,
+      "value": 0.6702127659574468,
+      "ci_lo": 0.5701,
+      "ci_hi": 0.7569,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 68,
+      "total": 94,
+      "value": 0.723404255319149,
+      "ci_lo": 0.6256,
+      "ci_hi": 0.8037,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 63,
+      "total": 71,
+      "value": 0.8873239436619719,
+      "ci_lo": 0.7931,
+      "ci_hi": 0.9418,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 57,
+      "total": 65,
+      "value": 0.8769230769230769,
+      "ci_lo": 0.7755,
+      "ci_hi": 0.9363,
+      "underpowered": false
+     }
+    }
+   },
+   "phoenicia": {
+    "recall": {
+     "m1": {
+      "matched": 102,
+      "total": 167,
+      "value": 0.6107784431137725,
+      "ci_lo": 0.5351,
+      "ci_hi": 0.6814,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 103,
+      "total": 167,
+      "value": 0.6167664670658682,
+      "ci_lo": 0.5412,
+      "ci_hi": 0.6871,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 105,
+      "total": 167,
+      "value": 0.6287425149700598,
+      "ci_lo": 0.5533,
+      "ci_hi": 0.6984,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 103,
+      "total": 114,
+      "value": 0.9035087719298246,
+      "ci_lo": 0.8354,
+      "ci_hi": 0.9453,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 99,
+      "total": 110,
+      "value": 0.9,
+      "ci_lo": 0.8298,
+      "ci_hi": 0.9432,
+      "underpowered": false
+     }
+    }
+   },
+   "rome": {
+    "recall": {
+     "m1": {
+      "matched": 131,
+      "total": 216,
+      "value": 0.6064814814814815,
+      "ci_lo": 0.54,
+      "ci_hi": 0.6692,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 132,
+      "total": 216,
+      "value": 0.6111111111111112,
+      "ci_lo": 0.5447,
+      "ci_hi": 0.6736,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 146,
+      "total": 216,
+      "value": 0.6759259259259259,
+      "ci_lo": 0.6109,
+      "ci_hi": 0.7348,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 132,
+      "total": 154,
+      "value": 0.8571428571428571,
+      "ci_lo": 0.7932,
+      "ci_hi": 0.9037,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 116,
+      "total": 137,
+      "value": 0.8467153284671532,
+      "ci_lo": 0.777,
+      "ci_hi": 0.8975,
+      "underpowered": false
+     }
+    }
+   },
+   "sumer": {
+    "recall": {
+     "m1": {
+      "matched": 77,
+      "total": 108,
+      "value": 0.7129629629629629,
+      "ci_lo": 0.6215,
+      "ci_hi": 0.7898,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 79,
+      "total": 108,
+      "value": 0.7314814814814815,
+      "ci_lo": 0.641,
+      "ci_hi": 0.8061,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 87,
+      "total": 108,
+      "value": 0.8055555555555556,
+      "ci_lo": 0.721,
+      "ci_hi": 0.8692,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 79,
+      "total": 89,
+      "value": 0.8876404494382022,
+      "ci_lo": 0.8054,
+      "ci_hi": 0.9378,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 64,
+      "total": 73,
+      "value": 0.8767123287671232,
+      "ci_lo": 0.782,
+      "ci_hi": 0.9338,
+      "underpowered": false
+     }
+    }
+   }
+  },
+  "resolved_by": {
+   "exact_label": {
+    "recall": {
+     "m1": {
+      "matched": 431,
+      "total": 482,
+      "value": 0.8941908713692946,
+      "ci_lo": 0.8635,
+      "ci_hi": 0.9186,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 437,
+      "total": 482,
+      "value": 0.9066390041493776,
+      "ci_lo": 0.8774,
+      "ci_hi": 0.9295,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 442,
+      "total": 482,
+      "value": 0.91701244813278,
+      "ci_lo": 0.889,
+      "ci_hi": 0.9385,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 437,
+      "total": 1068,
+      "value": 0.4091760299625468,
+      "ci_lo": 0.3801,
+      "ci_hi": 0.4389,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 384,
+      "total": 697,
+      "value": 0.5509325681492109,
+      "ci_lo": 0.5138,
+      "ci_hi": 0.5875,
+      "underpowered": false
+     },
+     "p3": {
+      "matched": 437,
+      "total": 1068,
+      "value": 0.4091760299625468,
+      "ci_lo": 0.3801,
+      "ci_hi": 0.4389,
+      "underpowered": false
+     }
+    }
+   },
+   "judge_rejected": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 51,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.07,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 0,
+      "total": 51,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.07,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 0,
+      "total": 51,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.07,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "judge_unavailable": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 1,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.7935,
+      "underpowered": true
+     },
+     "m2": {
+      "matched": 0,
+      "total": 1,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.7935,
+      "underpowered": true
+     },
+     "m3": {
+      "matched": 0,
+      "total": 1,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.7935,
+      "underpowered": true
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "llm_disambiguation": {
+    "recall": {
+     "m1": {
+      "matched": 466,
+      "total": 557,
+      "value": 0.8366247755834829,
+      "ci_lo": 0.8036,
+      "ci_hi": 0.865,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 472,
+      "total": 557,
+      "value": 0.8473967684021544,
+      "ci_lo": 0.8152,
+      "ci_hi": 0.8749,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 481,
+      "total": 557,
+      "value": 0.8635547576301615,
+      "ci_lo": 0.8325,
+      "ci_hi": 0.8896,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 472,
+      "total": 1732,
+      "value": 0.27251732101616627,
+      "ci_lo": 0.2521,
+      "ci_hi": 0.294,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 387,
+      "total": 971,
+      "value": 0.39855818743563337,
+      "ci_lo": 0.3682,
+      "ci_hi": 0.4297,
+      "underpowered": false
+     },
+     "p3": {
+      "matched": 472,
+      "total": 1732,
+      "value": 0.27251732101616627,
+      "ci_lo": 0.2521,
+      "ci_hi": 0.294,
+      "underpowered": false
+     }
+    }
+   },
+   "no_candidates": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 43,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.082,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 0,
+      "total": 43,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.082,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 0,
+      "total": 43,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.082,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   }
+  },
+  "type": {
+   "named": {
+    "recall": {
+     "m1": {
+      "matched": 761,
+      "total": 982,
+      "value": 0.774949083503055,
+      "ci_lo": 0.7478,
+      "ci_hi": 0.8,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 767,
+      "total": 982,
+      "value": 0.7810590631364562,
+      "ci_lo": 0.7541,
+      "ci_hi": 0.8058,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 809,
+      "total": 982,
+      "value": 0.8238289205702648,
+      "ci_lo": 0.7988,
+      "ci_hi": 0.8464,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 767,
+      "total": 853,
+      "value": 0.8991793669402111,
+      "ci_lo": 0.8771,
+      "ci_hi": 0.9176,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 673,
+      "total": 753,
+      "value": 0.8937583001328021,
+      "ci_lo": 0.8697,
+      "ci_hi": 0.9138,
+      "underpowered": false
+     }
+    }
+   },
+   "term": {
+    "recall": {
+     "m1": {
+      "matched": 136,
+      "total": 461,
+      "value": 0.2950108459869848,
+      "ci_lo": 0.2552,
+      "ci_hi": 0.3382,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 142,
+      "total": 461,
+      "value": 0.3080260303687636,
+      "ci_lo": 0.2676,
+      "ci_hi": 0.3516,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 168,
+      "total": 461,
+      "value": 0.3644251626898048,
+      "ci_lo": 0.3218,
+      "ci_hi": 0.4093,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 142,
+      "total": 186,
+      "value": 0.7634408602150538,
+      "ci_lo": 0.6974,
+      "ci_hi": 0.8188,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 128,
+      "total": 167,
+      "value": 0.7664670658682635,
+      "ci_lo": 0.6968,
+      "ci_hi": 0.8242,
+      "underpowered": false
+     }
+    }
+   }
+  }
+ },
+ "meta": {
+  "article_workers": 6,
+  "calls": {
+   "extract": 389,
+   "judge": 890
+  },
+  "config": "111",
+  "failed_paragraphs": [],
+  "finished_at": "2026-07-06T09:05:23.582421+00:00",
+  "llm_max_in_flight_observed": 8,
+  "llm_semaphore": 8,
+  "max_judge_calls": 30000,
+  "max_usd": 12.0,
+  "model": "google/gemini-3.1-flash-lite",
+  "n_articles": 20,
+  "n_failed_judge_calls": 0,
+  "n_failed_paragraphs": 0,
+  "n_paragraphs": 389,
+  "n_pred_mentions": 3542,
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "provider-9",
+  "run_id": "2026-07-06T08-57-53Z",
+  "spend": {
+   "extract": 0.06271999999999948,
+   "judge": 0.032540000000000374,
+   "total": 0.09526000000000238
+  },
+  "started_at": "2026-07-06T08:57:53.081001+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 450.50142,
+  "wikidata_workers": 2,
+  "n_gt_tuples": 1443,
+  "generated_at": "2026-07-06T09:06:06.852581+00:00"
+ }
+}

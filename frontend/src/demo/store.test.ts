@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Document, EvaluateResponse, Issue, Paragraph } from './api-client';
 
 vi.mock('./api-client', async (importOriginal) => {
@@ -15,6 +15,12 @@ vi.mock('./api-client', async (importOriginal) => {
     restoreRevision: vi.fn(),
     updateTranslatorConfig: vi.fn(),
     getDocument: vi.fn(),
+    getDocuments: vi.fn(),
+    getCriteria: vi.fn(),
+    getModels: vi.fn(),
+    getGroundingConfig: vi.fn(),
+    getTranslatorConfig: vi.fn(),
+    getHealth: vi.fn(),
   };
 });
 
@@ -29,8 +35,16 @@ import {
   restoreRevision,
   updateTranslatorConfig,
   getDocument,
+  getDocuments,
+  getCriteria,
+  getModels,
+  getGroundingConfig,
+  getTranslatorConfig,
+  getHealth,
 } from './api-client';
-import type { Criterion, TranslatorConfig } from './api-client';
+import type {
+  Criterion, DocumentSummary, GroundingConfig, ModelRegistryEntryPublic, TranslatorConfig,
+} from './api-client';
 import { useDemoStore } from './store';
 
 function issue(id: string, over: Partial<Issue> = {}): Issue {
@@ -436,5 +450,78 @@ describe('restoreParagraphRevision (S5 §3.3)', () => {
     expect(restoreRevision).toHaveBeenCalledWith(1, 42);
     expect(useDemoStore.getState().document?.paragraphs[0].target).toBe('restored text');
     expect(useDemoStore.getState().paraEvalState[0].stale).toBe(true);
+  });
+});
+
+describe('init (boot sequence) — auxiliary config isolation (2026-07-06 prod incident, prod-wave5-run.md)', () => {
+  const summaries: DocumentSummary[] = [
+    { id: 1, title: 'Doc', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1, origin: 'seed' },
+  ];
+  const criteriaList: Criterion[] = [
+    { id: 'accuracy', name: 'Accuracy', modelName: 'openai/gpt-5.4-mini', prompt: '',
+      scaleMin: 1, scaleMax: 10, weight: 0.3, color: '#4d8dff', enabled: true },
+  ];
+  const modelsList: ModelRegistryEntryPublic[] = [
+    { name: 'openai/gpt-5.4-mini', baseUrl: '', apiKeyMasked: '****', params: {}, effectiveParams: {} },
+  ];
+  const groundingCfg: GroundingConfig = { modelName: 'openai/gpt-5.4-mini', prompt: 'g', params: {} };
+  const translatorCfg: TranslatorConfig = { modelName: 'openai/gpt-5.4-mini', prompt: 't', params: {} };
+  const doc = makeDoc([]);
+
+  beforeEach(() => {
+    useDemoStore.setState({ document: null, documentError: null, documentLoading: false });
+    vi.mocked(getDocuments).mockResolvedValue(summaries);
+    vi.mocked(getCriteria).mockResolvedValue(criteriaList);
+    vi.mocked(getModels).mockResolvedValue(modelsList);
+    vi.mocked(getDocument).mockResolvedValue(doc);
+    vi.mocked(getHealth).mockResolvedValue({ service: 's', status: 'ok', limits: { maxParagraphs: 100, maxParaChars: 5000 } });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('a rejected grounding-config fetch does not block the document from loading; fallback recorded as null', async () => {
+    vi.mocked(getGroundingConfig).mockRejectedValue(new Error('GET /grounding-config → 500'));
+    vi.mocked(getTranslatorConfig).mockResolvedValue(translatorCfg);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await useDemoStore.getState().init();
+
+    const state = useDemoStore.getState();
+    expect(state.documentError).toBeNull();
+    expect(state.document).toEqual(doc);
+    expect(state.documents).toEqual(summaries);
+    expect(state.groundingConfig).toBeNull();
+    expect(state.translatorConfig).toEqual(translatorCfg);
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('a rejected translator-config fetch does not block the document from loading; fallback recorded as null', async () => {
+    vi.mocked(getGroundingConfig).mockResolvedValue(groundingCfg);
+    vi.mocked(getTranslatorConfig).mockRejectedValue(new Error('GET /translator-config → 500'));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await useDemoStore.getState().init();
+
+    const state = useDemoStore.getState();
+    expect(state.documentError).toBeNull();
+    expect(state.document).toEqual(doc);
+    expect(state.groundingConfig).toEqual(groundingCfg);
+    expect(state.translatorConfig).toBeNull();
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('a boot-critical fetch (getDocuments) rejecting surfaces documentError, not an unhandled rejection', async () => {
+    vi.mocked(getGroundingConfig).mockResolvedValue(groundingCfg);
+    vi.mocked(getTranslatorConfig).mockResolvedValue(translatorCfg);
+    vi.mocked(getDocuments).mockRejectedValue(new Error('GET /documents → 500'));
+
+    await expect(useDemoStore.getState().init()).resolves.toBeUndefined();
+
+    const state = useDemoStore.getState();
+    expect(state.documentError).toContain('500');
+    expect(state.document).toBeNull();
+    expect(state.documentLoading).toBe(false);
   });
 });

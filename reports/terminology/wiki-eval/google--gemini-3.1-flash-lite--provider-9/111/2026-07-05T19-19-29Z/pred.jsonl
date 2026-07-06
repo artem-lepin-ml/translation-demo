@@ -1,0 +1,789 @@
+{"title": "Аккадское царство", "index": 0, "surface": "Акка́д", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 27, "surface": "Южной Месопотамии", "lemma": "Южная Месопотамия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 36, "surface": "Аккаде", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 38, "surface": "Агаде", "lemma": "Агаде", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 39, "surface": "Аккадское", "lemma": "Аккадское государство", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 46, "surface": "Саргона Древнего", "lemma": "Саргон Древний", "qid": "Q199461", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 54, "surface": "шумеров", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 56, "surface": "восточных семитов", "lemma": "восточные семиты", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 59, "surface": "аккадцев", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 65, "surface": "номы", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 66, "surface": "Древней Месопотамии", "lemma": "Древняя Месопотамия", "qid": "Q119247819", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 74, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 78, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 79, "surface": "Нарам-Суэне", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 102, "surface": "гутиев", "lemma": "гутии", "qid": "Q549531", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 103, "surface": "кутиев", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 105, "surface": "аккадскую", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 115, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 117, "surface": "Шумеро-Аккадского царства", "lemma": "Шумеро-Аккадское царство", "qid": "Q120261242", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 119, "surface": "Вавилонии", "lemma": "Вавилония", "qid": "Q47690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 121, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 124, "surface": "Древнего Ближнего Востока", "lemma": "Древний Ближний Восток", "qid": "Q269678", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 127, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 138, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 143, "surface": "Тигра", "lemma": "Тигр", "qid": "Q35591", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 145, "surface": "Евфрата", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 150, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 155, "surface": "Дияла", "lemma": "Дияла", "qid": "Q304413", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 157, "surface": "Раннединастический период", "lemma": "Раннединастический период", "qid": "Q5326644", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 162, "surface": "шумерское", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 164, "surface": "Ки-Ури", "lemma": "Ки-Ури", "qid": "Q4461035", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 173, "surface": "Диялы", "lemma": "Дияла", "qid": "Q304413", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 179, "surface": "номовых", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 183, "surface": "Киш", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 184, "surface": "Сиппар", "lemma": "Сиппар", "qid": "Q619707", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 185, "surface": "Эшнунна", "lemma": "Эшнунна", "qid": "Q375685", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 186, "surface": "Вавилон", "lemma": "Вавилон", "qid": "Q5684", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 187, "surface": "Куту", "lemma": "Куту", "qid": "Q1096108", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 194, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 227, "surface": "Финикии", "lemma": "Финикия", "qid": "Q41642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 228, "surface": "Сирию", "lemma": "Сирия", "qid": "Q858", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 231, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 234, "surface": "Месопотамию", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 236, "surface": "Загросских", "lemma": "Загрос", "qid": "Q167021", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 239, "surface": "Элама", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 242, "surface": "Иране", "lemma": "Иран", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 245, "surface": "Аккадского царства", "lemma": "Аккадское царство", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 249, "surface": "III династии Ура", "lemma": "III династия Ура", "qid": "Q723587", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 253, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 259, "surface": "Ки-Ури", "lemma": "Ки-Ури", "qid": "Q4461035", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 261, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 269, "surface": "шумерских", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 275, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 287, "surface": "Вавилоном", "lemma": "Вавилон", "qid": "Q5684", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 288, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 291, "surface": "Шумера", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 293, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 296, "surface": "Вавилония", "lemma": "Вавилония", "qid": "Q47690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 302, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 305, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 316, "surface": "Энхедуанны", "lemma": "Энхедуанна", "qid": "Q232505", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 317, "surface": "Шумер", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 319, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 325, "surface": "Южной Месопотамии", "lemma": "Южная Месопотамия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 329, "surface": "III династии Ура", "lemma": "III династия Ура", "qid": "Q723587", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 334, "surface": "Ур-Намму", "lemma": "Ур-Намму", "qid": "Q297417", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 339, "surface": "Шумера", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 341, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 349, "surface": "вавилонскими", "lemma": "вавилоняне", "qid": "Q797930", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 351, "surface": "ассирийскими", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 356, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 373, "surface": "Аккаде", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 376, "surface": "аккадцев", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 379, "surface": "старовавилонского", "lemma": "старовавилонский период", "qid": "Q733897", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 381, "surface": "староассирийского", "lemma": "староассирийский период", "qid": "Q15782728", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 385, "surface": "Царства III династии Ура", "lemma": "Царство III династии Ура", "qid": "Q120261242", "span_len": 4, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 390, "surface": "шумерский", "lemma": "шумерский", "qid": "Q36790", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 400, "surface": "Ки-Ури", "lemma": "Ки-Ури", "qid": "Q4461035", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 401, "surface": "Киури", "lemma": "Киури", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 403, "surface": "Ki-uri", "lemma": "Ki-uri", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 418, "surface": "урукской экспансии", "lemma": "урукская экспансия", "qid": "Q731494", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 436, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 446, "surface": "державы Саргона", "lemma": "держава Саргона", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 450, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 482, "surface": "Шумеру", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 490, "surface": "Ниппур", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 500, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 508, "surface": "раннединастического периода", "lemma": "раннединастический период", "qid": "Q5326644", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 520, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 530, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 540, "surface": "Киш", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 554, "surface": "лугаль Киша", "lemma": "лугаль Киша", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 574, "surface": "Мари", "lemma": "Мари", "qid": "Q244762", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 576, "surface": "аккадский", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 593, "surface": "Эшнунна", "lemma": "Эшнунна", "qid": "Q375685", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 600, "surface": "Самсу-илуны", "lemma": "Самсу-илуна", "qid": "Q325917", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 602, "surface": "Эшнунны", "lemma": "Эшнунна", "qid": "Q375685", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 605, "surface": "Аккаде", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 621, "surface": "Аккаде", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 631, "surface": "Диялы", "lemma": "Дияла", "qid": "Q304413", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 646, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 685, "surface": "Истории Вавилонии", "lemma": "История Вавилонии", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 692, "surface": "Бер-ушу", "lemma": "Бер-уш", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 693, "surface": "Беросу", "lemma": "Берос", "qid": "Q312425", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 703, "surface": "Шумера", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 705, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 712, "surface": "Вавилония", "lemma": "Вавилония", "qid": "Q47690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 715, "surface": "Халдея", "lemma": "Халдея", "qid": "Q150904", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 719, "surface": "Библии", "lemma": "Библия", "qid": "Q1845", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 724, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 735, "surface": "вавилонского", "lemma": "вавилонский", "qid": "Q4102149", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 737, "surface": "Нимрода", "lemma": "Нимрод", "qid": "Q201861", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 746, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 752, "surface": "Иран", "lemma": "Иран", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 754, "surface": "Месопотамию", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 763, "surface": "К. Нибуром", "lemma": "К. Нибур", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 799, "surface": "Г. -Ф. Гротефенд", "lemma": "Г. -Ф. Гротефенд", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 812, "surface": "древнеперсидской", "lemma": "древнеперсидский", "qid": "Q35225", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 819, "surface": "месопотамской", "lemma": "месопотамский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 828, "surface": "Г. Роулинсоном", "lemma": "Г. Роулинсон", "qid": "Q309602", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 837, "surface": "аккадской", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 838, "surface": "вавилоно-ассирийской", "lemma": "вавилоно-ассирийский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 844, "surface": "Ж. Оппертом", "lemma": "Ж. Опперт", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 847, "surface": "Э. Хинксом", "lemma": "Э. Хинкс", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 857, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 865, "surface": "Шумера", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 867, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 886, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 891, "surface": "Тиглатпаласара I", "lemma": "Тиглатпаласар I", "qid": "Q296295", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 893, "surface": "Салманасара III", "lemma": "Салманасар III", "qid": "Q211928", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 896, "surface": "Синаххериба", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 899, "surface": "Аккадом", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 903, "surface": "Южной Месопотамии", "lemma": "Южная Месопотамия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 930, "surface": "вавилоно-ассирийскому", "lemma": "вавилоно-ассирийский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 936, "surface": "аккадским", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 941, "surface": "аккадским", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 949, "surface": "вавилоняне", "lemma": "вавилоняне", "qid": "Q797930", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 951, "surface": "ассирийцы", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 966, "surface": "шумерским", "lemma": "шумерский", "qid": "Q36790", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 973, "surface": "аккадцев", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 979, "surface": "вавилонян", "lemma": "вавилоняне", "qid": "Q797930", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 981, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 983, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 996, "surface": "ассириологии", "lemma": "ассириология", "qid": "Q156859", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1008, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1012, "surface": "месопотамских", "lemma": "месопотамский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1081, "surface": "аккадского", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1099, "surface": "Ф. Деличем", "lemma": "Ф. Делич", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1113, "surface": "староаккадском", "lemma": "староаккадский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1118, "surface": "вавилонских", "lemma": "вавилонский", "qid": "Q4102149", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1120, "surface": "ассирийских", "lemma": "ассирийский", "qid": "Q35518", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1124, "surface": "аккадскому", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1127, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1135, "surface": "Аккадское", "lemma": "Аккадское государство", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1140, "surface": "аккадский", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1142, "surface": "шумерский", "lemma": "шумерский", "qid": "Q36790", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1159, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1161, "surface": "Гирсу", "lemma": "Гирсу", "qid": "Q853946", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1162, "surface": "Ниппура", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1163, "surface": "Уммы", "lemma": "Умма", "qid": "Q740952", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1164, "surface": "Эшнунны", "lemma": "Эшнунна", "qid": "Q375685", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1165, "surface": "Адаба", "lemma": "Адаб", "qid": "Q346445", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1166, "surface": "Тутуба", "lemma": "Тутуб", "qid": "Q1305112", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1173, "surface": "аккадских", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1176, "surface": "Обелиск Маништушу", "lemma": "Обелиск Маништушу", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1181, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1183, "surface": "эламским", "lemma": "эламиты", "qid": "Q9252262", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1200, "surface": "Omina", "lemma": "Omina", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1230, "surface": "narû", "lemma": "narû", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1231, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1244, "surface": "Старовавилонский период", "lemma": "старовавилонский период", "qid": "Q733897", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1255, "surface": "Проклятие Аккаде. Месть за Экур", "lemma": "Проклятие Аккаде. Месть за Экур", "qid": null, "span_len": 5, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1284, "surface": "Саргоне Аккадском", "lemma": "Саргон Аккадский", "qid": "Q199461", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1308, "surface": "ассирийский период", "lemma": "ассирийский период", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1312, "surface": "Легенда о Саргоне", "lemma": "Легенда о Саргоне", "qid": "Q16571841", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1316, "surface": "Царь битвы", "lemma": "Царь битвы", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1328, "surface": "Римуша", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1330, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1347, "surface": "Элама", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1349, "surface": "Восточного Средиземноморья", "lemma": "Восточное Средиземноморье", "qid": "Q3301962", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1352, "surface": "Эблы", "lemma": "Эбла", "qid": "Q5743", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1354, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1359, "surface": "шумерами", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1377, "surface": "Верхней Месопотамии", "lemma": "Верхняя Месопотамия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1381, "surface": "Аравийского полуострова", "lemma": "Аравийский полуостров", "qid": "Q31945", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1384, "surface": "восточные семиты", "lemma": "восточные семиты", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1388, "surface": "аккадцев", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1394, "surface": "шумеров", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1408, "surface": "аккадские", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1411, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1419, "surface": "Семиты", "lemma": "семиты", "qid": "Q62928", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1425, "surface": "Тигра", "lemma": "Тигр", "qid": "Q35591", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1429, "surface": "Евфрата", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1432, "surface": "Мари", "lemma": "Мари", "qid": "Q244762", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1433, "surface": "Ашшур", "lemma": "Ашшур", "qid": "Q200200", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1434, "surface": "Ниневия", "lemma": "Ниневия", "qid": "Q5680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1437, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1439, "surface": "Ниппура", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1446, "surface": "Ниппура", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1448, "surface": "шумеры", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1462, "surface": "Шумеры", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1470, "surface": "восточные семиты", "lemma": "восточные семиты", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1478, "surface": "аккад.", "lemma": "аккадский язык", "qid": "Q35518", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1479, "surface": "ṣalmat qaqqadim", "lemma": "ṣalmat qaqqadim", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1483, "surface": "аккадский", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1505, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1513, "surface": "шумеров", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1519, "surface": "третьей династии Ура", "lemma": "третья династия Ура", "qid": "Q723587", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1530, "surface": "вавилонян", "lemma": "вавилоняне", "qid": "Q797930", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1533, "surface": "шумеров", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1535, "surface": "аккадцев", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1536, "surface": "Южной Месопотамии", "lemma": "Южная Месопотамия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1539, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1546, "surface": "Раннединастический", "lemma": "раннединастический", "qid": "Q716742", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1547, "surface": "Шумер", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1557, "surface": "номов", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1568, "surface": "Севера", "lemma": "Север", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1570, "surface": "Юга", "lemma": "Юг", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1571, "surface": "Шумер", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1578, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1582, "surface": "Юга", "lemma": "Юг", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1585, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1592, "surface": "Киш", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1596, "surface": "Севера", "lemma": "Север", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1599, "surface": "лугаль Киша", "lemma": "лугаль Киша", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1603, "surface": "царь множеств", "lemma": "царь множеств", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1608, "surface": "Шумер", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1625, "surface": "лугаля", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1636, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1638, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1639, "surface": "Уммы", "lemma": "Умма", "qid": "Q740952", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1642, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1643, "surface": "Урука", "lemma": "Урук", "qid": "Q168518", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1645, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1646, "surface": "Страны", "lemma": "Страна", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1658, "surface": "номов", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1661, "surface": "Северу", "lemma": "Север", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1663, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1664, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1665, "surface": "Ур-Забабу", "lemma": "Ур-Забаба", "qid": "Q1327805", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1676, "surface": "Шумер", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1678, "surface": "Лагаша", "lemma": "Лагаш", "qid": "Q207330", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1687, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1689, "surface": "Урук", "lemma": "Урук", "qid": "Q168518", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1700, "surface": "номов", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1709, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1718, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1722, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1725, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1726, "surface": "Лагаша", "lemma": "Лагаш", "qid": "Q207330", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1727, "surface": "Уруинимгиной", "lemma": "Уруинимгина", "qid": "Q315698", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1731, "surface": "Аккадское царство", "lemma": "Аккадское царство", "qid": "Q4461035", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1740, "surface": "Кише", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1749, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1751, "surface": "Ур-Забабу", "lemma": "Ур-Забаба", "qid": "Q1327805", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1759, "surface": "семит", "lemma": "семит", "qid": "Q62928", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1779, "surface": "Шаррум-кен", "lemma": "Шаррум-кен", "qid": "Q224092", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1794, "surface": "Саргон Аккадский", "lemma": "Саргон Аккадский", "qid": "Q199461", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1797, "surface": "Саргон Древний", "lemma": "Саргон Древний", "qid": "Q199461", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1804, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1805, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1822, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1828, "surface": "номов", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1838, "surface": "Верхнему Евфрату", "lemma": "Верхний Евфрат", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 1844, "surface": "Сирию", "lemma": "Сирия", "qid": "Q858", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1846, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1848, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1849, "surface": "Эблы", "lemma": "Эбла", "qid": "Q5743", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1855, "surface": "Верхнему морю", "lemma": "Верхнее море", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1857, "surface": "Средиземному", "lemma": "Средиземное море", "qid": "Q4918", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1863, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1872, "surface": "Аккаде́", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1891, "surface": "шумерскими", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1898, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1899, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1900, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1903, "surface": "Аккаде", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1913, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1919, "surface": "восточные семиты", "lemma": "восточные семиты", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1923, "surface": "аккадцами", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 1933, "surface": "шумерских", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1942, "surface": "Аккаде", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1945, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1955, "surface": "III династии Ура", "lemma": "III династия Ура", "qid": "Q723587", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1963, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 1968, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1977, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 1994, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2002, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2008, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2011, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2012, "surface": "Страны", "lemma": "Страна", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2013, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2020, "surface": "Ниппур", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2025, "surface": "Энлиля", "lemma": "Энлиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2034, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2037, "surface": "шумеров", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2039, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2040, "surface": "Страны", "lemma": "Страна", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2044, "surface": "Энлилем", "lemma": "Энлиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2050, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2057, "surface": "Лугальзагеси", "lemma": "Лугальзагеси", "qid": "Q316241", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2068, "surface": "Саргону", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2075, "surface": "Ура", "lemma": "Ур", "qid": "Q5699", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2078, "surface": "аккадскому", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2094, "surface": "Нижнего моря", "lemma": "Нижнее море", "qid": "Q38882", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2096, "surface": "Персидского залива", "lemma": "Персидский залив", "qid": "Q34675", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2098, "surface": "Шумер", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2128, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2132, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2142, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2147, "surface": "Сирию", "lemma": "Сирия", "qid": "Q858", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2161, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2164, "surface": "Аван", "lemma": "Аван", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2166, "surface": "Сузы", "lemma": "Сузы", "qid": "Q180773", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2168, "surface": "Симуррум", "lemma": "Симуррум", "qid": "Q15297029", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2171, "surface": "Тигре", "lemma": "Тигр", "qid": "Q35591", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2175, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2181, "surface": "аккадского", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2190, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2200, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2204, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2228, "surface": "номами", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2238, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2246, "surface": "Абы", "lemma": "Аба", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2249, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2250, "surface": "Забабы", "lemma": "Забаба", "qid": "Q147461", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2253, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2255, "surface": "Энлиля", "lemma": "Энлиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2257, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2294, "surface": "аккадской", "lemma": "аккадская династия", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2300, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2305, "surface": "Римушу", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2328, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2344, "surface": "Римуш", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2375, "surface": "Римуш", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2379, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2384, "surface": "Римуш", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2388, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2392, "surface": "Хишепратепа", "lemma": "Хишепратеп", "qid": "Q4497992", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2407, "surface": "Шумера", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2408, "surface": "Дера", "lemma": "Дер", "qid": "Q262432", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2409, "surface": "Уммы", "lemma": "Умма", "qid": "Q740952", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2410, "surface": "Лагаша", "lemma": "Лагаш", "qid": "Q207330", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2412, "surface": "Адаба", "lemma": "Адаб", "qid": "Q346445", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2417, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2433, "surface": "Шумер", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2434, "surface": "Римуш", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2439, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2445, "surface": "Варахсе", "lemma": "Варахсе", "qid": "Q492046", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2446, "surface": "Апалкамаша", "lemma": "Апалкамаш", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 2473, "surface": "аккадской", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2480, "surface": "Римуша", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2493, "surface": "Omina", "lemma": "Omina", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2515, "surface": "Римуша", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2519, "surface": "Маништушу", "lemma": "Маништушу", "qid": "Q61054", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2535, "surface": "Маништушу", "lemma": "Маништушу", "qid": "Q61054", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2540, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2543, "surface": "Аншана", "lemma": "Аншан", "qid": "Q569107", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2552, "surface": "Персидский залив", "lemma": "Персидский залив", "qid": "Q34675", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2583, "surface": "Маништушу", "lemma": "Маништушу", "qid": "Q61054", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2585, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2586, "surface": "Нарам-Син", "lemma": "Нарам-Син", "qid": "Q297506", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2590, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2597, "surface": "Саргону", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2606, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2616, "surface": "Ипхур-Киш", "lemma": "Ипхур-Киш", "qid": "Q12949101", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2621, "surface": "Кише", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2634, "surface": "нома", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2651, "surface": "Ниппур", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2652, "surface": "Умма", "lemma": "Умма", "qid": "Q740952", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2653, "surface": "Урук", "lemma": "Урук", "qid": "Q168518", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2655, "surface": "Мари", "lemma": "Мари", "qid": "Q244762", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2690, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2700, "surface": "номов", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2705, "surface": "Туттуле", "lemma": "Туттуль", "qid": "Q657272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2707, "surface": "Мараде", "lemma": "Марад", "qid": "Q1183843", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2716, "surface": "Уре", "lemma": "Ур", "qid": "Q5699", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2718, "surface": "Мари", "lemma": "Мари", "qid": "Q244762", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2720, "surface": "Лагаше", "lemma": "Лагаш", "qid": "Q207330", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2729, "surface": "Лугальушумгаль", "lemma": "Лугальушумгаль", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 2732, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2743, "surface": "Лагаше", "lemma": "Лагаш", "qid": "Q207330", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2767, "surface": "Нарам-Суэну", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2778, "surface": "Маган", "lemma": "Маган", "qid": "Q1429914", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2796, "surface": "Магана", "lemma": "Маган", "qid": "Q1429914", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2799, "surface": "Маниум", "lemma": "Маниум", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 2806, "surface": "Сирию", "lemma": "Сирия", "qid": "Q858", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2810, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2813, "surface": "Эбла", "lemma": "Эбла", "qid": "Q5743", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2815, "surface": "Арманум", "lemma": "Арманум", "qid": "Q16825439", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2818, "surface": "диданам", "lemma": "диданы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 2821, "surface": "Северная Сирия", "lemma": "Северная Сирия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2826, "surface": "Аккадской державы", "lemma": "Аккадская держава", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 2832, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2834, "surface": "Северная Месопотамия", "lemma": "Северная Месопотамия", "qid": "Q311819", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2841, "surface": "луллубеев", "lemma": "луллубеи", "qid": "Q1434558", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2845, "surface": "стела Нарам-Суэна", "lemma": "стела Нарам-Суэна", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 2856, "surface": "Тальхатум", "lemma": "Тальхатум", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 2866, "surface": "Тель-Браке", "lemma": "Тель-Брак", "qid": "Q978443", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2867, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2874, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2881, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2890, "surface": "Варахсе", "lemma": "Варахсе", "qid": "Q492046", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2896, "surface": "Авана", "lemma": "Аван", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2901, "surface": "Авана", "lemma": "Аван", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 2904, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2912, "surface": "Сузах", "lemma": "Сузы", "qid": "Q180773", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2914, "surface": "аккадский", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2920, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2946, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 2955, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2968, "surface": "Энлиля", "lemma": "Энлиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2970, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2977, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2980, "surface": "Шаркалишарри", "lemma": "Шаркалишарри", "qid": "Q349653", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 2989, "surface": "Бинкалишарри", "lemma": "Бинкалишарри", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 3023, "surface": "Ниппура", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3025, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3028, "surface": "Экура", "lemma": "Экур", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 3032, "surface": "Энлиля", "lemma": "Энлиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3067, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3075, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3093, "surface": "Загроса", "lemma": "Загрос", "qid": "Q167021", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3096, "surface": "эламитов", "lemma": "эламиты", "qid": "Q9252262", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3104, "surface": "кутиев", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3117, "surface": "Нарам-Суэну", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3150, "surface": "кутиев", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3154, "surface": "Месопотамию", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3168, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3169, "surface": "Шаркалишарри", "lemma": "Шаркалишарри", "qid": "Q349653", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3178, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3179, "surface": "кутии", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3182, "surface": "Энридавизира", "lemma": "Энридавизир", "qid": "Q1265570", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3185, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3186, "surface": "Энридавизир", "lemma": "Энридавизир", "qid": "Q1265570", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3188, "surface": "Сиппара", "lemma": "Сиппар", "qid": "Q619707", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3218, "surface": "амореев", "lemma": "амореи", "qid": "Q203507", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3223, "surface": "эламиты", "lemma": "эламиты", "qid": "Q9252262", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3228, "surface": "хурритского", "lemma": "хурриты", "qid": "Q190394", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3233, "surface": "Шаркалишарри", "lemma": "Шаркалишарри", "qid": "Q349653", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3245, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3259, "surface": "кутиям", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3268, "surface": "Сарлагаба", "lemma": "Сарлагаб", "qid": "Q1976845", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3275, "surface": "Шаркалишарри", "lemma": "Шаркалишарри", "qid": "Q349653", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3282, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3287, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3293, "surface": "эламитов", "lemma": "эламиты", "qid": "Q9252262", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3295, "surface": "Акшак", "lemma": "Акшак", "qid": "Q593537", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3300, "surface": "амореев", "lemma": "амореи", "qid": "Q203507", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3313, "surface": "Сиппаре", "lemma": "Сиппар", "qid": "Q619707", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3314, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3316, "surface": "Вавилоне", "lemma": "Вавилон", "qid": "Q5684", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3321, "surface": "Вавилоне", "lemma": "Вавилон", "qid": "Q5684", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3328, "surface": "Лагаша", "lemma": "Лагаш", "qid": "Q207330", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3330, "surface": "Уммы", "lemma": "Умма", "qid": "Q740952", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3344, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3352, "surface": "хурритское", "lemma": "хурритский", "qid": "Q35740", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3357, "surface": "Уркеше", "lemma": "Уркеш", "qid": "Q1758030", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3360, "surface": "царство луллубеев", "lemma": "царство луллубеев", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 3370, "surface": "хурриты", "lemma": "хурриты", "qid": "Q190394", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3372, "surface": "кутии", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3374, "surface": "Ашшур", "lemma": "Ашшур", "qid": "Q200200", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3382, "surface": "Тигра", "lemma": "Тигр", "qid": "Q35591", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3385, "surface": "кутии", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3389, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3401, "surface": "Шаркалишарри", "lemma": "Шаркалишарри", "qid": "Q349653", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3408, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3441, "surface": "аккадских", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3446, "surface": "Царский список", "lemma": "Царский список", "qid": "Q270860", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3452, "surface": "Игиги", "lemma": "Игиги", "qid": "Q16632373", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3453, "surface": "Нанум", "lemma": "Нанум", "qid": "Q3312994", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3454, "surface": "Ими", "lemma": "Ими", "qid": "Q1275509", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3456, "surface": "Элулу", "lemma": "Элулу", "qid": "Q2619539", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3489, "surface": "Кутии", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3497, "surface": "Элулу-Меш", "lemma": "Элулу-Меш", "qid": "Q1001038", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3503, "surface": "аккадский", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3508, "surface": "Царский список", "lemma": "Царский список", "qid": "Q270860", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3512, "surface": "Элулу", "lemma": "Элулу", "qid": "Q2619539", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3521, "surface": "Дуду", "lemma": "Дуду", "qid": "Q560137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3523, "surface": "династии Саргона", "lemma": "династия Саргона", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 3531, "surface": "Аккадское царство", "lemma": "Аккадское царство", "qid": "Q4461035", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3539, "surface": "Дуду", "lemma": "Дуду", "qid": "Q560137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3552, "surface": "кутиев", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3554, "surface": "аккадским", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3558, "surface": "Дуду", "lemma": "Дуду", "qid": "Q560137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3564, "surface": "Аккадское государство", "lemma": "Аккадское государство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 3571, "surface": "шумерские", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3572, "surface": "номы", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3579, "surface": "IV династия Урука", "lemma": "IV династия Урук", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 3583, "surface": "II династия Лагаша", "lemma": "II династия Лагаш", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 3588, "surface": "Шу-турула", "lemma": "Шу-турул", "qid": "Q627980", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3595, "surface": "кутии", "lemma": "кутии", "qid": "Q5621802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3597, "surface": "Аккадское царство", "lemma": "Аккадское царство", "qid": "Q4461035", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3605, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3618, "surface": "Оманского залива", "lemma": "Оманский залив", "qid": "Q79948", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3636, "surface": "Шубат-Эллиль", "lemma": "Шубат-Эллиль", "qid": "Q588192", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3644, "surface": "Аккадской империи", "lemma": "Аккадская империя", "qid": "Q4461035", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3684, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3703, "surface": "аккадский", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3730, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3736, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3750, "surface": "шумерским", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3752, "surface": "Раннединастического периода", "lemma": "Раннединастический период", "qid": "Q5326644", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3767, "surface": "Шумеро-Аккадского царства", "lemma": "Шумеро-Аккадское царство", "qid": "Q120261242", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3769, "surface": "Вавилонии", "lemma": "Вавилония", "qid": "Q47690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3771, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3803, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3842, "surface": "шумерских", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3845, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3849, "surface": "лугаль", "lemma": "лугаль", "qid": "Q854642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3850, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3851, "surface": "аккад.", "lemma": "аккадский язык", "qid": "Q35518", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3857, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3862, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3873, "surface": "Римуш", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3879, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3899, "surface": "Саргониды", "lemma": "Саргониды", "qid": "Q176980", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3904, "surface": "Абы", "lemma": "Аба", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 3906, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3907, "surface": "Забабы", "lemma": "Забаба", "qid": "Q147461", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3909, "surface": "Киша", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3913, "surface": "Энлиля", "lemma": "Энлиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3918, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3928, "surface": "аккадских", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3938, "surface": "династии Аккаде", "lemma": "династия Аккаде", "qid": "Q4461035", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3955, "surface": "Нарам-Суэном", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3961, "surface": "Аккаде", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 3971, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 3975, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4018, "surface": "Абы", "lemma": "Аба", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4019, "surface": "Анума", "lemma": "Анум", "qid": "Q188536", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4020, "surface": "Эллиля", "lemma": "Эллиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4021, "surface": "Эа", "lemma": "Эа", "qid": "Q1276669", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4022, "surface": "Астар", "lemma": "Астар", "qid": "Q755753", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4023, "surface": "Иштар", "lemma": "Иштар", "qid": "Q47553", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4025, "surface": "Анунит", "lemma": "Анунит", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4032, "surface": "номы", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4035, "surface": "шумерских", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4045, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4050, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4053, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4055, "surface": "шагана", "lemma": "шаган", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4065, "surface": "лагашский", "lemma": "лагашский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 4066, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4067, "surface": "Лугаль-ушумгаль", "lemma": "Лугаль-ушумгаль", "qid": "Q4267888", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4084, "surface": "номовых", "lemma": "номовый", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 4092, "surface": "Киш", "lemma": "Киш", "qid": "Q132272", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4099, "surface": "IV династия", "lemma": "IV династия", "qid": "Q211001", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4105, "surface": "Римуша", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4107, "surface": "Маништушу", "lemma": "Маништушу", "qid": "Q61054", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4132, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4140, "surface": "суккаль", "lemma": "суккаль", "qid": "Q107324956", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4147, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4156, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4180, "surface": "номовых", "lemma": "номов", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4206, "surface": "аккадским", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4214, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4223, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4227, "surface": "шумерской", "lemma": "шумерский", "qid": "Q36790", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4250, "surface": "Шумере", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4267, "surface": "шумерских", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4294, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4304, "surface": "Аккадское", "lemma": "Аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4332, "surface": "аккадских", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4373, "surface": "аккадские", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4381, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4404, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4445, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4447, "surface": "энси", "lemma": "энси", "qid": "Q932495", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4449, "surface": "шаганы", "lemma": "шаган", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4456, "surface": "Новый год", "lemma": "Новый год", "qid": "Q34812", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4472, "surface": "раннединастческий период", "lemma": "раннединастический период", "qid": "Q5326644", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4494, "surface": "Аккадского царства", "lemma": "Аккадское царство", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4503, "surface": "Аккаде", "lemma": "Аккаде", "qid": "Q150996", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4504, "surface": "шумер.", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4505, "surface": "Агаде", "lemma": "Агаде", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4524, "surface": "аккадской", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4542, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4547, "surface": "номе", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4548, "surface": "Сиппар", "lemma": "Сиппар", "qid": "Q619707", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4560, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4574, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4579, "surface": "Абы", "lemma": "Аба", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4596, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4641, "surface": "шумерами", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4649, "surface": "Евфрат", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4651, "surface": "Тигр", "lemma": "Тигр", "qid": "Q35591", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4663, "surface": "Ирнина", "lemma": "Ирнина", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 4665, "surface": "Итурунгаль", "lemma": "Итурунгаль", "qid": "Q137114008", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4667, "surface": "Евфрат", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4670, "surface": "И-Нина-гена", "lemma": "И-Нина-гена", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 4676, "surface": "Тигр", "lemma": "Тигр", "qid": "Q35591", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4707, "surface": "номов", "lemma": "ном", "qid": "Q223706", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4715, "surface": "Арахту", "lemma": "Арахту", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 4716, "surface": "Апкаллату", "lemma": "Апкаллату", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 4717, "surface": "Ме-Энлила", "lemma": "Ме-Энлила", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 4755, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4763, "surface": "Шумера", "lemma": "Шумер", "qid": "Q35355", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4765, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4776, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4834, "surface": "Раннединастическим периодом", "lemma": "Раннединастический период", "qid": "Q5326644", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4841, "surface": "аккадский период", "lemma": "аккадский период", "qid": "Q419594", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4863, "surface": "Раннединастического периода", "lemma": "Раннединастический период", "qid": "Q5326644", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4870, "surface": "Аккадского государства", "lemma": "Аккадское государство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 4886, "surface": "э", "lemma": "э", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4888, "surface": "би́тум", "lemma": "битум", "qid": "Q167510", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 4947, "surface": "аккадским", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 4964, "surface": "гур", "lemma": "гур", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4968, "surface": "ику", "lemma": "ику", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4974, "surface": "гур", "lemma": "гур", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 4978, "surface": "сикль", "lemma": "сикль", "qid": "Q1404428", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5002, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5032, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5062, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5096, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5098, "surface": "Восточное Средиземноморье", "lemma": "Восточное Средиземноморье", "qid": "Q3301962", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5101, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5107, "surface": "Маган", "lemma": "Маган", "qid": "Q1429914", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5119, "surface": "Раннединастическую", "lemma": "Раннединастический", "qid": "Q716742", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5129, "surface": "Бадахшан", "lemma": "Бадахшан", "qid": "Q32056", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5135, "surface": "Элам", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5136, "surface": "Саргониды", "lemma": "Саргониды", "qid": "Q176980", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5144, "surface": "Мелуххой", "lemma": "Мелухха", "qid": "Q483421", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5148, "surface": "Дильмуна", "lemma": "Дильмун", "qid": "Q748846", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5155, "surface": "цивилизацией долины Инда", "lemma": "цивилизация долины Инда", "qid": "Q42534", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5176, "surface": "аккадской", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5192, "surface": "аккадскую", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5214, "surface": "Раннединастический период", "lemma": "Раннединастический период", "qid": "Q5326644", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5220, "surface": "тамкары", "lemma": "тамкар", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5253, "surface": "Саргоном", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5271, "surface": "Саргона", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5279, "surface": "псевдоитинерария", "lemma": "псевдоитинерарий", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 5293, "surface": "аккадского", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5308, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5309, "surface": "аккадского", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5316, "surface": "э", "lemma": "э", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5320, "surface": "би́тум", "lemma": "битум", "qid": "Q167510", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5378, "surface": "э", "lemma": "э", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5391, "surface": "аккадской", "lemma": "аккадская", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5396, "surface": "Древней Месопотамии", "lemma": "Древняя Месопотамия", "qid": "Q119247819", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5404, "surface": "номовой", "lemma": "номов", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5470, "surface": "гу́руш", "lemma": "гуруш", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5507, "surface": "аккадскую", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5513, "surface": "эред", "lemma": "эред", "qid": "Q3650323", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5514, "surface": "нгеме", "lemma": "нгеме", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 5516, "surface": "ва́рдум", "lemma": "вардум", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5524, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5530, "surface": "Древнего Востока", "lemma": "Древний Восток", "qid": "Q7277981", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5558, "surface": "нгеме", "lemma": "нгеме", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 5560, "surface": "эред", "lemma": "эред", "qid": "Q3650323", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5582, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5605, "surface": "Древнем Риме", "lemma": "Древний Рим", "qid": "Q1747689", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5636, "surface": "аккадского периода", "lemma": "аккадский период", "qid": "Q419594", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5662, "surface": "Междуречья", "lemma": "Междуречье", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5669, "surface": "Саргон Древний", "lemma": "Саргон Древний", "qid": "Q199461", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5672, "surface": "Нарам-Суэн", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5696, "surface": "аккадцы", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5703, "surface": "шумеры", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5708, "surface": "аккадского", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5740, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5762, "surface": "аккадских", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5770, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5782, "surface": "3-й династии Ура", "lemma": "3-я династия Ура", "qid": "Q723587", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5792, "surface": "зиккураты", "lemma": "зиккурат", "qid": "Q170153", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5798, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5802, "surface": "Г. Ф. Гилпрехт", "lemma": "Г. Ф. Гилпрехт", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 5807, "surface": "Ниппуре", "lemma": "Ниппур", "qid": "Q188395", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5809, "surface": "зиккурата", "lemma": "зиккурат", "qid": "Q170153", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5811, "surface": "Саргоном Аккадским", "lemma": "Саргон Аккадский", "qid": "Q199461", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5815, "surface": "зиккуратом", "lemma": "зиккурат", "qid": "Q170153", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5817, "surface": "3-й династии Ура", "lemma": "3-я династия Ура", "qid": "Q723587", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5824, "surface": "аккадской", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5828, "surface": "Тель-Браке", "lemma": "Тель-Брак", "qid": "Q978443", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5829, "surface": "Максом Маллоуэном", "lemma": "Макс Маллоуэн", "qid": "Q454442", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5849, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5852, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5857, "surface": "Нарам-Сина", "lemma": "Нарам-Син", "qid": "Q297506", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5888, "surface": "Аккада", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5892, "surface": "Эшнунна", "lemma": "Эшнунна", "qid": "Q375685", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5901, "surface": "аккадского", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5909, "surface": "Северным Дворцом", "lemma": "Северный Дворец", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 5984, "surface": "Уре", "lemma": "Ур", "qid": "Q5699", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5985, "surface": "Леонардом Вулли", "lemma": "Леонард Вулли", "qid": "Q356134", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 5990, "surface": "аккадских", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 5999, "surface": "аккадской", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6013, "surface": "Маништушу", "lemma": "Маништушу", "qid": "Q61054", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6016, "surface": "аккадского", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6019, "surface": "Максом Мэллоуэном", "lemma": "Макс Мэллоуэн", "qid": "Q454442", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6022, "surface": "Ниневии", "lemma": "Ниневия", "qid": "Q5680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6026, "surface": "Иштар", "lemma": "Иштар", "qid": "Q47553", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6027, "surface": "Мэллоуэн", "lemma": "Мэллоуэн", "qid": "Q454442", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6032, "surface": "Саргона Аккадского", "lemma": "Саргон Аккадский", "qid": "Q199461", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6039, "surface": "Маништушу", "lemma": "Маништушу", "qid": "Q61054", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6045, "surface": "аккадским", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6053, "surface": "шумерским", "lemma": "шумерский", "qid": "Q36790", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6055, "surface": "Саргон", "lemma": "Саргон", "qid": "Q199461", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6084, "surface": "Иракском национальном музее", "lemma": "Иракский национальный музей", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6087, "surface": "Обелиск Маништушу", "lemma": "Обелиск Маништушу", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6095, "surface": "Сузах", "lemma": "Сузы", "qid": "Q180773", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6108, "surface": "Маништушу", "lemma": "Маништушу", "qid": "Q61054", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6116, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6145, "surface": "аккадского периода", "lemma": "аккадский период", "qid": "Q419594", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6157, "surface": "Аккадские", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6169, "surface": "шумерских", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6178, "surface": "аккадцы", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6218, "surface": "Зу", "lemma": "Зу", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6222, "surface": "Этана", "lemma": "Этана", "qid": "Q335721", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6243, "surface": "аккадские", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6256, "surface": "Римуша", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6258, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6260, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6264, "surface": "Сузах", "lemma": "Сузы", "qid": "Q180773", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6266, "surface": "Элама", "lemma": "Элам", "qid": "Q128904", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6272, "surface": "Шутрук-Наххунте", "lemma": "Шутрук-Наххунте", "qid": "Q392729", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6274, "surface": "Сиппара", "lemma": "Сиппар", "qid": "Q619707", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6284, "surface": "Нарам-Суэна", "lemma": "Нарам-Суэн", "qid": "Q297506", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6292, "surface": "луллубеев", "lemma": "луллубеи", "qid": "Q1434558", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6318, "surface": "аккадцев", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6324, "surface": "Стела Римуша", "lemma": "Стела Римуша", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6336, "surface": "Римуш", "lemma": "Римуш", "qid": "Q313856", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6349, "surface": "Аккадское", "lemma": "Аккадское государство", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6354, "surface": "шумерский", "lemma": "шумерский язык", "qid": "Q36790", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6356, "surface": "аккадский", "lemma": "аккадский язык", "qid": "Q35518", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6361, "surface": "Шумерский", "lemma": "шумерский язык", "qid": "Q36790", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6404, "surface": "Нижней Месопотамии", "lemma": "Нижняя Месопотамия", "qid": "Q11767", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6411, "surface": "староаккадского", "lemma": "староаккадский диалект", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6448, "surface": "Аккадского государства", "lemma": "Аккадское государство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6472, "surface": "аккадскую", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6483, "surface": "шумерские", "lemma": "шумерский", "qid": "Q36790", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6524, "surface": "шумерский", "lemma": "шумерский", "qid": "Q36790", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6528, "surface": "аккадском", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6540, "surface": "староаккадским", "lemma": "староаккадский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6545, "surface": "Энхедуане", "lemma": "Энхедуана", "qid": "Q232505", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6547, "surface": "Саргона Аккадского", "lemma": "Саргон Аккадский", "qid": "Q199461", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6552, "surface": "Ура", "lemma": "Ур", "qid": "Q5699", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6559, "surface": "Инанне", "lemma": "Инанна", "qid": "Q272523", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6577, "surface": "старовавилонского периода", "lemma": "старовавилонский период", "qid": "Q733897", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6596, "surface": "аккадцев", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6598, "surface": "восточные семиты", "lemma": "восточные семиты", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6610, "surface": "семиты", "lemma": "семиты", "qid": "Q62928", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6626, "surface": "ба’ал", "lemma": "ба’ал", "qid": "Q2520315", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6628, "surface": "бел", "lemma": "бел", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Аккадское царство", "index": 6633, "surface": "аc̠тар", "lemma": "аc̠тар", "qid": "Q755753", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6635, "surface": "иштар", "lemma": "иштар", "qid": "Q47553", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6638, "surface": "южных семитов", "lemma": "южные семиты", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6648, "surface": "Аккадской державы", "lemma": "Аккадская держава", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Аккадское царство", "index": 6650, "surface": "семитские", "lemma": "семиты", "qid": "Q62928", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6655, "surface": "шумерской", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6657, "surface": "Бел", "lemma": "Бел", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Аккадское царство", "index": 6667, "surface": "Энлиль", "lemma": "Энлиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6670, "surface": "Мардук", "lemma": "Мардук", "qid": "Q190123", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6672, "surface": "Иштар", "lemma": "Иштар", "qid": "Q47553", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6688, "surface": "шумерских", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6697, "surface": "Энлиль", "lemma": "Энлиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6698, "surface": "по-аккадски", "lemma": "аккадцы", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6700, "surface": "Эллиль", "lemma": "Эллиль", "qid": "Q214672", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6702, "surface": "Инанна", "lemma": "Инанна", "qid": "Q272523", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6706, "surface": "Иштар", "lemma": "Иштар", "qid": "Q47553", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6709, "surface": "Уту", "lemma": "Уту", "qid": "Q526992", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6711, "surface": "Шамаш", "lemma": "Шамаш", "qid": "Q332188", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6714, "surface": "Нанна", "lemma": "Нанна", "qid": "Q217420", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6715, "surface": "Зуэн", "lemma": "Зуэн", "qid": "Q217420", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6717, "surface": "Суэн", "lemma": "Суэн", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6718, "surface": "Син", "lemma": "Син", "qid": "Q217420", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6719, "surface": "Энки", "lemma": "Энки", "qid": "Q189726", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6721, "surface": "Хайя", "lemma": "Хайя", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6722, "surface": "Эа", "lemma": "Эа", "qid": "Q1276669", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6723, "surface": "Ишкур", "lemma": "Ишкур", "qid": "Q752166", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6725, "surface": "Адад", "lemma": "Адад", "qid": "Q346547", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6748, "surface": "шумеро-аккадской", "lemma": "шумеро-аккадский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Аккадское царство", "index": 6750, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6757, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6790, "surface": "Шумеро-Аккадского царства", "lemma": "Шумеро-Аккадское царство", "qid": "Q120261242", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6792, "surface": "3-й династии Ура", "lemma": "3-я династия Ура", "qid": "Q723587", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6795, "surface": "Вавилонии", "lemma": "Вавилония", "qid": "Q47690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6797, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6801, "surface": "Месопотамии", "lemma": "Месопотамия", "qid": "Q11767", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6813, "surface": "аккадских", "lemma": "аккадский", "qid": "Q419594", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6832, "surface": "аккадский", "lemma": "аккадский язык", "qid": "Q35518", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6842, "surface": "шумеров", "lemma": "шумеры", "qid": "Q656043", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6848, "surface": "вавилонян", "lemma": "вавилоняне", "qid": "Q797930", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6850, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6876, "surface": "Древнего Востока", "lemma": "Древний Восток", "qid": "Q7277981", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6880, "surface": "Аккаде", "lemma": "Аккад", "qid": "Q150996", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6886, "surface": "Древнего Востока", "lemma": "Древний Восток", "qid": "Q7277981", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Аккадское царство", "index": 6894, "surface": "хеттов", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6896, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Аккадское царство", "index": 6897, "surface": "Аккад", "lemma": "Аккад", "qid": "Q4461035", "span_len": 1, "resolved_by": "exact_label"}

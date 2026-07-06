@@ -1,7 +1,9 @@
 """Wiki ground-truth builder (W3): Parsoid fetch, anchor->QID GT tuples,
-strata/hardness, chronology filter.
+chronology filter.
 
-See docs/superpowers/specs/2026-07-03-wiki-eval-design.md E-D3, E-D5..E-D8,
+Corpus selection lives in scripts/select_wiki_corpus.py (selection v2).
+
+See docs/superpowers/specs/2026-07-03-wiki-eval-design.md E-D5..E-D8,
 E-D17 and Sec.11 for the pinned contracts this module implements.
 """
 from __future__ import annotations
@@ -360,11 +362,11 @@ def memoized_titles_to_qids(
 ) -> Callable[[Iterable[str]], dict[str, dict | None]]:
     """Wrap `titles_to_qids_fn` in an in-memory cache keyed by title.
 
-    `cmd_build_gt`'s hardness pre-pass and `build_gt` itself both need the
-    anchor-title -> QID mapping for every article; without this wrapper each
-    resolves the same anchor titles independently, doubling network traffic
-    (spec: build-gt should call the batch fetcher once per title and reuse).
-    Only titles not yet cached are fetched on each call.
+    `cmd_build_gt` and `build_gt` itself both need the anchor-title -> QID
+    mapping for every article; without this wrapper each resolves the same
+    anchor titles independently, doubling network traffic (spec: build-gt
+    should call the batch fetcher once per title and reuse). Only titles not
+    yet cached are fetched on each call.
     """
     cache: dict[str, dict | None] = {}
 
@@ -378,94 +380,6 @@ def memoized_titles_to_qids(
     return wrapped
 
 
-# ── hardness (E-D3) ──────────────────────────────────────────────────────────
-
-
-def hardness(pages_gt: dict[str, ExtractResult | list[AnchorTarget]]) -> dict[str, float]:
-    """Per-page hardness = share of ambiguous anchors.
-
-    Ambiguous = piped link (surface != canonical title) OR anchor surface that
-    resolves to different QIDs across the pool. Deterministic, GT-only.
-    """
-    per_page_targets: dict[str, list[AnchorTarget]] = {}
-    for title, value in pages_gt.items():
-        per_page_targets[title] = (
-            value.anchor_targets if isinstance(value, ExtractResult) else value
-        )
-
-    surface_to_qids: dict[str, set[str]] = {}
-    for targets in per_page_targets.values():
-        for t in targets:
-            if t.qid:
-                surface_to_qids.setdefault(t.surface, set()).add(t.qid)
-
-    scores: dict[str, float] = {}
-    for title, targets in per_page_targets.items():
-        grounded = [t for t in targets if t.qid]
-        if not grounded:
-            scores[title] = 0.0
-            continue
-        ambiguous = 0
-        for t in grounded:
-            is_piped = bool(t.canonical_title) and t.surface.strip() != t.canonical_title.strip()
-            is_polysemous = len(surface_to_qids.get(t.surface, set())) > 1
-            if is_piped or is_polysemous:
-                ambiguous += 1
-        scores[title] = ambiguous / len(grounded)
-    return scores
-
-
-# ── article selection (E-D3) ────────────────────────────────────────────────
-
-
-@dataclass
-class SelectionResult:
-    hard: list[str]
-    typical: list[str]
-    n_hard_seeds: int
-    seed_percentiles: dict[str, float]
-
-
-def select_articles(
-    pool: dict[str, float],
-    *,
-    n_hard: int = 50,
-    n_typical: int = 50,
-    seeds: list[str] | None = None,
-) -> SelectionResult:
-    """Rank `pool` (title -> hardness) into hard/typical strata.
-
-    Forced `seeds` are always placed into the hard stratum; the remaining hard
-    slots are filled by score-descending rank. Typical is sampled from the
-    remainder in deterministic (title-sorted) order.
-    """
-    seeds = seeds or []
-    ranked = sorted(pool.items(), key=lambda kv: (-kv[1], kv[0]))
-    ranks = {title: i for i, (title, _score) in enumerate(ranked)}
-    n = max(len(ranked), 1)
-
-    seed_percentiles = {
-        s: (n - ranks[s]) / n for s in seeds if s in ranks
-    }
-
-    hard: list[str] = [s for s in seeds if s in pool]
-    for title, _score in ranked:
-        if len(hard) >= n_hard:
-            break
-        if title not in hard:
-            hard.append(title)
-
-    remaining = [title for title, _ in ranked if title not in hard]
-    typical = sorted(remaining)[:n_typical]
-
-    return SelectionResult(
-        hard=hard,
-        typical=typical,
-        n_hard_seeds=len([s for s in seeds if s in pool]),
-        seed_percentiles=seed_percentiles,
-    )
-
-
 # ── orchestration ────────────────────────────────────────────────────────────
 
 
@@ -475,7 +389,6 @@ def build_gt(
     out_path: str | Path,
     *,
     stratum_of: Callable[[str], str] | None = None,
-    hardness_of: Callable[[str], float] | None = None,
     p31_of: Callable[[str], set[str]] | None = None,
     fetch_fn: Callable[[str, str | Path], str] = fetch_html,
     titles_to_qids_fn: Callable[..., dict[str, dict | None]] = titles_to_qids,
@@ -493,7 +406,6 @@ def build_gt(
     reproducibility risk, per the spec.
     """
     stratum_of = stratum_of or (lambda _t: "typical")
-    hardness_of = hardness_of or (lambda _t: 0.0)
 
     records = []
     n_fetch_failed = 0
@@ -533,7 +445,6 @@ def build_gt(
                 "title": title,
                 "qid": titles[title],
                 "stratum": stratum_of(title),
-                "hardness": hardness_of(title),
                 "tokens": flat_tokens,
                 "gt_tuples": [list(t) for t in extracted.tuples],
                 "counters": extracted.counters.as_dict(),

@@ -27,13 +27,58 @@ class GroundingConfig:
 
     Each toggle acts at exactly one point in the G6 label_first algorithm, so
     ablation runs can isolate and attribute its contribution (spec §3.3).
+
+    .. deprecated:: 2026-07-06
+        ``use_fallbacks`` split into ``use_cirrus`` (CirrusSearch full-text
+        rung) and ``use_sitelink`` (Wikipedia RU-title -> Wikidata item rung).
+        The two rungs are no longer coupled because ``use_sitelink`` shares
+        its title->QID mapping with the wiki-eval reference annotations,
+        which creates evaluation circularity when both are scored together
+        (docs/stages/wiki-eval.md Subtleties) -- eval runs need to disable
+        ``use_sitelink`` while keeping ``use_cirrus`` on. The constructor
+        still accepts ``use_fallbacks=<bool>`` as a compat alias that sets
+        both new fields to the same value, so existing call sites and
+        ablation bit-configs keep working unchanged; reading back
+        ``.use_fallbacks`` returns ``True`` only when both are ``True``. New
+        code should set ``use_cirrus``/``use_sitelink`` directly.
     """
 
     use_lemma: bool = True
-    use_fallbacks: bool = True
+    use_cirrus: bool = True
+    use_sitelink: bool = True
     match_aliases: bool = True
     search_limit: int = 7
     enrich_top: int = 5
+
+    def __init__(
+        self,
+        use_lemma: bool = True,
+        use_cirrus: bool = True,
+        use_sitelink: bool = True,
+        match_aliases: bool = True,
+        search_limit: int = 7,
+        enrich_top: int = 5,
+        use_fallbacks: bool | None = None,
+    ) -> None:
+        # dataclass(frozen=True) only auto-generates __init__ when the class
+        # doesn't already define one, so this hand-written constructor is the
+        # cleanest way to keep a deprecated compat kwarg without duplicating
+        # the field list in a classmethod/factory -- __repr__/__eq__ still
+        # come from the annotated fields below, unaffected.
+        if use_fallbacks is not None:
+            use_cirrus = use_fallbacks
+            use_sitelink = use_fallbacks
+        object.__setattr__(self, "use_lemma", use_lemma)
+        object.__setattr__(self, "use_cirrus", use_cirrus)
+        object.__setattr__(self, "use_sitelink", use_sitelink)
+        object.__setattr__(self, "match_aliases", match_aliases)
+        object.__setattr__(self, "search_limit", search_limit)
+        object.__setattr__(self, "enrich_top", enrich_top)
+
+    @property
+    def use_fallbacks(self) -> bool:
+        """Deprecated compat read: True only if both use_cirrus and use_sitelink are True."""
+        return self.use_cirrus and self.use_sitelink
 
 
 @dataclass(frozen=True)

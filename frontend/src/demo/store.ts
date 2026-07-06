@@ -284,17 +284,44 @@ export const useDemoStore = create<DemoStore>((set, get) => {
     // main document load below; a failure here just keeps the client fallback
     // constants from limits.ts and must not block the rest of init.
     getHealth().then((h) => applyLimits(h.limits)).catch(() => {});
+
+    // Auxiliary Settings-tab configs — best-effort, independent of the
+    // boot-critical load below. Kicked off (not awaited) here so the
+    // isolating .catch() is attached immediately, before either promise has a
+    // chance to reject unobserved. A single misconfigured/missing endpoint
+    // (e.g. a table absent on a not-yet-migrated prod DB — 2026-07-06 incident,
+    // see docs/reports/e2e/prod-wave5-run.md) must never blank the whole app;
+    // on failure the store keeps its null default and the Settings tab shows
+    // that config as unavailable instead of crashing.
+    const groundingConfigPromise = getGroundingConfig().catch((e) => {
+      console.warn('init: getGroundingConfig failed, falling back to null', e);
+      return null;
+    });
+    const translatorConfigPromise = getTranslatorConfig().catch((e) => {
+      console.warn('init: getTranslatorConfig failed, falling back to null', e);
+      return null;
+    });
+
     try {
-      const [summaries, criteria, models, groundingConfig, translatorConfig] = await Promise.all([
+      // Boot-critical: without these there is no document to render at all.
+      const [summaries, criteria, models] = await Promise.all([
         getDocuments(),
         getCriteria(),
         getModels(),
-        getGroundingConfig(),
-        getTranslatorConfig(),
+      ]);
+      const [groundingConfig, translatorConfig] = await Promise.all([
+        groundingConfigPromise,
+        translatorConfigPromise,
       ]);
       const firstId = summaries[0]?.id;
       if (firstId === undefined) {
-        set({ documentLoading: false, documentError: 'No documents available', documents: summaries });
+        set({
+          documentLoading: false,
+          documentError: 'No documents available',
+          documents: summaries,
+          groundingConfig,
+          translatorConfig,
+        });
         return;
       }
       const doc = await getDocument(firstId);

@@ -541,10 +541,11 @@ describe('SettingsTab Translator card (S4 §3.4)', () => {
     expect(screen.getByText('Applies to the next translation run')).toBeTruthy();
   });
 
-  it('does not render the Translator card when translatorConfig is null', () => {
+  it('does not render the Translator card when translatorConfig is null, showing the unavailable affordance instead (2026-07-06 prod incident)', () => {
     renderSettings({ translatorConfig: null });
     expect(screen.getByText('Translator')).toBeTruthy();
     expect(screen.queryByTestId('translator-card')).toBeNull();
+    expect(screen.getByTestId('translator-config-unavailable')).toBeTruthy();
   });
 
   it('changing the model select calls onSaveTranslatorConfig immediately', async () => {
@@ -664,11 +665,12 @@ describe('SettingsTab Grounding card', () => {
     expect(select.querySelectorAll('option')).toHaveLength(1);
   });
 
-  it('does not render the Grounding editor when groundingConfig is null', () => {
+  it('does not render the Grounding editor when groundingConfig is null, showing the unavailable affordance instead (2026-07-06 prod incident)', () => {
     renderSettings({ groundingConfig: null });
 
     expect(screen.getByText('Grounding')).toBeTruthy();
     expect(screen.queryByTestId('grounding-editor')).toBeNull();
+    expect(screen.getByTestId('grounding-config-unavailable')).toBeTruthy();
   });
 
   it('editing the prompt and blurring calls onSaveGroundingConfig', async () => {

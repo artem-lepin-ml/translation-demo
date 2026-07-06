@@ -11,6 +11,18 @@ aggregate. ``precision(..., variant="p3")`` requires a non-None
 ``resolved_by`` and raises otherwise; ``aggregate``/``aggregate_corpus`` only
 compute P3 inside the ``resolved_by`` slice, never at the top level.
 
+``aggregate_corpus`` additionally accepts an optional ``label_exists``
+predicate (the real Wikidata-label check, wired in by ``scripts/wiki_eval.py
+cmd_report --p3``). When given, it (a) replaces the stub
+``lambda _s: False`` used for P3 inside the ``resolved_by`` slice, and (b)
+activates a headline ``"p3_ex"`` cell in the unsliced ``precision`` dict:
+P3 computed over every prediction EXCEPT those resolved via
+``exact_label`` (see ``_precision_counts_p3_ex``). Excluding the
+tautological exact_label path from the denominator makes this headline
+non-tautological, unlike plain unsliced P3. Omitting ``label_exists``
+(the default) leaves both computations exactly as before — no "p3_ex" key,
+stub-based P3 in the resolved_by slice.
+
 Cross-article scoping (bug fix): GT/pred token indices are ARTICLE-LOCAL
 (reset to 0 per article — spec E-D6 indexes "the whole-article token stream",
 one stream per article, not one global stream across the corpus). Matching
@@ -117,6 +129,37 @@ def _precision_counts(
     raise ValueError(f"unknown precision variant: {variant!r}")
 
 
+# resolved_by tag of the deterministic path P3 is tautological on (spec Sec.4).
+P3_EX_EXCLUDED_RESOLVED_BY = "exact_label"
+
+
+def _precision_counts_p3_ex(
+    gt: list[Tuple4],
+    pred: list[Tuple4],
+    *,
+    mode: str,
+    resolved_by_of: dict[int, str],
+    label_exists: Callable[[str], bool],
+) -> tuple[int, int]:
+    """Headline "P3\\exact": label-justified precision computed over every
+    prediction EXCEPT those resolved via ``exact_label`` — denominator is the
+    count of non-exact-label predictions, not the full prediction set. Unlike
+    plain unsliced P3 (tautological, see ``_precision_counts``), this is
+    well-defined without a ``resolved_by`` slice because excluding the
+    always-justified exact_label path from the denominator removes the
+    tautology by construction.
+
+    ``resolved_by_of`` is keyed by a prediction tuple's own index (see
+    ``scripts/wiki_eval.py::_resolved_by_of_for_article``); a prediction with
+    no entry (e.g. a resolution path added later that isn't tagged) is
+    treated as not-exact-label and kept in the denominator.
+    """
+    non_exact_pred = [p for p in pred if resolved_by_of.get(p[0]) != P3_EX_EXCLUDED_RESOLVED_BY]
+    _matched_gt, matched_pred = _MATCHERS[mode](gt, non_exact_pred)
+    justified = {p for p in non_exact_pred if p in matched_pred or label_exists(p[1])}
+    return len(justified), len(non_exact_pred)
+
+
 def precision(
     gt: list[Tuple4],
     pred: list[Tuple4],
@@ -216,7 +259,11 @@ def _add_counts(acc: dict, key: tuple, matched: int, total: int) -> None:
     acc[key] = (m + matched, t + total)
 
 
-def aggregate_corpus(articles: list[ArticleTuples]) -> dict:
+def aggregate_corpus(
+    articles: list[ArticleTuples],
+    *,
+    label_exists: Callable[[str], bool] | None = None,
+) -> dict:
     """Corpus-level aggregation across many articles, matching each article's
     GT against only that SAME article's predictions (bug fix: GT/pred token
     indices are article-local, so matching flattened cross-article tuples by
@@ -228,6 +275,11 @@ def aggregate_corpus(articles: list[ArticleTuples]) -> dict:
     evaluated per article here, never across the whole corpus. Per-cell raw
     matched/total counts are summed across articles and Wilson CI is computed
     ONCE at the end from the accumulated counts — never averaged per-article.
+
+    ``label_exists`` (module docstring): omitted (default) reproduces the old
+    behaviour exactly — no ``"p3_ex"`` headline, stub-based P3 in the
+    resolved_by slice. Passed (the real Wikidata-label predicate), it
+    activates both.
     """
     recall_counts: dict[tuple, tuple[int, int]] = {}
     precision_counts: dict[tuple, tuple[int, int]] = {}
@@ -253,6 +305,13 @@ def aggregate_corpus(articles: list[ArticleTuples]) -> dict:
             matched, total = _precision_counts(gt, pred, mode="m2", variant=variant)
             _add_counts(precision_counts, (variant,), matched, total)
 
+        if label_exists is not None:
+            matched, total = _precision_counts_p3_ex(
+                gt, pred, mode="m2",
+                resolved_by_of=article["resolved_by_of"], label_exists=label_exists,
+            )
+            _add_counts(precision_counts, ("p3_ex",), matched, total)
+
         for axis, mapping_key in axes:
             mapping = article[mapping_key]
             values = set(mapping.get(t[0]) for t in gt if mapping.get(t[0]) is not None)
@@ -270,9 +329,10 @@ def aggregate_corpus(articles: list[ArticleTuples]) -> dict:
                     _add_counts(slice_precision_counts, (axis, value, variant), matched, total)
 
                 if axis == "resolved_by":
+                    real_or_stub = label_exists if label_exists is not None else (lambda _s: False)
                     matched, total = _precision_counts(
                         slice_gt, slice_pred, mode="m2", variant="p3",
-                        label_exists=lambda _s: False, resolved_by=value,
+                        label_exists=real_or_stub, resolved_by=value,
                     )
                     _add_counts(slice_precision_counts, (axis, value, "p3"), matched, total)
 
@@ -283,6 +343,8 @@ def aggregate_corpus(articles: list[ArticleTuples]) -> dict:
         },
         "slices": {},
     }
+    if label_exists is not None:
+        result["precision"]["p3_ex"] = _cell(*precision_counts.get(("p3_ex",), (0, 0)))
 
     for axis, _mapping_key in axes:
         axis_slices = {}

@@ -1,0 +1,290 @@
+<title>Отчёт о моделях — CloseRouter + Frontier</title>
+<style>
+  :root{
+    --bg:#1a1b26;--bg2:#1f2335;--panel:#24283b;--panel2:#20233444;--line:#2f334d;
+    --tx:#c0caf5;--tx-dim:#8f97c0;--tx-mute:#6b7299;
+    --blue:#7aa2f7;--green:#9ece6a;--yel:#e0af68;--red:#f7768e;--purple:#bb9af7;--cyan:#7dcfff;
+    --shadow:0 1px 0 #ffffff08,0 8px 30px #00000055;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,"Helvetica Neue",Arial,sans-serif;
+  }
+  :root[data-theme="light"]{
+    --bg:#eceef5;--bg2:#e3e6f0;--panel:#fff;--panel2:#f4f6fc;--line:#d3d8ea;
+    --tx:#2a2e45;--tx-dim:#565d80;--tx-mute:#868db0;
+    --blue:#3760bf;--green:#587539;--yel:#8f5e15;--red:#c04a63;--purple:#7847bd;--cyan:#2e7de9;
+    --shadow:0 1px 0 #fff,0 8px 24px #5560800f;
+  }
+  @media(prefers-color-scheme:light){:root:not([data-theme="dark"]){
+    --bg:#eceef5;--bg2:#e3e6f0;--panel:#fff;--panel2:#f4f6fc;--line:#d3d8ea;
+    --tx:#2a2e45;--tx-dim:#565d80;--tx-mute:#868db0;
+    --blue:#3760bf;--green:#587539;--yel:#8f5e15;--red:#c04a63;--purple:#7847bd;--cyan:#2e7de9;
+    --shadow:0 1px 0 #fff,0 8px 24px #5560800f;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:clamp(20px,4vw,52px) clamp(16px,4vw,40px) 90px}
+  a{color:var(--cyan);text-decoration:none;border-bottom:1px solid #7dcfff44}
+  code{font-family:var(--mono);font-size:.85em;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:.08em .38em;color:var(--cyan)}
+  .m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  h1,h2,h3{text-wrap:balance;line-height:1.2;margin:0}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--purple);font-weight:600}
+  header{border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:34px}
+  h1{font-size:clamp(28px,5vw,42px);font-weight:750;letter-spacing:-.02em;margin:12px 0 12px}
+  .thesis{font-size:clamp(15px,2vw,18px);color:var(--tx-dim);max-width:66ch}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .pill{font-family:var(--mono);font-size:12.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--tx-dim);display:inline-flex;gap:7px;align-items:center}
+  .pill b{color:var(--tx);font-weight:600}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .d-green{background:var(--green)}.d-yel{background:var(--yel)}.d-red{background:var(--red)}.d-blue{background:var(--blue)}
+  section{margin-top:42px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:11px}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--purple);font-weight:600}
+  h2{font-size:clamp(19px,3vw,25px);font-weight:700;letter-spacing:-.01em}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:19px 21px;box-shadow:var(--shadow)}
+  .lead{border-left:3px solid var(--purple)}
+  .grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  p{margin:0 0 12px}.muted{color:var(--tx-dim)}
+  ul{margin:6px 0 12px;padding-left:20px}li{margin:5px 0}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+  .tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px}
+  .tile .n{font-family:var(--mono);font-size:23px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .tile .l{font-size:12.5px;color:var(--tx-dim);margin-top:3px}.tile .s{font-size:11.5px;color:var(--tx-mute);margin-top:4px;font-family:var(--mono)}
+  .n-green{color:var(--green)}.n-blue{color:var(--blue)}.n-yel{color:var(--yel)}.n-red{color:var(--red)}
+  .tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:14px;min-width:460px}
+  th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--line)}
+  thead th{background:var(--panel2);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--tx-dim);font-weight:600}
+  tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--panel2)}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+  .row-hi td{background:#9ece6a12}
+  .bg{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;padding:2px 9px;border-radius:6px;border:1px solid;white-space:nowrap}
+  .b-green{color:var(--green);border-color:#9ece6a55;background:#9ece6a12}
+  .b-yel{color:var(--yel);border-color:#e0af6855;background:#e0af6812}
+  .b-red{color:var(--red);border-color:#f7768e55;background:#f7768e12}
+  .b-blue{color:var(--blue);border-color:#7aa2f755;background:#7aa2f712}
+  .callout{border:1px solid;border-radius:12px;padding:13px 16px;font-size:14.5px}
+  .co-yel{border-color:#e0af6844;background:#e0af6810}.co-blue{border-color:#7aa2f744;background:#7aa2f70e}
+  .co-green{border-color:#9ece6a44;background:#9ece6a10}.co-red{border-color:#f7768e44;background:#f7768e10}
+  .co h4{margin:0 0 6px;font-size:14px;font-family:var(--mono);letter-spacing:.04em}
+  .co-yel h4{color:var(--yel)}.co-blue h4{color:var(--blue)}.co-green h4{color:var(--green)}.co-red h4{color:var(--red)}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px}
+  .kv dt{font-family:var(--mono);color:var(--tx-mute);font-size:12.5px;white-space:nowrap}.kv dd{margin:0;color:var(--tx-dim)}
+  .toggle{position:fixed;top:14px;right:14px;z-index:20;font-family:var(--mono);font-size:12px;background:var(--panel);color:var(--tx-dim);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+  .foot{margin-top:52px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--tx-mute);font-family:var(--mono)}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:4px}
+</style>
+
+<button class="toggle" id="tg" aria-label="Переключить тему">◐ theme</button>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Palimpsest · model triage · 2026-07-05</div>
+  <h1>Отчёт о моделях: CloseRouter + Frontier</h1>
+  <p class="thesis">Живой прогон обоих провайдеров и допил LLM-клиента проекта под CloseRouter. Всё измерено вживую (curl + реальный путь <code>palimpsest.llm.client</code>), ключи не логировались.</p>
+  <div class="pills">
+    <span class="pill"><span class="dot d-green"></span>база: <b>gemini-3.1-flash-lite @ provider-9</b></span>
+    <span class="pill"><span class="dot d-yel"></span>урок: pin явный маршрут, не <b>auto</b></span>
+    <span class="pill"><span class="dot d-green"></span>CloseRouter fleet: <b>10/10</b></span>
+    <span class="pill"><span class="dot d-blue"></span>Frontier: 7 живых / 5 мёртвых</span>
+  </div>
+</header>
+
+<div class="card lead">
+  <p><b>Главное.</b> Оба провайдера доступны. Финальная база (твой выбор) — <code>google/gemini-3.1-flash-lite @ provider-9</code>: быстрейший и дешёвый чистый маршрут (10/10, ~1.4с, честные 5 prompt-ток, $2e-6). Экстрактор и judge (в т.ч. в <code>eval_grounding.py</code>) переведены на него. Ключевой урок прогона — <b>пинить явный маршрут, а не <code>auto</code></b>: для gpt-5.4-mini <code>auto</code> уходит на provider-6, который пакует ~4400 скрытых prompt-токенов (~200× вход. цена). Модель/маршрут/таймаут — env-настраиваемы. Клиент допилен под CloseRouter (WAF-UA, ретраи 3×1/3/9с, кап 4, env-таймаут, фикс cost) и провалидирован через реальный код.</p>
+</div>
+
+<!-- PROVIDERS -->
+<section>
+  <div class="sec-head"><span class="sec-num">01</span><h2>Провайдеры — статус</h2></div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="eyebrow" style="color:var(--blue)">CloseRouter · api.closerouter.dev/v1</div>
+      <dl class="kv" style="margin-top:10px">
+        <dt>ключ</dt><dd>живой; баланс <span class="m">$84.07</span> (использовано $54.77)</dd>
+        <dt>формат</dt><dd>OpenAI-совместим; id модели <code>provider/model</code></dd>
+        <dt>пин</dt><dd>per-request поле <code>provider</code> (через <code>extra_body</code>); <code>auto</code> = живой маршрут</dd>
+        <dt>WAF</dt><dd><b>блокирует дефолтный UA OpenAI SDK → 403</b>; нужен нейтральный User-Agent</dd>
+        <dt>стоимость</dt><dd>surfaced в usage под ключом <code>cost_usd</code></dd>
+      </dl>
+    </div>
+    <div class="card">
+      <div class="eyebrow" style="color:var(--blue)">Frontier · gateway.frontierai.ru/v1</div>
+      <dl class="kv" style="margin-top:10px">
+        <dt>ключ</dt><dd>живой (<code>FRONTIER_API_KEY</code>)</dd>
+        <dt>модели</dt><dd>self-hosted vLLM, только open (Qwen/GPT-OSS/GLM/Gemma/Nemotron) — <b>Claude нет</b></dd>
+        <dt>каталог</dt><dd>13 в <code>/v1/models</code>; <code>gpt-oss</code> ✅, но <code>qwen3-vl</code> → <b>404</b> (числится ≠ сервится)</dd>
+        <dt>стоимость</dt><dd>не считается (self-hosted, <code>cost=None</code>)</dd>
+        <dt>роль</dt><dd>не подходит под haiku-дефолт; кандидат под open-baseline для статьи</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTE HEALTH -->
+<section>
+  <div class="sec-head"><span class="sec-num">02</span><h2>claude-haiku-4.5 — здоровье маршрутов (живьём)</h2></div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>route</th><th>итог</th><th class="num">prompt tok</th><th>заметка</th></tr></thead>
+      <tbody>
+        <tr><td class="m">provider-10 <span class="muted">(твой)</span></td><td><span class="bg b-red">502</span></td><td class="num">—</td><td>мёртв ×3, включая ретрай</td></tr>
+        <tr><td class="m">provider-2</td><td><span class="bg b-red">502</span></td><td class="num">—</td><td>мёртв</td></tr>
+        <tr><td class="m">provider-5</td><td><span class="bg b-yel">200</span></td><td class="num">14222</td><td>reseller-паддинг (скрытый систем-промпт), дорого — избегать</td></tr>
+        <tr><td class="m">provider-8</td><td><span class="bg b-red">503</span></td><td class="num">—</td><td>no available upstream</td></tr>
+        <tr class="row-hi"><td class="m"><b>provider-9</b></td><td><span class="bg b-green">200</span></td><td class="num">12</td><td><b>чисто</b>: честные токены, cost surfaced, reasoning=0</td></tr>
+        <tr class="row-hi"><td class="m"><b>auto</b></td><td><span class="bg b-green">200</span></td><td class="num">12</td><td>сейчас роутит на provider-9 → чисто</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted" style="font-size:13.5px;margin-top:10px">Каталог-снапшот (2026-07-02) числил у haiku маршруты 2/4/5/8/9 без десятки — но ты предупредил, что «провайдеры сейчас другие». Живая проба это подтвердила: <code>provider-10</code> существует как маршрут (отдаёт 502, а не 503 no_available_provider), но сейчас нездоров. Рабочий чистый маршрут haiku — <b>provider-9 / auto</b>.</p>
+</section>
+
+<!-- BASE MODEL -->
+<section>
+  <div class="sec-head"><span class="sec-num">03</span><h2>Базовая модель → <span style="font-family:var(--mono);font-size:.82em">gemini-3.1-flash-lite</span> @ provider-9</h2><p>твой выбор · финал</p></div>
+  <div class="callout co-green" style="margin-bottom:14px"><h4>Финальная база</h4><code>google/gemini-3.1-flash-lite</code> на <b>provider-9</b>: 10/10, med 1.44с, честные <b>5</b> prompt-ток, cost surfaced ($2e-6) — быстрейший/дешёвый чистый маршрут. <code>temperature=0</code> принят, judge даёт валидный JSON (29 ток, 1.4с). Пример ниже (gpt-5.4-mini) — <b>почему пиним явный маршрут, а не <code>auto</code></b>.</div>
+  <div class="tw"><table>
+    <thead><tr><th>route</th><th>success</th><th class="num">med</th><th class="num">p90</th><th class="num">prompt tok</th><th>вердикт</th></tr></thead>
+    <tbody>
+      <tr class="row-hi"><td class="m"><b>provider-8</b></td><td><span class="bg b-green">10/10</span></td><td class="num">3.32s</td><td class="num">6.42s</td><td class="num n-green">21</td><td><b>выбран</b> — честные токены</td></tr>
+      <tr><td class="m">provider-6</td><td><span class="bg b-green">10/10</span></td><td class="num n-blue">2.46s</td><td class="num">3.52s</td><td class="num n-red">4395</td><td>на 0.9с быстрее, но +4374 паддинга → ~200× вход. цена</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout co-yel" style="margin-top:12px">
+    <h4>Решение против чисто-скоростного критерия</h4>
+    Ты просил «быстрее на 10 запросах» — формально это provider-6 (2.46с vs 3.32с). Но provider-6 (тот же маршрут, куда <code>auto</code> роутит gpt-5.4-mini) пакует ~4400 скрытых prompt-токенов на вызов (reseller-обёртка) — на прогоне 100 статей это ~200× инфляция входной стоимости. Поэтому дефолт — <b>provider-8</b> (честные 21 ток, 10/10, +0.9с). На скорость: <code>CLOSEROUTER_PROVIDER=provider-6</code>. Провалидировано через наш клиент: <code>temperature=0</code> принят, judge отдаёт валидный JSON (57 ток, 2.6с).
+  </div>
+</section>
+
+<!-- MODEL TABLE -->
+<section>
+  <div class="sec-head"><span class="sec-num">04</span><h2>Таблица моделей — что работает</h2><p>Phase 3 · 10 запросов каждой</p></div>
+  <div class="grid g2">
+    <div>
+      <div class="eyebrow" style="color:var(--blue);margin-bottom:8px">CloseRouter · маршрут auto — все 10/10</div>
+      <div class="tw"><table>
+        <thead><tr><th>модель</th><th class="num">med</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td class="m">gemini-3.1-flash-lite</td><td class="num n-green">1.39s</td><td>дёшево ($2e-6)</td></tr>
+          <tr><td class="m">grok-4.1-fast</td><td class="num">1.63s</td><td>ptok 664 (паддинг)</td></tr>
+          <tr><td class="m">gemini-3-flash</td><td class="num">1.72s</td><td>дёшево</td></tr>
+          <tr><td class="m">deepseek-v4-flash</td><td class="num">2.2s</td><td>дешевле всех ($9e-7)</td></tr>
+          <tr><td class="m">gpt-5.4-mini</td><td class="num">2.35s</td><td>auto→prov6 padded</td></tr>
+          <tr><td class="m">kimi-k2.6</td><td class="num">2.48s</td><td></td></tr>
+          <tr><td class="m">glm-5.2</td><td class="num">3.47s</td><td></td></tr>
+          <tr><td class="m">claude-haiku-4.5</td><td class="num">3.4s</td><td>чисто</td></tr>
+          <tr><td class="m">gpt-5.4</td><td class="num">4.02s</td><td></td></tr>
+          <tr><td class="m">gpt-5.5</td><td class="num n-yel">5.64s</td><td>медленнее</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted" style="font-size:12px;margin-top:8px">Cost surfaced у gemini/deepseek/kimi/grok/glm; у OpenAI-семьи и haiku@auto — <code>None</code> (budget-guard идёт по оценке).</p>
+    </div>
+    <div>
+      <div class="eyebrow" style="color:var(--blue);margin-bottom:8px">Frontier · self-hosted (13)</div>
+      <div class="tw"><table>
+        <thead><tr><th>модель</th><th>succ</th><th class="num">med</th></tr></thead>
+        <tbody>
+          <tr><td class="m">inksight_v3</td><td><span class="bg b-green">10/10</span></td><td class="num">1.22s</td></tr>
+          <tr><td class="m">gemma-4-31B-it</td><td><span class="bg b-green">10/10</span></td><td class="num">1.35s</td></tr>
+          <tr><td class="m">gpt-oss</td><td><span class="bg b-green">10/10</span></td><td class="num">1.49s</td></tr>
+          <tr><td class="m">Nemotron-…A55B-3</td><td><span class="bg b-green">10/10</span></td><td class="num">1.73s</td></tr>
+          <tr><td class="m">Qwen3.5-4B-FP8</td><td><span class="bg b-green">10/10</span></td><td class="num">2.02s</td></tr>
+          <tr><td class="m">GLM-5.2</td><td><span class="bg b-green">10/10</span></td><td class="num">2.67s</td></tr>
+          <tr><td class="m">gemma-4</td><td><span class="bg b-green">10/10</span></td><td class="num">2.67s</td></tr>
+          <tr><td class="m">Nemotron-…A55B</td><td><span class="bg b-yel">9/10</span></td><td class="num">1.89s</td></tr>
+          <tr><td class="m">glm5.2</td><td><span class="bg b-red">0/10</span></td><td class="num">404/429</td></tr>
+          <tr><td class="m">qwen3-vl</td><td><span class="bg b-red">0/10</span></td><td class="num">404/429</td></tr>
+          <tr><td class="m">qwen35-1</td><td><span class="bg b-red">0/10</span></td><td class="num">404/429</td></tr>
+          <tr><td class="m">qwen3.5-4b-odie4</td><td><span class="bg b-red">0/10</span></td><td class="num">500</td></tr>
+          <tr><td class="m">qwen3.5-4b-odie1</td><td><span class="bg b-red">0/10</span></td><td class="num">timeout</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted" style="font-size:12px;margin-top:8px">7 живых, 1 флапает, 5 мёртвых. Регистр важен: <code>GLM-5.2</code> жив, <code>glm5.2</code> — нет.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HAIKU BEHAVIOUR -->
+<section>
+  <div class="sec-head"><span class="sec-num">05</span><h2>Поведение haiku (provider-9) — измерено</h2></div>
+  <div class="tiles">
+    <div class="tile"><div class="n n-green">accepted</div><div class="l">temperature=0</div><div class="s">без opus-запрета 400</div></div>
+    <div class="tile"><div class="n n-green">939–1421</div><div class="l">out-токенов (big)</div><div class="s">finish=stop, не обрезан</div></div>
+    <div class="tile"><div class="n n-blue">$0.0008</div><div class="l">цена big-output</div><div class="s">~900 слов, 13с</div></div>
+    <div class="tile"><div class="n n-blue">$5.6e-5</div><div class="l">цена judge-вызова</div><div class="s">49 ток, 3.5с</div></div>
+  </div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="callout co-green">
+      <h4>✓ Что подтвердилось</h4>
+      <ul style="margin:0">
+        <li><b>big-output ≥1k</b> чисто: 1421 ток, <code>finish=stop</code>, cost честный;</li>
+        <li><b>LLM-as-a-judge</b> сквозь наш клиент: fence-strip парсер проекта разбирает ответ → <code>{score:5, verdict:green, …}</code>;</li>
+        <li><b>детерминизм</b>: 3 judge-вызова при temp=0 — байт-в-байт идентичны;</li>
+        <li><b>cost surfaced</b>: <code>6e-06</code>/простой, <code>5.6e-05</code>/judge, <code>0.00077</code>/900-слов.</li>
+      </ul>
+    </div>
+    <div class="callout co-yel">
+      <h4>▲ Гоча: haiku оборачивает JSON в ```-фенс</h4>
+      <p style="margin:0 0 6px">Вопреки «no code fences» модель отдаёт <code>```json\n{…}\n```</code>. Сырой <code>json.loads</code> падает — но <b>парсер проекта уже снимает фенс</b> (<code>strip("\`")</code> + срез <code>json</code>), так что judge разбирается корректно. Проверено через реальный код: результат — валидный dict.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 2 WIRING -->
+<section>
+  <div class="sec-head"><span class="sec-num">06</span><h2>Phase 2 — вайринг (сделано + провалидировано)</h2></div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>файл</th><th>изменение</th><th>зачем</th></tr></thead>
+      <tbody>
+        <tr><td class="m">llm/client.py</td><td>+ <code>User-Agent</code> в <code>default_headers</code></td><td>обойти WAF CloseRouter (иначе 100% 403)</td></tr>
+        <tr><td class="m">llm/client.py</td><td>+ <code>complete_retrying</code> (3× · 1/3/9с)</td><td>ретрай только транзиентных (429/5xx/timeout); ~90% success</td></tr>
+        <tr><td class="m">llm/client.py</td><td>+ <code>DEFAULT_MAX_CONCURRENCY=4</code></td><td>жёсткий кап параллелизма (твоё указание)</td></tr>
+        <tr><td class="m">llm/client.py</td><td>fix: читать <code>cost_usd</code> из usage</td><td>CloseRouter отдаёт стоимость под этим ключом (был None)</td></tr>
+        <tr><td class="m">scripts/wiki_eval.py</td><td>ветка <code>closerouter</code> = дефолт</td><td>haiku via <code>OPENROUTER_BASE_URL</code> + пин <code>extra_body</code>; экстрактор и judge</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout co-blue" style="margin-top:14px">
+    <h4>Валидация через реальный код (.venv python, PYTHONPATH=src)</h4>
+    <code>py_compile</code> обоих файлов — OK. Наш <code>LLMClient</code> с UA-фиксом + пином provider-9 + ретраем: <span class="m">→ 'ok'</span>, usage с <code>cost_usd 6e-06</code>. Judge-вызов сквозь клиент: валидный dict после fence-strip. Big-output: 939 ток / $0.00077. Всё — реальными вызовами, не моками.
+  </div>
+</section>
+
+<!-- FINDINGS -->
+<section>
+  <div class="sec-head"><span class="sec-num">07</span><h2>Критические находки и гочи</h2></div>
+  <div class="grid g2">
+    <div class="callout co-red"><h4>WAF-UA обязателен</h4>дефолтный UA OpenAI SDK → <code>403</code> на любом эндпоинте CloseRouter. Без фикса весь наш код падал бы. Зашито в клиент.</div>
+    <div class="callout co-red"><h4>provider-10 лежит</h4>твой пин отдаёт <code>502</code> (×3). Дефолт поставил <code>auto</code>; вернуть 10 — <code>CLOSEROUTER_PROVIDER=provider-10</code>, когда оживёт.</div>
+    <div class="callout co-yel"><h4>cost под <code>cost_usd</code></h4>не <code>cost</code>. Клиент теперь читает оба (OpenRouter=<code>cost</code>, CloseRouter=<code>cost_usd</code>).</div>
+    <div class="callout co-yel"><h4>Frontier: числится ≠ сервится</h4><code>qwen3-vl</code> в <code>/models</code>, но chat → <code>404</code>. Проверять живым вызовом, не списком.</div>
+    <div class="callout co-yel"><h4>haiku фенсит JSON</h4>парсер проекта справляется, но любой новый judge-путь должен снимать фенс.</div>
+    <div class="callout co-blue"><h4>Каталог устарел</h4>снапшот 2026-07-02 не совпал с живым (маршруты сместились). Источник истины — живая проба <code>/endpoints</code> + billing-канарейка.</div>
+  </div>
+</section>
+
+<!-- OPEN -->
+<section>
+  <div class="sec-head"><span class="sec-num">08</span><h2>Открытые вопросы / решения за тобой</h2></div>
+  <div class="card">
+    <ul style="margin:0">
+      <li><b>База выбрана:</b> <code>gemini-3.1-flash-lite @ provider-9</code> — экстрактор + judge. wiki-eval будет мерить gemini, не турнирный haiku (вернуть — <code>CLOSEROUTER_MODEL=anthropic/claude-haiku-4.5</code>).</li>
+      <li><b>Урок про маршруты:</b> всегда пиним явный <code>provider-N</code>, не <code>auto</code> — auto может уйти на padded-провайдера для части моделей.</li>
+      <li><b>Сделано по твоим ответам:</b> ✓ <code>eval_grounding.py</code> judge переведён на CloseRouter (тот же провайдер-селектор); ✗ Frontier open-baseline — не берём.</li>
+      <li><b>Дальше:</b> полный прогон wiki-eval на 100 статьях на <code>gemini-3.1-flash-lite@provider-9</code>.</li>
+    </ul>
+  </div>
+</section>
+
+<div class="foot">
+  Palimpsest · model-provider triage · живые вызовы CloseRouter/Frontier (10 запросов/модель) + валидация через palimpsest.llm.client · ключи не логировались · далее — полный прогон wiki-eval на 100 статьях (gpt-5.4-mini@provider-8).
+</div>
+</div>
+
+<script>
+(function(){var b=document.documentElement,t=document.getElementById('tg');
+function cur(){var s=b.getAttribute('data-theme');return s?s:(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');}
+t.addEventListener('click',function(){b.setAttribute('data-theme',cur()==='dark'?'light':'dark');});})();
+</script>

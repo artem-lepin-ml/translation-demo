@@ -2,7 +2,8 @@
 """SessionStart context pointer (Phase-1 workflow hardening).
 
 If current-state docs exist, inject an `additionalContext` note listing their PATHS
-ONLY (never their contents) so the session reads them before continuing.
+ONLY (never their contents) so the session reads them before continuing. Additive to
+any other SessionStart hooks — their additionalContext is unioned.
 
 If none of the candidate files exist -> exit 0 with no output.
 FAIL-OPEN: any exception -> exit 0 silently.

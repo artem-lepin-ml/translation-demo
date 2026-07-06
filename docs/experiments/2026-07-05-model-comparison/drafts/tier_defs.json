@@ -1,0 +1,42 @@
+{
+  "0": {
+    "name": "R-T0 (raw / unfiltered)",
+    "rule_description": "All GT reference tuples, no filtering. Baseline = the current wiki-eval M3 recall.",
+    "properties_used": [],
+    "kept_rule": "always kept"
+  },
+  "1": {
+    "name": "R-T1 (clean / structural noise removed)",
+    "rule_description": "Drop a tuple iff EVERY P31 class of its target is a structural non-content class: Wikimedia disambiguation/list/category/duplicate/name-convention pages, or a calendar/temporal item (year, decade, century, millennium, calendar month, temporal entity). Targets with no P31, or with any non-noise P31, are kept.",
+    "properties_used": [
+      "P31"
+    ],
+    "drop_buckets": [
+      "META",
+      "CALENDAR"
+    ],
+    "kept_rule": "kept iff drop_level==0"
+  },
+  "2": {
+    "name": "R-T2 (terminology / generic lexical concepts removed)",
+    "rule_description": "On top of T1, additionally drop a tuple iff EVERY P31 class of its target is a generic, non-domain concept class: (a) languages and writing/transcription/romanization systems, phonemes, letters, part-of-speech; (b) taxa, chemical elements, materials, minerals; (c) units of measurement and ISO/SI standards; (d) academic disciplines, fields of study, and abstract meta-topics (aspect-of-history, history-of-X, form-of-government, political system, concept, quality, activity). Domain concept-terms with no P31 (ziggurat, papyrus, cylinder seal, harem, caste) or with a domain P31 (ethnic group, title, dynasty, deity, culture, polity) are KEPT.",
+    "properties_used": [
+      "P31"
+    ],
+    "drop_buckets": [
+      "META",
+      "CALENDAR",
+      "LANGUAGE_WRITING",
+      "TAXON_SCIENCE",
+      "UNIT_STANDARD",
+      "ACADEMIC_ABSTRACT"
+    ],
+    "kept_rule": "kept iff drop_level==0"
+  },
+  "_membership": "A tuple with target qid Q is in tier T's kept-set iff tier_assignment[Q]==0 OR tier_assignment[Q]>T. tier_assignment[Q]=1 => removed at T1; =2 => removed at T2; =0 => survives all tiers.",
+  "_rejected_alt": {
+    "name": "owner literal 'identity-bearing only'",
+    "rule": "keep iff target has P625 coords OR inception/start/point-in-time OR birth/death OR P31=Q5(human)",
+    "why_rejected": "Drops core domain terminology (ziggurat, papyrus, satrapy, priesthood, cylinder seal, harem, caste all lack coords/dates/human) AND high-recall class terms (ethnic group, title, rank). Removes 2360 tuples (30%) yet its term-recall (0.436) is BELOW T2's (0.474): it discards correct matches, not just noise."
+  }
+}

@@ -7,6 +7,7 @@ from __future__ import annotations
 import pytest
 
 from palimpsest.terminology.evaluation.metrics import (
+    _precision_counts_p3_ex,
     aggregate,
     aggregate_corpus,
     precision,
@@ -260,3 +261,135 @@ def test_aggregate_corpus_empty_article_list_is_uninformative_not_a_crash():
     assert result["recall"]["m1"]["total"] == 0
     assert result["recall"]["m1"]["matched"] == 0
     assert result["slices"]["stratum"] == {}
+
+
+# ── P3\\exact headline (real label_exists predicate, wiki_eval.py --p3) ─────
+
+
+def _p3_ex_fixture():
+    """One GT tuple matched by an exact_label prediction, plus two
+    llm_disambiguation predictions that don't match GT: one has a surface
+    that exists as a Wikidata label (justified), one doesn't (unjustified)."""
+    gt = [(0, "a", "Q1", 1)]
+    pred = [
+        (0, "a", "Q1", 1),   # exact_label -- matches GT, EXCLUDED from p3_ex's denominator
+        (5, "b", "Q2", 1),   # llm_disambiguation, no GT match, label_exists("b") -> justified
+        (10, "c", "Q3", 1),  # llm_disambiguation, no GT match, label_exists("c") -> NOT justified
+    ]
+    resolved_by_of = {0: "exact_label", 5: "llm_disambiguation", 10: "llm_disambiguation"}
+
+    def label_exists(surface: str) -> bool:
+        return surface == "b"
+
+    return gt, pred, resolved_by_of, label_exists
+
+
+def test_precision_counts_p3_ex_excludes_exact_label_from_denominator():
+    gt, pred, resolved_by_of, label_exists = _p3_ex_fixture()
+    matched, total = _precision_counts_p3_ex(
+        gt, pred, mode="m2", resolved_by_of=resolved_by_of, label_exists=label_exists,
+    )
+    # Denominator is 2 (the two non-exact-label predictions), NOT 3 -- the
+    # exact_label prediction is excluded entirely, not merely down-weighted.
+    assert total == 2
+    # "b" is justified via label_exists; "c" is not (and neither matches GT).
+    assert matched == 1
+
+
+def test_aggregate_corpus_p3_ex_absent_without_label_exists():
+    gt, pred, resolved_by_of, _label_exists = _p3_ex_fixture()
+    article = {
+        "gt_tuples": gt,
+        "pred_tuples": pred,
+        "resolved_by_of": resolved_by_of,
+        "stratum_of": {0: "typical"},
+        "type_of": {0: "term"},
+    }
+    result = aggregate_corpus([article])
+    assert "p3_ex" not in result["precision"]
+    # p1 stays over the FULL prediction set (3), unaffected by p3_ex's exclusion.
+    assert result["precision"]["p1"]["total"] == 3
+
+
+def test_aggregate_corpus_p3_ex_headline_present_and_correct_when_label_exists_given():
+    gt, pred, resolved_by_of, label_exists = _p3_ex_fixture()
+    article = {
+        "gt_tuples": gt,
+        "pred_tuples": pred,
+        "resolved_by_of": resolved_by_of,
+        "stratum_of": {0: "typical"},
+        "type_of": {0: "term"},
+    }
+    result = aggregate_corpus([article], label_exists=label_exists)
+    assert result["precision"]["p3_ex"]["total"] == 2
+    assert result["precision"]["p3_ex"]["matched"] == 1
+    assert result["precision"]["p3_ex"]["value"] == pytest.approx(0.5)
+    # p1/p2 untouched by passing label_exists (only "p3_ex" is added).
+    assert result["precision"]["p1"]["total"] == 3
+
+
+def test_aggregate_corpus_p3_ex_sums_matched_and_total_across_articles():
+    gt_a, pred_a, resolved_by_of_a, label_exists = _p3_ex_fixture()
+    # Second article: same shape, different token-index space (article-local
+    # indices, spec E-D6) and a QID namespace disjoint from article A's.
+    gt_b = [(0, "x", "Q10", 1)]
+    pred_b = [
+        (0, "x", "Q10", 1),     # exact_label match -- excluded from p3_ex denominator
+        (5, "b", "Q20", 1),     # llm_disambiguation, label_exists("b") -> justified
+    ]
+    resolved_by_of_b = {0: "exact_label", 5: "llm_disambiguation"}
+
+    article_a = {
+        "gt_tuples": gt_a, "pred_tuples": pred_a, "resolved_by_of": resolved_by_of_a,
+        "stratum_of": {0: "typical"}, "type_of": {0: "term"},
+    }
+    article_b = {
+        "gt_tuples": gt_b, "pred_tuples": pred_b, "resolved_by_of": resolved_by_of_b,
+        "stratum_of": {0: "typical"}, "type_of": {0: "term"},
+    }
+
+    result = aggregate_corpus([article_a, article_b], label_exists=label_exists)
+    # article A: matched=1, total=2 (from the fixture); article B: matched=1, total=1.
+    assert result["precision"]["p3_ex"]["total"] == 3
+    assert result["precision"]["p3_ex"]["matched"] == 2
+
+
+def test_aggregate_corpus_resolved_by_slice_p3_uses_real_label_exists_when_provided():
+    # aggregate_corpus's resolved_by axis derives its slice VALUES from GT
+    # indices (`_filter_by` looks up `mapping.get(t[0])` for `t` in `gt`), so
+    # a second GT tuple at the SAME index as the llm_disambiguation
+    # predictions is needed for that slice to exist at all; it carries an
+    # unrelated QID so it doesn't itself get matched by anything.
+    gt = [(0, "a", "Q1", 1), (5, "z", "Q999", 1)]
+    pred = [
+        (0, "a", "Q1", 1),   # exact_label -- matches gt[0]
+        (5, "b", "Q2", 1),   # llm_disambiguation, no GT match, label_exists("b") -> justified
+        (10, "c", "Q3", 1),  # llm_disambiguation, no GT match, label_exists("c") -> NOT justified
+    ]
+    resolved_by_of = {0: "exact_label", 5: "llm_disambiguation", 10: "llm_disambiguation"}
+
+    def label_exists(surface: str) -> bool:
+        return surface == "b"
+
+    article = {
+        "gt_tuples": gt,
+        "pred_tuples": pred,
+        "resolved_by_of": resolved_by_of,
+        "stratum_of": {0: "typical", 5: "typical"},
+        "type_of": {0: "term", 5: "term"},
+    }
+
+    # Default (no label_exists): P3 stub-equals P1 within the resolved_by
+    # slice -- unchanged prior behaviour (activation must be opt-in).
+    stub_result = aggregate_corpus([article])
+    llm_slice_stub = stub_result["slices"]["resolved_by"]["llm_disambiguation"]["precision"]
+    assert llm_slice_stub["p3"]["matched"] == llm_slice_stub["p1"]["matched"] == 0
+    assert llm_slice_stub["p3"]["total"] == llm_slice_stub["p1"]["total"] == 2
+
+    # With the real predicate: "b" gets label-justified inside the SAME
+    # resolved_by slice, so p3 now diverges from p1 (still 0/2).
+    real_result = aggregate_corpus([article], label_exists=label_exists)
+    llm_slice_real = real_result["slices"]["resolved_by"]["llm_disambiguation"]["precision"]
+    assert llm_slice_real["p1"]["matched"] == 0
+    assert llm_slice_real["p3"]["matched"] == 1
+    assert llm_slice_real["p3"]["total"] == 2
