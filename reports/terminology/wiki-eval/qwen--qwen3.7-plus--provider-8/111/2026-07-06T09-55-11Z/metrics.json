@@ -1,0 +1,5102 @@
+{
+ "recall": {
+  "m1": {
+   "matched": 868,
+   "total": 7959,
+   "value": 0.1090589270008795,
+   "ci_lo": 0.1024,
+   "ci_hi": 0.1161,
+   "underpowered": false
+  },
+  "m2": {
+   "matched": 887,
+   "total": 7959,
+   "value": 0.1114461615780877,
+   "ci_lo": 0.1047,
+   "ci_hi": 0.1185,
+   "underpowered": false
+  },
+  "m3": {
+   "matched": 1303,
+   "total": 7959,
+   "value": 0.16371403442643548,
+   "ci_lo": 0.1557,
+   "ci_hi": 0.172,
+   "underpowered": false
+  }
+ },
+ "precision": {
+  "p1": {
+   "matched": 887,
+   "total": 2956,
+   "value": 0.30006765899864685,
+   "ci_lo": 0.2838,
+   "ci_hi": 0.3168,
+   "underpowered": false
+  },
+  "p2": {
+   "matched": 813,
+   "total": 1964,
+   "value": 0.4139511201629328,
+   "ci_lo": 0.3924,
+   "ci_hi": 0.4359,
+   "underpowered": false
+  },
+  "p3_ex": {
+   "matched": 490,
+   "total": 1018,
+   "value": 0.481335952848723,
+   "ci_lo": 0.4508,
+   "ci_hi": 0.512,
+   "underpowered": false
+  }
+ },
+ "slices": {
+  "stratum": {
+   "achaemenid_iran": {
+    "recall": {
+     "m1": {
+      "matched": 77,
+      "total": 713,
+      "value": 0.10799438990182328,
+      "ci_lo": 0.0873,
+      "ci_hi": 0.1329,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 77,
+      "total": 713,
+      "value": 0.10799438990182328,
+      "ci_lo": 0.0873,
+      "ci_hi": 0.1329,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 88,
+      "total": 713,
+      "value": 0.12342215988779803,
+      "ci_lo": 0.1013,
+      "ci_hi": 0.1496,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 77,
+      "total": 92,
+      "value": 0.8369565217391305,
+      "ci_lo": 0.7483,
+      "ci_hi": 0.8986,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 72,
+      "total": 85,
+      "value": 0.8470588235294118,
+      "ci_lo": 0.7557,
+      "ci_hi": 0.9084,
+      "underpowered": false
+     }
+    }
+   },
+   "assyria": {
+    "recall": {
+     "m1": {
+      "matched": 123,
+      "total": 879,
+      "value": 0.13993174061433447,
+      "ci_lo": 0.1186,
+      "ci_hi": 0.1644,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 124,
+      "total": 879,
+      "value": 0.1410693970420933,
+      "ci_lo": 0.1196,
+      "ci_hi": 0.1656,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 178,
+      "total": 879,
+      "value": 0.2025028441410694,
+      "ci_lo": 0.1773,
+      "ci_hi": 0.2303,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 124,
+      "total": 130,
+      "value": 0.9538461538461539,
+      "ci_lo": 0.903,
+      "ci_hi": 0.9787,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 112,
+      "total": 118,
+      "value": 0.9491525423728814,
+      "ci_lo": 0.8935,
+      "ci_hi": 0.9765,
+      "underpowered": false
+     }
+    }
+   },
+   "china": {
+    "recall": {
+     "m1": {
+      "matched": 53,
+      "total": 458,
+      "value": 0.11572052401746726,
+      "ci_lo": 0.0896,
+      "ci_hi": 0.1483,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 53,
+      "total": 458,
+      "value": 0.11572052401746726,
+      "ci_lo": 0.0896,
+      "ci_hi": 0.1483,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 59,
+      "total": 458,
+      "value": 0.12882096069868995,
+      "ci_lo": 0.1012,
+      "ci_hi": 0.1626,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 53,
+      "total": 61,
+      "value": 0.8688524590163934,
+      "ci_lo": 0.762,
+      "ci_hi": 0.932,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 49,
+      "total": 55,
+      "value": 0.8909090909090909,
+      "ci_lo": 0.7817,
+      "ci_hi": 0.949,
+      "underpowered": false
+     }
+    }
+   },
+   "egypt": {
+    "recall": {
+     "m1": {
+      "matched": 113,
+      "total": 579,
+      "value": 0.19516407599309155,
+      "ci_lo": 0.1649,
+      "ci_hi": 0.2294,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 117,
+      "total": 579,
+      "value": 0.20207253886010362,
+      "ci_lo": 0.1714,
+      "ci_hi": 0.2367,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 130,
+      "total": 579,
+      "value": 0.22452504317789293,
+      "ci_lo": 0.1924,
+      "ci_hi": 0.2603,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 117,
+      "total": 131,
+      "value": 0.8931297709923665,
+      "ci_lo": 0.8286,
+      "ci_hi": 0.9353,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 109,
+      "total": 122,
+      "value": 0.8934426229508197,
+      "ci_lo": 0.8262,
+      "ci_hi": 0.9367,
+      "underpowered": false
+     }
+    }
+   },
+   "greece": {
+    "recall": {
+     "m1": {
+      "matched": 155,
+      "total": 1506,
+      "value": 0.10292164674634795,
+      "ci_lo": 0.0886,
+      "ci_hi": 0.1193,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 156,
+      "total": 1506,
+      "value": 0.10358565737051793,
+      "ci_lo": 0.0892,
+      "ci_hi": 0.12,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 218,
+      "total": 1506,
+      "value": 0.14475431606905712,
+      "ci_lo": 0.1279,
+      "ci_hi": 0.1634,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 156,
+      "total": 180,
+      "value": 0.8666666666666667,
+      "ci_lo": 0.8093,
+      "ci_hi": 0.9087,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 144,
+      "total": 168,
+      "value": 0.8571428571428571,
+      "ci_lo": 0.7962,
+      "ci_hi": 0.9021,
+      "underpowered": false
+     }
+    }
+   },
+   "hittite": {
+    "recall": {
+     "m1": {
+      "matched": 42,
+      "total": 649,
+      "value": 0.06471494607087827,
+      "ci_lo": 0.0482,
+      "ci_hi": 0.0863,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 42,
+      "total": 649,
+      "value": 0.06471494607087827,
+      "ci_lo": 0.0482,
+      "ci_hi": 0.0863,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 54,
+      "total": 649,
+      "value": 0.08320493066255778,
+      "ci_lo": 0.0643,
+      "ci_hi": 0.107,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 42,
+      "total": 43,
+      "value": 0.9767441860465116,
+      "ci_lo": 0.8794,
+      "ci_hi": 0.9959,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 38,
+      "total": 39,
+      "value": 0.9743589743589743,
+      "ci_lo": 0.8682,
+      "ci_hi": 0.9955,
+      "underpowered": false
+     }
+    }
+   },
+   "india": {
+    "recall": {
+     "m1": {
+      "matched": 106,
+      "total": 843,
+      "value": 0.1257413997627521,
+      "ci_lo": 0.105,
+      "ci_hi": 0.1498,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 108,
+      "total": 843,
+      "value": 0.12811387900355872,
+      "ci_lo": 0.1072,
+      "ci_hi": 0.1524,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 142,
+      "total": 843,
+      "value": 0.16844602609727166,
+      "ci_lo": 0.1447,
+      "ci_hi": 0.1952,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 108,
+      "total": 113,
+      "value": 0.9557522123893806,
+      "ci_lo": 0.9006,
+      "ci_hi": 0.981,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 102,
+      "total": 107,
+      "value": 0.9532710280373832,
+      "ci_lo": 0.8952,
+      "ci_hi": 0.9799,
+      "underpowered": false
+     }
+    }
+   },
+   "phoenicia": {
+    "recall": {
+     "m1": {
+      "matched": 171,
+      "total": 1036,
+      "value": 0.16505791505791506,
+      "ci_lo": 0.1437,
+      "ci_hi": 0.1889,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 172,
+      "total": 1036,
+      "value": 0.16602316602316602,
+      "ci_lo": 0.1446,
+      "ci_hi": 0.1899,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 193,
+      "total": 1036,
+      "value": 0.18629343629343628,
+      "ci_lo": 0.1638,
+      "ci_hi": 0.2111,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 172,
+      "total": 198,
+      "value": 0.8686868686868687,
+      "ci_lo": 0.8145,
+      "ci_hi": 0.9088,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 167,
+      "total": 192,
+      "value": 0.8697916666666666,
+      "ci_lo": 0.8148,
+      "ci_hi": 0.9102,
+      "underpowered": false
+     }
+    }
+   },
+   "rome": {
+    "recall": {
+     "m1": {
+      "matched": 15,
+      "total": 683,
+      "value": 0.021961932650073207,
+      "ci_lo": 0.0134,
+      "ci_hi": 0.0359,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 15,
+      "total": 683,
+      "value": 0.021961932650073207,
+      "ci_lo": 0.0134,
+      "ci_hi": 0.0359,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 20,
+      "total": 683,
+      "value": 0.029282576866764276,
+      "ci_lo": 0.019,
+      "ci_hi": 0.0448,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 15,
+      "total": 21,
+      "value": 0.7142857142857143,
+      "ci_lo": 0.5004,
+      "ci_hi": 0.8619,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 15,
+      "total": 21,
+      "value": 0.7142857142857143,
+      "ci_lo": 0.5004,
+      "ci_hi": 0.8619,
+      "underpowered": true
+     }
+    }
+   },
+   "sumer": {
+    "recall": {
+     "m1": {
+      "matched": 13,
+      "total": 613,
+      "value": 0.021207177814029365,
+      "ci_lo": 0.0124,
+      "ci_hi": 0.0359,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 13,
+      "total": 613,
+      "value": 0.021207177814029365,
+      "ci_lo": 0.0124,
+      "ci_hi": 0.0359,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 25,
+      "total": 613,
+      "value": 0.040783034257748776,
+      "ci_lo": 0.0278,
+      "ci_hi": 0.0595,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 13,
+      "total": 14,
+      "value": 0.9285714285714286,
+      "ci_lo": 0.6853,
+      "ci_hi": 0.9873,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 13,
+      "total": 14,
+      "value": 0.9285714285714286,
+      "ci_lo": 0.6853,
+      "ci_hi": 0.9873,
+      "underpowered": true
+     }
+    }
+   }
+  },
+  "resolved_by": {
+   "exact_label": {
+    "recall": {
+     "m1": {
+      "matched": 643,
+      "total": 706,
+      "value": 0.9107648725212465,
+      "ci_lo": 0.8875,
+      "ci_hi": 0.9296,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 650,
+      "total": 706,
+      "value": 0.9206798866855525,
+      "ci_lo": 0.8984,
+      "ci_hi": 0.9384,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 653,
+      "total": 706,
+      "value": 0.9249291784702549,
+      "ci_lo": 0.9031,
+      "ci_hi": 0.9422,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 650,
+      "total": 1936,
+      "value": 0.3357438016528926,
+      "ci_lo": 0.3151,
+      "ci_hi": 0.3571,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 605,
+      "total": 1315,
+      "value": 0.4600760456273764,
+      "ci_lo": 0.4333,
+      "ci_hi": 0.4871,
+      "underpowered": false
+     },
+     "p3": {
+      "matched": 1060,
+      "total": 1936,
+      "value": 0.5475206611570248,
+      "ci_lo": 0.5253,
+      "ci_hi": 0.5696,
+      "underpowered": false
+     }
+    }
+   },
+   "judge_rejected": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 35,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0989,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 0,
+      "total": 35,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0989,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 0,
+      "total": 35,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0989,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "judge_unavailable": {
+    "recall": {
+     "m1": {
+      "matched": 0,
+      "total": 735,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0052,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 0,
+      "total": 735,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0052,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 0,
+      "total": 735,
+      "value": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0052,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 0,
+      "total": 0,
+      "value": null,
+      "ci_lo": 0.0,
+      "ci_hi": 1.0,
+      "underpowered": true
+     }
+    }
+   },
+   "llm_disambiguation": {
+    "recall": {
+     "m1": {
+      "matched": 224,
+      "total": 276,
+      "value": 0.8115942028985508,
+      "ci_lo": 0.7613,
+      "ci_hi": 0.8533,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 226,
+      "total": 276,
+      "value": 0.8188405797101449,
+      "ci_lo": 0.7691,
+      "ci_hi": 0.8598,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 227,
+      "total": 276,
+      "value": 0.822463768115942,
+      "ci_lo": 0.773,
+      "ci_hi": 0.863,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 226,
+      "total": 965,
+      "value": 0.23419689119170983,
+      "ci_lo": 0.2086,
+      "ci_hi": 0.2619,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 201,
+      "total": 615,
+      "value": 0.32682926829268294,
+      "ci_lo": 0.2909,
+      "ci_hi": 0.3649,
+      "underpowered": false
+     },
+     "p3": {
+      "matched": 467,
+      "total": 965,
+      "value": 0.48393782383419687,
+      "ci_lo": 0.4525,
+      "ci_hi": 0.5155,
+      "underpowered": false
+     }
+    }
+   },
+   "no_candidates": {
+    "recall": {
+     "m1": {
+      "matched": 1,
+      "total": 75,
+      "value": 0.013333333333333334,
+      "ci_lo": 0.0024,
+      "ci_hi": 0.0717,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 1,
+      "total": 75,
+      "value": 0.013333333333333334,
+      "ci_lo": 0.0024,
+      "ci_hi": 0.0717,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 1,
+      "total": 75,
+      "value": 0.013333333333333334,
+      "ci_lo": 0.0024,
+      "ci_hi": 0.0717,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 1,
+      "total": 2,
+      "value": 0.5,
+      "ci_lo": 0.0945,
+      "ci_hi": 0.9055,
+      "underpowered": true
+     },
+     "p2": {
+      "matched": 1,
+      "total": 2,
+      "value": 0.5,
+      "ci_lo": 0.0945,
+      "ci_hi": 0.9055,
+      "underpowered": true
+     },
+     "p3": {
+      "matched": 1,
+      "total": 2,
+      "value": 0.5,
+      "ci_lo": 0.0945,
+      "ci_hi": 0.9055,
+      "underpowered": true
+     }
+    }
+   }
+  },
+  "type": {
+   "named": {
+    "recall": {
+     "m1": {
+      "matched": 713,
+      "total": 5309,
+      "value": 0.13430024486720663,
+      "ci_lo": 0.1254,
+      "ci_hi": 0.1437,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 718,
+      "total": 5309,
+      "value": 0.13524204181578453,
+      "ci_lo": 0.1263,
+      "ci_hi": 0.1447,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 859,
+      "total": 5309,
+      "value": 0.16180071576568092,
+      "ci_lo": 0.1521,
+      "ci_hi": 0.172,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 718,
+      "total": 802,
+      "value": 0.8952618453865336,
+      "ci_lo": 0.8722,
+      "ci_hi": 0.9146,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 673,
+      "total": 751,
+      "value": 0.8961384820239681,
+      "ci_lo": 0.8723,
+      "ci_hi": 0.916,
+      "underpowered": false
+     }
+    }
+   },
+   "term": {
+    "recall": {
+     "m1": {
+      "matched": 155,
+      "total": 2650,
+      "value": 0.05849056603773585,
+      "ci_lo": 0.0502,
+      "ci_hi": 0.0681,
+      "underpowered": false
+     },
+     "m2": {
+      "matched": 159,
+      "total": 2650,
+      "value": 0.06,
+      "ci_lo": 0.0516,
+      "ci_hi": 0.0697,
+      "underpowered": false
+     },
+     "m3": {
+      "matched": 228,
+      "total": 2650,
+      "value": 0.0860377358490566,
+      "ci_lo": 0.076,
+      "ci_hi": 0.0973,
+      "underpowered": false
+     }
+    },
+    "precision": {
+     "p1": {
+      "matched": 159,
+      "total": 181,
+      "value": 0.8784530386740331,
+      "ci_lo": 0.8228,
+      "ci_hi": 0.9183,
+      "underpowered": false
+     },
+     "p2": {
+      "matched": 149,
+      "total": 171,
+      "value": 0.8713450292397661,
+      "ci_lo": 0.8129,
+      "ci_hi": 0.9135,
+      "underpowered": false
+     }
+    }
+   }
+  }
+ },
+ "meta": {
+  "article_workers": 10,
+  "calls": {
+   "extract": 1462,
+   "judge": 1015
+  },
+  "config": "111",
+  "failed_paragraphs": [
+   {
+    "paragraph_index": 2,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Академия Цзися"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Академия Цзися"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Арахозия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Гелиополиты"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "KV35YL"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "XXVII династия"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ахеменидские сатрапии"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Гай Сосий (консул)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Амударьинский клад"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "XXX династия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Дауния"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Зимрида (правитель Сидона)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Завоевание царства Шу царством Вэй"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Ибаль-пи-Эль II"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Ибби-Суэн"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Калинга (государство)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Калинга (государство)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Калинга (государство)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Ишува"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Калан (мудрец)"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Камарупа"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Кария"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Квинт Фульвий Флакк (консул 237 года до н. э.)"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 57,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 59,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 58,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 60,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 61,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 62,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 63,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Кесарево безумие"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 65,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 64,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 66,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Керченский пролив"
+   },
+   {
+    "paragraph_index": 67,
+    "title": "Индо-Греческое царство"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Касситская династия"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Кесария Палестинская"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Кипрская война (390—380 до н. э.)"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Линейное письмо Б"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Луций Марций Цензорин (консул 39 года до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Лугальзагеси"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Лувийский язык"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Македония при Ахеменидах"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Марк Фульвий Флакк (консул 264 года до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Мистерии"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Муваталлис II"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Мугаллу"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Мурсили II"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Нур-Адад"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Осада Тира (314—313 до н. э.)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Осада Тира (586—573 до н. э.)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Первая династия Страны Моря"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Спартано-персидская война"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Сокровища Сеусо"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Стигия"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Римляне"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Су Цинь"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Согдиана"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Сур (город)"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 21,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 22,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 44,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 23,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 45,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 47,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 54,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 53,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 55,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Тудхалия IV"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 20,
+    "title": "Теория открытия финикийцами Америки"
+   },
+   {
+    "paragraph_index": 24,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 48,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 49,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 50,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 51,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 56,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 57,
+    "title": "Синаххериб"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Тронное имя фараона"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Урук"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 28,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 29,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 52,
+    "title": "Список префектов Рима"
+   },
+   {
+    "paragraph_index": 30,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 31,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 32,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 33,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 34,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 35,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 1,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 0,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 36,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 37,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 4,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 5,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 6,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 7,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 39,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 10,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 42,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 43,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 8,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 41,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 9,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 11,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 12,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Финикийцы"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 16,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 17,
+    "title": "Урукагина"
+   },
+   {
+    "paragraph_index": 13,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 40,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 15,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 46,
+    "title": "Тель-Абу-Хавам"
+   },
+   {
+    "paragraph_index": 38,
+    "title": "Эллинистический Египет"
+   },
+   {
+    "paragraph_index": 19,
+    "title": "Фокидский союз"
+   },
+   {
+    "paragraph_index": 14,
+    "title": "Цальпува"
+   },
+   {
+    "paragraph_index": 25,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 26,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 18,
+    "title": "Хайаса"
+   },
+   {
+    "paragraph_index": 27,
+    "title": "Хатти"
+   },
+   {
+    "paragraph_index": 2,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 3,
+    "title": "Элулай"
+   },
+   {
+    "paragraph_index": 143,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 144,
+    "title": "Яффа"
+   },
+   {
+    "paragraph_index": 145,
+    "title": "Яффа"
+   }
+  ],
+  "finished_at": "2026-07-06T18:06:34.908224+00:00",
+  "llm_max_in_flight_observed": 4,
+  "llm_semaphore": 4,
+  "max_judge_calls": 30000,
+  "max_usd": 12.0,
+  "model": "qwen/qwen3.7-plus",
+  "n_articles": 100,
+  "n_failed_judge_calls": 577,
+  "n_failed_paragraphs": 1044,
+  "n_paragraphs": 1462,
+  "n_pred_mentions": 3309,
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "provider-8",
+  "resumed_from_n_articles": 36,
+  "run_id": "2026-07-06T09-55-11Z",
+  "spend": {
+   "extract": 0.6936044799999802,
+   "judge": 0.3324015199999948,
+   "total": 2.6461753600002567
+  },
+  "started_at": "2026-07-06T14:31:45.394621+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 12889.513603,
+  "wikidata": {
+   "cache_hits": 4294,
+   "calls": 5890,
+   "seconds": 1969.644
+  },
+  "wikidata_workers": 2,
+  "n_gt_tuples": 7959,
+  "generated_at": "2026-07-06T18:12:53.683818+00:00"
+ }
+}
