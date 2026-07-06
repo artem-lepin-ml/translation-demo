@@ -1,4 +1,3 @@
-<!-- vendored from wshobson/agents @ 5cc2549a50fc672230efd0a0307e2fd27ffba792 · source: plugins/code-documentation/agents/docs-architect.md · 2026-07-04 · MIT -->
 ---
 name: docs-architect-l4
 description: >-
@@ -12,6 +11,7 @@ description: >-
 model: sonnet
 tools: Read, Glob, Grep, Write, Edit
 ---
+<!-- vendored from wshobson/agents @ 5cc2549a50fc672230efd0a0307e2fd27ffba792 · source: plugins/code-documentation/agents/docs-architect.md · 2026-07-04 · MIT -->
 
 # docs-architect-l4
 
