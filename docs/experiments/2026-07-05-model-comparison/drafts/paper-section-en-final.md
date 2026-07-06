@@ -115,8 +115,9 @@ deepseek-v4-flash 0.614, with narrow intervals over 7,959 gold mentions.
 Precision sits near 0.30 at the mention level and near 0.45 at the type level
 for both models; the type gain is exactly the do-not-relink convention made
 visible. Label-verified precision, which credits a further class of
-unmatched-but-valid predictions, is reported in \placeholder{P_label values,
-both models} once the label-index pass completes.
+unmatched-but-valid predictions, reaches 0.526 for gemini-3.1-flash-lite and
+0.530 for deepseek-v4-flash, about 0.07 above type-level precision for both
+models and, like grounding accuracy, nearly identical across models.
 
 **The recall gap has a single, clean cause.** We decompose recall at each gold
 position into two factors: *extraction coverage*, whether the pipeline produced
