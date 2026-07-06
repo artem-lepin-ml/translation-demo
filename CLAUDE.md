@@ -131,6 +131,8 @@ Bundled, pending an owner decision (unique un-merged work, not on any keeper): `
 ### Dynamic workflow
 Use a hierarchical structure: chief aggregator → per-topic aggregators → several agents per topic. Choose the interaction format, agent roles and count yourself (usually 5–30). Use a dynamic workflow only when you understand why it beats a swarm or a naive single-agent run.
 
+**Parallel means parallel.** When agents are declared parallel, dispatch them genuinely concurrently: one message with multiple Agent launches, or `parallel()`/`pipeline()` in a Workflow script — never a serialized await-one-then-launch-next loop (owner feedback 2026-07-06). Serialize only for a real data dependency or a shared-file write conflict, and state which one forces it.
+
 ### Useful skills & MCP
 - Browser e2e, in order of preference: (1) **`playwright-cli` skill** — primary for interactive/adversarial runs (~4x cheaper than MCP: disk snapshots read selectively, `snapshot --depth/--scope`; named sessions `-s=<topic>` isolate parallel runs/worktrees); (2) **scripted `npx playwright test`** — cheapest for regression suites (model sees pass/fail + report, not DOM); (3) **playwright MCP** (`--isolated`) — fallback for interactive a11y-ref reasoning only; (4) **chrome-devtools MCP** — perf/network/console debugging, not e2e driving.
 
