@@ -14,7 +14,7 @@ SRC="${CLAUDE_HOME:-$HOME/.claude}"
 DST=".claude"
 
 # ── what to bring in (edit per repo) ─────────────────────────────────────────
-SKILLS=(verify-spec verify-pr looper playwright-cli)   # user skills this repo uses
+SKILLS=(verify-spec verify-pr looper playwright-cli)            # user skills this repo uses
 AGENTS=(e2e-tester docs-keeper)                                  # user agents (project ones already in repo win)
 COMMANDS=(looper)                                               # user slash-commands
 HOOKS=()                                                        # portable SessionStart hooks (repo-relative logic only)

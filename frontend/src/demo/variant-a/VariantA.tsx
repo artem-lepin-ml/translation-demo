@@ -13,6 +13,7 @@ import './variant-a.css';
 
 import { useDemoStore, scoreBand } from '../store';
 import { langLabel } from '../lang';
+import { exportUrl } from '../api-client';
 import type { Document, Issue, Term } from '../api-client';
 
 import IssuePopover from './IssuePopover';
@@ -31,6 +32,31 @@ type TabId = 'document' | 'glossary' | 'ranking' | 'settings';
  * just sit at "—" forever with no indication anything went wrong (BUG-5). */
 export function precomputeFailed(precompute: Document['precompute']): boolean {
   return precompute?.status === 'done' && precompute.planned > 0 && precompute.succeeded === 0;
+}
+
+/** Human-readable cause for the precompute-failed notice (S1 §2.6) — replaces
+ * the old unconditional "something's wrong" text with the server's own
+ * error_reason where available. */
+export function precomputeFailedMessage(precompute: Document['precompute']): string {
+  switch (precompute?.errorReason) {
+    case 'no_api_key':
+      return 'Precompute skipped: no API key configured';
+    case 'budget_exhausted':
+      return 'Precompute skipped: budget cap reached';
+    default:
+      return 'Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph';
+  }
+}
+
+/** Download glyph matching UploadIcon's style (S6 §5) — tray + arrow-down. */
+function DownloadIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 4v11M12 15l-4.5-4.5M12 15l4.5-4.5" />
+      <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+    </svg>
+  );
 }
 
 const TABS: { id: TabId; label: string }[] = [
@@ -64,6 +90,7 @@ export default function VariantA() {
     criteria,
     models,
     groundingConfig,
+    translatorConfig,
     documentLoading,
     documentError,
     paraEvalState,
@@ -93,6 +120,10 @@ export default function VariantA() {
     removeModel,
     testModel,
     saveGroundingConfig,
+    saveTranslatorConfig,
+    retryTranslate,
+    runFirstParagraphsEvaluate,
+    restoreParagraphRevision,
     switchDocument,
     deleteDoc,
     openUploadModal,
@@ -110,6 +141,12 @@ export default function VariantA() {
   /** Last accept-all outcome for the selected paragraph; cleared on selection change / evaluate */
   const [acceptAllSummary, setAcceptAllSummary] =
     useState<{ applied: number; outdated: number } | null>(null);
+  // Translation-done badge fades after 5s (S4 §3.3) — tracked per doc so
+  // switching documents doesn't leave a stale fade timer running.
+  const [translationDoneVisible, setTranslationDoneVisible] = useState(true);
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [runningFirstEvaluate, setRunningFirstEvaluate] = useState(false);
+  const [retryingTranslate, setRetryingTranslate] = useState(false);
 
   useEffect(() => {
     setAcceptAllSummary(null);
@@ -132,6 +169,23 @@ export default function VariantA() {
     const t = setInterval(() => void refreshDocument(), 3000);
     return () => clearInterval(t);
   }, [doc?.id, doc?.precompute?.status, refreshDocument]);
+
+  // Translation badge polling — mirrors the precompute effect above exactly
+  // (S4 §3.3: "poll every 3s while running").
+  useEffect(() => {
+    if (!doc || doc.origin !== 'upload') return;
+    if (doc.translation?.status !== 'running') return;
+    const t = setInterval(() => void refreshDocument(), 3000);
+    return () => clearInterval(t);
+  }, [doc?.id, doc?.translation?.status, refreshDocument]);
+
+  // "Translated N¶" badge fades 5s after the run completes (S4 §3.3).
+  useEffect(() => {
+    if (doc?.translation?.status !== 'done') return;
+    setTranslationDoneVisible(true);
+    const t = setTimeout(() => setTranslationDoneVisible(false), 5000);
+    return () => clearTimeout(t);
+  }, [doc?.id, doc?.translation?.status, doc?.translation?.done]);
 
   // ── Derived data ──────────────────────────────────────────────────────────
 
@@ -298,14 +352,44 @@ export default function VariantA() {
   }
 
   async function handleReset() {
+    const resetTarget = doc?.origin === 'upload' ? 'its originally uploaded state' : 'its seed state';
     const ok = window.confirm(
-      'Reset the document to its seed state?\n' +
+      `Reset the document to ${resetTarget}?\n` +
       'All accepted edits, dismissals and live scores will be lost.',
     );
     if (!ok) return;
     setResetting(true);
     await resetDoc();
     setResetting(false);
+  }
+
+  async function handleRunFirstEvaluate() {
+    setRunningFirstEvaluate(true);
+    try {
+      await runFirstParagraphsEvaluate();
+    } finally {
+      setRunningFirstEvaluate(false);
+    }
+  }
+
+  async function handleRetryTranslate() {
+    setRetryingTranslate(true);
+    try {
+      await retryTranslate();
+    } finally {
+      setRetryingTranslate(false);
+    }
+  }
+
+  function handleExport(format: 'xlsx' | 'md') {
+    if (!doc) return;
+    const a = window.document.createElement('a');
+    a.href = exportUrl(doc.id, format);
+    a.download = '';
+    window.document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setExportMenuOpen(false);
   }
 
   function handleTextChange(paraId: number, text: string) {
@@ -376,7 +460,7 @@ export default function VariantA() {
               className="va-icon-btn"
               title="Delete document"
               onClick={() => {
-                if (window.confirm(`Delete “${doc.title}”?`)) void deleteDoc(doc.id);
+                if (window.confirm(`Delete "${doc.title}"?`)) void deleteDoc(doc.id);
               }}
             >
               🗑
@@ -388,6 +472,42 @@ export default function VariantA() {
           {doc.precompute?.status === 'running' && (
             <span className="va-precompute-badge">
               warming {doc.precompute.done}/{doc.precompute.planned} ¶…
+            </span>
+          )}
+          {doc.translation?.status === 'running' && (
+            <span className="va-translate-progress-wrap" data-testid="translation-badge">
+              <span className="va-translating-badge">
+                Translating {doc.translation.done}/{doc.translation.total}…
+              </span>
+              <div className="va-progress-track">
+                <div
+                  className="va-progress-fill"
+                  style={{ width: `${doc.translation.total > 0 ? (doc.translation.done / doc.translation.total) * 100 : 0}%` }}
+                />
+              </div>
+            </span>
+          )}
+          {doc.translation?.status === 'done' && translationDoneVisible && (
+            <span className="va-translate-progress-wrap" data-testid="translation-done-badge">
+              <span className="va-translating-badge" style={{ color: 'var(--va-green)' }}>
+                Translated {doc.translation.total}¶
+              </span>
+              <span className="va-run-precompute-hint">
+                Evaluate first paragraphs?{' '}
+                <button className="va-link-btn" disabled={runningFirstEvaluate} onClick={() => void handleRunFirstEvaluate()}>
+                  {runningFirstEvaluate ? 'Running…' : 'Run'}
+                </button>
+              </span>
+            </span>
+          )}
+          {doc.translation?.status === 'failed' && (
+            <span className="va-translate-progress-wrap" data-testid="translation-failed-badge">
+              <span className="va-translating-badge" style={{ color: 'var(--va-red)' }}>
+                Translation failed{doc.translation.errorReason ? `: ${doc.translation.errorReason}` : ''}
+              </span>
+              <button className="va-btn-secondary" disabled={retryingTranslate} onClick={() => void handleRetryTranslate()}>
+                {retryingTranslate ? 'Retrying…' : 'Retry'}
+              </button>
             </span>
           )}
         </div>
@@ -404,6 +524,33 @@ export default function VariantA() {
             >
               {resetting ? 'Resetting…' : 'Reset'}
             </button>
+          )}
+
+          {/* Export (S6 §5) */}
+          {activeTab === 'document' && (
+            <span className="va-export-wrap" style={{ marginRight: 8 }}>
+              <button
+                className="va-btn-secondary"
+                data-testid="export-btn"
+                disabled={paragraphs.length === 0}
+                onClick={() => setExportMenuOpen((v) => !v)}
+              >
+                <DownloadIcon />Export
+              </button>
+              {exportMenuOpen && (
+                <>
+                  <div className="va-popover-backdrop" style={{ background: 'transparent' }} onClick={() => setExportMenuOpen(false)} />
+                  <div className="va-export-menu" data-testid="export-menu">
+                    <div className="va-export-menu-item" data-testid="export-xlsx" onClick={() => handleExport('xlsx')}>
+                      <DownloadIcon />Excel (.xlsx)
+                    </div>
+                    <div className="va-export-menu-item" data-testid="export-md" onClick={() => handleExport('md')}>
+                      <DownloadIcon />Markdown (.md)
+                    </div>
+                  </div>
+                </>
+              )}
+            </span>
           )}
 
           {/* Doc-level Accept all */}
@@ -486,7 +633,7 @@ export default function VariantA() {
             <div className="va-doc-wrapper">
               {showPrecomputeFailedNotice && (
                 <div className="va-precompute-failed-notice" data-testid="precompute-failed-notice">
-                  Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph
+                  {precomputeFailedMessage(doc.precompute)}
                 </div>
               )}
               <div className="va-col-headers">
@@ -507,6 +654,10 @@ export default function VariantA() {
                   };
                   const agg = para.aggregate;
                   const chipDelta = computeChipDelta(agg, para.aggregatePrev, para.aggregateBaseline);
+                  // Best-marker (S5 §3.1) composed alongside ScoreChip rather than
+                  // inside it/EditorParagraph — those files belong to another lane.
+                  const best = para.best;
+                  const showBestMarker = !!best && !best.isCurrent && agg !== null && best.aggregate > agg + 0.05;
 
                   return (
                     <EditorParagraph
@@ -521,14 +672,29 @@ export default function VariantA() {
                       criteria={criteria}
                       selected={selectedParaIdx === idx}
                       scoreChip={
-                        <ScoreChip
-                          label={`§${para.idx + 1}`}
-                          score={agg}
-                          loading={es.loading}
-                          delta={chipDelta}
-                          cached={es.cached}
-                          stale={es.stale}
-                        />
+                        <>
+                          <ScoreChip
+                            label={`§${para.idx + 1}`}
+                            score={agg}
+                            loading={es.loading}
+                            delta={chipDelta}
+                            cached={es.cached}
+                            stale={es.stale}
+                          />
+                          {showBestMarker && (
+                            <span
+                              className="va-best-marker"
+                              data-testid="best-marker"
+                              title={`Best ${best!.aggregate.toFixed(1)} — click to review`}
+                              onClick={() => {
+                                setSelectedParaIdx(idx);
+                                setInspectorTab('scores');
+                              }}
+                            >
+                              ⭰
+                            </span>
+                          )}
+                        </>
                       }
                       onSelect={() => {
                         setSelectedParaIdx(idx);
@@ -571,6 +737,10 @@ export default function VariantA() {
               onEvaluate={handleEvaluate}
               onRetryFailed={handleRetryFailed}
               visibleIssues={inspectorIssues}
+              onRestoreRevision={async (revisionId) => {
+                if (!selectedPara) return;
+                await restoreParagraphRevision(selectedPara.id, selectedParaIdx, revisionId);
+              }}
             />
           </>
         )}
@@ -581,6 +751,7 @@ export default function VariantA() {
             paragraphs={paragraphs}
             sourceLang={doc.sourceLang}
             targetLang={doc.targetLang}
+            onMentionClick={handleRankingRowClick}
           />
         )}
 
@@ -605,6 +776,8 @@ export default function VariantA() {
             onTestModel={testModel}
             groundingConfig={groundingConfig}
             onSaveGroundingConfig={saveGroundingConfig}
+            translatorConfig={translatorConfig}
+            onSaveTranslatorConfig={saveTranslatorConfig}
           />
         )}
       </div>

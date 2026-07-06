@@ -2,7 +2,10 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getBudget } from '../api-client';
-import type { BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, TestModelResult } from '../api-client';
+import type {
+  BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, TestModelResult,
+  TranslatorConfig,
+} from '../api-client';
 import type { DemoStore } from '../store';
 
 interface Props {
@@ -17,6 +20,8 @@ interface Props {
   onTestModel: DemoStore['testModel'];
   groundingConfig: GroundingConfig | null;
   onSaveGroundingConfig: DemoStore['saveGroundingConfig'];
+  translatorConfig: TranslatorConfig | null;
+  onSaveTranslatorConfig: DemoStore['saveTranslatorConfig'];
 }
 
 // Evaluator palette already in use by the seed criteria (seed.py CRITERIA) —
@@ -47,6 +52,48 @@ function defaultTestState(): TestState {
   return { loading: false, expanded: false, result: null };
 }
 
+/** api-client's fetch helpers throw a bare `METHOD path → status: body` Error
+ *  (see api-client.ts `del`/`post`/`put`). Pull the status + detail text back
+ *  out of that string so callers can show a human message instead of the raw
+ *  method/URL dump. Returns null when the message doesn't match that shape
+ *  (e.g. a network-level failure with no HTTP response at all). */
+function parseApiError(e: unknown): { status: number; detail: string } | null {
+  const message = e instanceof Error ? e.message : String(e);
+  const match = /→ (\d+): ([\s\S]*)$/.exec(message);
+  if (!match) return null;
+  const status = Number(match[1]);
+  const body = match[2].trim();
+  try {
+    const parsed = JSON.parse(body) as { detail?: unknown };
+    if (typeof parsed.detail === 'string') return { status, detail: parsed.detail };
+  } catch {
+    // Not a JSON body — fall through and use the raw text as-is.
+  }
+  return { status, detail: body };
+}
+
+/** Friendly Remove-model error text (spec 2026-07-05-settings-fixes.md §2.5):
+ *  a 409 "model referenced by a criterion" names the evaluator(s) still
+ *  pointing at the model instead of dumping `DELETE /models/... → 409: {...}`
+ *  at the owner; any other failure gets a short human message (status +
+ *  detail), never the raw method/URL. */
+function friendlyRemoveModelError(e: unknown, modelName: string, criteria: Criterion[]): string {
+  const parsed = parseApiError(e);
+  if (parsed?.status === 409 && parsed.detail === 'model referenced by a criterion') {
+    const names = criteria.filter((c) => c.modelName === modelName).map((c) => c.name);
+    if (names.length > 0) {
+      const label = names.length > 1 ? 'evaluators' : 'evaluator';
+      const quoted = names.map((n) => `"${n}"`).join(', ');
+      return `Model is used by ${label} ${quoted} — reassign it first`;
+    }
+    return 'Model is used by an evaluator — reassign it first';
+  }
+  if (parsed) {
+    return `Could not remove the model (${parsed.status}): ${parsed.detail}`;
+  }
+  return 'Could not remove the model — please try again.';
+}
+
 export default function SettingsTab({
   criteria,
   models,
@@ -59,6 +106,8 @@ export default function SettingsTab({
   onTestModel,
   groundingConfig,
   onSaveGroundingConfig,
+  translatorConfig,
+  onSaveTranslatorConfig,
 }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null); // collapsed by default
   // Per-criterion error surfaced inline in EvaluatorEditor — covers both a
@@ -66,6 +115,11 @@ export default function SettingsTab({
   const [fieldError, setFieldError] = useState<{ id: string; message: string } | null>(null);
   // Grounding card error — same "surface server rejection inline" pattern as fieldError.
   const [groundingError, setGroundingError] = useState<string | null>(null);
+  // Translator card error — same pattern (S4 §3.4).
+  const [translatorError, setTranslatorError] = useState<string | null>(null);
+  // Per-model Remove error (S1 §2.5) — a 409 (model referenced by a
+  // criterion) used to vanish silently; now surfaced next to the row.
+  const [modelError, setModelError] = useState<{ name: string; message: string } | null>(null);
 
   const [testState, setTestState] = useState<Record<string, TestState>>({});
   const [editing, setEditing] = useState<ModelRegistryEntryPublic | null>(null);
@@ -121,11 +175,15 @@ export default function SettingsTab({
   }
 
   async function handleRemoveModel(name: string) {
-    if (!window.confirm(`Delete “${name}”?`)) return;
+    if (!window.confirm(`Delete "${name}"?`)) return;
+    setModelError(null);
     try {
       await onRemoveModel(name);
-    } catch {
-      // any error is a no-op here — the row simply stays (no silent fail).
+    } catch (e) {
+      // Surface the backend's own reason (e.g. "model referenced by a
+      // criterion") as a human message naming the evaluator(s), instead of
+      // the raw `DELETE /models/... → 409: {...}` dump (S1 §2.5).
+      setModelError({ name, message: friendlyRemoveModelError(e, name, criteria) });
     }
   }
 
@@ -141,8 +199,27 @@ export default function SettingsTab({
     <div className="va-tab-content">
       {budget && <BudgetLine budget={budget} />}
 
+      {/* ─── Translator (S4 §3.4) — above Evaluators; single config, no add/remove ── */}
+      <div className="va-settings-section-title">Translator</div>
+      {translatorConfig && (
+        <TranslatorCard
+          config={translatorConfig}
+          models={models}
+          onSave={async (next) => {
+            try {
+              await onSaveTranslatorConfig(next);
+              setTranslatorError(null);
+            } catch (e) {
+              setTranslatorError(String(e));
+              throw e;
+            }
+          }}
+          error={translatorError}
+        />
+      )}
+
       {/* ─── Criteria (Evaluators) — full-width rows, Model Registry pattern ── */}
-      <div className="va-settings-section-title">Evaluators</div>
+      <div className="va-settings-section-title" style={{ marginTop: 32 }}>Evaluators</div>
       <table className="va-table">
         <thead>
           <tr>
@@ -199,7 +276,7 @@ export default function SettingsTab({
                         }}
                         fieldError={fieldError?.id === c.id ? fieldError.message : null}
                         onRemove={async () => {
-                          if (!window.confirm(`Delete “${c.name}”?`)) return;
+                          if (!window.confirm(`Delete "${c.name}"?`)) return;
                           setFieldError(null);
                           try {
                             await onRemoveCriterion(c.id);
@@ -242,7 +319,6 @@ export default function SettingsTab({
             {models.map((m) => {
               const ts = stateFor(m.name);
               const paramsOpen = !!expandedParams[m.name];
-              const paramsCount = Object.keys(m.params).length;
               return (
                 <Fragment key={m.name}>
                   <tr>
@@ -260,11 +336,11 @@ export default function SettingsTab({
                     </td>
                     <td>
                       <span
-                        className={`va-params-badge${paramsOpen ? ' open' : ''}`}
-                        data-testid={`params-badge-${m.name}`}
+                        data-testid={`params-inline-${m.name}`}
+                        style={{ cursor: 'pointer' }}
                         onClick={() => setExpandedParams((s) => ({ ...s, [m.name]: !s[m.name] }))}
                       >
-                        <span className="chev">▶</span>{paramsCount} params
+                        <ParamsInline params={m.params} />
                       </span>
                       {paramsOpen && (
                         <div className="va-params-expanded" data-testid={`params-expanded-${m.name}`}>
@@ -277,15 +353,24 @@ export default function SettingsTab({
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
                         <button className="va-btn-secondary" onClick={() => handleTest(m.name)} disabled={ts.loading}>
-                          {ts.loading ? '…' : 'Test'}
+                          {ts.loading ? 'Testing…' : 'Test'}
                         </button>
-                        <button className="va-btn-secondary" onClick={() => setEditing(m)}>Edit</button>
+                        <button className="va-btn-secondary" data-testid={`edit-model-btn-${m.name}`} onClick={() => setEditing(m)}>Edit</button>
                         <button className="va-btn-secondary" onClick={() => void handleRemoveModel(m.name)}>
                           Remove
                         </button>
                       </div>
                     </td>
                   </tr>
+                  {modelError?.name === m.name && (
+                    <tr>
+                      <td colSpan={5} style={{ padding: 0, borderBottom: '1px solid var(--va-border)' }}>
+                        <div className="va-inspector-warning" data-testid={`model-field-error-${m.name}`}>
+                          {modelError.message}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                   {ts.expanded && ts.result && (
                     <tr>
                       <td colSpan={5} style={{ padding: 0, borderBottom: '1px solid var(--va-border)' }}>
@@ -448,13 +533,14 @@ function EvaluatorEditor({ criterion, models, onUpdate, onRemove, fieldError }: 
         </span>
       </div>
 
-      {/* Prompt preview */}
-      <div>
-        <div className="va-field-label">Prompt (read-only preview)</div>
-        <div className="va-prompt-preview">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{criterion.prompt}</ReactMarkdown>
-        </div>
-      </div>
+      {/* Prompt — Edit/Preview toggle, explicit Save (S1 §2.3) */}
+      <PromptEditor
+        prompt={criterion.prompt}
+        testidPrefix="evaluator"
+        onSave={async (next) => {
+          await onUpdate({ ...criterion, prompt: next });
+        }}
+      />
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -465,6 +551,219 @@ function EvaluatorEditor({ criterion, models, onUpdate, onRemove, fieldError }: 
       {fieldError && (
         <div className="va-inspector-warning" data-testid="evaluator-field-error">
           {fieldError}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── PromptEditor — Edit/Preview toggle + explicit Save/Revert (S1 §2.3) ──────
+// Reused by EvaluatorEditor and the Translator card (S4 §3.4) — the only two
+// prompts editable in Settings.
+
+interface PromptEditorProps {
+  prompt: string;
+  /** Prefix for data-testids so EvaluatorEditor / TranslatorCard instances are distinguishable in tests. */
+  testidPrefix: string;
+  onSave: (next: string) => Promise<void>;
+}
+
+function PromptEditor({ prompt, testidPrefix, onSave }: PromptEditorProps) {
+  const [mode, setMode] = useState<'edit' | 'preview'>('preview');
+  const [draft, setDraft] = useState(prompt);
+  const [saving, setSaving] = useState(false);
+
+  // Re-sync when the saved prompt actually changes (successful save, or
+  // switching to a different criterion) — but not while the user has unsaved
+  // local edits that haven't round-tripped yet.
+  useEffect(() => {
+    setDraft(prompt);
+  }, [prompt]);
+
+  const dirty = draft !== prompt;
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await onSave(draft);
+    } catch {
+      // The caller already recorded the error in its own fieldError state;
+      // this catch only prevents an unhandled rejection here.
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div>
+      <div className="va-field-label" style={{ display: 'inline-block' }}>Prompt</div>
+      <span className="va-prompt-toggle" data-testid={`${testidPrefix}-prompt-toggle`}>
+        <button className={mode === 'edit' ? 'active' : ''} onClick={() => setMode('edit')}>Edit</button>
+        <button className={mode === 'preview' ? 'active' : ''} onClick={() => setMode('preview')}>Preview</button>
+      </span>
+      {mode === 'edit' ? (
+        <textarea
+          className="va-field-input va-prompt-textarea"
+          data-testid={`${testidPrefix}-prompt-editor`}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+        />
+      ) : (
+        <div className="va-prompt-preview" data-testid={`${testidPrefix}-prompt-preview`}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{draft}</ReactMarkdown>
+        </div>
+      )}
+      <div className="va-prompt-actions">
+        <button
+          className="va-primary"
+          data-testid={`${testidPrefix}-prompt-save`}
+          disabled={!dirty || saving}
+          onClick={() => void handleSave()}
+        >
+          {saving ? '…' : 'Save prompt'}
+        </button>
+        <button
+          className="va-btn-secondary"
+          data-testid={`${testidPrefix}-prompt-revert`}
+          disabled={!dirty}
+          onClick={() => setDraft(prompt)}
+        >
+          Revert
+        </button>
+        {dirty && <span className="va-unsaved">Unsaved changes</span>}
+        <span className="va-char-count">{draft.length} chars</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── ParamsInline — readable inline params text (replaces the raw "N params" badge, S1 §2.4) ──
+
+/** Display-only key abbreviations matching the approved mockup (2026-07-05-wave5-ui-mockup.html) —
+ * cosmetic only, the underlying param key/value data is never renamed. */
+const PARAM_DISPLAY_KEY: Record<string, string> = { temperature: 'temp' };
+
+function formatParamValue(v: unknown): string {
+  return typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v);
+}
+
+function ParamsInline({ params }: { params: Record<string, unknown> }) {
+  const entries = Object.entries(params);
+  if (entries.length === 0) {
+    return <span className="va-inline-params" style={{ opacity: 0.5 }}>—</span>;
+  }
+  const shown = entries.slice(0, 3);
+  const more = entries.length - shown.length;
+  return (
+    <span className="va-inline-params">
+      {shown.map(([k, v], i) => (
+        <span key={k}>
+          <b>{PARAM_DISPLAY_KEY[k] ?? k}</b> {formatParamValue(v)}{i < shown.length - 1 ? ' · ' : ''}
+        </span>
+      ))}
+      {more > 0 && ` · +${more}`}
+    </span>
+  );
+}
+
+// ─── TranslatorCard — first-pass AI translation config (S4 §3.4, mirrors GroundingEditor) ──
+
+interface TranslatorCardProps {
+  config: TranslatorConfig;
+  models: ModelRegistryEntryPublic[];
+  onSave: (cfg: TranslatorConfig) => Promise<void>;
+  error: string | null;
+}
+
+function TranslatorCard({ config, models, onSave, error }: TranslatorCardProps) {
+  const [modelName, setModelName] = useState(config.modelName ?? '');
+  const [paramsText, setParamsText] = useState(JSON.stringify(config.params, null, 2));
+  const [paramsError, setParamsError] = useState<string | null>(null);
+
+  function commitField(next: Partial<TranslatorConfig>) {
+    void onSave({ modelName, prompt: config.prompt, params: config.params, ...next }).catch(() => {
+      // onSave already recorded the error via the `error` prop.
+    });
+  }
+
+  function commitParams() {
+    let params: Record<string, unknown>;
+    try {
+      params = JSON.parse(paramsText);
+    } catch {
+      setParamsError('Params must be valid JSON.');
+      return;
+    }
+    setParamsError(null);
+    commitField({ params });
+  }
+
+  // "Effective" preview is estimated client-side from the draft params plus
+  // the selected model's own capability fact (does it force a seed?) — there
+  // is no dedicated translator-effective-params endpoint (GET
+  // /translator-config only returns model/prompt/params), so this mirrors
+  // the same whitelist the backend validates against rather than guessing.
+  const selectedModel = models.find((m) => m.name === modelName);
+  const forcesSeed = 'seed' in (selectedModel?.effectiveParams ?? {});
+  let parsedForPreview: Record<string, unknown> | null = null;
+  try {
+    parsedForPreview = JSON.parse(paramsText);
+  } catch {
+    parsedForPreview = null;
+  }
+  const effectiveParts = parsedForPreview
+    ? Object.entries(parsedForPreview).map(([k, v]) => `${PARAM_DISPLAY_KEY[k] ?? k} ${formatParamValue(v)}`)
+    : [];
+  if (forcesSeed && parsedForPreview && !('seed' in parsedForPreview)) {
+    effectiveParts.push('seed 7 (forced for reproducibility)');
+  }
+
+  return (
+    <div className="va-translator-card" data-testid="translator-card">
+      <div>
+        <div className="va-field-label">Model</div>
+        <select
+          className="va-field-input va-field-select"
+          style={{ maxWidth: 320 }}
+          value={modelName}
+          onChange={(e) => { setModelName(e.target.value); commitField({ modelName: e.target.value }); }}
+        >
+          {models.map((m) => (
+            <option key={m.name} value={m.name}>{m.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="va-translator-params-row">
+        <div style={{ maxWidth: 340, flex: 1 }}>
+          <div className="va-field-label">Params</div>
+          <textarea
+            className="va-field-input"
+            style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11.5, minHeight: 70, resize: 'vertical' }}
+            data-testid="translator-params"
+            value={paramsText}
+            onChange={(e) => setParamsText(e.target.value)}
+            onBlur={commitParams}
+          />
+          {paramsError && <div className="va-inline-error" data-testid="translator-params-error">{paramsError}</div>}
+          <div className="va-effective-line" data-testid="translator-effective">
+            Effective: <b>{effectiveParts.join(' · ') || '—'}</b>
+          </div>
+        </div>
+      </div>
+
+      <PromptEditor
+        prompt={config.prompt}
+        testidPrefix="translator"
+        onSave={async (next) => {
+          await onSave({ modelName, prompt: next, params: config.params });
+        }}
+      />
+      <div className="va-applies-note">Applies to the next translation run</div>
+
+      {error && (
+        <div className="va-inspector-warning" data-testid="translator-field-error">
+          {error}
         </div>
       )}
     </div>
@@ -623,15 +922,21 @@ function TestResultCard({ result }: { result: TestModelResult }) {
 interface EditModelModalProps {
   model: ModelRegistryEntryPublic;
   onClose: () => void;
-  onSave: (entry: { baseUrl: string; apiKey: string; params: Record<string, unknown> }) => Promise<void>;
+  /** `apiKey` is OMITTED entirely (not sent as "") unless the user actually
+   * touched the field — app.py's presence-check treats an included `apiKey`
+   * (including "") as an explicit clear, so always-sending "" would silently
+   * wipe the key on every unrelated edit (S1 §2.5). */
+  onSave: (entry: { baseUrl: string; apiKey?: string; params: Record<string, unknown> }) => Promise<void>;
 }
 
 function EditModelModal({ model, onClose, onSave }: EditModelModalProps) {
   const [baseUrl, setBaseUrl] = useState(model.baseUrl);
   const [apiKey, setApiKey] = useState('');
+  const [apiKeyTouched, setApiKeyTouched] = useState(false);
   const [paramsText, setParamsText] = useState(JSON.stringify(model.params, null, 2));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [clearingKey, setClearingKey] = useState(false);
   // Synchronous re-entry guard — see handleTest's comment in SettingsTab for why
   // state alone (`saving`) is too slow to stop a rapid double/triple-click.
   const inFlight = useRef(false);
@@ -649,7 +954,7 @@ function EditModelModal({ model, onClose, onSave }: EditModelModalProps) {
     inFlight.current = true;
     setSaving(true);
     try {
-      await onSave({ baseUrl, apiKey, params });
+      await onSave({ baseUrl, params, ...(apiKeyTouched ? { apiKey } : {}) });
     } catch (e) {
       setError(String(e));
     } finally {
@@ -657,6 +962,29 @@ function EditModelModal({ model, onClose, onSave }: EditModelModalProps) {
       inFlight.current = false;
     }
   }
+
+  async function handleClearKey() {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setClearingKey(true);
+    setError(null);
+    try {
+      await onSave({ baseUrl: model.baseUrl, apiKey: '', params: model.params });
+      setApiKey('');
+      setApiKeyTouched(false);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setClearingKey(false);
+      inFlight.current = false;
+    }
+  }
+
+  // Defensive fallback: effectiveParams is a S1 §2.4 addition to GET /api/models;
+  // tolerate an older/mocked response shape that doesn't have it yet.
+  const effectiveParts = Object.entries(model.effectiveParams ?? {}).map(
+    ([k, v]) => `${k} ${formatParamValue(v)}`,
+  );
 
   return (
     <>
@@ -683,13 +1011,23 @@ function EditModelModal({ model, onClose, onSave }: EditModelModalProps) {
 
         <div>
           <div className="va-field-label">API Key</div>
-          <input
-            className="va-field-input"
-            type="password"
-            placeholder={model.apiKeyMasked}
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-          />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              className="va-field-input"
+              type="password"
+              placeholder={model.apiKeyMasked}
+              value={apiKey}
+              onChange={(e) => { setApiKey(e.target.value); setApiKeyTouched(true); }}
+            />
+            <button
+              className="va-btn-secondary"
+              data-testid="clear-key-btn"
+              disabled={clearingKey || !model.apiKeyMasked}
+              onClick={() => void handleClearKey()}
+            >
+              {clearingKey ? '…' : 'Clear key'}
+            </button>
+          </div>
         </div>
 
         <div>
@@ -700,6 +1038,13 @@ function EditModelModal({ model, onClose, onSave }: EditModelModalProps) {
             value={paramsText}
             onChange={(e) => setParamsText(e.target.value)}
           />
+        </div>
+
+        <div>
+          <div className="va-field-label">Effective params</div>
+          <div className="va-effective-line" data-testid="edit-model-effective">
+            {effectiveParts.length > 0 ? <b>{effectiveParts.join(' · ')}</b> : '—'}
+          </div>
         </div>
 
         {error && <div className="va-inline-error" data-testid="edit-model-error" style={{ color: 'var(--va-red)', fontSize: 12 }}>{error}</div>}

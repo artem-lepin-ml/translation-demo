@@ -48,21 +48,27 @@ _SPECS = [
     # — see docs/known_issues.md for the one model (gpt-5.4-mini) where this is
     # unverified against a live call. vLLM's OpenAI-compat server does not wire
     # `seed` through by default in this deployment, so local models keep it off.
+    # Demo-matrix temperature: forced to 0 on all 5 OpenRouter rows (2026-07-05
+    # settings-fixes §2.4 — judge determinism for the recorded demo). A no-op
+    # where supports_temperature=False (ModelParams.for_model strips the key
+    # before the call — see model_params.py), but kept on the row so the raw
+    # params vs `effective_params` distinction is visible in Settings.
     _or("anthropic/claude-haiku-4.5", temp=False, top_k=True, min_p=False, seed=True,
         reasoning="max_tokens",
-        default_params={"max_tokens": 1536}),                 # reasoning off → fast clean output
+        default_params={"max_tokens": 1536, "temperature": 0}),  # reasoning off → fast clean output
     _or("anthropic/claude-sonnet-5", temp=False, top_k=False, min_p=False, seed=True,
         reasoning="effort",
-        default_params={"max_tokens": 1536}),                 # effort omitted → provider default
+        default_params={"max_tokens": 1536, "temperature": 0}),  # effort omitted → provider default
     _or("google/gemini-3.5-flash", temp=False, top_k=False, min_p=False, seed=True,
         reasoning="effort",
-        default_params={"max_tokens": 2048, "reasoning": {"effort": "low"}}),  # effort obligatory
+        default_params={"max_tokens": 2048, "temperature": 0,
+                        "reasoning": {"effort": "low"}}),  # effort obligatory
     _or("openai/gpt-5.4-mini", temp=False, top_k=False, min_p=False, seed=True,
         reasoning="effort",
-        default_params={"max_tokens": 1536}),                 # effort omitted → provider default
+        default_params={"max_tokens": 1536, "temperature": 0}),  # effort omitted → provider default
     _or("qwen/qwen3.6-plus", temp=True, top_k=False, min_p=False, seed=True,
         reasoning="effort",
-        default_params={"max_tokens": 1536, "temperature": 0.7}),
+        default_params={"max_tokens": 1536, "temperature": 0}),
     _vllm("Qwen/Qwen3-4B-Thinking-2507", temp=True, top_k=True, min_p=True, seed=False,
           reasoning="none",
           default_params={"max_tokens": 1024, "temperature": 0.6, "top_k": 20, "min_p": 0.0}),

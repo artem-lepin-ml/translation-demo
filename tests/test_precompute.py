@@ -80,7 +80,8 @@ def test_all_calls_fail_status_done_but_zero_succeeded(scored_client):
     doc = _mk_doc(scored_client, n=2)
     asyncio.run(precompute.run(doc["id"], failing_judge))
     status = precompute.status_for(doc["id"])
-    assert status == {"status": "done", "done": 2, "planned": 2, "succeeded": 0}
+    assert status == {"status": "done", "done": 2, "planned": 2, "succeeded": 0,
+                       "error_reason": "no_api_key"}
 
 
 def test_sub_cap_stops_run(scored_client, monkeypatch):

@@ -11,6 +11,10 @@ vi.mock('./api-client', async (importOriginal) => {
     createCriterion: vi.fn(),
     deleteCriterion: vi.fn(),
     patchParagraph: vi.fn(),
+    translateDocument: vi.fn(),
+    restoreRevision: vi.fn(),
+    updateTranslatorConfig: vi.fn(),
+    getDocument: vi.fn(),
   };
 });
 
@@ -21,8 +25,12 @@ import {
   evaluate,
   patchIssueStatus,
   patchParagraph,
+  translateDocument,
+  restoreRevision,
+  updateTranslatorConfig,
+  getDocument,
 } from './api-client';
-import type { Criterion } from './api-client';
+import type { Criterion, TranslatorConfig } from './api-client';
 import { useDemoStore } from './store';
 
 function issue(id: string, over: Partial<Issue> = {}): Issue {
@@ -36,7 +44,7 @@ function issue(id: string, over: Partial<Issue> = {}): Issue {
 function makeDoc(issues: Issue[]): Document {
   const para: Paragraph = {
     id: 1, idx: 0, source: 'ru', target: 'aaa bbb', scores: [], scoresPrev: null,
-    scoresBaseline: null, aggregate: null, aggregateBaseline: null, issues, terms: [],
+    scoresBaseline: null, aggregate: null, aggregateBaseline: null, best: null, issues, terms: [],
   };
   return {
     id: 1, title: 't', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1,
@@ -360,5 +368,73 @@ describe('criteria CRUD — add/remove (H-frontend)', () => {
     await expect(useDemoStore.getState().removeCriterion('accuracy')).rejects.toThrow('409');
     // criterion must remain in state — the failed delete did not mutate it
     expect(useDemoStore.getState().criteria).toHaveLength(1);
+  });
+});
+
+describe('saveTranslatorConfig (S4 §3.4)', () => {
+  it('PUTs the config and replaces translatorConfig in state', async () => {
+    const cfg: TranslatorConfig = { modelName: 'openai/gpt-5.4-mini', prompt: 'p', params: { temperature: 0 } };
+    vi.mocked(updateTranslatorConfig).mockResolvedValue(cfg);
+    await useDemoStore.getState().saveTranslatorConfig(cfg);
+    expect(updateTranslatorConfig).toHaveBeenCalledWith(cfg);
+    expect(useDemoStore.getState().translatorConfig).toEqual(cfg);
+  });
+});
+
+describe('retryTranslate (S4 §3.3)', () => {
+  it('re-POSTs /translate for the current document then refreshes it', async () => {
+    vi.mocked(translateDocument).mockResolvedValue({ status: 'started', total: 3 });
+    const refreshed = makeDoc([]);
+    vi.mocked(getDocument).mockResolvedValue(refreshed);
+    useDemoStore.setState({ document: makeDoc([]) });
+
+    await useDemoStore.getState().retryTranslate();
+
+    expect(translateDocument).toHaveBeenCalledWith(1);
+    expect(getDocument).toHaveBeenCalledWith(1);
+    expect(useDemoStore.getState().document).toEqual(refreshed);
+  });
+
+  it('is a no-op when no document is loaded', async () => {
+    useDemoStore.setState({ document: null });
+    await useDemoStore.getState().retryTranslate();
+    expect(translateDocument).not.toHaveBeenCalled();
+  });
+});
+
+describe('runFirstParagraphsEvaluate (S4 §3.3 — reuses the existing per-paragraph evaluate path)', () => {
+  it('evaluates each paragraph of the document in order', async () => {
+    const doc = makeDoc([]);
+    doc.paragraphs = [
+      { ...doc.paragraphs[0], id: 1, idx: 0 },
+      { ...doc.paragraphs[0], id: 2, idx: 1 },
+    ];
+    useDemoStore.setState({ document: doc, paraEvalState: {} });
+    vi.mocked(evaluate).mockResolvedValue(evalResponse);
+
+    await useDemoStore.getState().runFirstParagraphsEvaluate();
+
+    expect(evaluate).toHaveBeenCalledTimes(2);
+    expect(evaluate).toHaveBeenNthCalledWith(1, 1, undefined);
+    expect(evaluate).toHaveBeenNthCalledWith(2, 2, undefined);
+  });
+});
+
+describe('restoreParagraphRevision (S5 §3.3)', () => {
+  it('restores via POST and replaces the paragraph, marking it stale', async () => {
+    const restored: Paragraph = {
+      ...makeDoc([]).paragraphs[0],
+      target: 'restored text',
+    };
+    vi.mocked(restoreRevision).mockResolvedValue(restored);
+    useDemoStore.setState({ document: makeDoc([]), paraEvalState: { 0: {
+      loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false,
+    } } });
+
+    await useDemoStore.getState().restoreParagraphRevision(1, 0, 42);
+
+    expect(restoreRevision).toHaveBeenCalledWith(1, 42);
+    expect(useDemoStore.getState().document?.paragraphs[0].target).toBe('restored text');
+    expect(useDemoStore.getState().paraEvalState[0].stale).toBe(true);
   });
 });
