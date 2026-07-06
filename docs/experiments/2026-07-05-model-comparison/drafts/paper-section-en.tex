@@ -28,60 +28,77 @@
 % NOTE: paper-section-en-final.md contains NO BibTeX block -- only bracketed
 % author/year mentions inline (e.g. "[Botha et al. 2020]"). The entries
 % below were reconstructed from those in-text mentions solely to resolve
-% every \cite key used in Related Work. Entries marked TODO(cite) carry
-% lower-confidence bibliographic metadata (exact venue/pages/authors) and
-% MUST be checked against the actual publications before submission.
+% every \cite key used in Related Work. All 7 entries verified 2026-07-06
+% against ACL Anthology / arXiv / OpenReview / ACM DL (authors, titles,
+% venues, pages).
 \begin{filecontents*}[overwrite]{references.bib}
 @inproceedings{botha2020mewsli,
   author    = {Botha, Jan A. and Shan, Zifei and Gillick, Daniel},
   title     = {Entity Linking in 100 Languages},
   booktitle = {Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
   year      = {2020},
-  pages     = {7833--7845}
+  address   = {Online},
+  publisher = {Association for Computational Linguistics},
+  pages     = {7833--7845},
+  doi       = {10.18653/v1/2020.emnlp-main.630}
 }
 
 @article{decao2022mgenre,
-  author  = {De Cao, Nicola and Wu, Ledell and Popat, Kashyap and Artetxe, Mikel and Goyal, Naman and Plachouras, Vassilis and Chaudhary, Vishrav and Fan, Angela and Bakhtin, Anton and Wu, Yuning and Petroni, Fabio and Riedel, Sebastian},
+  author  = {De Cao, Nicola and Wu, Ledell and Popat, Kashyap and Artetxe, Mikel and Goyal, Naman and Plekhanov, Mikhail and Zettlemoyer, Luke and Cancedda, Nicola and Riedel, Sebastian and Petroni, Fabio},
   title   = {Multilingual Autoregressive Entity Linking},
   journal = {Transactions of the Association for Computational Linguistics},
   volume  = {10},
   pages   = {274--290},
-  year    = {2022}
+  year    = {2022},
+  publisher = {MIT Press},
+  doi     = {10.1162/tacl\_a\_00460}
 }
 
 @inproceedings{decao2021genre,
   author    = {De Cao, Nicola and Izacard, Gautier and Riedel, Sebastian and Petroni, Fabio},
   title     = {Autoregressive Entity Retrieval},
   booktitle = {International Conference on Learning Representations (ICLR)},
-  year      = {2021}
+  year      = {2021},
+  url       = {https://openreview.net/forum?id=5k8F6UU39V}
 }
 
-% TODO(cite): verify exact authors/venue against the published DaMuEL paper.
+% arXiv-only preprint: positively ruled out of DLnLD@LREC-COLING-2024; no
+% peer-reviewed venue found as of 2026-07-06.
 @misc{damuel2023,
-  author = {{DaMuEL}},
-  title  = {DaMuEL: A Dataset for Multilingual Entity Linking},
-  year   = {2023}
+  author = {Kube\v{s}a, David and Straka, Milan},
+  title  = {{DaMuEL}: A Large Multilingual Dataset for Entity Linking},
+  year   = {2023},
+  eprint = {2306.09288},
+  archivePrefix = {arXiv}
 }
 
-% TODO(cite): verify exact authors/venue for the cross-lingual link-sparsity study.
-@misc{gerlach2021,
-  author = {Gerlach, Martin and others},
-  title  = {Cross-Lingual Wikipedia Link Sparsity},
-  year   = {2021}
+@inproceedings{gerlach2021,
+  author    = {Gerlach, Martin and Miller, Marshall and Ho, Rita and Harlan, Kosta and Difallah, Djellel},
+  title     = {Multilingual Entity Linking System for Wikipedia with a Machine-in-the-Loop Approach},
+  booktitle = {Proceedings of the 30th ACM International Conference on Information and Knowledge Management (CIKM)},
+  year      = {2021},
+  pages     = {3818--3827},
+  doi       = {10.1145/3459637.3481939}
 }
 
-% TODO(cite): verify exact venue/pages for KG-MT.
-@misc{conia2024kgmt,
-  author = {Conia, Simone and others},
-  title  = {{KG-MT}: Knowledge-Graph-Retrieval-Augmented Entity Translation},
-  year   = {2024}
+@inproceedings{conia2024kgmt,
+  author    = {Conia, Simone and Lee, Daniel and Li, Min and Minhas, Umar Farooq and Potdar, Saloni and Li, Yunyao},
+  title     = {Towards Cross-Cultural Machine Translation with Retrieval-Augmented Generation from Multilingual Knowledge Graphs},
+  booktitle = {Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  year      = {2024},
+  address   = {Miami, Florida, USA},
+  publisher = {Association for Computational Linguistics},
+  pages     = {16343--16360}
 }
 
-% TODO(cite): verify official shared-task report citation for SemEval-2025 Task 2 (EA-MT).
-@misc{semeval2025eamt,
-  author = {{SemEval-2025 Task 2 Organizers}},
-  title  = {{SemEval-2025} Task 2: Entity-Aware Machine Translation},
-  year   = {2025}
+@inproceedings{semeval2025eamt,
+  author    = {Conia, Simone and Li, Min and Navigli, Roberto and Potdar, Saloni},
+  title     = {{SemEval}-2025 Task 2: Entity-Aware Machine Translation},
+  booktitle = {Proceedings of the 19th International Workshop on Semantic Evaluation (SemEval-2025)},
+  year      = {2025},
+  address   = {Vienna, Austria},
+  publisher = {Association for Computational Linguistics},
+  pages     = {2535--2557}
 }
 \end{filecontents*}
 
@@ -394,8 +411,10 @@ terminology rather than a verified partition.
 \label{sec:related}
 
 Building reference annotations from Wikipedia's own hyperlinks is
-established practice. Mewsli-9~\citet{botha2020mewsli} extracts anchor texts
+established practice. Mewsli-9~\citep{botha2020mewsli} extracts anchor texts
 as linked mentions and resolves them to Wikidata across nine languages;
+% TODO(verify): the 0.89--0.90 R@1 range could not be pinned to a source in
+% the 2026-07-06 citation pass (mGENRE's 90.2 micro-accuracy IS confirmed).
 supervised multilingual linkers reach 0.89--0.90 R@1 on it, with
 mGENRE~\citep{decao2022mgenre} reporting 90.2 micro-accuracy. Neither covers
 Russian, and both train on the very link distribution they are scored
