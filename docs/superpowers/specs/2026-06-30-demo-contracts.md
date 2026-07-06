@@ -49,6 +49,7 @@ interface Term {
   pairAccuracy: Verdict | null; // 🟢 верный · 🟡 спорный · 🔴 неверный; null при difficulty='red'
   recommended: string | null;   // рекомендуемый EN-эквивалент (🟡/🔴); null при difficulty='red'
   note: string;
+  traceJson: Record<string, unknown>; // rev-5: parsed `term.trace_json` — полный лог решения граундинга (GroundingTrace v1, §4); '{}' пока не проставлено enrichment-скриптом/трейсом
 }
 
 // ───────── контрибьюшен 2: оценщики и находки ─────────
@@ -364,6 +365,7 @@ GET  /api/health -> {service, status, limits: {maxParagraphs, maxParaChars}}
 - `translate:true` ⇒ every `paragraphs[].target` MUST be empty (`""`) — a non-empty target on ANY paragraph → `422 {detail:'mixed_targets'}`. Server FORCES `precompute:false` regardless of the body's `precompute` value (translating into empty targets must never trigger a paid judge pass over garbage).
 - `translate:true` documents get `target=seed_target=''` at creation; the first `target_revision` (`origin='upload'`) is written once translate.py actually fills a paragraph in (`origin='translate'`), not at creation time.
 - Document DTO gains a `translation` block (present whenever `precompute` is, i.e. `origin==='upload'`): `{status:'running'|'done'|'failed', done, total, errorReason?}`, mirroring `precompute`'s shape.
+- **Pre-existing gap surfaced by this delta:** `document.origin: 'seed'|'upload'` (used above and by `DELETE`/`/reset`/`/translate`'s 403/409 gates) predates rev-5 but was never added to the §1 `DocumentSummary`/`Document` interfaces or the §4 `document` DDL — `app.py` has always serialized it (`"origin": d["origin"]`) and [webapp.md](../../subsystems/webapp.md) documents the column, but this SSOT doc does not. Flagged, not backfilled here (out of the rev-5 delta's own scope — the field itself shipped with the original demo, not this wave).
 
 `GET /api/documents/{id}` paragraph DTO gains `best: {aggregate, revisionId, createdAt, isCurrent} | null` — the highest-`aggregate` scored revision (`kind IN ('seed','live')` only, `kind='cache'` excluded, tie-break newest); `null` if the paragraph has no scored revision yet.
 
@@ -373,7 +375,7 @@ GET  /api/health -> {service, status, limits: {maxParagraphs, maxParaChars}}
 
 `PUT /api/models/{name}` `apiKey` semantics changed from a falsy-check to a **presence-check**: `apiKey` absent from the body ⇒ keep the existing key (unchanged); `apiKey` present (including `""`) ⇒ use it verbatim, so `{apiKey: ""}` now explicitly clears a previously-set key. Previously an empty string was indistinguishable from "omitted" and silently kept the old key (known_issues.md, now resolved).
 
-**Not implemented despite being spec'd — `Term.traceJson`.** [2026-07-05-glossary-redesign-impl.md §4](2026-07-05-glossary-redesign-impl.md) required `_term_dict` to add a `traceJson: Record<string,unknown>` field (parsed `term.trace_json`) to the §1 `Term` interface, to drive the Glossary tab's grounding-path stepper. This was never done — the field is absent from both `_term_dict`'s output and this doc's `Term` interface (§1), so they agree with each other but not with the shipped Glossary UI, which reads `term.traceJson` and always falls back to the no-trace degraded render as a result. See [known_issues.md](../../known_issues.md) "`Term.traceJson` is never sent to the frontend" for the full finding.
+**`Term.traceJson` (rev-5, corrected 2026-07-06).** [2026-07-05-glossary-redesign-impl.md §4](2026-07-05-glossary-redesign-impl.md) required `_term_dict` to add a `traceJson: Record<string,unknown>` field (parsed `term.trace_json`) to the §1 `Term` interface, to drive the Glossary tab's grounding-path stepper. An earlier revision of this doc claimed this was never done — that was **wrong**: `_term_dict` (`app.py`) does emit `"traceJson": json.loads(r["trace_json"]) if r["trace_json"] else {}` (commit `7f3b56a`, covered by `tests/test_term_dict.py::test_trace_json_serialized_as_parsed_object`), and the `Term` interface above now lists it. The stale "not implemented" note and its `known_issues.md` counterpart were doc-only drift (the code had already shipped the field in the same commit that added the note) — see the 2026-07-06 doc-parity audit report for the full finding. Note frontend `api-client.ts`'s own `Term` interface still does not declare `traceJson` (only the `TermWithTrace` intersection type in `glossary-grouping.ts` does) — a follow-up for whoever next touches that file, not a wire/backend gap.
 
 ### 7.3 `_client_for` gains an explicit params override
 

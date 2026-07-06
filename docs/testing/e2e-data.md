@@ -63,6 +63,20 @@ States, 1:1 with the spec's e2e checklist (§5.8) — each is at least one scree
 14. Reset on the uploaded document: confirm → translation reverts to the uploaded text.
 15. Delete the upload: confirm dialog → dropdown no longer lists it, seed document is active.
 
+## Journey: AI-translate / revision history / export (wave-5, all must pass)
+
+Uses the same "Upload a custom pair" modal as above, plus the Settings Translator card and the
+per-paragraph History block. Full design: [contracts spec §7](../superpowers/specs/2026-06-30-demo-contracts.md#72-newchanged-rest),
+[2026-07-05-translator.md](../superpowers/specs/2026-07-05-translator.md),
+[2026-07-05-score-history-best.md](../superpowers/specs/2026-07-05-score-history-best.md),
+[2026-07-05-export-xlsx.md](../superpowers/specs/2026-07-05-export-xlsx.md).
+
+1. Upload modal, source-only (no `target` pasted): `ai-translate-card` (`data-testid`) shows an "AI-translate" CTA (`ai-translate-cta`) naming the configured translator model; Step 2 is skipped; submit via `upload-submit-translate`.
+2. Document opens with a `Translating N/total…` badge; polls until `done` (or `failed` with `errorReason` — no API key / budget exhausted — surfaces a Retry affordance, per `translate.py`'s `_classify_failure`).
+3. A paragraph's `revision-history` block (`InspectorPanel`) lists past revisions (`history-row-{id}`), each restorable via `history-restore-{id}`; the highest-scored one is flagged best.
+4. Restore a non-current revision: `target` reverts to that text, a NEW `origin='restore'` revision is written (restore is itself tracked, not a rewind), and the paragraph's score resets to "not scored" until the next explicit Evaluate — restoring does **not** copy the old score. **Known bug (wave-5 e2e, [wave5-run.md §4.1](../reports/e2e/wave5-run.md))**: the History list does not always refresh with the new revision immediately after a successful Restore in the same session — a manual reload (or the next `GET /api/paragraphs/{pid}/revisions`) shows the correct, complete list. Not yet fixed; retest after any History-block refetch change.
+5. `export-btn` in the top bar opens `export-menu` with two items, `export-xlsx` and `export-md`; each downloads a file named `{slug}-{doc_id}.{ext}` (verified end-to-end in [wave5-run.md](../reports/e2e/wave5-run.md): xlsx round-trips through `openpyxl` — 15¶+header+meta rows, frozen header, score-colored cells; md is a valid GFM table).
+
 ## Out of scope (do not test / do not seed)
 
 - Live model inference on the seeded document (no key — see above).
