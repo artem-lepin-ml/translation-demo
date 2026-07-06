@@ -439,14 +439,16 @@ def test_llm_semaphore_bounds_concurrent_extract_and_judge_calls(monkeypatch):
     lock = threading.Lock()
 
     class FakeLLMClient:
-        """Counts concurrent complete_retrying() calls; distinguishes judge
-        calls (non-empty `system`) from extract calls (system="") to return
-        shaped-appropriately content for each."""
+        """Counts concurrent complete() calls (retries now loop over
+        client.complete() inside wiki_eval's own _complete_with_slot helper,
+        not client.complete_retrying -- see its docstring); distinguishes
+        judge calls (non-empty `system`) from extract calls (system="") to
+        return shaped-appropriately content for each."""
 
         def __init__(self, config):
             self.config = config
 
-        def complete_retrying(self, system, user, **kw):
+        def complete(self, system, user):
             with lock:
                 in_flight[0] += 1
                 max_in_flight[0] = max(max_in_flight[0], in_flight[0])
@@ -767,24 +769,142 @@ def test_parallel_extract_fn_without_tracker_still_tolerates_silently():
     assert results == [["good"], []]
 
 
+# ── _complete_with_slot: semaphore released during backoff (2026-07-06) ────
+#
+# Root cause diagnosed live via py-spy: the old code held the llm_semaphore
+# slot around the ENTIRE complete_retrying(...) call, backoff sleeps
+# included. Under a sustained upstream 429 storm, all N slots ended up held
+# by threads that were merely sleeping (observed: 8/8 slots sleeping,
+# ~20 threads queued on acquire, zero open connections for over an hour) --
+# throughput collapsed to zero. The fix moves the retry loop into wiki_eval
+# itself (_complete_with_slot) so the slot is acquired fresh for each
+# individual network attempt and released before the backoff sleep.
+
+
+def test_complete_with_slot_releases_semaphore_during_backoff_sleep(monkeypatch):
+    """The whole point of the fix: while a call is sleeping between retry
+    attempts, the llm_semaphore slot must be free for another thread to use
+    -- not held for the full 1..60s backoff window."""
+    from palimpsest.llm.client import LLMResult, Usage
+
+    calls: list[int] = []
+
+    class FlakyOnceClient:
+        def complete(self, system, user):
+            calls.append(1)
+            if len(calls) == 1:
+                raise TimeoutError("transient")
+            return LLMResult(content="ok", usage=Usage(1, 1, 0, 0.0))
+
+    semaphore = threading.Semaphore(1)  # single slot: any hold during sleep would show up
+    slot_free_during_sleep: list[bool] = []
+
+    def fake_sleep(seconds):
+        acquired = semaphore.acquire(blocking=False)
+        slot_free_during_sleep.append(acquired)
+        if acquired:
+            semaphore.release()
+
+    monkeypatch.setattr(wiki_eval.time, "sleep", fake_sleep)
+
+    result = wiki_eval._complete_with_slot(
+        FlakyOnceClient(), "sys", "user", semaphore, attempts=3, backoff=(0.01, 0.01, 0.01),
+    )
+
+    assert result.content == "ok"
+    assert len(calls) == 2  # one transient failure, then success
+    assert slot_free_during_sleep == [True]  # free during the one backoff window
+
+
+def test_complete_with_slot_deterministic_error_raises_without_retry(monkeypatch):
+    """A deterministic error (bad request / bad config) must raise on the
+    first attempt, with no backoff sleep and no further attempts -- a retry
+    would just burn another paid call and fail identically."""
+    calls: list[int] = []
+
+    class BadClient:
+        def complete(self, system, user):
+            calls.append(1)
+            raise ValueError("400 bad request -- misconfigured model id")
+
+    def fail_if_called(seconds):
+        raise AssertionError("must not sleep on a deterministic error")
+
+    monkeypatch.setattr(wiki_eval.time, "sleep", fail_if_called)
+    semaphore = threading.Semaphore(1)
+
+    with pytest.raises(ValueError):
+        wiki_eval._complete_with_slot(
+            BadClient(), "sys", "user", semaphore,
+            attempts=wiki_eval.RESILIENT_ATTEMPTS, backoff=wiki_eval.RESILIENT_BACKOFF,
+        )
+
+    assert len(calls) == 1
+
+
+def test_complete_with_slot_acquires_semaphore_once_per_attempt(monkeypatch):
+    """Each retry attempt acquires+releases the slot on its own -- the slot is
+    never held across the whole retry loop, only for the duration of each
+    individual client.complete() call."""
+    from palimpsest.llm.client import LLMResult, Usage
+
+    acquire_count = [0]
+
+    class CountingSemaphore:
+        def __init__(self):
+            self._sem = threading.Semaphore(4)
+
+        def __enter__(self):
+            self._sem.acquire()
+            acquire_count[0] += 1
+            return self
+
+        def __exit__(self, *exc):
+            self._sem.release()
+
+    calls: list[int] = []
+
+    class FlakyTwiceClient:
+        def complete(self, system, user):
+            calls.append(1)
+            if len(calls) < 3:
+                raise TimeoutError("transient")
+            return LLMResult(content="ok", usage=Usage(1, 1, 0, 0.0))
+
+    monkeypatch.setattr(wiki_eval.time, "sleep", lambda s: None)
+    semaphore = CountingSemaphore()
+
+    result = wiki_eval._complete_with_slot(
+        FlakyTwiceClient(), "sys", "user", semaphore,
+        attempts=wiki_eval.RESILIENT_ATTEMPTS, backoff=wiki_eval.RESILIENT_BACKOFF,
+    )
+
+    assert result.content == "ok"
+    assert len(calls) == 3
+    assert acquire_count[0] == 3  # acquired exactly once per attempt, not once total
+
+
 # ── _build_judge / _build_extract_fn: resilient retries + judge tolerance ──
 
 
 def _fake_llm_client_factory(*, always_raise=None, contents=None):
     """Builds a FakeLLMClient class for monkeypatching
-    palimpsest.llm.client.LLMClient. ``always_raise`` (if set) is raised on
-    every complete_retrying call, simulating complete_retrying itself having
-    already exhausted its own attempts/backoff loop against a flapping
-    route. ``contents`` (if set) is a list of successive ``.content`` values
-    returned across calls, in order (one entry consumed per call)."""
+    palimpsest.llm.client.LLMClient. Fakes ``.complete()`` (the bare,
+    non-retrying network call) -- retries now loop over ``.complete()``
+    inside wiki_eval's own ``_complete_with_slot`` helper, they are no longer
+    delegated to ``client.complete_retrying`` (semaphore-starvation fix,
+    2026-07-06). ``always_raise`` (if set) is raised on EVERY ``.complete()``
+    call, simulating a route that keeps 429/503-flapping across every retry
+    attempt. ``contents`` (if set) is a list of successive ``.content``
+    values returned across calls, in order (one entry consumed per call)."""
     calls: list[dict] = []
 
     class FakeLLMClient:
         def __init__(self, config):
             self.config = config
 
-        def complete_retrying(self, system, user, **kw):
-            calls.append({"system": system, "user": user, "kw": kw})
+        def complete(self, system, user):
+            calls.append({"system": system, "user": user})
             if always_raise is not None:
                 raise always_raise
             from palimpsest.llm.client import LLMResult, Usage
@@ -799,10 +919,13 @@ def test_build_judge_transient_exhausted_raises_and_counts(monkeypatch):
     must propagate unchanged (LabelFirstGrounding.ground() already treats ANY
     judge exception as terminal judge_unavailable) but must ALSO increment
     FailureTracker.n_failed_judge_calls -- otherwise a run could silently
-    degrade with no owner-visible signal."""
+    degrade with no owner-visible signal. Retries (and their backoff sleeps)
+    now happen inside wiki_eval's own _complete_with_slot helper -- monkeypatch
+    time.sleep so this test doesn't actually wait out 1+3+9+20+40s."""
     FakeLLMClient, calls = _fake_llm_client_factory(always_raise=TimeoutError("exhausted"))
     monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+    monkeypatch.setattr(wiki_eval.time, "sleep", lambda s: None)
 
     guard = wiki_eval.BudgetGuard(max_usd=1000.0)
     llm_semaphore = wiki_eval._CountingSemaphore(4)
@@ -813,7 +936,7 @@ def test_build_judge_transient_exhausted_raises_and_counts(monkeypatch):
         judge("some judge prompt")
 
     assert tracker.n_failed_judge_calls == 1
-    assert len(calls) == 1  # this wrapper does not itself retry a raw exception
+    assert len(calls) == wiki_eval.RESILIENT_ATTEMPTS  # all 6 attempts exhausted, then raised
 
 
 def test_build_judge_transient_exhausted_used_with_real_grounding_leaves_mention_unresolved():
@@ -907,37 +1030,50 @@ def test_build_judge_malformed_json_gives_up_after_one_reask_and_counts(monkeypa
 
 
 def test_build_judge_uses_resilient_attempts_and_backoff(monkeypatch):
-    """Task requirement: judge closures pass attempts=6,
-    backoff=(1,3,9,20,40,60) -- long enough to ride out a multi-minute
-    CloseRouter circuit-breaker window, not client.py's 3-attempt default."""
-    FakeLLMClient, calls = _fake_llm_client_factory(contents=['{"qid": null, "reason": "n/a"}'])
+    """Task requirement: judge closures retry up to RESILIENT_ATTEMPTS=6
+    times with RESILIENT_BACKOFF=(1,3,9,20,40,60) sleeps between them -- long
+    enough to ride out a multi-minute CloseRouter circuit-breaker window, not
+    client.py's 3-attempt complete_retrying default. Retries are driven by
+    wiki_eval's own _complete_with_slot helper (not delegated to
+    complete_retrying, semaphore-starvation fix 2026-07-06), so this is now
+    observed via the actual number of client.complete() calls and the
+    recorded backoff sleep durations, not via kwargs passed to the client."""
+    FakeLLMClient, calls = _fake_llm_client_factory(always_raise=TimeoutError("flapping"))
     monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+    sleeps: list[float] = []
+    monkeypatch.setattr(wiki_eval.time, "sleep", lambda s: sleeps.append(s))
 
     guard = wiki_eval.BudgetGuard(max_usd=1000.0)
     llm_semaphore = wiki_eval._CountingSemaphore(4)
     judge = wiki_eval._build_judge(guard, llm_semaphore)
-    judge("prompt")
 
-    assert calls[0]["kw"]["attempts"] == 6 == wiki_eval.RESILIENT_ATTEMPTS
+    with pytest.raises(TimeoutError):
+        judge("prompt")
+
     assert wiki_eval.RESILIENT_BACKOFF == (1.0, 3.0, 9.0, 20.0, 40.0, 60.0)
-    assert calls[0]["kw"]["backoff"] == wiki_eval.RESILIENT_BACKOFF
+    assert len(calls) == 6 == wiki_eval.RESILIENT_ATTEMPTS
+    assert sleeps == list(wiki_eval.RESILIENT_BACKOFF[:5])  # 5 sleeps between 6 attempts
 
 
 def test_build_extract_fn_uses_resilient_attempts_and_backoff(monkeypatch):
     """Same requirement as above, for the extraction closure."""
-    FakeLLMClient, calls = _fake_llm_client_factory(contents=["[]"])
+    FakeLLMClient, calls = _fake_llm_client_factory(always_raise=TimeoutError("flapping"))
     monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+    sleeps: list[float] = []
+    monkeypatch.setattr(wiki_eval.time, "sleep", lambda s: sleeps.append(s))
 
     guard = wiki_eval.BudgetGuard(max_usd=1000.0)
     llm_semaphore = wiki_eval._CountingSemaphore(4)
     extract_fn = wiki_eval._build_extract_fn(guard, llm_semaphore)
-    extract_fn("some paragraph")
 
-    assert calls[0]["kw"]["attempts"] == 6 == wiki_eval.RESILIENT_ATTEMPTS
+    with pytest.raises(TimeoutError):
+        extract_fn("some paragraph")
+
     assert wiki_eval.RESILIENT_BACKOFF == (1.0, 3.0, 9.0, 20.0, 40.0, 60.0)
-    assert calls[0]["kw"]["backoff"] == wiki_eval.RESILIENT_BACKOFF
+    assert len(calls) == 6 == wiki_eval.RESILIENT_ATTEMPTS
+    assert sleeps == list(wiki_eval.RESILIENT_BACKOFF[:5])
 
 
 # ── meta.json counters wiring ────────────────────────────────────────────────

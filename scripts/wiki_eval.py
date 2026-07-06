@@ -22,6 +22,7 @@ import json
 import os
 import sys
 import threading
+import time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -328,6 +329,42 @@ class FailureTracker:
 # ── extractor + judge builders (E-D16 bridge) ────────────────────────────────
 
 
+def _complete_with_slot(client, system: str, user: str,
+                         semaphore: _CountingSemaphore | threading.Semaphore, *,
+                         attempts: int, backoff: tuple[float, ...]):
+    """Retry loop with the SAME contract as ``LLMClient.complete_retrying``
+    (bounded retries on transient errors only via
+    ``palimpsest.llm.client.is_transient_error``; a deterministic error
+    raises immediately; ``asyncio.CancelledError`` is a ``BaseException`` and
+    is never caught here, so it always propagates uncaught) -- except the
+    ``llm_semaphore`` slot is held ONLY across each individual
+    ``client.complete()`` attempt, never across the ``time.sleep`` backoff
+    between attempts.
+
+    This is the semaphore-starvation fix (diagnosed live via py-spy, 2026-07-06):
+    the previous code held the slot for the ENTIRE ``complete_retrying(...)``
+    call, backoff sleeps included, so under a sustained upstream 429 storm all
+    N slots ended up held by threads that were merely sleeping -- throughput
+    collapsed to ~zero with every slot occupied by a sleeper and ~20 threads
+    queued on ``acquire``. Releasing the slot during backoff lets other
+    threads make real network progress while this one waits to retry.
+
+    Shared by both ``_build_extract_fn``'s ``extractor()`` and
+    ``_build_judge``'s ``_call()`` so the loop is written exactly once.
+    """
+    from palimpsest.llm.client import is_transient_error
+
+    for i in range(attempts):
+        try:
+            with semaphore:
+                return client.complete(system, user)
+        except Exception as exc:  # noqa: BLE001 -- re-raised unless transient
+            if not is_transient_error(exc) or i == attempts - 1:
+                raise
+            time.sleep(backoff[min(i, len(backoff) - 1)])
+    raise RuntimeError("unreachable")  # pragma: no cover
+
+
 def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
                        model: str | None = None, provider: str | None = None):
     """Real NER extraction entry point: LLMClient + DEFAULT_NER_PROMPT ->
@@ -361,7 +398,11 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
     ``_parallel_extract_fn``, which is where the paragraph index and article
     title needed for the accounting are actually available. A deterministic
     error (bad request, bad config) is never tolerated anywhere -- it
-    propagates all the way out and kills the run.
+    propagates all the way out and kills the run. Retries (and their backoff
+    sleeps) are driven by the shared ``_complete_with_slot`` helper, which
+    holds ``llm_semaphore`` only during each network attempt -- never during
+    the sleep between attempts (semaphore-starvation fix, 2026-07-06; see its
+    docstring).
     """
     from palimpsest.llm.client import LLMClient, LLMConfig
 
@@ -378,11 +419,10 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
         if not guard.can_reserve(EST_COST_PER_EXTRACT_CALL, kind="extract"):
             raise RuntimeError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_EXTRACT_CALL, kind="extract")
-        with llm_semaphore:
-            reply = client.complete_retrying(
-                system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source),
-                attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
-            )
+        reply = _complete_with_slot(
+            client, system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source),
+            semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
+        )
         actual_cost = reply.usage.cost_usd
         if actual_cost is None and reply.usage.prompt_tokens:
             actual_cost = (reply.usage.prompt_tokens * PRICE_IN
@@ -499,7 +539,10 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
     Last-resort tolerance (qwen-run resilience patch, 2026-07-05): retries at
     ``RESILIENT_ATTEMPTS``/``RESILIENT_BACKOFF`` (6 attempts, up to 60s
     backoff) instead of ``complete_retrying``'s 3-attempt default, to ride
-    out CloseRouter's multi-minute circuit-breaker windows. If a call is
+    out CloseRouter's multi-minute circuit-breaker windows -- via the shared
+    ``_complete_with_slot`` helper, which holds ``llm_semaphore`` only during
+    each network attempt, never during the sleep between attempts
+    (semaphore-starvation fix, 2026-07-06; see its docstring). If a call is
     still TRANSIENT-failing after that, or the reply is still not valid JSON
     after ONE corrective re-ask, this closure lets the exception propagate
     exactly as before this patch -- ``LabelFirstGrounding.ground()`` already
@@ -533,15 +576,15 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
     ))
 
     def _call(prompt: str, *, system: str) -> str:
-        """One real judge network call: reserve, call (resilient retries), settle."""
+        """One real judge network call: reserve, call (resilient retries,
+        semaphore slot released during backoff), settle."""
         if not guard.can_reserve(EST_COST_PER_JUDGE_CALL, kind="judge"):
             raise RuntimeError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_JUDGE_CALL, kind="judge")
-        with llm_semaphore:
-            result = client.complete_retrying(
-                system=system, user=prompt,
-                attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
-            )
+        result = _complete_with_slot(
+            client, system=system, user=prompt,
+            semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
+        )
         actual_cost = result.usage.cost_usd
         if actual_cost is None and result.usage.prompt_tokens:
             actual_cost = (result.usage.prompt_tokens * PRICE_IN
