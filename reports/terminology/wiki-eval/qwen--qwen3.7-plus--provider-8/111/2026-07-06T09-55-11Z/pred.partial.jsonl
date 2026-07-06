@@ -3678,3 +3678,27 @@
 {"title": "Микенская цивилизация", "index": 5437, "surface": "da-wo", "lemma": "da-wo", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
 {"title": "Микенская цивилизация", "index": 5447, "surface": "Месара", "lemma": "Месара", "qid": "Q1924039", "span_len": 1, "resolved_by": "llm_disambiguation"}
 {"title": "Микенская цивилизация", "index": 5451, "surface": "Крит", "lemma": "Крит", "qid": "Q34374", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 81, "surface": "Арахозию", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 84, "surface": "саков", "lemma": "саки", "qid": "Q673001", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 90, "surface": "юэчжей", "lemma": "юэчжи", "qid": "Q467985", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 92, "surface": "Средней Азии", "lemma": "Средняя Азия", "qid": "Q1211919", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 100, "surface": "Дрангиане", "lemma": "Дрангиана", "qid": "Q1074810", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 107, "surface": "Сакастаном", "lemma": "Сакастан", "qid": "Q757169", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 109, "surface": "Сеистан", "lemma": "Сеистан", "qid": "Q757169", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 120, "surface": "парфянами", "lemma": "парфяне", "qid": "Q28045596", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 140, "surface": "Арахозия", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 146, "surface": "сакской", "lemma": "сакский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Арахозия", "index": 158, "surface": "Александрия Кавказская", "lemma": "Александрия Кавказская", "qid": "Q2005166", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 176, "surface": "Арахозии", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 181, "surface": "Вонон", "lemma": "Вонон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Арахозия", "index": 182, "surface": "Спалахор", "lemma": "Спалахор", "qid": "Q2306507", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 198, "surface": "Спалагадам", "lemma": "Спалагадам", "qid": "Q7572953", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 202, "surface": "Спалахор", "lemma": "Спалахор", "qid": "Q2306507", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 204, "surface": "сакским", "lemma": "сакский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Арахозия", "index": 207, "surface": "Спалирис", "lemma": "Спалирис", "qid": "Q1754231", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 217, "surface": "индо-сакский", "lemma": "индо-сакский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арахозия", "index": 219, "surface": "Азес I", "lemma": "Азес I", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Арахозия", "index": 223, "surface": "Гандхаре", "lemma": "Гандхара", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Арахозия", "index": 226, "surface": "арабов", "lemma": "арабы", "qid": "Q35323", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 231, "surface": "Рухадж", "lemma": "Рухадж", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Арахозия", "index": 232, "surface": "Арахосия", "lemma": "Арахосия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
