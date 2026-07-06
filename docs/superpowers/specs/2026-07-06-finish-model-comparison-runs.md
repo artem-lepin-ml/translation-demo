@@ -31,28 +31,23 @@
 
 - **Документы** (финальные тексты в scratchpad — см. § Файлы): RU-отчёт v3 (0 точек с запятой, EMNLP-терминология), EN-секция v-final (Opus + Fable-полировка), схема пайплайна PNG/SVG. Плейсхолдеры в них: строка qwen и числа P_label (последние теперь известны — вписать).
 
-## Задача 1 — довести qwen3.7-plus (частичный чекпойнт)
+## Задача 1 — qwen3.7-plus ЗАВЕРШЁН, но ДЕГРАДИРОВАЛ (коммит после этой спеки)
 
-Прогон был жив на 87/100, закоммичен как частичный чекпойнт (`100864f`). Если контейнер новый — процесс убит, но `pred.partial.jsonl` (87 статей) сохранён.
+Прогон дошёл до 100/100 (`.../2026-07-06T09-55-11Z/`, есть `pred.jsonl`/`meta.json`/`metrics.json`), НО **непригоден как измерение качества**: маршрут provider-8 задушился в середине, **2 115 из 2 644 абзацев (80 %) провалились** по исчерпанию ретраев и были громко занулены. Всего 3 889 предсказаний против 20 960 у gemini. Итог **R_doc = 0.092** — это артефакт недоступности маршрута, НЕ качество модели.
 
-1. **Проверить**, не завершился ли прогон в старом контейнере: `ls reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/` — если есть `pred.jsonl` + `meta.json`, значит готов, переходить к report.
-2. **Иначе — возобновить** (маршрут qwen@provider-8 был рабочим 3/3; проверить пробой перед запуском, при 429/503 подождать):
+Решение новой сессии (одно из двух):
+1. **Перепрогнать на здоровом маршруте.** Проблема: triage показал, что у qwen **нет стабильного маршрута** через шлюз (лучший `auto` 8/10, provider-8 6/10). Перед запуском обязательно пробой 3+ вызовами; если success < 9/10 — не запускать, деньги сгорят так же. Возможно, дождаться другого окна или другого провайдера. Команда (с `--resume` смысла нет, старый pred непригоден — свежий run):
    ```
    PYTHONPATH=src uv run python scripts/wiki_eval.py run \
      --gt data/eval/wiki/gt_v2.jsonl --config 111 \
-     --model qwen/qwen3.7-plus --provider provider-8 \
+     --model qwen/qwen3.7-plus --provider <здоровый-маршрут> \
      --max-usd 12 --max-judge-calls 30000 --llm-workers 4 --article-workers 10 \
-     --wikidata-workers 2 --wikidata-cache reports/terminology/wikidata_cache.qwen.jsonl \
-     --resume reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/
+     --wikidata-workers 2 --wikidata-cache reports/terminology/wikidata_cache.qwen.jsonl
    ```
-   Фоном (harness-tracked, не через субагента — супервизия через субагента дважды теряла процесс этой ночью). Осталось ~13 статей, ~20–30 мин.
-3. **Report с P3 + чистые sitelink-числа**:
-   ```
-   PYTHONPATH=src uv run python scripts/wiki_eval.py report --p3 \
-     --gt data/eval/wiki/gt_v2.jsonl --pred <run_dir>
-   ```
-   Затем чистые (без sitelink) числа реплеем: `scratchpad/sitelink_contamination.py` (переиспользуемый, дать ему кэш `wikidata_cache.qwen.jsonl`).
-4. Закоммитить run dir; вписать строку qwen во все документы и таблицы.
+   Фоном (harness-tracked, НЕ через субагента). Затем `report --p3` + чистые sitelink-числа (`scripts/replay_sitelink_contamination.py`).
+2. **Отчитать как reliability-жертву** (рекомендуется, если маршрут не оживёт). В таблице сравнения строка qwen: «run degraded — 80 % extraction failures, no stable gateway route; R_doc 0.092 not a quality measurement». Это усиливает нарратив «надёжность маршрута — измеряемый фактор выбора модели», а не портит его. Числа деградировавшего прогона задокументированы, не выдумывать «исправленные».
+
+Итог по матрице: **валидны 2 модели (gemini, deepseek)**, qwen — деградировал, gpt-5.5 — заблокирован (Задача 2). Для сравнения качества это gemini vs deepseek; qwen и gpt-5.5 — часть reliability-вывода.
 
 ## Задача 2 — gpt-5.5 (опционально, заблокирован провайдером)
 

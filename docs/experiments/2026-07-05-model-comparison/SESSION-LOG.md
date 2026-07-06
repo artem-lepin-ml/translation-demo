@@ -26,7 +26,7 @@ qwen → provider-8 (чистого маршрута нет — reliability-на
 |---|---|---|---|
 | gemini-3.1-flash-lite | `reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z/` | 0.690 | ✅ готов |
 | deepseek-v4-flash | `reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--provider-9/111/2026-07-05T23-35-52Z/` | 0.614 | ✅ готов |
-| qwen3.7-plus | `reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/` | — | ⏳ 87/100, `--resume` |
+| qwen3.7-plus | `reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/` | 0.092 | ⚠️ ДЕГРАДИРОВАЛ (80% отказов, не измерение качества) |
 | gpt-5.5 | — | — | ❌ заблокирован 429 провайдера |
 
 Инциденты ночи (все дали коммит + тест): Wikidata-429 (Retry-After обрезался), circuit-breaker auto qwen,
