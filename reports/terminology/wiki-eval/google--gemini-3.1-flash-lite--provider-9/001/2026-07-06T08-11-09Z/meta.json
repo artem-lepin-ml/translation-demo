@@ -1,0 +1,33 @@
+{
+ "article_workers": 6,
+ "calls": {
+  "extract": 389,
+  "judge": 604
+ },
+ "config": "001",
+ "failed_paragraphs": [],
+ "finished_at": "2026-07-06T08:16:39.318852+00:00",
+ "llm_max_in_flight_observed": 8,
+ "llm_semaphore": 8,
+ "max_judge_calls": 30000,
+ "max_usd": 12.0,
+ "model": "google/gemini-3.1-flash-lite",
+ "n_articles": 20,
+ "n_failed_judge_calls": 0,
+ "n_failed_paragraphs": 0,
+ "n_paragraphs": 389,
+ "n_pred_mentions": 3543,
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "provider-9",
+ "run_id": "2026-07-06T08-11-09Z",
+ "spend": {
+  "extract": 0.06271399999999948,
+  "judge": 0.02174200000000017,
+  "total": 0.08445600000000125
+ },
+ "started_at": "2026-07-06T08:11:09.163059+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 330.155793,
+ "wikidata_workers": 2
+}
