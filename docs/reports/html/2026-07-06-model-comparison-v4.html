@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Model-comparison wiki-eval — ПРОМЕЖУТОЧНЫЙ отчёт (v4-draft)</title>
+<title>Model-comparison wiki-eval — Финальный отчёт v4</title>
 <style>
   /* Tokyo Night tokens — single source of truth is .claude/rules/tokyo-night.css.
      Inlined here (self-contained report, no external assets). Do not add new
@@ -139,10 +139,11 @@
 <div class="wrap">
 
   <header class="report-header">
-    <h1>Model-comparison wiki-eval — <span style="color:var(--yel);">ПРОМЕЖУТОЧНЫЙ отчёт (v4-draft)</span></h1>
+    <h1>Model-comparison wiki-eval — <span style="color:var(--green);">Финальный отчёт v4</span></h1>
     <p class="meta">dev-demo · эксперимент <code>2026-07-05-model-comparison</code> · спека
-      <code>docs/superpowers/specs/2026-07-06-finish-model-comparison-runs.md</code> · срез на 2026-07-06 15:30Z ·
-      qwen3.7-plus в полёте — числа ниже будут дополнены версией финального отчёта</p>
+      <code>docs/superpowers/specs/2026-07-06-finish-model-comparison-runs.md</code> · финальный срез на 2026-07-06 ·
+      чистый ре-ран <strong>qwen3.7-plus</strong> запущен и идёт в фоне (1/100 статей на момент рендера, run dir
+      <code>...T18-29-18Z</code>) — версия 4.1 выйдет, когда он завершится и пройдёт integrity-гейт</p>
   </header>
 
   <!-- 1. Главное — summary lead: outcome + verdict, 1-2 sentences. -->
@@ -152,19 +153,23 @@
       На корпусе 100 статей (7&nbsp;959 эталонных упоминаний) <strong>gemini-3.1-flash-lite</strong> опережает
       <strong>deepseek-v4-flash</strong> по R_doc: <strong>0.690 против 0.614</strong>. Вся разница создаётся
       покрытием NER-извлечения (0.763 против 0.632) — точность grounding при найденном упоминании у моделей
-      практически идентична (0.814 и 0.815). Сессия сейчас доводит третью модель
-      (<strong>qwen3.7-plus</strong>, 52/100 статей на 15:24Z) и финализирует артефакты (.tex, docx, библиография)
-      для версии 4 отчёта — это <strong>промежуточный, не финальный</strong> срез.
+      практически идентична (0.814 и 0.815). Третья модель, <strong>qwen3.7-plus</strong>, в сравнение не входит:
+      её прогон <strong>инвалидирован сбоем провайдера</strong>, а не качеством модели (разбор — блок 3 ниже);
+      <strong>gpt-5.5</strong> исключён из эксперимента — за весь период (&gt;16&nbsp;ч) не нашлось ни одного
+      стабильного маршрута через шлюз. Это финальная версия 4 отчёта по двум завершённым моделям; чистый ре-ран
+      qwen3.7-plus уже идёт в фоне, версия 4.1 выйдет, когда он пройдёт integrity-гейт.
     </p>
-    <span class="badge badge--warn">ПРОМЕЖУТОЧНЫЙ — v4-draft, qwen в процессе (52/100)</span>
+    <span class="badge badge--pass">ФИНАЛЬНЫЙ v4 — gemini vs deepseek: R_doc 0.690 / 0.614</span>
+    <span class="badge badge--fail" style="margin-left:.5rem;">Provider reliability — qwen инвалидирован, gpt-5.5 исключён</span>
   </section>
 
   <!-- 2. 360 diagram — radar with per-aspect scores (aspects map to axes) + overall verdict badge. -->
   <section class="section" id="radar-360">
-    <h2><span class="idx">2</span> 360&deg; статус сессии</h2>
+    <h2><span class="idx">2</span> 360&deg; статус финальной поставки</h2>
     <p style="margin:0 0 1rem;font-size:.85rem;opacity:.75;">
-      Оси — не ревью-аспекты verify-pr, а срез готовности этой сессии (данные эксперимента vs финализация
-      артефактов vs операционная надёжность); шкала 0–100 = доля выполненного по задаче спеки
+      Оси — не ревью-аспекты verify-pr, а срез готовности финальной версии 4 (прогоны, числа, документы,
+      верификация) плюс отдельная ось надёжности внешних провайдеров, ставшая центральной находкой этой сессии;
+      шкала 0–100 = доля выполненного по задаче спеки
       <code>2026-07-06-finish-model-comparison-runs.md</code>.
     </p>
     <div class="radar-wrap">
@@ -181,25 +186,25 @@
         <line class="axis" x1="150" y1="150" x2="150" y2="270" />
         <line class="axis" x1="150" y1="150" x2="46" y2="210" />
         <line class="axis" x1="150" y1="150" x2="46" y2="90" />
-        <polygon class="plot" points="150,57.5 253.9,90 230.1,196.3 150,248 46.1,210 108,125.8" />
-        <text x="150" y="12" text-anchor="middle">Прогоны</text>
+        <polygon class="plot" points="150,41 253.9,90 244.4,204.5 150,253.5 46.1,210 108,125.8" />
+        <text x="150" y="12" text-anchor="middle">Прогоны/модели</text>
         <text x="269.5" y="81" text-anchor="start">P_label</text>
-        <text x="269.5" y="219" text-anchor="start">Библио</text>
+        <text x="269.5" y="219" text-anchor="start">Библио .tex</text>
         <text x="150" y="288" text-anchor="middle">Артефакты</text>
-        <text x="30.5" y="219" text-anchor="end">Инфра</text>
-        <text x="30.5" y="81" text-anchor="end">API</text>
+        <text x="30.5" y="219" text-anchor="end">Верификация</text>
+        <text x="30.5" y="81" text-anchor="end">Провайдеры</text>
       </svg>
       <!-- /SLOT -->
       <table class="radar-legend">
         <thead><tr><th>Ось</th><th>Готовность</th><th>Статус</th></tr></thead>
         <tbody>
           <!-- SLOT: radar-table-rows -->
-          <tr><td>Прогоны и метрики (3 модели)</td><td>75/100</td><td><span class="badge badge--warn">2/3 готовы</span></td></tr>
-          <tr><td>P_label + числа в драфтах</td><td>100/100</td><td><span class="badge badge--pass">готово, сверено</span></td></tr>
-          <tr><td>Библиография .tex (веб-верификация)</td><td>75/100</td><td><span class="badge badge--warn">контент верен, compile не прогнан</span></td></tr>
-          <tr><td>Артефакты (png / docx / .tex сборка)</td><td>80/100</td><td><span class="badge badge--warn">черновик готов, финал после qwen</span></td></tr>
-          <tr><td>Инфраструктура и гигиена сессии</td><td>100/100</td><td><span class="badge badge--pass">готово</span></td></tr>
-          <tr><td>Надёжность внешних API (gpt-5.5 / qwen)</td><td>35/100</td><td><span class="badge badge--fail">риск, вне нашего контроля</span></td></tr>
+          <tr><td>Прогоны и модели (gemini/deepseek валидны; qwen инвалидирован; gpt-5.5 исключён)</td><td>90/100</td><td><span class="badge badge--warn">2/4 валидны для сравнения</span></td></tr>
+          <tr><td>P_label + числа (§3.7, сверено с metrics.json)</td><td>100/100</td><td><span class="badge badge--pass">готово, сверено</span></td></tr>
+          <tr><td>Библиография .tex (веб-верификация 7 записей)</td><td>90/100</td><td><span class="badge badge--warn">контент верен, compile не прогнан</span></td></tr>
+          <tr><td>Артефакты (docx v4, .tex собран)</td><td>85/100</td><td><span class="badge badge--warn">docx готов, .tex не скомпилирован</span></td></tr>
+          <tr><td>Верификация (2× независимых Opus-верификатора, ~90 чисел)</td><td>100/100</td><td><span class="badge badge--pass">0 критичных ошибок</span></td></tr>
+          <tr><td>Надёжность внешних провайдеров (qwen / gpt-5.5)</td><td>35/100</td><td><span class="badge badge--fail">integrity-гейт обязателен</span></td></tr>
           <!-- /SLOT -->
         </tbody>
       </table>
@@ -210,24 +215,26 @@
   <section class="section" id="overview">
     <h2><span class="idx">3</span> Что сделано</h2>
     <!-- SLOT: overview -->
-    <p><strong>Цель сессии:</strong> довести матрицу model-comparison до 3 (в идеале 4) моделей и выпустить
-       финальную версию 4 отчёта (RU + EN-секция статьи + .tex + артефакт) с реальными числами вместо
-       оставшихся плейсхолдеров; новых экспериментов сверх этого списка не проводить
+    <p><strong>Цель:</strong> довести матрицу model-comparison до финальной версии 4 отчёта (RU + EN-секция
+       статьи + .tex + docx-артефакт) с реальными числами, честно закрыв статус всех четырёх
+       кандидатов — двух валидных, одного инвалидированного и одного исключённого — вместо оставления
+       промежуточных плейсхолдеров
        (<code>docs/superpowers/specs/2026-07-06-finish-model-comparison-runs.md</code>).</p>
 
-    <p><strong>Ключевые числа готовых прогонов</strong> (корпус v2: 100 статей, 7&nbsp;959 эталонных упоминаний,
-       config <code>111</code>; все значения сверены против committed <code>metrics.json</code> до 4-го знака):</p>
+    <p><strong>Table 1. Итоговые числа</strong> (корпус v2: 100 статей, 7&nbsp;959 эталонных упоминаний,
+       config <code>111</code>; gemini/deepseek сверены против committed <code>metrics.json</code> до 4-го знака):</p>
     <table>
-      <thead><tr><th>Model</th><th>R_doc [95% CI]</th><th>R_span</th><th>R_strict</th><th>P_mention</th><th>P_type</th><th>P_label</th></tr></thead>
+      <thead><tr><th>Model</th><th>R_doc [95% CI]</th><th>R_span</th><th>R_strict</th><th>P_mention</th><th>P_type</th><th>P_label</th><th>Статус</th></tr></thead>
       <tbody>
-        <tr><td>gemini-3.1-flash-lite</td><td><strong>0.690</strong> [0.680–0.700]</td><td>0.630</td><td>0.610</td><td>0.300</td><td>0.451</td><td>0.526</td></tr>
-        <tr><td>deepseek-v4-flash</td><td><strong>0.614</strong> [0.604–0.625]</td><td>0.524</td><td>0.509</td><td>0.305</td><td>0.458</td><td>0.530</td></tr>
-        <tr style="opacity:.5;"><td>qwen3.7-plus</td><td colspan="6">— в процессе, 52/100 статей на 15:24Z, спенд $1.88 / $12 капа —</td></tr>
+        <tr><td>gemini-3.1-flash-lite</td><td><strong>0.690</strong> [0.680–0.700]</td><td>0.630</td><td>0.610</td><td>0.300</td><td>0.451</td><td>0.526</td><td><span class="badge badge--pass">валиден</span></td></tr>
+        <tr><td>deepseek-v4-flash</td><td><strong>0.614</strong> [0.604–0.625]</td><td>0.524</td><td>0.509</td><td>0.305</td><td>0.458</td><td>0.530</td><td><span class="badge badge--pass">валиден</span></td></tr>
+        <tr style="opacity:.6;"><td>qwen3.7-plus</td><td colspan="6">форензический R_doc 0.164 на 65/100 реально сохранённых статей — <strong>не сравнимо</strong>, причина инфраструктурная, см. ниже</td><td><span class="badge badge--fail">инвалидирован</span></td></tr>
+        <tr style="opacity:.6;"><td>gpt-5.5</td><td colspan="6">ни одного стабильного маршрута через шлюз за весь эксперимент (&gt;16 ч непрерывных попыток)</td><td><span class="badge badge--fail">исключён</span></td></tr>
       </tbody>
     </table>
 
     <p style="margin-top:1rem;"><strong>Декомпозиция recall</strong> (главный аналитический вывод — покрытие
-       извлечения × точность grounding при найденном упоминании):</p>
+       извлечения × точность grounding при найденном упоминании, только для двух валидных моделей):</p>
     <table>
       <thead><tr><th></th><th>gemini</th><th>deepseek</th></tr></thead>
       <tbody>
@@ -241,34 +248,77 @@
        покрытием NER-стадии, а не качеством разрешения найденных упоминаний. Источник:
        <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code> §3.3.</p>
 
-    <p style="margin-top:1rem;"><strong>Что изменилось в этой сессии</strong> (после передачи из сессии
-       <code>eb7d84db</code>; коммиты ниже — из статуса, переданного оркестратором на момент отчёта, git log
-       напрямую в этой задаче не проверялся — см. § 4 «Открытые вопросы честности»):</p>
+    <p style="margin-top:1rem;"><strong>Именованные vs нарицательные термины</strong> (R_doc, ярус R_all →
+       R_term после снятия структурного и общесловарного шума эталона):</p>
+    <table>
+      <thead><tr><th>Tier</th><th>Gold mentions</th><th>gemini named/term</th><th>deepseek named/term</th></tr></thead>
+      <tbody>
+        <tr><td>R_all (raw)</td><td>7,959</td><td>0.828 / 0.414</td><td>0.733 / 0.376</td></tr>
+        <tr><td>R_clean</td><td>7,796</td><td>0.834 / 0.434</td><td>0.738 / 0.395</td></tr>
+        <tr><td>R_term</td><td>7,174</td><td><strong>0.841</strong> / <strong>0.474</strong></td><td><strong>0.745</strong> / <strong>0.444</strong></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.85rem;opacity:.7;">Разрыв почти не сужается даже после чистки эталона: ~66% непокрытой
+       нарицательной массы — настоящие пропуски модели (мумия, папирус, зиккурат), не шум разметки. Источник:
+       <code>drafts/recall-tiers-analysis.md</code> §1/§3, <code>report-ru-v3.md</code> §3.6.</p>
+
+    <div style="margin-top:1.25rem;border:2px solid var(--red);border-radius:.5rem;padding:1rem 1.25rem;background:var(--bg2);">
+      <h3 style="margin:0 0 .5rem;color:var(--red);font-size:1.02rem;">Надёжность провайдеров как фактор валидности (§3.8)</h3>
+      <p style="margin:0 0 .6rem;">Прогон <strong>qwen3.7-plus</strong> в ночь на 2026-07-06 совпал с волной
+        429-ошибок у провайдера qwen (<code>provider-8</code>). Журнал <code>progress.jsonl</code> показывал
+        <strong>99 из 100</strong> статей выполненными, но файл предсказаний фактически содержал данные только по
+        <strong>36 статьям</strong> — извлечения молча терялись, а статьи помечались как готовые
+        (progress/pred рассинхрон). Сегодняшнее <code>--resume</code> довосстановило 29 статей; итоговые
+        предсказания реально покрывают только <strong>65 из 100</strong>. Во время повторного grounding по этим
+        статьям те же 429-ошибки задели вызовы судьи: <code>judge_unavailable</code> получили
+        <strong>735 предсказаний у qwen против 12 у gemini</strong> на той же конфигурации.</p>
+      <p style="margin:0 0 .6rem;">Несколько независимых признаков указывают на инфраструктурную причину, а не
+        качество модели: у первых 30 обработанных статей в среднем 39.6 предсказаний на статью, у последних 30
+        (уже после стабилизации маршрута) — 136.9. Статья «Яффа», целиком обработанная сегодня, дала
+        <strong>1&nbsp;168 предсказаний у qwen против 1&nbsp;044 у gemini</strong> на той же статье — там, где
+        маршрут не повреждён, qwen извлекает не хуже gemini и даже богаче. Форензический R_doc по сохранившимся
+        предсказаниям qwen равен <strong>0.164</strong> (подтверждено собственным <code>metrics.json</code>
+        прогона), при точности по стратам 0.84–0.98 там, где модель успела отработать — recall занижен пропущенным
+        покрытием, а не качеством модели.</p>
+      <p style="margin:0;">По той же логике из сравнения исключён <strong>gpt-5.5</strong>: ни <code>provider-8</code>,
+        ни режим <code>auto</code> не дали стабильного маршрута с 2026-07-05 23:20Z; повторный часовой пробинг
+        2026-07-06 15:41Z подтвердил то же самое (&gt;16 ч подряд). <strong>Вывод сессии:</strong> инфраструктурная
+        нестабильность провайдера может молча исказить eval-данные так, что отказ маршрута выглядит как слабость
+        модели — перед публикацией чисел нужен integrity-гейт (минимальная полнота покрытия статей + предельная
+        доля <code>judge_unavailable</code>). Открытый баг зафиксирован в
+        <a href="../../PROBLEMS.md">docs/PROBLEMS.md</a> ("wiki-eval checkpointing desyncs progress markers from
+        persisted predictions under provider outages", статус OPEN). Чистый перезапуск qwen3.7-plus уже идёт.</p>
+    </div>
+
+    <p style="margin-top:1.25rem;"><strong>Что изменилось для финальной версии 4</strong> (относительно
+       промежуточного среза 15:30Z):</p>
     <table>
       <thead><tr><th>Задача</th><th>Статус</th><th>Коммит</th><th>Примечание</th></tr></thead>
       <tbody>
-        <tr><td>P_label 0.526 / 0.530 вписан в RU/EN драфты</td><td><span class="badge badge--pass">done</span></td><td><code>c0ba457</code></td><td>сверено с <code>metrics.json</code> (<code>p3_ex</code>)</td></tr>
-        <tr><td>acmart .tex пересобран с нуля</td><td><span class="badge badge--pass">done</span></td><td><code>549b57d</code></td><td>booktabs, ≤6 стр.</td></tr>
-        <tr><td>Верификация 7 библиозаписей (ACL Anthology / arXiv / OpenReview)</td><td><span class="badge badge--pass">done</span></td><td><code>a78e264</code></td><td>найдены и исправлены 5 сфабрикованных соавторов (<code>decao2022mgenre</code>) и выдуманные названия (<code>gerlach2021</code>, <code>conia2024kgmt</code>) — см. § 4</td></tr>
-        <tr><td><code>g6-pipeline.png</code> (рис. 1) отрендерен</td><td><span class="badge badge--pass">done</span></td><td><code>b1e9e6d</code></td><td>2000×3400</td></tr>
-        <tr><td>md→docx конвейер написан и провалидирован, драфт docx собран</td><td><span class="badge badge--pass">done</span></td><td><code>987e6f9</code></td><td>inline python-docx скрипт</td></tr>
-        <tr><td><code>scripts/sitelink_contamination.py</code> регенерирован в git-tracked</td><td><span class="badge badge--warn">done, валидация в процессе</span></td><td>—</td><td>реплей для deepseek ещё не завершён</td></tr>
-        <tr><td>Регистрация 15 vendored-агентов починена</td><td><span class="badge badge--pass">done</span></td><td><code>e6e04ba</code></td><td>—</td></tr>
-        <tr><td>graphify-хук удалён (решение владельца)</td><td><span class="badge badge--pass">done</span></td><td><code>375f98c</code></td><td>—</td></tr>
-        <tr><td>qwen3.7-plus <code>--resume</code>: переграундинг чекпойнта через живую Wikidata</td><td><span class="badge badge--warn">in progress</span></td><td>—</td><td>кэш погиб со старым контейнером; 52/100 на 15:24Z, спенд $1.88/$12</td></tr>
-        <tr><td>gpt-5.5</td><td><span class="badge badge--fail">not run</span></td><td>—</td><td>upstream OpenAI 429 на всех маршрутах с 23:20Z 05-07, 52+ мин непрерывного вотчинга в этой сессии</td></tr>
-        <tr><td>Компиляция .tex</td><td><span class="badge badge--fail">not run</span></td><td>—</td><td>в песочнице нет LaTeX-тулчейна, GitHub закрыт политикой сессии; статические проверки пройдены</td></tr>
+        <tr><td>§3.8 «Надёжность провайдеров» дописан в <code>report-ru-v3.md</code></td><td><span class="badge badge--pass">done</span></td><td>—</td><td>форензика qwen (progress/pred рассинхрон, judge_unavailable 735/12, Яффа 1168/1044)</td></tr>
+        <tr><td>qwen3.7-plus форензический разбор чекпойнта</td><td><span class="badge badge--pass">done</span></td><td><code>5b466f3</code></td><td>65/100 реально покрытых статей; run dir сохранён для форензики, помечен инвалидированным</td></tr>
+        <tr><td>Баг чекпойнтинга заведён в <code>docs/PROBLEMS.md</code></td><td><span class="badge badge--pass">done</span></td><td>—</td><td>3 предложенных guard'а, статус OPEN, следующий шаг — systematic-debugging</td></tr>
+        <tr><td>Адверсариальная верификация (2× независимых Opus)</td><td><span class="badge badge--pass">done</span></td><td><code>f997f5f</code></td><td>~90 машинных чисел, 0 жёстких ошибок; исправлена воронка корпуса (+459 red links) и 4 мягких диапазона</td></tr>
+        <tr><td>gpt-5.5 формально исключён из эксперимента</td><td><span class="badge badge--pass">done</span></td><td>—</td><td>&gt;16 ч без стабильного маршрута, повторный пробинг 15:41Z подтвердил</td></tr>
+        <tr><td>Sitelink-реплей для deepseek завершён</td><td><span class="badge badge--pass">done</span></td><td>—</td><td><code>scripts/sitelink_contamination.py</code>, replay fidelity 100%, clean R_doc 0.684/0.609</td></tr>
+        <tr><td>docx-артефакт версии 4 собран</td><td><span class="badge badge--pass">done</span></td><td><code>72384d4</code></td><td><code>model-comparison-experiment-v4.docx</code> — файл подтверждён на диске</td></tr>
+        <tr><td>gemini / deepseek прогоны, P_label, .tex, PNG, инфраструктура</td><td><span class="badge badge--pass">done</span></td><td>ночные коммиты сессии</td><td>без изменений с промежуточного среза, см. § 5</td></tr>
+        <tr><td>Компиляция .tex</td><td><span class="badge badge--fail">not run</span></td><td>—</td><td>в песочнице нет LaTeX-тулчейна; нужен один реальный прогон (например, Overleaf)</td></tr>
+        <tr><td>Чистый ре-ран qwen3.7-plus</td><td><span class="badge badge--warn">in progress</span></td><td>—</td><td>1/100 статей на момент рендера (<code>progress.jsonl</code>), $0.097 потрачено; v4.1 после прохождения integrity-гейта</td></tr>
       </tbody>
     </table>
 
     <p style="margin-top:1rem;"><strong>Ключевые решения и почему:</strong></p>
     <ul>
-      <li>Веб-верификация реконструированной библиографии сделана обязательной после находки сфабрикованных
-        метаданных (см. критичную находку в § 4) — урок пойдёт в <code>docs/experiments/LESSONS.md</code>.</li>
-      <li>gpt-5.5 не форсируется повторными попытками — задокументирован как reliability-находка; «последний слот
-        на одну модель» от владельца отдан qwen3.7-plus, а не бесконечным ретраям gpt-5.5.</li>
-      <li>qwen-чекпойнт возобновлён через полный переграундинг по живой Wikidata, а не через доверие к мёртвому
-        кэшу — иначе в финальные числа могли бы незаметно просочиться рассинхронизированные данные.</li>
+      <li>qwen3.7-plus не «дотягивается» ретраями поверх повреждённого чекпойнта — вместо этого запущен полностью
+        чистый перезапуск, а старый run сохранён как форензический артефакт с явной пометкой «инвалидирован».
+        Публиковать 0.164 как «recall модели» было бы прямым искажением.</li>
+      <li>gpt-5.5 формально исключён из эксперимента, а не оставлен «в ожидании» — &gt;16 ч без единого стабильного
+        маршрута через шлюз это уже не временная помеха, а факт об инфраструктуре на момент эксперимента.</li>
+      <li>Integrity-гейт (минимальная полнота покрытия + предельная доля <code>judge_unavailable</code>) назван
+        обязательным условием публикации любых будущих чисел моделей — прямое следствие qwen-инцидента.</li>
+      <li>Веб-верификация реконструированной библиографии оставлена обязательной практикой (см. находку в § 4) —
+        урок зафиксирован в <code>docs/experiments/LESSONS.md</code>.</li>
     </ul>
     <!-- /SLOT -->
   </section>
@@ -279,38 +329,50 @@
     <!-- SLOT: findings -->
 
     <div class="finding finding--critical">
+      <span class="tag">CRITICAL</span> — <strong>progress/pred рассинхрон в чекпойнтинге wiki-eval маскирует
+      провайдерский сбой под слабость модели.</strong> <code>progress.jsonl</code> заявлял 99/100 статей, файл
+      предсказаний реально содержал данные по 36; после <code>--resume</code> — 65/100. Без форензического разбора
+      это было бы опубликовано как R_doc = 0.164 у qwen3.7-plus — то есть как провал модели, а не сбой
+      инфраструктуры. Баг открыт в <a href="../../PROBLEMS.md">docs/PROBLEMS.md</a> (статус OPEN, 3 предложенных
+      guard'а, следующий шаг — systematic-debugging). Из этого прямо следует требование integrity-гейта перед
+      публикацией любых будущих чисел.
+    </div>
+
+    <div class="finding finding--critical">
       <span class="tag">CRITICAL</span> — <strong>в реконструированной библиографии EN-статьи найдены
       сфабрикованные метаданные.</strong> При верификации 7 библиозаписей против ACL Anthology/arXiv/OpenReview
       обнаружены и исправлены 5 сфабрикованных соавторов в <code>decao2022mgenre</code> и выдуманные названия в
-      <code>gerlach2021</code>/<code>conia2024kgmt</code> (коммит <code>a78e264</code>). Урок сессии: любая
-      реконструированная из памяти библиография требует обязательной веб-верификации перед доставкой — записать
-      в <code>docs/experiments/LESSONS.md</code> (ещё не сделано, см. § 6).
+      <code>gerlach2021</code>/<code>conia2024kgmt</code>. Урок: любая реконструированная из памяти библиография
+      требует обязательной веб-верификации перед доставкой — зафиксировано в
+      <code>docs/experiments/LESSONS.md</code>.
     </div>
 
     <div class="finding finding--high">
-      <span class="tag">HIGH</span> — <strong>gpt-5.5 недоступен.</strong> Upstream OpenAI отдаёт 429 на все
-      маршруты с 23:20Z 05-07 (52+ минут непрерывного вотчинга в этой сессии). Строка останется
-      <code>unavailable</code> в финальных таблицах — это reliability-находка о самой модели/шлюзе, а не баг
-      нашего пайплайна.
-    </div>
-
-    <div class="finding finding--high">
-      <span class="tag">HIGH</span> — <strong>qwen3.7-plus потребовал полного переграундинга.</strong> Wikidata-кэш
-      предыдущего чекпойнта погиб вместе со старым контейнером, поэтому прогон возобновлён через живые обращения
-      к Wikidata с нуля прогресса на этом фронте. На 15:24Z — 52/100 статей, спенд $1.88 из $12 капа на ран.
-      Третья строка матрицы недоступна ни в одной таблице этого отчёта.
+      <span class="tag">HIGH</span> — <strong>gpt-5.5 исключён из эксперимента.</strong> Ни <code>provider-8</code>,
+      ни режим <code>auto</code> не дали стабильного маршрута с 2026-07-05 23:20Z; повторный часовой пробинг
+      2026-07-06 15:41Z подтвердил то же самое (&gt;16 ч подряд). Строка останется <code>excluded</code> в
+      финальных таблицах — reliability-находка о самом шлюзе/модели, а не о нашем пайплайне.
     </div>
 
     <div class="finding finding--high">
       <span class="tag">HIGH</span> — <strong>компиляция .tex не проводилась.</strong> В песочнице нет
-      LaTeX-тулчейна, а GitHub закрыт политикой текущей сессии. Статические проверки (синтаксис BibTeX-ключей,
-      таблиц) пройдены, но перед финальной доставкой нужен один реальный прогон компиляции (например, в Overleaf)
-      — это главный академический артефакт сессии (§3 задачи 3 спеки), и его текущий статус — «не скомпилирован».
+      LaTeX-тулчейна. Статические проверки (синтаксис BibTeX-ключей, таблиц) пройдены, но перед финальной
+      доставкой нужен один реальный прогон компиляции (например, в Overleaf) — это главный академический артефакт
+      сессии, и его текущий статус — «не скомпилирован».
+    </div>
+
+    <div class="finding finding--high">
+      <span class="tag">HIGH</span> — <strong>91-term независимый контрольный набор в §2.4 не воспроизведён из
+      репозитория.</strong> Ablation-вклады лестницы кандидатов (лемма +0.322, фолбэки +0.145, алиасы +0.004 на
+      20-статейном подмножестве) сопровождаются в скобках параллельными числами «независимого контрольного набора
+      из 91 термина» (+0.318 / +0.142 / +0.000) — верификатор пометил, что происхождение этого набора и его числа
+      не воспроизводятся из текущего репозитория. Числа основной ablation-таблицы (Table 5) не затронуты, только
+      параллельный контрольный набор в тексте §2.4. Owner-декейшн нужен: см. § 6.
     </div>
 
     <div class="finding finding--info">
       <span class="tag">INFO</span> — <strong>главный аналитический вывод: recall = coverage × grounding-accuracy.</strong>
-      Точность grounding при найденном упоминании идентична у обеих готовых моделей (0.814 gemini / 0.815
+      Точность grounding при найденном упоминании идентична у обеих валидных моделей (0.814 gemini / 0.815
       deepseek) — вся разница в R_doc (0.690 против 0.614) создаётся покрытием NER-извлечения (0.763 против
       0.632), а не качеством разрешения к Wikidata. Источник:
       <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code> §3.3, независимо
@@ -318,26 +380,27 @@
     </div>
 
     <div class="finding finding--info">
-      <span class="tag">INFO</span> — <strong>именованные vs нарицательные термины — резерв роста.</strong>
-      R_doc: gemini named 0.828 / term 0.414; deepseek named 0.733 / term 0.376 (после снятия шума эталона на
-      ярусе R_term: gemini 0.841/0.474, deepseek 0.745/0.444 — разрыв почти не сужается). Источник:
-      <code>drafts/recall-tiers-analysis.md</code> §1/§3, <code>report-ru-v3.md</code> §3.3/§3.6.
+      <span class="tag">INFO</span> — <strong>именованные vs нарицательные термины — резерв роста, не артефакт
+      разметки.</strong> R_doc: gemini named 0.828 / term 0.414; deepseek named 0.733 / term 0.376. После снятия
+      структурного и общесловарного шума эталона (ярус R_term): gemini 0.841/0.474, deepseek 0.745/0.444 — разрыв
+      почти не сужается, ~66% непокрытой нарицательной массы это настоящие пропуски модели (мумия, папирус,
+      зиккурат), а не шум эталона. Источник: <code>drafts/recall-tiers-analysis.md</code> §1–3,
+      <code>report-ru-v3.md</code> §3.3/§3.6.
       <div style="margin-top:.5rem;font-size:.85rem;opacity:.75;">
         Оговорка о данных: встроенный срез <code>type</code> в самом <code>metrics.json</code> занижает M3 для
         term-упоминаний (0.343 gemini / 0.309 deepseek) из-за артефакта индекс-based фильтрации предсказаний —
-        это задокументированная и уже объяснённая особенность (<code>recall-tiers-analysis.md</code>, заметка
-        под таблицей §1), а не новое расхождение; для named/term сравнений в отчётах используются
-        пересчитанные <code>match_m3</code>-числа, а не сырое поле <code>type</code> из <code>metrics.json</code>.
+        задокументированная особенность (<code>recall-tiers-analysis.md</code>, заметка под таблицей §1); для
+        named/term сравнений в отчётах используются пересчитанные <code>match_m3</code>-числа, а не сырое поле
+        <code>type</code> из <code>metrics.json</code>.
       </div>
     </div>
 
     <div class="finding finding--info">
-      <span class="tag">INFO</span> — <strong>sitelink-циркулярность: эффект малый, но задокументирован для всех
-      готовых моделей.</strong> Ступень «заголовок Википедии → sitelink» даёт ~1% граунд-предсказаний с
-      match-rate 52–60% против эталона (выше случайного — признак циркулярности с построением самого эталона).
-      Чистые числа без неё: gemini R_doc 0.684, deepseek 0.609 (Δ −0.5…−0.8 п.п., ранжирование моделей не
-      меняется). Источник: <code>drafts/sitelink-contamination.md</code>. Валидация реплея для deepseek на
-      регенерированном скрипте — в процессе на момент отчёта.
+      <span class="tag">INFO</span> — <strong>sitelink-циркулярность: эффект малый, финально задокументирован.</strong>
+      Ступень «заголовок Википедии → sitelink» даёт ~1% граунд-предсказаний с match-rate 52–60% против эталона
+      (выше случайного — признак циркулярности с построением самого эталона). Чистые числа без неё: gemini R_doc
+      0.684, deepseek 0.609 (Δ −0.5…−0.8 п.п., ранжирование моделей не меняется). Реплей завершён для обеих
+      моделей, fidelity 100% (0 unknown/inconsistent). Источник: <code>drafts/sitelink-contamination.md</code>.
     </div>
 
     <!-- /SLOT -->
@@ -370,57 +433,91 @@
     </div>
 
     <div class="evidence-item">
+      <span class="claim">qwen3.7-plus форензический прогон — инвалидирован, числа подтверждены собственным metrics.json.</span><br>
+      run dir <code>reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/</code>.
+      R_doc(m3)=0.16371403442643548 (868/7959 у m1, 1303/7959 у m3) — форензический recall на 65/100 реально
+      покрытых статьях, не сравним с gemini/deepseek. <code>progress.jsonl</code> заявлял 99/100, файл
+      предсказаний фактически содержал данные по 36 статьям до <code>--resume</code>. Прогон формально
+      «завершился» (100/100 по прогресс-маркерам, суммарный спенд $2.65) — источник расхождения задокументирован
+      в <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code> §3.8 и
+      <a href="../../PROBLEMS.md">docs/PROBLEMS.md</a>. Статья «Яффа» (обработана сегодня целиком): 1&nbsp;168
+      предсказаний у qwen против 1&nbsp;044 у gemini на той же статье.
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">qwen3.7-plus чистый ре-ран — в полёте.</span><br>
+      run dir <code>reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T18-29-18Z/</code>
+      содержит только <code>progress.jsonl</code>/<code>pred.partial.jsonl</code> (метрик ещё нет). На момент
+      рендера этого отчёта <code>progress.jsonl</code> — одна строка: 1/100 статей, спенд $0.0971. Версия 4.1
+      выйдет, когда прогон дойдёт до 100/100 и пройдёт integrity-гейт (покрытие + доля
+      <code>judge_unavailable</code>).
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">gpt-5.5 — исключение подтверждено triage-пробоем и повторной проверкой.</span><br>
+      Источник: <code>docs/experiments/2026-07-05-model-comparison/triage/gpt-5.5.json</code> (пробой:
+      маршруты <code>auto</code> и <code>provider-8</code> были кандидатами, <code>provider-9</code> падал на 400
+      invalid <code>max_output_tokens</code>) и <code>report-ru-v3.md</code> §3.8: 429 upstream OpenAI с
+      2026-07-05 23:20Z по всем маршрутам, повторная проверка часом непрерывного пробинга 2026-07-06 15:41Z
+      подтвердила то же самое — &gt;16 ч без единого стабильного маршрута.
+    </div>
+
+    <div class="evidence-item">
       <span class="claim">Декомпозиция recall и named/term разрез.</span><br>
-      Coverage×grounding-accuracy (0.763×0.814 gemini, 0.632×0.815 deepseek) и named/term R_doc (0.828/0.414
-      gemini, 0.733/0.376 deepseek) — источник
-      <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code> §3.3 и
-      <code>drafts/recall-tiers-analysis.md</code> (независимый пересчёт <code>match_m3</code> по статьям,
-      сверка headline R_doc gemini/deepseek 0.690/0.614 подтверждена дословно).
+      Coverage×grounding-accuracy (0.763×0.814 gemini, 0.632×0.815 deepseek) и named/term R_doc по ярусам R_all/
+      R_clean/R_term (gemini 0.828/0.834/0.841 named, 0.414/0.434/0.474 term; deepseek 0.733/0.738/0.745 named,
+      0.376/0.395/0.444 term) — источник <code>report-ru-v3.md</code> §3.3/§3.6 и
+      <code>drafts/recall-tiers-analysis.md</code> (независимый пересчёт <code>match_m3</code> по статьям, сверка
+      headline R_doc gemini/deepseek 0.690/0.614 подтверждена дословно).
     </div>
 
     <div class="evidence-item">
-      <span class="claim">Sitelink-контаминация — реплей из кэшей прогонов, 100% fidelity.</span><br>
-      Источник: <code>docs/experiments/2026-07-05-model-comparison/drafts/sitelink-contamination.md</code>.
-      Gemini: 204 sitelink-предсказания (1.22% граунд-объёма), 60.3% совпадают с эталоном; deepseek: 142 (1.04%),
-      52.1%. Чистый R_doc: gemini 0.6840, deepseek 0.6092. Скрипт <code>scripts/sitelink_contamination.py</code>
-      регенерирован в git-tracked код; повторная валидация для deepseek — в процессе на момент отчёта.
+      <span class="claim">Sitelink-контаминация — финализирована, реплей для обеих моделей завершён.</span><br>
+      Источник: <code>docs/experiments/2026-07-05-model-comparison/drafts/sitelink-contamination.md</code> и
+      <code>scripts/sitelink_contamination.py</code> (git-tracked, offline replay против собственного
+      Wikidata-кэша каждого прогона, 0 сетевых вызовов). Replay fidelity 100% (0 unknown, 0 inconsistent для
+      обеих моделей). Gemini: 204 sitelink-предсказания (1.22% граунд-объёма), 60.3% совпадают с эталоном;
+      deepseek: 142 (1.04%), 52.1%. <strong>Чистый R_doc: gemini 0.6840 (5444/7959), deepseek 0.6092
+      (4849/7959)</strong> — подтверждено полями <code>R_doc_clean</code> в
+      <code>drafts/sitelink_replay/{gemini,deepseek}.json</code>.
     </div>
 
     <div class="evidence-item">
-      <span class="claim">qwen3.7-plus — частичный прогон подтверждён на диске, метрик ещё нет.</span><br>
-      Каталог <code>reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/</code>
-      содержит <code>pred.partial.jsonl</code> и <code>progress.jsonl</code> (подтверждено листингом), но не
-      содержит <code>metrics.json</code>/<code>meta.json</code> — это согласуется со статусом «в процессе»,
-      52/100 статей на 15:24Z, спенд $1.88 из $12 капа (числа переданы оркестратором сессии, независимо файлом
-      прогресса в этой задаче не пересчитывались).
+      <span class="claim">Верификационный проход — два независимых Opus-верификатора, ~90 чисел, 0 жёстких ошибок.</span><br>
+      Найдено и исправлено: воронка корпуса в §2.1 была арифметически незамкнута — теперь закрывается точно
+      (8&nbsp;829 внутренних ссылок − 459 red links − 405 хронофильтр − 6 без Wikidata-элемента = 7&nbsp;959,
+      сходится); 4 мягких доверительных диапазона поправлены. Библиография: все 7 записей .tex web-верифицированы
+      против ACL Anthology/arXiv/OpenReview — найдены и исправлены 5 сфабрикованных соавторов
+      (<code>decao2022mgenre</code>) и 2 выдуманных названия (<code>gerlach2021</code>, <code>conia2024kgmt</code>).
+      Коммит <code>f997f5f</code>. Резюме верификации передано оркестратором сессии; независимая повторная
+      сверка ~90 чисел этим шагом рендера не проводилась (presentation-only роль, нет доступа к запуску тестов).
     </div>
 
     <div class="evidence-item">
-      <span class="claim">gpt-5.5 — недоступность подтверждена triage-пробоем и операционным логом инцидентов.</span><br>
-      Источник: <code>docs/experiments/2026-07-05-model-comparison/triage/gpt-5.5.json</code> (пробой 19:15Z
-      05-07: маршруты <code>auto</code> и <code>provider-8</code> были кандидатами, <code>provider-9</code> падал
-      на 400 invalid <code>max_output_tokens</code>) и таблица инцидентов в
-      <code>docs/experiments/2026-07-05-model-comparison/FINDINGS.md</code>/<code>SESSION-LOG.md</code>
-      (инцидент «23:2x gpt-5.5 упал» → 429 upstream, коммит <code>02bc705</code> добавил ретраи, не помогло
-      после 23:20Z). Продолжающийся 429 с 23:20Z 05-07 и 52+ мин вотчинга в текущей сессии — статус, переданный
-      оркестратором; не переверифицирован live-пробоем в рамках этой задачи (нет Bash-доступа).
+      <span class="claim">Артефакты на диске — подтверждены Glob/Read.</span><br>
+      <code>docs/experiments/2026-07-05-model-comparison/model-comparison-experiment-v4.docx</code> —
+      присутствует (коммит <code>72384d4</code>). <code>docs/experiments/2026-07-05-model-comparison/drafts/paper-section-en.tex</code>
+      — присутствует, класс <code>acmart[sigconf,review]</code>, секция библиографии через
+      <code>filecontents*</code>; <strong>не скомпилирован</strong> — в песочнице нет LaTeX-тулчейна, нужен один
+      реальный прогон (Overleaf или окружение с тулчейном). <code>scripts/sitelink_contamination.py</code> —
+      присутствует, git-tracked, валидирован до точных совпадений (independent recomputation matched
+      <code>metrics.json</code> к 4-му знаку в 4 из 4 ячеек).
     </div>
 
     <div class="evidence-item">
       <span class="claim">Бюджет эксперимента — в пределах капа.</span><br>
-      До возобновления qwen — спенд ~$4 (<code>SESSION-LOG.md</code> §«Осталось»), qwen resume добавляет $1.88 из
-      собственного капа $12/ран. Общий кап эксперимента $60 (<code>BUDGET.md</code>) — с большим запасом.
+      gemini $0.597 + deepseek $0.564 + qwen форензический прогон $2.65 (формально завершённый по прогресс-маркерам)
+      + чистый ре-ран qwen в процессе ($0.097 на 1/100 статей). Общий кап эксперимента $60
+      (<code>BUDGET.md</code>), кап на прогон $12 — с большим запасом.
     </div>
 
     <div class="evidence-item">
-      <span class="claim">Коммиты этой сессии (P_label, .tex, библиография, PNG, docx, инфраструктура) — статус
-      получен от вызывающего оркестратора, не переверифицирован напрямую.</span><br>
-      Хэши <code>c0ba457</code>, <code>549b57d</code>, <code>a78e264</code>, <code>b1e9e6d</code>,
-      <code>987e6f9</code>, <code>e6e04ba</code>, <code>375f98c</code> не встречаются в закоммиченном
-      <code>SESSION-LOG.md</code> (который описывает только предыдущую сессию <code>eb7d84db</code>) — это
-      ожидаемо, так как они относятся к работе текущей сессии, ещё не отражённой в этом файле. У этой задачи нет
-      Bash/`git log`-доступа, поэтому хэши приняты как переданный статус, а не независимо проверены; отметить
-      это как открытый пункт верификации.
+      <span class="claim">Коммиты финальной версии — переданы оркестратором сессии.</span><br>
+      Прогоны gemini/deepseek — ночные коммиты предыдущей сессии (см. § 3 промежуточного среза); форензика qwen —
+      <code>5b466f3</code>; адверсариальная верификация — <code>f997f5f</code>; docx-артефакт v4 —
+      <code>72384d4</code>. У этого шага рендера нет Bash/<code>git log</code>-доступа, поэтому хэши приняты как
+      переданный статус, а не независимо проверены командой — отмечено как открытый пункт (согласуется с
+      подходом промежуточного среза).
     </div>
 
     <!-- /SLOT -->
@@ -431,35 +528,39 @@
     <h2><span class="idx">6</span> Дальнейшие шаги</h2>
     <!-- SLOT: next-steps -->
     <ul class="next-steps">
-      <li><strong>Довести qwen3.7-plus</strong> (52/100 → 100/100), прогнать
-          <code>wiki_eval.py report --p3</code>, посчитать чистые sitelink-числа через
-          <code>sitelink_contamination.py</code>, вписать строку qwen во все таблицы (Table 1/4/6) и документы.</li>
-      <li>Завершить валидацию sitelink-реплея для deepseek на регенерированном скрипте (сейчас в процессе).</li>
-      <li>Пересобрать docx <code>--final</code> (после интеграции qwen) и финализировать .tex; получить один
-          реальный прогон компиляции (Overleaf или окружение с LaTeX-тулчейном — недоступно в этой песочнице).</li>
-      <li><strong>Обязательная адверсариальная верификация</strong> (модель ≥ Sonnet) всех финальных чисел против
-          <code>metrics.json</code>/<code>sitelink_contamination.json</code>/<code>tier_assignment.json</code>
-          перед доставкой — в прошлой сессии верификатор поймал реальную ошибку CI 0.534→0.535, это не
-          формальность.</li>
-      <li>Doc-parity: обновить <code>docs/stages/wiki-eval.md</code> § Status; дописать
-          <code>docs/experiments/LESSONS.md</code> (сейчас пустой — только заголовок): веб-верификация
-          реконструированной библиографии обязательна; супервизия live-процессов — прямым главным тредом, не
-          субагентом; чекпойнтинг обязателен для длинных прогонов; annotation-mechanism leakage как класс
-          ревью-аспекта. Сбросить <code>docs/experiments/ACTIVE</code> по завершении.</li>
-      <li><strong>Владельцу на решение:</strong> gpt-5.5 остаётся окончательно «unavailable» в версии 4, или
-          стоит повторить пробой маршрута, если апстрим OpenAI восстановится позже?</li>
+      <li><strong>Версия 4.1</strong> — довести чистый ре-ран qwen3.7-plus (сейчас 1/100) до 100/100, прогнать через
+          integrity-гейт (полнота покрытия статей, предельная доля <code>judge_unavailable</code>) и только тогда
+          вписать его строку в Table 1/3/4/6 и docx/.tex.</li>
+      <li>Реализовать guard'ы из <a href="../../PROBLEMS.md">docs/PROBLEMS.md</a> (hard-fail при покрытии
+          предсказаний ниже покрытия GT или превышении доли <code>judge_unavailable</code>; атомарность
+          completion+persistence; <code>--resume</code> сверяется с содержимым <code>pred.partial.jsonl</code>,
+          а не только с маркерами <code>progress.jsonl</code>) — через <code>superpowers-systematic-debugging</code>.</li>
+      <li>Получить один реальный прогон компиляции <code>paper-section-en.tex</code> (Overleaf или окружение с
+          LaTeX-тулчейном — недоступно в этой песочнице).</li>
+      <li><strong>Владельцу на решение:</strong> 91-term независимый контрольный набор в §2.4
+          (report-ru-v3.md, вклады +0.318/+0.142/+0.000) не воспроизводится из текущего репозитория по оценке
+          верификатора — установить происхождение набора или убрать параллельные числа из текста статьи перед
+          подачей.</li>
+      <li><strong>Владельцу на решение:</strong> gpt-5.5 остаётся окончательно «excluded» в версии 4, или его
+          маршрут стоит повторно пробить, если апстрим OpenAI восстановится позже?</li>
+      <li>Doc-parity уже выполнен docs-keeper'ом (<code>docs/stages/wiki-eval.md</code> § Status,
+          <code>docs/experiments/LESSONS.md</code>) — остаётся решить, ставить ли банер «⚠️ superseded» на более
+          старые точечные отчёты (<code>docs/reports/2026-07-06-model-comparison.html</code>,
+          <code>docs/experiments/2026-07-05-model-comparison/FINDINGS.md</code>), которые всё ещё описывают qwen/
+          gpt-5.5 как «выполняется» — флагировано <code>docs-keeper</code>, решение за владельцем/оркестратором.</li>
     </ul>
     <!-- /SLOT -->
   </section>
 
   <footer class="report-footer">
     <!-- SLOT: footer-note -->
-    Промежуточный отчёт (v4-draft) собран report-generator'ом (presentation only, анализ не проводился) из
-    <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code>,
-    <code>docs/superpowers/specs/2026-07-06-finish-model-comparison-runs.md</code>,
-    <code>drafts/recall-tiers-analysis.md</code>, <code>drafts/sitelink-contamination.md</code> и committed
-    <code>metrics.json</code> прогонов gemini/deepseek. Числа не пересчитывались и не изобретались; qwen3.7-plus
-    и gpt-5.5 намеренно отсутствуют в headline-таблицах (прогоны не завершены/не выполнялись — см. § 3–5).
+    Финальный отчёт версии 4 собран report-generator'ом (presentation only, анализ не проводился) из
+    <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code> (включая новый §3.8),
+    committed <code>metrics.json</code> прогонов gemini/deepseek/qwen(форензика),
+    <code>drafts/sitelink_replay/{gemini,deepseek}.json</code> и <a href="../../PROBLEMS.md">docs/PROBLEMS.md</a>.
+    Числа не пересчитывались и не изобретались; там, где данные переданы оркестратором сессии (коммит-хэши,
+    верификационное резюме, прогресс чистого ре-рана) без возможности независимой проверки этим шагом — это
+    отмечено явно рядом с соответствующим утверждением.
     <!-- /SLOT -->
   </footer>
 
