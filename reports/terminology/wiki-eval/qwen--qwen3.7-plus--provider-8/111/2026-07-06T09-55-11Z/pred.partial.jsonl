@@ -3751,3 +3751,142 @@
 {"title": "Академия Цзися", "index": 341, "surface": "Цзыбо", "lemma": "Цзыбо", "qid": "Q198370", "span_len": 1, "resolved_by": "exact_label"}
 {"title": "Академия Цзися", "index": 343, "surface": "Шаньдун", "lemma": "Шаньдун", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
 {"title": "Академия Цзися", "index": 418, "surface": "Цзи-ся", "lemma": "Цзи-ся", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "KV35YL", "index": 61, "surface": "Тия", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 67, "surface": "Вебенсену", "lemma": "Вебенсену", "qid": "Q1412960", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 70, "surface": "Аменхотепа II", "lemma": "Аменхотеп II", "qid": "Q158052", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 74, "surface": "Тутмос", "lemma": "Тутмос", "qid": "Q632254", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 77, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 87, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 122, "surface": "Виктор Лоре", "lemma": "Виктор Лоре", "qid": "Q552436", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 138, "surface": "Графтон Эллиот Смит", "lemma": "Графтон Эллиот Смит", "qid": "Q733942", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 159, "surface": "Флетчер", "lemma": "Флетчер", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 175, "surface": "Нефертити", "lemma": "Нефертити", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 192, "surface": "Нефертити", "lemma": "Нефертити", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 198, "surface": "Захи Хавасса", "lemma": "Захи Хавасс", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 205, "surface": "Флетчер", "lemma": "Флетчер", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 228, "surface": "Тии", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 232, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 240, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 242, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 245, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 261, "surface": "Младшая дама", "lemma": "Младшая дама", "qid": "Q516435", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 268, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 270, "surface": "Нефертити", "lemma": "Нефертити", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 272, "surface": "Кийей", "lemma": "Кия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 282, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 289, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 291, "surface": "Ситамон", "lemma": "Ситамон", "qid": "Q270864", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 292, "surface": "Изидой", "lemma": "Исида", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 294, "surface": "Хенуттанеб", "lemma": "Хенуттанеб", "qid": "Q470272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 298, "surface": "Великими Царицами", "lemma": "Великая Царица", "qid": "Q1073256", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 304, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 309, "surface": "Эхнатон", "lemma": "Эхнатон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 320, "surface": "Нефертити", "lemma": "Нефертити", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 334, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 337, "surface": "Небетах", "lemma": "Небетах", "qid": "Q470261", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 339, "surface": "Бакетатон", "lemma": "Бакетатон", "qid": "Q469607", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 354, "surface": "Меритатон", "lemma": "Меритатон", "qid": "Q153344", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 357, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 359, "surface": "Нефертити", "lemma": "Нефертити", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 361, "surface": "Сменхкара", "lemma": "Сменхкар", "qid": "Q158003", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 365, "surface": "Меритатон", "lemma": "Меритатон", "qid": "Q153344", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 369, "surface": "Сменхкара", "lemma": "Сменхкар", "qid": "Q158003", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 372, "surface": "Тутанхамон", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 375, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 384, "surface": "Эйден Додсон", "lemma": "Эйден Додсон", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "KV35YL", "index": 387, "surface": "Бристольского университета", "lemma": "Бристольский университет", "qid": "Q459506", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 407, "surface": "Элизабет Дейнис", "lemma": "Элизабет Дейнис", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "KV35YL", "index": 413, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 425, "surface": "Нефертити", "lemma": "Нефертити", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 432, "surface": "Виктор Солкин", "lemma": "Виктор Солкин", "qid": "Q4427740", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 446, "surface": "ЖЖ", "lemma": "ЖЖ", "qid": "Q219523", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 494, "surface": "египтяне", "lemma": "египтяне", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 513, "surface": "Нефертити", "lemma": "Нефертити", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 567, "surface": "София Багдасарова", "lemma": "София Багдасарова", "qid": "Q47443191", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 597, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 604, "surface": "Графтоном Эллиотом Смитом", "lemma": "Графтон Эллиот Смит", "qid": "Q733942", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 610, "surface": "Графтон Эллиот Смит", "lemma": "Графтон Эллиот Смит", "qid": "Q733942", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 688, "surface": "Аменхотепа II", "lemma": "Аменхотеп II", "qid": "Q158052", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 741, "surface": "Старшей дамы", "lemma": "Старшая дама", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 743, "surface": "Тия", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 750, "surface": "KV35YL", "lemma": "KV35YL", "qid": "Q516435", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 754, "surface": "Тутанхамону", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 763, "surface": "Туи", "lemma": "Туя", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "KV35YL", "index": 765, "surface": "Тие", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 767, "surface": "младшей леди КВ35YL", "lemma": "младшая леди КВ35YL", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "KV35YL", "index": 771, "surface": "Тутанхамону", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 0, "surface": "Амударьи́нский клад", "lemma": "Амударьинский клад", "qid": "Q1246609", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 7, "surface": "Oxus Treasure", "lemma": "Oxus Treasure", "qid": "Q1246609", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 21, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q389688", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 28, "surface": "Тахти-Сангин", "lemma": "Тахти-Сангин", "qid": "Q6554804", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 32, "surface": "Амударья", "lemma": "Амударья", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 34, "surface": "Окс", "lemma": "Окс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 36, "surface": "Бухарском эмирате", "lemma": "Бухарский эмират", "qid": "Q746558", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 39, "surface": "Таджикистан", "lemma": "Таджикистан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 44, "surface": "Британском музее", "lemma": "Британский музей", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 50, "surface": "музее Виктории и Альберта", "lemma": "музей Виктории и Альберта", "qid": "Q213322", "span_len": 4, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 283, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q389688", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 292, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q389688", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 298, "surface": "персидского", "lemma": "персидский", "qid": "Q124317785", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 300, "surface": "греко-бактрийского", "lemma": "греко-бактрийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 304, "surface": "скифского", "lemma": "скифский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 305, "surface": "звериного стиля", "lemma": "звериный стиль", "qid": "Q576717", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 316, "surface": "Ахеменидского Ирана", "lemma": "Ахеменидский Иран", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 330, "surface": "Персеполя", "lemma": "Персеполь", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 338, "surface": "Ксенофонт", "lemma": "Ксенофонт", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 461, "surface": "Таджикистана", "lemma": "Таджикистан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 463, "surface": "Великобритании", "lemma": "Великобритания", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 464, "surface": "Эркин Касымов", "lemma": "Эркин Касымов", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 478, "surface": "Британского музея", "lemma": "Британский музей", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 486, "surface": "Амударьинского клада", "lemma": "Амударьинский клад", "qid": "Q1246609", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 504, "surface": "Таджикистану", "lemma": "Таджикистан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 513, "surface": "Министерстве иностранных дел Таджикистана", "lemma": "Министерство иностранных дел Таджикистана", "qid": null, "span_len": 4, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 522, "surface": "британского музея", "lemma": "Британский музей", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 532, "surface": "таджикскому национальному музею", "lemma": "Таджикский национальный музей", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 543, "surface": "Душанбе", "lemma": "Душанбе", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 544, "surface": "Джон Симпсон", "lemma": "Джон Симпсон", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 550, "surface": "Британского музея", "lemma": "Британский музей", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 561, "surface": "Окса", "lemma": "Окс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 578, "surface": "Британии", "lemma": "Британия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 587, "surface": "Таджикистана", "lemma": "Таджикистан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 596, "surface": "Британии", "lemma": "Британия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 601, "surface": "Окса", "lemma": "Окс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 608, "surface": "Окса", "lemma": "Окс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Амударьинский клад", "index": 614, "surface": "Британского музея", "lemma": "Британский музей", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 0, "surface": "XXX династия", "lemma": "XXX династия", "qid": "Q386303", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 2, "surface": "Древнего Египта", "lemma": "Древний Египет", "qid": "Q11768", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 14, "surface": "Себеннитской", "lemma": "Себеннитская", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXX династия", "index": 18, "surface": "Позднему периоду", "lemma": "Поздний период", "qid": "Q621917", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 20, "surface": "Древнего Египта", "lemma": "Древний Египет", "qid": "Q11768", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 26, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 27, "surface": "Персидской империей", "lemma": "Персидская империя", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 204, "surface": "фараона", "lemma": "фараон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 205, "surface": "династии", "lemma": "династия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 211, "surface": "персидского", "lemma": "персидский", "qid": "Q124317785", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 216, "surface": "Египтом", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 221, "surface": "Нектанеба II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 227, "surface": "Артаксеркс III", "lemma": "Артаксеркс III", "qid": "Q192867", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 240, "surface": "персы", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 244, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 265, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 270, "surface": "Нектанеб II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 274, "surface": "Нубию", "lemma": "Нубия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 281, "surface": "Верхний Египет", "lemma": "Верхний Египет", "qid": "Q203751", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 296, "surface": "Эдфу", "lemma": "Эдфу", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 421, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 422, "surface": "Александром Великим", "lemma": "Александр Великий", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 432, "surface": "Нектанеба", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 437, "surface": "Романе об Александре", "lemma": "Роман об Александре", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 444, "surface": "Нектанеб", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 455, "surface": "персы", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 458, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 465, "surface": "Македонию", "lemma": "Македония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 468, "surface": "Пелле", "lemma": "Пелла", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 476, "surface": "Олимпиаду", "lemma": "Олимпиада", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 479, "surface": "Филиппа", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 494, "surface": "Амоном", "lemma": "Амон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 498, "surface": "Нектанеб", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 504, "surface": "Филипп", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 512, "surface": "Олимпиады", "lemma": "Олимпиада", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXX династия", "index": 519, "surface": "Нектанеба", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 534, "surface": "Александру", "lemma": "Александр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
