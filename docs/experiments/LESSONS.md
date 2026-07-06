@@ -16,7 +16,7 @@ self-improvement step); never rewrite prior entries.
   reconciled against persisted predictions.** The qwen incident showed a
   `progress.jsonl` "done" marker can lie under provider outages while
   `pred.partial.jsonl` silently holds far fewer records — see
-  [docs/PROBLEMS.md](PROBLEMS.md) ("wiki-eval checkpointing desyncs progress
+  [docs/PROBLEMS.md](../PROBLEMS.md) ("wiki-eval checkpointing desyncs progress
   markers from persisted predictions under provider outages").
 - **Integrity gates before reading scores.** Article coverage in pred vs GT,
   plus `judge_unavailable` share, must be checked before trusting any metric —
