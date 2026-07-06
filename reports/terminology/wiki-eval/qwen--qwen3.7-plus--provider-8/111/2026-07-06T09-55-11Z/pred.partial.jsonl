@@ -4560,3 +4560,367 @@
 {"title": "Кесария Палестинская", "index": 1902, "surface": "Башня Стратона", "lemma": "Башня Стратона", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
 {"title": "Кесария Палестинская", "index": 1924, "surface": "Кесария", "lemma": "Кесария", "qid": "Q319242", "span_len": 1, "resolved_by": "llm_disambiguation"}
 {"title": "Кесария Палестинская", "index": 1986, "surface": "Византии", "lemma": "Византия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 0, "surface": "Лу́ций Ма́рций Цензорин", "lemma": "Луций Марций Цензорин", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 24, "surface": "Марциев Цензоринов", "lemma": "Марции Цензорины", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 38, "surface": "цезарианцев", "lemma": "цезарианцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 95, "surface": "Луций Марций", "lemma": "Луций Марций", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 100, "surface": "цензора-плебея", "lemma": "цензор-плебей", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 105, "surface": "Гая Марция Рутила", "lemma": "Гай Марций Рутил", "qid": "Q935315", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 110, "surface": "Цензорин", "lemma": "Цензорин", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 111, "surface": "Censorinus", "lemma": "Censorinus", "qid": "Q21446733", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 118, "surface": "Луций Марций Цензорин", "lemma": "Луций Марций Цензорин", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 121, "surface": "консул", "lemma": "консул", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 133, "surface": "Карфагена", "lemma": "Карфаген", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 136, "surface": "Третьей Пунической войны", "lemma": "Третья Пуническая война", "qid": "Q6334", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 142, "surface": "Гай", "lemma": "Гай", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 145, "surface": "Луций", "lemma": "Луций", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 147, "surface": "монетарием", "lemma": "монетарий", "qid": "Q1861571", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 157, "surface": "Гая Марция Цензорина", "lemma": "Гай Марций Цензорин", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 162, "surface": "марианской «партии»", "lemma": "марианская «партия»", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 175, "surface": "Луция Марция", "lemma": "Луций Марций", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 178, "surface": "марианцами", "lemma": "марианцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 189, "surface": "Гая Юлия Цезаря", "lemma": "Гай Юлий Цезарь", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 193, "surface": "Гнея Помпея", "lemma": "Гней Помпей", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 196, "surface": "Николаю Дамасскому", "lemma": "Николай Дамасский", "qid": "Q313924", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 215, "surface": "Цензорин", "lemma": "Цензорин", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 217, "surface": "Гай Кальвизий Сабин", "lemma": "Гай Кальвизий Сабин", "qid": "Q3757297", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 222, "surface": "диктатора", "lemma": "диктатор", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 231, "surface": "консулат", "lemma": "консулат", "qid": "Q17522107", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 240, "surface": "Марк Туллий Цицерон", "lemma": "Марк Туллий Цицерон", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 244, "surface": "Луция Марция", "lemma": "Луций Марций", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 248, "surface": "цезарианцев", "lemma": "цезарианцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 264, "surface": "Луций Марций", "lemma": "Луций Марций", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 267, "surface": "претором", "lemma": "претор", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 270, "surface": "Марка Антония", "lemma": "Марк Антоний", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 276, "surface": "претура", "lemma": "претура", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 280, "surface": "Цензорин", "lemma": "Цензорин", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 285, "surface": "Антония", "lemma": "Антоний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 287, "surface": "Мутину", "lemma": "Мутина", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 292, "surface": "Цезаря", "lemma": "Цезарь", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 293, "surface": "Децима Юния Брута", "lemma": "Децим Юний Брут", "qid": "Q1172185", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 301, "surface": "Луций Марций", "lemma": "Луций Марций", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 307, "surface": "антонианской", "lemma": "антонианский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 311, "surface": "Публием Вентидием Бассом", "lemma": "Публий Вентидий Басс", "qid": "Q521552", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 321, "surface": "Республики", "lemma": "Республика", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 324, "surface": "Антоний", "lemma": "Антоний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 328, "surface": "Гаем Юлием Цезарем Октавианом", "lemma": "Гай Юлий Цезарь Октавиан", "qid": null, "span_len": 4, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 334, "surface": "Рим", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 338, "surface": "проскрипции", "lemma": "проскрипция", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 342, "surface": "Луций Марций", "lemma": "Луций Марций", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 354, "surface": "Палатине", "lemma": "Палатин", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 357, "surface": "Цицерону", "lemma": "Цицерон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 358, "surface": "Цензорин", "lemma": "Цензорин", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 364, "surface": "Балканы", "lemma": "Балканы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 366, "surface": "республиканцев", "lemma": "республиканцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 370, "surface": "цезарианской партии", "lemma": "цезарианская партия", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 373, "surface": "Филиппах", "lemma": "Филиппы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 383, "surface": "Антоний", "lemma": "Антоний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 387, "surface": "Македонии", "lemma": "Македония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 389, "surface": "Ахайи", "lemma": "Ахайя", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 394, "surface": "Луций Марций", "lemma": "Луций Марций", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 398, "surface": "Рим", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 402, "surface": "триумфа", "lemma": "триумф", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Луций Марций Цензорин (консул 39 года до н. э.)", "index": 418, "surface": "консулата", "lemma": "консулат", "qid": "Q17522107", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Тель-Абу-Хавам", "index": 1932, "surface": "terra sigilta", "lemma": "terra sigilta", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Тель-Абу-Хавам", "index": 1937, "surface": "раннеарабского периода", "lemma": "раннеарабский период", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Финикийцы", "index": 735, "surface": "Ариш", "lemma": "Ариш", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Финикийцы", "index": 737, "surface": "пунического", "lemma": "пунический", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Финикийцы", "index": 742, "surface": "Бирса", "lemma": "Бирса", "qid": "Q1018648", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Финикийцы", "index": 747, "surface": "Национальный музей Карфагена", "lemma": "Национальный музей Карфагена", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Финикийцы", "index": 751, "surface": "Тунисе", "lemma": "Тунис", "qid": "Q3572", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Финикийцы", "index": 766, "surface": "U5b2c1", "lemma": "U5b2c1", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Финикийцы", "index": 779, "surface": "Иберии", "lemma": "Иберия", "qid": "Q1203967", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Финикийцы", "index": 781, "surface": "финикийцами", "lemma": "финикийцы", "qid": "Q1048468", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Финикийцы", "index": 784, "surface": "финикийцев", "lemma": "финикийцы", "qid": "Q1048468", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Финикийцы", "index": 787, "surface": "мальтийцы", "lemma": "мальтийцы", "qid": "Q1286876", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Финикийцы", "index": 789, "surface": "Мальте", "lemma": "Мальта", "qid": "Q233", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Финикийцы", "index": 792, "surface": "марониты", "lemma": "марониты", "qid": "Q4988656", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Финикийцы", "index": 794, "surface": "Ливане", "lemma": "Ливан", "qid": "Q822", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 0, "surface": "Кипрская война", "lemma": "Кипрская война", "qid": "Q18398876", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 9, "surface": "Саламина", "lemma": "Саламин", "qid": "Q767089", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 11, "surface": "Кипре", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 12, "surface": "Эвагора", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 15, "surface": "персидского", "lemma": "персидский", "qid": "Q124317785", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 17, "surface": "Артаксеркса II", "lemma": "Артаксеркс II", "qid": "Q188472", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 87, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 91, "surface": "греческого", "lemma": "греческий", "qid": "Q9129", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 93, "surface": "финикийского", "lemma": "финикийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 97, "surface": "Каллиева мира", "lemma": "Каллиев мир", "qid": "Q370709", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 103, "surface": "афиняне", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 111, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 117, "surface": "семитического", "lemma": "семитический", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 120, "surface": "эллинизма", "lemma": "эллинизм", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 128, "surface": "Саламине", "lemma": "Саламин", "qid": "Q767089", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 131, "surface": "финикийцем", "lemma": "финикиец", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 135, "surface": "греческой", "lemma": "греческий", "qid": "Q9129", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 137, "surface": "Эакидов", "lemma": "Эакиды", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 138, "surface": "Тевкридов", "lemma": "Тевкриды", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 143, "surface": "Тевкра", "lemma": "Тевкр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 146, "surface": "Зевса", "lemma": "Зевс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 147, "surface": "Эаку", "lemma": "Эак", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 151, "surface": "финикийская династия", "lemma": "финикийская династия", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 157, "surface": "персидского царя", "lemma": "персидский царь", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 167, "surface": "Абдемоном", "lemma": "Абдемон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 172, "surface": "Китиона", "lemma": "Китион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 179, "surface": "Тевкридов", "lemma": "Тевкриды", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 180, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 184, "surface": "Саламине", "lemma": "Саламин", "qid": "Q767089", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 194, "surface": "Персии", "lemma": "Персия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 196, "surface": "Спартой", "lemma": "Спарта", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 197, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 213, "surface": "афинянина", "lemma": "афинянин", "qid": "Q21177816", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 214, "surface": "Конона", "lemma": "Конон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 216, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 224, "surface": "персы", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 243, "surface": "Кипром", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 246, "surface": "Китион", "lemma": "Китион", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 247, "surface": "Амаф", "lemma": "Амаф", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 249, "surface": "Солы", "lemma": "Солы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 257, "surface": "персидскому царю", "lemma": "персидский царь", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 308, "surface": "Конон", "lemma": "Конон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 318, "surface": "Эвагора", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 322, "surface": "персам", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 330, "surface": "Эвагора", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 333, "surface": "сатрап", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 334, "surface": "Лидии", "lemma": "Лидия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 335, "surface": "Автофрадат", "lemma": "Автофрадат", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 339, "surface": "сатрапу", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 340, "surface": "Карии", "lemma": "Кария", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 341, "surface": "Гекатомну", "lemma": "Гекатомн", "qid": "Q1370645", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 342, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 346, "surface": "Афины", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 355, "surface": "персами", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 360, "surface": "Саламинским", "lemma": "Саламинский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 370, "surface": "пельтастов", "lemma": "пельтаст", "qid": "Q720600", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 374, "surface": "Народное собрание", "lemma": "Народное собрание", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 380, "surface": "триер", "lemma": "триера", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 385, "surface": "Филократа", "lemma": "Филократ", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 393, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 396, "surface": "Родоса", "lemma": "Родос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 399, "surface": "спартанцами", "lemma": "спартанцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 401, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 410, "surface": "Персии", "lemma": "Персия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 413, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 414, "surface": "Ахорисом", "lemma": "Ахорис", "qid": "Q360012", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 427, "surface": "Египтом", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 431, "surface": "Афины", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 437, "surface": "афиняне", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 440, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 445, "surface": "триер", "lemma": "триера", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 448, "surface": "пельтастов", "lemma": "пельтаст", "qid": "Q720600", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 451, "surface": "Хабрия", "lemma": "Хабрий", "qid": "Q543525", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 452, "surface": "Артаксеркс II", "lemma": "Артаксеркс II", "qid": "Q188472", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 460, "surface": "Автофрадата", "lemma": "Автофрадат", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 463, "surface": "сатрапа", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 464, "surface": "Лидии", "lemma": "Лидия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 465, "surface": "Тирибазом", "lemma": "Тирибаз", "qid": "Q921102", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 474, "surface": "Кипра", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 481, "surface": "Оронту", "lemma": "Оронт", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 485, "surface": "персы", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 495, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 504, "surface": "Анталкидова мира", "lemma": "Анталкидов мир", "qid": "Q1132922", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 515, "surface": "Кипре", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 518, "surface": "Египте", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 528, "surface": "Персии", "lemma": "Персия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 533, "surface": "Тирибазу", "lemma": "Тирибаз", "qid": "Q921102", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 535, "surface": "Анталкиду", "lemma": "Анталкид", "qid": "Q508188", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 537, "surface": "Сузах", "lemma": "Сузы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 540, "surface": "Диодора", "lemma": "Диодор", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 551, "surface": "Кипра", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 560, "surface": "триер", "lemma": "триера", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 563, "surface": "персов", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 567, "surface": "Смирнском заливе", "lemma": "Смирнский залив", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 570, "surface": "Фокее", "lemma": "Фокея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 572, "surface": "Киме", "lemma": "Кима", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 577, "surface": "ионийские греки", "lemma": "ионийские греки", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 589, "surface": "греков", "lemma": "греки", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 599, "surface": "Финикии", "lemma": "Финикия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 601, "surface": "Киликии", "lemma": "Киликия", "qid": "Q620864", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 607, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 611, "surface": "Хабрия", "lemma": "Хабрий", "qid": "Q543525", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 617, "surface": "Финикию", "lemma": "Финикия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 620, "surface": "Тир", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 627, "surface": "Киликию", "lemma": "Киликия", "qid": "Q620864", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 629, "surface": "киприоты", "lemma": "киприоты", "qid": "Q10464898", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 634, "surface": "египтянами", "lemma": "египтяне", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 638, "surface": "Южной Сирии", "lemma": "Южная Сирия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 640, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 648, "surface": "тирийскими", "lemma": "тирийский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 663, "surface": "Ахорис", "lemma": "Ахорис", "qid": "Q360012", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 665, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 674, "surface": "Гекатомн Карийский", "lemma": "Гекатомн Карийский", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 683, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 699, "surface": "Киликией", "lemma": "Киликия", "qid": "Q620864", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 703, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 704, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 758, "surface": "наварх", "lemma": "наварх", "qid": "Q185878", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 759, "surface": "Глос", "lemma": "Глос", "qid": "Q140368253", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 768, "surface": "Киликии", "lemma": "Киликия", "qid": "Q620864", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 769, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 782, "surface": "Ахорис", "lemma": "Ахорис", "qid": "Q360012", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 789, "surface": "кипрский", "lemma": "кипрский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 795, "surface": "триер", "lemma": "триера", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 806, "surface": "Китии", "lemma": "Китий", "qid": "Q171882", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 808, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 814, "surface": "персидские", "lemma": "персидский", "qid": "Q124317785", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 817, "surface": "киприоты", "lemma": "киприоты", "qid": "Q10464898", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 831, "surface": "персы", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 844, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 851, "surface": "триер", "lemma": "триера", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 854, "surface": "персы", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 862, "surface": "Китии", "lemma": "Кития", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 872, "surface": "Саламин", "lemma": "Саламин", "qid": "Q767089", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 880, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 884, "surface": "Кипре", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 887, "surface": "Пнитагора", "lemma": "Пнитагор", "qid": "Q11942117", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 894, "surface": "Саламин", "lemma": "Саламин", "qid": "Q767089", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 898, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 899, "surface": "Ахорис", "lemma": "Ахорис", "qid": "Q360012", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 902, "surface": "Эвагору", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 912, "surface": "Афины", "lemma": "Афины", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 919, "surface": "Спарте", "lemma": "Спарта", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 931, "surface": "Кипр", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 935, "surface": "Саламин", "lemma": "Саламин", "qid": "Q767089", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 940, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 946, "surface": "персов", "lemma": "персы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 947, "surface": "Тирибаз", "lemma": "Тирибаз", "qid": "Q921102", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 954, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 961, "surface": "Саламин", "lemma": "Саламин", "qid": "Q767089", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 969, "surface": "Персии", "lemma": "Персия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 974, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 986, "surface": "Артаксерксом", "lemma": "Артаксеркс", "qid": "Q706239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 992, "surface": "Тирибаз", "lemma": "Тирибаз", "qid": "Q921102", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1002, "surface": "Оронт", "lemma": "Оронт", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1005, "surface": "Тирибаз", "lemma": "Тирибаз", "qid": "Q921102", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1013, "surface": "Саламин", "lemma": "Саламин", "qid": "Q767089", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1017, "surface": "Эвагор", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1024, "surface": "Тирибаз", "lemma": "Тирибаз", "qid": "Q921102", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1028, "surface": "спартанцами", "lemma": "спартанцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1032, "surface": "дельфийского оракула", "lemma": "дельфийский оракул", "qid": "Q682558", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1046, "surface": "Тирибаз", "lemma": "Тирибаз", "qid": "Q921102", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1127, "surface": "Кипром", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1128, "surface": "Артаксеркс", "lemma": "Артаксеркс", "qid": "Q706239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1135, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1138, "surface": "кадусиев", "lemma": "кадусии", "qid": "Q924425", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1142, "surface": "Персия", "lemma": "Персия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кипрская война (390—380 до н. э.)", "index": 1155, "surface": "Эвагором", "lemma": "Эвагор", "qid": "Q463301", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 618, "surface": "хеттском", "lemma": "хеттский", "qid": "Q35668", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 620, "surface": "Хаттусилисе I", "lemma": "Хаттусилис I", "qid": "Q299472", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 633, "surface": "Цальпы", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 639, "surface": "Хаппис", "lemma": "Хаппис", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 643, "surface": "знать", "lemma": "знать", "qid": "Q2478141", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 646, "surface": "Цальпы", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 651, "surface": "Хеттского царства", "lemma": "Хеттское царство", "qid": "Q4496560", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 660, "surface": "Хаттусилис I", "lemma": "Хаттусилис I", "qid": "Q299472", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 667, "surface": "Мурсилис I", "lemma": "Мурсилис I", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Цальпува", "index": 684, "surface": "Хаттусилис", "lemma": "Хаттусилис", "qid": "Q299472", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 687, "surface": "Лапарнас III", "lemma": "Лапарнас III", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 691, "surface": "Хаппису", "lemma": "Хаппис", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 693, "surface": "Цальпу", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 694, "surface": "Хаттусилис", "lemma": "Хаттусилис", "qid": "Q299472", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 697, "surface": "Лапарнаса", "lemma": "Лапарнас", "qid": "Q313312", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 699, "surface": "Хаппиc", "lemma": "Хаппиc", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 703, "surface": "Мурсилис", "lemma": "Мурсилис", "qid": "Q404105", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 706, "surface": "Цальпу", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 708, "surface": "Хапписа", "lemma": "Хаппис", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 710, "surface": "Лапарнаса", "lemma": "Лапарнас", "qid": "Q313312", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 724, "surface": "Цальпе", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 736, "surface": "Мурсилис", "lemma": "Мурсилис", "qid": "Q404105", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 739, "surface": "Цальпу", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 740, "surface": "Мурсилис", "lemma": "Мурсилис", "qid": "Q404105", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 750, "surface": "Цальпу", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 751, "surface": "Хаттусилис", "lemma": "Хаттусилис", "qid": "Q299472", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 759, "surface": "Цальпа", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 761, "surface": "Хаттусилис", "lemma": "Хаттусилис", "qid": "Q299472", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 767, "surface": "Хаттусу", "lemma": "Хаттуса", "qid": "Q181007", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 932, "surface": "Цальпа", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 941, "surface": "Хеттской державы", "lemma": "Хеттская держава", "qid": "Q4496560", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 966, "surface": "Цальпува", "lemma": "Цальпува", "qid": "Q145237", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 978, "surface": "хеттский язык", "lemma": "хеттский язык", "qid": "Q35668", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 980, "surface": "неситский", "lemma": "неситский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 990, "surface": "Тудхалияса II", "lemma": "Тудхалияс II", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1001, "surface": "Цальпува", "lemma": "Цальпува", "qid": "Q145237", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1005, "surface": "касков", "lemma": "каски", "qid": "Q116238", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1031, "surface": "Нерик", "lemma": "Нерик", "qid": "Q916681", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1036, "surface": "Арнувандас I", "lemma": "Арнувандас I", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1050, "surface": "касков", "lemma": "каски", "qid": "Q116238", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1058, "surface": "Хетты", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1073, "surface": "Арнувандас I", "lemma": "Арнувандас I", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1083, "surface": "Нерик", "lemma": "Нерик", "qid": "Q916681", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1088, "surface": "Молитве царя Арнувандаса I", "lemma": "Молитва царя Арнувандаса I", "qid": null, "span_len": 4, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1097, "surface": "Камамму", "lemma": "Камамма", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1099, "surface": "Цальпуву", "lemma": "Цальпува", "qid": "Q145237", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1108, "surface": "касков", "lemma": "каски", "qid": "Q116238", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1117, "surface": "Камамму", "lemma": "Камамма", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1119, "surface": "Цальпуву", "lemma": "Цальпува", "qid": "Q145237", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1123, "surface": "касков", "lemma": "каски", "qid": "Q116238", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1128, "surface": "Арнувандаса II", "lemma": "Арнувандас II", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1144, "surface": "Цальпу", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 1147, "surface": "хеттских", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1151, "surface": "Центральной Анатолии", "lemma": "Центральная Анатолия", "qid": "Q155526", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1155, "surface": "Хаттусы", "lemma": "Хаттуса", "qid": "Q181007", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1156, "surface": "Нерика", "lemma": "Нерик", "qid": "Q916681", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Цальпува", "index": 1159, "surface": "Сапинувы", "lemma": "Сапинува", "qid": "Q3620", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1161, "surface": "Цальпува", "lemma": "Цальпува", "qid": "Q145237", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1168, "surface": "хаттами", "lemma": "хатты", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 1173, "surface": "Цальпува", "lemma": "Цальпува", "qid": "Q145237", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1178, "surface": "Цальпувы", "lemma": "Цальпува", "qid": "Q145237", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1181, "surface": "хаттской", "lemma": "хаттский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 1185, "surface": "Залпы", "lemma": "Залпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 1189, "surface": "Аммамма", "lemma": "Аммамма", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1197, "surface": "хаттские", "lemma": "хаттский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Цальпува", "index": 1199, "surface": "Шулинкатте", "lemma": "Шулинкатте", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1202, "surface": "Халипину", "lemma": "Халипину", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1203, "surface": "Хатепину", "lemma": "Хатепину", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Цальпува", "index": 1206, "surface": "хеттскому", "lemma": "хеттский", "qid": "Q35668", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1208, "surface": "хеттский", "lemma": "хеттский", "qid": "Q35668", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Цальпува", "index": 1216, "surface": "Цальпы", "lemma": "Цальпа", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 934, "surface": "Армении", "lemma": "Армения", "qid": "Q399", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 939, "surface": "Николай Адонц", "lemma": "Николай Адонц", "qid": "Q967052", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 941, "surface": "Григорий Капанцян", "lemma": "Григорий Капанцян", "qid": "Q4212834", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 947, "surface": "Геворк Джаукян", "lemma": "Геворк Джаукян", "qid": "Q4159963", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 957, "surface": "хеттские", "lemma": "хеттский", "qid": "Q35668", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 959, "surface": "Harsankila", "lemma": "Harsankila", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 961, "surface": "Harsanasa", "lemma": "Harsanasa", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 962, "surface": "Parminaija", "lemma": "Parminaija", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 964, "surface": "Parminasa", "lemma": "Parminasa", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 965, "surface": "Hiwaswanta", "lemma": "Hiwaswanta", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 967, "surface": "Hiwasasa", "lemma": "Hiwasasa", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 976, "surface": "Хайасы", "lemma": "Хайаса", "qid": "Q599590", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 978, "surface": "армянский", "lemma": "армянский", "qid": "Q8785", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 979, "surface": "армянский", "lemma": "армянский", "qid": "Q8785", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 985, "surface": "хайасском", "lemma": "хайасский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 987, "surface": "Рафаэл Ишханян", "lemma": "Рафаэл Ишханян", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 993, "surface": "армян", "lemma": "армяне", "qid": "Q79797", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 994, "surface": "Вана", "lemma": "Ван", "qid": "Q83061", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 999, "surface": "Армении", "lemma": "Армения", "qid": "Q399", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 1006, "surface": "Севан", "lemma": "Севан", "qid": "Q181932", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 1007, "surface": "хетт.", "lemma": "хеттский", "qid": "Q35668", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1010, "surface": "грабар", "lemma": "грабар", "qid": "Q181074", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1016, "surface": "хетт.", "lemma": "хеттский", "qid": "Q35668", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1019, "surface": "грабар", "lemma": "грабар", "qid": "Q181074", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1020, "surface": "Հայք", "lemma": "Հայք", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 1021, "surface": "Haykʿ", "lemma": "Haykʿ", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1033, "surface": "Хайаса", "lemma": "Хайаса", "qid": "Q599590", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1036, "surface": "армян", "lemma": "армяне", "qid": "Q79797", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 1037, "surface": "hay", "lemma": "hay", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1043, "surface": "протоармянского", "lemma": "протоармянский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1055, "surface": "балканских", "lemma": "балканские", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1057, "surface": "Пеонии", "lemma": "Пеония", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1059, "surface": "Παίωνες", "lemma": "Παίωνες", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 1060, "surface": "Παῖτοι", "lemma": "Παῖτοι", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 1061, "surface": "Παιόπλαι", "lemma": "Παιόπλαι", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 1065, "surface": "хайасцев", "lemma": "хайасцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 1070, "surface": "Кавказа", "lemma": "Кавказ", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1076, "surface": "Чёрного моря", "lemma": "Чёрное море", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1164, "surface": "хайасский язык", "lemma": "хайасский язык", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Хайаса", "index": 1168, "surface": "анатолийской группе", "lemma": "анатолийская группа", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1176, "surface": "протоармянскому языку", "lemma": "протоармянский язык", "qid": "Q3848498", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1187, "surface": "армян", "lemma": "армяне", "qid": "Q79797", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 1189, "surface": "Хайасой", "lemma": "Хайаса", "qid": "Q599590", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1196, "surface": "армян", "lemma": "армяне", "qid": "Q79797", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Хайаса", "index": 1200, "surface": "Армянском нагорье", "lemma": "Армянское нагорье", "qid": "Q211263", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1209, "surface": "Хайасе", "lemma": "Хайаса", "qid": "Q599590", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1213, "surface": "армянского народа", "lemma": "армянский народ", "qid": "Q79797", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Хайаса", "index": 1223, "surface": "армянского этноса", "lemma": "армянский этнос", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Хайаса", "index": 1226, "surface": "Армянском нагорье", "lemma": "Армянское нагорье", "qid": "Q211263", "span_len": 2, "resolved_by": "exact_label"}
