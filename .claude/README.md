@@ -13,7 +13,7 @@ source of config in the cloud.
 | `agents/` | Project subagents: `docs-keeper`, `doc-syncer`, `e2e-tester`, `pr-writer`. |
 | `skills/` | User skills this repo uses: `verify-spec` (+ `aspects-catalog.md`), `verify-pr`, `graphify`, `looper`, `playwright-cli`. |
 | `commands/` | Slash commands (`looper`). |
-| `hooks/` | Portable SessionStart hooks (`graphify-freshness.mjs`). |
+| `hooks/` | Portable hooks wired via `settings.json`: session context pointer (SessionStart), orchestrator write gate, subagent activity marker + report check, experiment approval gate, pre-compact backup. |
 | `settings.json` | Enabled plugins, marketplace, SessionStart hook wiring (via `$CLAUDE_PROJECT_DIR`). |
 | `cloud-setup.sh` | Reference **Environment → Setup script** for claude.ai/code (deps baked into the snapshot). |
 | `migrate-config.sh` | The reusable tool that produced this directory — see below. |

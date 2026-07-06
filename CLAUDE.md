@@ -132,7 +132,6 @@ Use a hierarchical structure: chief aggregator → per-topic aggregators → sev
 graphify is a skill (invoke via the Skill tool, not bash; its python package installs itself on the first run).
 - Auto-use: questions about architecture/relations/"where does X live" → `/graphify query "<question>"` first; grep only if the graph can't answer. Pass `graphify-out/GRAPH_REPORT.md` to recon and review agents as input context.
 - Auto-update: at feature end (step 8) — `/graphify <root> --update` via a background agent (pinned `model: sonnet` — hard cap: never opus/fable).
-- Auto-start: on the SessionStart hook injection, build the graph via a background agent (pinned `model: sonnet` — hard cap: never opus/fable) without blocking the main work.
 
 ### Useful skills & MCP
 - Browser e2e, in order of preference: (1) **`playwright-cli` skill** — primary for interactive/adversarial runs (~4x cheaper than MCP: disk snapshots read selectively, `snapshot --depth/--scope`; named sessions `-s=<topic>` isolate parallel runs/worktrees); (2) **scripted `npx playwright test`** — cheapest for regression suites (model sees pass/fail + report, not DOM); (3) **playwright MCP** (`--isolated`) — fallback for interactive a11y-ref reasoning only; (4) **chrome-devtools MCP** — perf/network/console debugging, not e2e driving.
