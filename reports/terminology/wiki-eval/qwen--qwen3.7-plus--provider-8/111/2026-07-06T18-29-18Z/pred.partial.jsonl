@@ -1408,3 +1408,74 @@
 {"title": "Кесария Палестинская", "index": 1986, "surface": "Византии", "lemma": "Византия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
 {"title": "Кесария Палестинская", "index": 2008, "surface": "Крокодильей речки", "lemma": "Крокодилья речка", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
 {"title": "Кесария Палестинская", "index": 2011, "surface": "речки Ада", "lemma": "речка Ада", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Кария", "index": 1571, "surface": "персов-сатрапов", "lemma": "перс-сатрап", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кария", "index": 1579, "surface": "Карией", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1581, "surface": "Гекатомна", "lemma": "Гекатомн", "qid": "Q1370645", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1583, "surface": "Миласы", "lemma": "Миласа", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кария", "index": 1592, "surface": "Артаксеркс II", "lemma": "Артаксеркс II", "qid": "Q188472", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1596, "surface": "Миласы", "lemma": "Миласа", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кария", "index": 1600, "surface": "Карией", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1608, "surface": "киприотов", "lemma": "киприоты", "qid": "Q10464898", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1618, "surface": "Мавсолу", "lemma": "Мавсол", "qid": "Q296857", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1628, "surface": "Карии", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1630, "surface": "Миласы", "lemma": "Миласа", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кария", "index": 1632, "surface": "Галикарнас", "lemma": "Галикарнас", "qid": "Q5843680", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1633, "surface": "Мавсола", "lemma": "Мавсол", "qid": "Q296857", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1635, "surface": "Гекатомна", "lemma": "Гекатомн", "qid": "Q1370645", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1662, "surface": "персидского царя", "lemma": "персидский царь", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Кария", "index": 1668, "surface": "Карии", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1691, "surface": "Карии", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1693, "surface": "горную Карию", "lemma": "горная Кария", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Кария", "index": 1753, "surface": "Артемисии", "lemma": "Артемисия", "qid": "Q231851", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1755, "surface": "Карией", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1758, "surface": "Гекатомна", "lemma": "Гекатомн", "qid": "Q1370645", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1759, "surface": "Идрией", "lemma": "Идрий", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кария", "index": 1767, "surface": "Гекатомна", "lemma": "Гекатомн", "qid": "Q1370645", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1768, "surface": "Пиксодар", "lemma": "Пиксодар", "qid": "Q930824", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1777, "surface": "Карией", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1780, "surface": "Оронтобата", "lemma": "Оронтобат", "qid": "Q961005", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1782, "surface": "Пиксодара", "lemma": "Пиксодар", "qid": "Q930824", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1784, "surface": "Пиксодара", "lemma": "Пиксодар", "qid": "Q930824", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1788, "surface": "Александр Македонский", "lemma": "Александр Македонский", "qid": "Q8409", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1794, "surface": "Филиппа II", "lemma": "Филипп II", "qid": "Q130650", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1798, "surface": "Пиксодара", "lemma": "Пиксодар", "qid": "Q930824", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1858, "surface": "Александра Македонского", "lemma": "Александр Македонский", "qid": "Q8409", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1860, "surface": "Кария", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1868, "surface": "диадохов", "lemma": "диадохи", "qid": "Q201546", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1873, "surface": "римляне", "lemma": "римляне", "qid": "Q1651392", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1879, "surface": "Антиохом III", "lemma": "Антиох III", "qid": "Q579949", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 1890, "surface": "Пергамским царством", "lemma": "Пергамское царство", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 1893, "surface": "Родосом", "lemma": "Родос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 1897, "surface": "Кария", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 1982, "surface": "Дж. М. Кук", "lemma": "Дж. М. Кук", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Кария", "index": 1986, "surface": "Дж. Э. Бин", "lemma": "Дж. Э. Бин", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Кария", "index": 1994, "surface": "Карии", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 2004, "surface": "Карии", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 2024, "surface": "Эгейского моря", "lemma": "Эгейское море", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2038, "surface": "Асарлыке", "lemma": "Асарлык", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кария", "index": 2043, "surface": "Милете", "lemma": "Милет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2046, "surface": "Миласы", "lemma": "Миласа", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кария", "index": 2051, "surface": "карийские", "lemma": "карийские", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кария", "index": 2063, "surface": "греческой", "lemma": "греческий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2073, "surface": "Карии", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 2075, "surface": "микенские", "lemma": "микенские", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2078, "surface": "Ясосе", "lemma": "Ясос", "qid": "Q279048", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 2081, "surface": "минойскими", "lemma": "минойские", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2088, "surface": "протогеометрического", "lemma": "протогеометрический", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2090, "surface": "геометрического", "lemma": "геометрический", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2100, "surface": "карийцев", "lemma": "карийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2102, "surface": "Сардисе", "lemma": "Сардис", "qid": "Q353119", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Кария", "index": 2103, "surface": "Родосе", "lemma": "Родос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2106, "surface": "Египте", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2111, "surface": "фараона", "lemma": "фараон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2115, "surface": "Родосе", "lemma": "Родос", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2117, "surface": "карийской", "lemma": "карийская", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2121, "surface": "Птолемейон", "lemma": "Птолемейон", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кария", "index": 2127, "surface": "карийской", "lemma": "карийская", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2138, "surface": "карийцы", "lemma": "карийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2145, "surface": "Анатолии", "lemma": "Анатолия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2153, "surface": "Карии", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 2166, "surface": "карийцы", "lemma": "карийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2178, "surface": "Кария", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кария", "index": 2195, "surface": "карийцы", "lemma": "карийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кария", "index": 2201, "surface": "Анатолии", "lemma": "Анатолия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
