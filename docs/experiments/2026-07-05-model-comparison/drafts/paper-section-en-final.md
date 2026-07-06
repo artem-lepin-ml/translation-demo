@@ -23,7 +23,8 @@ component, so the benchmark is deterministic and rebuilds bit-for-bit from a
 cached HTML snapshot of each article. We remove links to chronology targets
 (years, decades, centuries, identified by the target's *instance-of* class),
 which annotate temporal navigation rather than terminology. The corpus of 100
-articles yields 8,829 in-text links; 405 are chronology-filtered and 6 carry no
+articles yields 8,829 in-text links; 459 point to red links, 405 are
+chronology-filtered, and 6 carry no
 Wikidata item, leaving **7,959 gold mentions over 3,868 distinct QIDs**.
 
 The 100 articles come in ten thematic sections of ten (Sumer, Egypt, Assyria,
@@ -128,12 +129,12 @@ position into two factors: *extraction coverage*, whether the pipeline produced
 any resolved prediction at that position, and *grounding accuracy*, whether
 that prediction carried the right QID. Coverage separates the models sharply:
 0.763 for gemini against 0.632 for deepseek. Grounding accuracy does not move:
-**0.814 and 0.815, identical to the third decimal**. The entire recall
+**0.814 and 0.815, identical to the second decimal**. The entire recall
 difference lives in the extraction stage. Given a mention, both models ground
 it about equally well, and well in absolute terms: accuracy runs 0.92–0.93 on
 the deterministic exact-label path and 0.85–0.86 on judge-disambiguated cases,
 with the residual conditional loss concentrated in explicit abstentions,
-roughly 7–8% of covered positions. This is the result to carry out of the
+roughly 7–9% of covered positions. This is the result to carry out of the
 section. The bottleneck is finding the terms, not linking them.
 
 **The mention-type slice points to the same place.** Document recall on
