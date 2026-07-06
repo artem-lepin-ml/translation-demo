@@ -376,3 +376,52 @@ describe('context highlighting helpers (S2 §2.3)', () => {
     expect(findSentenceContaining('First. Second.', 'nowhere')).toBeNull();
   });
 });
+
+describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)', () => {
+  const base = {
+    id: '1', paragraphId: 1, sourceSurface: 'Евфрата', sourceLemma: 'Евфрата',
+    context: '', charStart: 0, charEnd: 7, difficulty: 'yellow' as const,
+    grounded: null, targetSurface: 'Euphrates', pairAccuracy: null,
+    recommended: null, note: '',
+  };
+  const cands = [
+    { qid: 'Q26690015', label: 'Operation Euphrates Shield', description: '' },
+    { qid: 'Q1728989', label: 'Karasu River', description: '' },
+  ];
+
+  it('maps ambiguous_candidates to the ambiguous badge with candidate count', () => {
+    const badge = resolveBadge({
+      ...base, candidates: cands,
+      traceJson: { decision: { resolved_by: 'ambiguous_candidates' } },
+    } as never);
+    expect(badge.tone).toBe('rej');
+    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+  });
+
+  it('maps judge_unavailable to the ambiguous badge', () => {
+    const badge = resolveBadge({
+      ...base, candidates: cands,
+      traceJson: { decision: { resolved_by: 'judge_unavailable' } },
+    } as never);
+    expect(badge.tone).toBe('rej');
+    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+  });
+
+  it('unknown resolved_by with candidates degrades to ambiguous, not "no candidates"', () => {
+    const badge = resolveBadge({
+      ...base, candidates: cands,
+      traceJson: { decision: { resolved_by: 'mystery_future_value' } },
+    } as never);
+    expect(badge.tone).toBe('rej');
+    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+  });
+
+  it('unknown resolved_by without candidates stays "no candidates"', () => {
+    const badge = resolveBadge({
+      ...base, candidates: [],
+      traceJson: { decision: { resolved_by: 'mystery_future_value' } },
+    } as never);
+    expect(badge.tone).toBe('none');
+    expect(badge.label).toBe('○ no candidates');
+  });
+});

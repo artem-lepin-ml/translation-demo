@@ -414,8 +414,8 @@ export default function GlossaryTab({ terms, paragraphs, sourceLang, targetLang,
       </table>
       <div className="va-gl-legend">
         ◆ label match — deterministic exact-label decision, no LLM · ◇ LLM — judge disambiguated among candidates
-        (model shown) · ◇ LLM rejected all — candidates existed, none fit the context · ○ no candidates — search +
-        enabled fallbacks returned nothing.
+        (model shown) · ◇ LLM rejected all — candidates existed, none fit the context · ◇ ambiguous — candidates
+        found, no exact match and no judge run · ○ no candidates — search + enabled fallbacks returned nothing.
         <br />
         Row = unique (lemma, entity); Mentions ×N aggregates per-occurrence rows. Click any row to expand context,
         path, candidates and all mentions.

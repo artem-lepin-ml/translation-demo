@@ -83,6 +83,8 @@ export function resolveBadge(term: TermWithTrace): Badge {
   const trace = term.traceJson;
   const resolvedBy = trace?.resolved_by ?? trace?.decision?.resolved_by;
 
+  const knownCandidates = term.candidates.length;
+
   if (resolvedBy) {
     const model = trace?.model ?? trace?.decision?.model ?? DEFAULT_MODEL_LABEL;
     switch (resolvedBy) {
@@ -93,11 +95,19 @@ export function resolveBadge(term: TermWithTrace): Badge {
         return { tone: 'llm', label: `◇ LLM · ${model}` };
       case 'llm_rejected':
         return { tone: 'rej', label: '◇ LLM rejected all' };
+      // Deterministic enrichment stops here: candidates found but no exact
+      // label match and no judge was run — honest "unresolved", NOT "none".
+      case 'ambiguous_candidates':
+      case 'judge_unavailable':
+        return { tone: 'rej', label: `◇ ambiguous · ${knownCandidates || '?'} candidates` };
       case 'no_candidates':
         return { tone: 'none', label: '○ no candidates' };
       default:
-        // Defensive: unrecognized value from a future backend — degrade quietly.
-        return { tone: 'none', label: '○ no candidates' };
+        // Defensive: unrecognized value from a future backend — degrade
+        // honestly by what the data shows rather than always claiming "none".
+        return knownCandidates > 0
+          ? { tone: 'rej', label: `◇ ambiguous · ${knownCandidates} candidates` }
+          : { tone: 'none', label: '○ no candidates' };
     }
   }
 

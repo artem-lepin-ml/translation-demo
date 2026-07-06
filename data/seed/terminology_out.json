@@ -16644,12 +16644,7 @@
    "charStart": 18,
    "charEnd": 25,
    "difficulty": "yellow",
-   "grounded": {
-    "qid": "Q1728989",
-    "url": "https://www.wikidata.org/wiki/Q1728989",
-    "label": "Karasu River",
-    "description": "river in Erzincan, eastern Turkey"
-   },
+   "grounded": null,
    "candidates": [
     {
      "qid": "Q26690015",
@@ -16764,7 +16759,7 @@
      }
     ],
     "exact_matches": [],
-    "resolved_by": "llm_disambiguation",
+    "resolved_by": "ambiguous_candidates",
     "judge": {
      "response": {
       "qid": "Q1728989",
@@ -16776,7 +16771,11 @@
     },
     "chosen_qid": "Q1728989",
     "n_api_calls": 0,
-    "latency_ms": 1062.4
+    "latency_ms": 1062.4,
+    "decision": {
+     "resolved_by": "ambiguous_candidates",
+     "note": "Karasu River homonym demoted: true Euphrates QID absent from candidates"
+    }
    }
   },
   {
