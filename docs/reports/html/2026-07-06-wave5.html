@@ -152,7 +152,7 @@ Wave-5 — ночная автономная сессия: translator, глос�
     <h2><span class="idx">1</span> Главное</h2>
     <p class="lead">
       <!-- SLOT: main-verdict -->
-Все шесть фич wave-5 реализованы по отревьюированным спекам, протестированы (<b>474 pytest + 259 vitest, production build, 34 e2e-скриншота, 0 серверных 500</b>) и запушены в <a href="https://github.com/artem-lepin-ml/translation-demo/pull/4">draft PR #4</a>. Две внешние оговорки: живой LLM-путь в облачной песочнице блокируется WAF шлюза (продукт честно фейлится и ретраится; на твоём сервере с настоящим ключом OpenRouter путь живой), а деплой из этой сессии невозможен (SSH закрыт политикой) — подготовлен идемпотентный <code>deploy/update-server.sh</code>.
+Все шесть фич wave-5 реализованы по отревьюированным спекам, протестированы (<b>475 pytest + 263 vitest, production build, 34 e2e-скриншота, 0 серверных 500</b>) и запушены в <a href="https://github.com/artem-lepin-ml/translation-demo/pull/4">draft PR #4</a>. Две внешние оговорки: живой LLM-путь в облачной песочнице блокируется WAF шлюза (продукт честно фейлится и ретраится; на твоём сервере с настоящим ключом OpenRouter путь живой), а деплой из этой сессии невозможен (SSH закрыт политикой) — подготовлен идемпотентный <code>deploy/update-server.sh</code>.
 <!-- /SLOT -->
     </p>
     <!-- SLOT: overall-badge -->
@@ -232,7 +232,8 @@ Wave-5 — ночная автономная сессия: translator, глос�
   <section class="section" id="evidence">
     <h2><span class="idx">5</span> Артефакты запуска</h2>
     <!-- SLOT: evidence -->
-<div class="evidence-item"><span class="claim">Тесты</span> — pytest <b>474 passed</b> (413 базовых + 61 новый; 3 прогона подряд без флаков) · vitest <b>259 passed</b> (после фикс-раунда; было 246) · <code>tsc -b</code> чистый · <code>vite build</code> ок. Коммиты: <code>01fdc10</code> (backend), <code>fff5496</code> (frontend), <code>17fc4a3</code> (фикс-раунд).</div>
+<div class="evidence-item"><span class="claim">Тесты</span> — pytest <b>475 passed</b> · vitest <b>263 passed</b> (финальные прогоны после всех фикс-раундов) · <code>tsc -b</code> чистый · <code>vite build</code> ок. Коммиты: <code>01fdc10</code> (backend), <code>fff5496</code> (frontend), <code>17fc4a3</code> (фикс-раунд).</div>
+<div class="evidence-item"><span class="claim">Добивочный e2e (addendum)</span> — 9/9 проверок PASS: слияние «Тигр/Тигра» в браузере, реальный Q11767 у «Месопотамии», .md-strip / windows-1251 / .docx / drag-drop; его 2 находки закрыты в тот же час: честный бейдж «◇ ambiguous · N candidates» и демоция ложного «Евфрата»→Karasu River из реального G3-выхода. Отчёт: Addendum в <code>wave5-run.md</code>, скриншоты <code>shots/wave5-addendum/</code>.</div>
 <div class="evidence-item"><span class="claim">Браузерный e2e</span> — 34 скриншота, 0 серверных 500 за весь прогон; полный отчёт со сценарной таблицей и provenance: <code>docs/reports/e2e/wave5-run.md</code> (коммит <code>74c6a8e</code>). Найденные им 3 бага + пробел данных закрыты фикс-раундом <code>17fc4a3</code>.</div>
 <div class="evidence-item"><span class="claim">Обогащение глоссария</span> — 142 уникальных surface: 28 exact_label (Месопотамия→Q11767, Евфрат→Q34589, Тигр→Q35591, Шатт-эль-Араб→Q166966), 31 ambiguous с реальными кандидатами, 83 no_candidates; ложные матчи отфильтрованы; коммит <code>3f8aedf</code>, скрипт <code>scripts/enrich_seed_terms.py</code>.</div>
 <div class="evidence-item"><span class="claim">Спек-ревью до кода</span> — 3 Sonnet-аспекта, 20 находок (2 CRITICAL, 5 HIGH), все внесены в спеки до реализации: <code>ff95aa2</code>. Спеки: <code>docs/superpowers/specs/2026-07-05-*.md</code>.</div>
