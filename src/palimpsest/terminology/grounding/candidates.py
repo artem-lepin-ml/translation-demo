@@ -6,11 +6,13 @@ Search order, widening only when thin:
      differs from the surface (Russian is heavily inflected; the nominative
      lemma recovers hits the inflected surface misses).
   2. ``wbsearchentities(surface)``
-  3. if 0 hits total and ``config.use_fallbacks``: CirrusSearch full-text
+  3. if 0 hits total and ``config.use_cirrus``: CirrusSearch full-text
      (``list=search``) over both forms — recovers inflected/rare terms the
      prefix search misses.
-  4. if still 0 and ``config.use_fallbacks``: Wikipedia RU-title → Wikidata
-     item — last resort for historicisms.
+  4. if still 0 and ``config.use_sitelink``: Wikipedia RU-title → Wikidata
+     item — last resort for historicisms. Independently gatable from rung 3
+     because it shares its title->QID mapping with the wiki-eval reference
+     annotations (evaluation circularity, see docs/stages/wiki-eval.md).
 
 Every search call is logged to ``queries`` (feeds ``GroundingTrace`` v1).
 Candidates are enriched, redirect-canonicalised, and returned as plain dicts
@@ -62,7 +64,7 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
                 hits.append(h)
 
     source = "wbsearchentities" if hits else "none"
-    if not hits and config.use_fallbacks:  # prefix search missed entirely → full-text CirrusSearch recovers inflected/rare terms
+    if not hits and config.use_cirrus:  # prefix search missed entirely → full-text CirrusSearch recovers inflected/rare terms
         for q in forms:
             results = wd.search_cirrus(q, limit=config.search_limit)
             queries.append({"q": q, "kind": "lemma" if q == mention.lemma else "surface",
@@ -73,7 +75,7 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
                     hits.append(h)
         if hits:
             source = "cirrus"
-    if not hits and config.use_fallbacks:  # last resort: RU Wikipedia page → Wikidata item
+    if not hits and config.use_sitelink:  # last resort: RU Wikipedia page → Wikidata item
         wiki_title = mention.lemma or mention.surface
         qid = wd.wikipedia_wikibase_item(wiki_title, lang=mention.lang)
         queries.append({"q": wiki_title, "kind": "lemma" if wiki_title == mention.lemma else "surface",
