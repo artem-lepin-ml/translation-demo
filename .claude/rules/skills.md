@@ -14,11 +14,10 @@ user-invoked skill never calls another user-invoked skill.**
 
 ## Classification
 
-17 skill dirs currently under `.claude/skills/`, each with a `SKILL.md`.
+16 skill dirs currently under `.claude/skills/`, each with a `SKILL.md`.
 
 | Skill | Class | Trigger / role |
 |---|---|---|
-| `graphify` | User-invoked | Frontmatter declares an explicit `trigger: /graphify` slash command; also the named entry point for codebase/doc questions and the step-8 `--update` call |
 | `grill-with-docs` | User-invoked | `disable-model-invocation: true` in frontmatter (owner-fixed) |
 | `grilling` | User-invoked | Owner-fixed; relentless plan/design interview the user deliberately starts |
 | `handoff` | Model-invoked | Owner-fixed; compacts the running conversation into a W7 doc, fires as a helper near context/session end rather than as a numbered process step |

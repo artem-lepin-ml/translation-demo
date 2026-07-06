@@ -19,6 +19,7 @@ import type {
   TestModelResult,
   CreateDocumentBody,
   GroundingConfig,
+  TranslatorConfig,
 } from './api-client';
 import {
   getDocuments,
@@ -41,8 +42,14 @@ import {
   patchIssueStatus,
   getGroundingConfig,
   updateGroundingConfig,
+  getTranslatorConfig,
+  updateTranslatorConfig,
+  getHealth,
+  translateDocument as apiTranslateDocument,
+  restoreRevision as apiRestoreRevision,
 } from './api-client';
 import type { CriterionId, ModelRegistryEntry } from './api-client';
+import { applyLimits } from './limits';
 
 // ─── UI state ─────────────────────────────────────────────────────────────────
 
@@ -64,6 +71,7 @@ export interface DemoStore {
   criteria: Criterion[];
   models: ModelRegistryEntryPublic[];
   groundingConfig: GroundingConfig | null;
+  translatorConfig: TranslatorConfig | null;
 
   // ── loading states ──────────────────────────────────────────────────────────
   documentLoading: boolean;
@@ -156,6 +164,24 @@ export interface DemoStore {
 
   // ─── grounding config ───────────────────────────────────────────────────────
   saveGroundingConfig: (cfg: GroundingConfig) => Promise<void>;
+
+  // ─── translator config (S4 §3.4) ─────────────────────────────────────────────
+  saveTranslatorConfig: (cfg: TranslatorConfig) => Promise<void>;
+
+  /** Re-POST /translate for the current document (S4 §3.3 Retry after a failed run). */
+  retryTranslate: () => Promise<void>;
+
+  /** Evaluate the first N (min(paragraphs, 12)) paragraphs of the current
+   * document sequentially — the "Evaluate first paragraphs?" [Run] CTA after
+   * a translation completes (S4 §3.3). There is no standalone server-side
+   * precompute-trigger endpoint (precompute only runs at document creation),
+   * so this reuses the existing per-paragraph /evaluate path instead of
+   * inventing a new backend route (see webapp-ui-design.md doc-parity note). */
+  runFirstParagraphsEvaluate: () => Promise<void>;
+
+  /** Restore a paragraph to a past revision's text (S5 §3.3), then replace it
+   * in the loaded document with the server's fresh paragraph DTO. */
+  restoreParagraphRevision: (paraId: number, paraIdx: number, revisionId: number) => Promise<void>;
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -238,6 +264,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   criteria: [],
   models: [],
   groundingConfig: null,
+  translatorConfig: null,
   documentLoading: false,
   documentError: null,
   paraEvalState: {},
@@ -253,12 +280,17 @@ export const useDemoStore = create<DemoStore>((set, get) => {
 
   init: async () => {
     set({ documentLoading: true, documentError: null });
+    // Server-side limits sync (S3 §2.3) — best-effort, independent of the
+    // main document load below; a failure here just keeps the client fallback
+    // constants from limits.ts and must not block the rest of init.
+    getHealth().then((h) => applyLimits(h.limits)).catch(() => {});
     try {
-      const [summaries, criteria, models, groundingConfig] = await Promise.all([
+      const [summaries, criteria, models, groundingConfig, translatorConfig] = await Promise.all([
         getDocuments(),
         getCriteria(),
         getModels(),
         getGroundingConfig(),
+        getTranslatorConfig(),
       ]);
       const firstId = summaries[0]?.id;
       if (firstId === undefined) {
@@ -276,6 +308,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
         criteria,
         models,
         groundingConfig,
+        translatorConfig,
         activeCriteria,
         documentLoading: false,
         paraEvalState: Object.fromEntries(doc.paragraphs.map((_, i) => [i, defaultParaEval()])),
@@ -609,6 +642,43 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   saveGroundingConfig: async (cfg) => {
     const updated = await updateGroundingConfig(cfg);
     set({ groundingConfig: updated });
+  },
+
+  // ── translator config ─────────────────────────────────────────────────────
+
+  saveTranslatorConfig: async (cfg) => {
+    const updated = await updateTranslatorConfig(cfg);
+    set({ translatorConfig: updated });
+  },
+
+  retryTranslate: async () => {
+    const doc = get().document;
+    if (!doc) return;
+    await apiTranslateDocument(doc.id);
+    await get().refreshDocument();
+  },
+
+  runFirstParagraphsEvaluate: async () => {
+    const doc = get().document;
+    if (!doc) return;
+    const PRECOMPUTE_MAX_PARAS = 12;
+    const targets = doc.paragraphs.slice(0, PRECOMPUTE_MAX_PARAS);
+    for (const [idx, para] of targets.entries()) {
+      await get().evaluateParagraph(para.id, idx);
+    }
+  },
+
+  // ── revision history (S5 §3.3) ────────────────────────────────────────────
+
+  restoreParagraphRevision: async (paraId, paraIdx, revisionId) => {
+    const updated = await apiRestoreRevision(paraId, revisionId);
+    set((s) => {
+      const doc = s.document;
+      if (!doc) return {};
+      const paragraphs = doc.paragraphs.map((p) => (p.id === paraId ? { ...p, ...updated } : p));
+      return { document: { ...doc, paragraphs } };
+    });
+    markStale(paraIdx);   // restored text has no fresh score yet — Evaluate ↻ will re-judge it honestly
   },
   };
 });

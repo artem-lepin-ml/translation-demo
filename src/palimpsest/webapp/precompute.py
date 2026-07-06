@@ -41,6 +41,16 @@ def mark_started(doc_id: int, n_paragraphs: int) -> None:
                         "planned": min(n_paragraphs, PRECOMPUTE_PARAS), "succeeded": 0}
 
 
+def _classify_failure(exc: Exception) -> str:
+    """error_reason for the 'succeeded == 0' banner (spec 2026-07-05
+    settings-fixes §2.6) — no_api_key | budget_exhausted | all_failed."""
+    if isinstance(exc, budget.BudgetExceeded):
+        return "budget_exhausted"
+    if isinstance(exc, RuntimeError) and "no api key" in str(exc):
+        return "no_api_key"
+    return "all_failed"
+
+
 def launch(doc_id: int, judge_live) -> None:
     t = asyncio.create_task(run(doc_id, judge_live))
     _tasks[doc_id] = t
@@ -94,12 +104,13 @@ def _write_paragraph(conn, doc_id: int, pid: int, enabled, results: dict) -> boo
             return False                       # document deleted mid-flight, discard write
         if _already_scored(conn, pid):
             return False                       # discard judged results, no write
+        revision_id = db.latest_revision_id(conn, pid)
         for cid, res in results.items():
             for kind in ("seed", "cache"):
                 conn.execute(
                     "INSERT INTO score(paragraph_id,criterion_id,value,summary,aggregate,"
-                    "criteria_key,kind,created_at) VALUES(?,?,?,?,?,?,?,?)",
-                    (pid, cid, res["value"], res["summary"], aggregate, criteria_key, kind, ts))
+                    "criteria_key,kind,created_at,revision_id) VALUES(?,?,?,?,?,?,?,?,?)",
+                    (pid, cid, res["value"], res["summary"], aggregate, criteria_key, kind, ts, revision_id))
             for it in res["issues"]:
                 conn.execute(
                     "INSERT INTO issue(paragraph_id,criterion_id,target_fragment,source_fragment,"
@@ -149,18 +160,22 @@ async def _run(doc_id: int, judge_live) -> None:
         for c in enabled:
             if not await _take_call_slot():
                 _status[doc_id]["status"] = "stopped"
+                _status[doc_id].setdefault("error_reason", "budget_exhausted")
                 return
             try:
                 results[c["id"]] = await judge_live(
                     conn, c, p["source"], p["target"],
                     d["source_lang"], d["target_lang"], endpoint="precompute")
-            except Exception:
+            except Exception as exc:
                 logging.exception(
                     "precompute judge call failed doc_id=%s paragraph_id=%s criterion=%s",
                     doc_id, p["id"], c["id"])
                 failed = True                  # BudgetExceeded/сеть → абзац не пишется
+                _status[doc_id].setdefault("error_reason", _classify_failure(exc))
                 break
         if not failed and _write_paragraph(conn, doc_id, p["id"], enabled, results):
             _status[doc_id]["succeeded"] += 1
         _status[doc_id]["done"] += 1
+    if _status[doc_id]["succeeded"] == 0 and _status[doc_id]["planned"] > 0:
+        _status[doc_id].setdefault("error_reason", "all_failed")
     _status[doc_id]["status"] = "done"

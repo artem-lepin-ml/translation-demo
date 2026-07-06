@@ -5,13 +5,13 @@ Load a bilingual document, get LLM-as-judge highlights with explanations and sug
 
 ## What the demo does
 
-- Renders 16 seed paragraphs (Mesopotamia pilot) with per-criterion score overlays.
+- Renders 15 seed paragraphs (Mesopotamia pilot) with per-criterion score overlays.
 - Upload your own original↔translation pair (paste or `.docx`/`.md`/`.txt` file, any language pair) via the top-bar modal — paragraph-alignment preview, background cache warm-up, delete when done.
 - Inspector panel: per-paragraph issues (explanation / suggestion / severity) and score breakdown.
 - Terminology panel: each RU term carries a **difficulty** dot (Wikidata grounding: confirmed / ambiguous / not found) and a **pair-accuracy** verdict on the RU↔EN pair — two independent signals, not one.
 - Accept a suggested fix → target text updates → re-score → aggregate shows ▲delta with `cached` badge.
 - Reset button restores seed baseline.
-- Settings: 5 evaluator criteria with model · weight · prompt; model registry with masked API keys.
+- Settings: 4 evaluator criteria with model · weight · prompt; model registry with masked API keys.
 - Ranking view: sort paragraphs by any criterion or aggregate.
 
 ## Quickstart

@@ -46,3 +46,30 @@ def test_out_of_enum_difficulty_serializes_to_null(client):
     term = next(t for t in r.json()["paragraphs"][0]["terms"] if t["sourceSurface"] == "Ein")
     assert term["difficulty"] is None
     assert term["pairAccuracy"] == "green"
+
+
+def test_trace_json_serialized_as_parsed_object(client):
+    doc = client.post("/api/documents", json=_body()).json()
+    pid = doc["paragraphs"][0]["id"]
+
+    conn = db.connect()
+    conn.execute(
+        "INSERT INTO term(paragraph_id,source_surface,source_lemma,context,char_start,char_end,"
+        "difficulty,target_surface,pair_accuracy,trace_json) VALUES(?,?,?,?,?,?,?,?,?,?)",
+        (pid, "Ein", "ein", "", 0, 3, "green", "A", "green",
+         '{"decision": {"resolved_by": "exact_label"}}'),
+    )
+    conn.execute(
+        "INSERT INTO term(paragraph_id,source_surface,source_lemma,context,char_start,char_end,"
+        "difficulty,target_surface,pair_accuracy) VALUES(?,?,?,?,?,?,?,?,?)",
+        (pid, "Zwei", "zwei", "", 4, 8, "red", "B", "red"),
+    )
+    conn.commit()
+
+    r = client.get(f"/api/documents/{doc['id']}")
+    assert r.status_code == 200
+    terms = r.json()["paragraphs"][0]["terms"]
+    with_trace = next(t for t in terms if t["sourceSurface"] == "Ein")
+    assert with_trace["traceJson"] == {"decision": {"resolved_by": "exact_label"}}
+    without_trace = next(t for t in terms if t["sourceSurface"] == "Zwei")
+    assert without_trace["traceJson"] == {}

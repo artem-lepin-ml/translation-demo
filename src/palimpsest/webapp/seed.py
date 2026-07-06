@@ -99,6 +99,7 @@ def seed() -> None:
         pid = conn.execute(
             "INSERT INTO paragraph(document_id,idx,source,target,seed_target) VALUES(?,?,?,?,?)",
             (doc_id, idx, ru, en, en)).lastrowid
+        revision_id = db.write_revision(conn, pid, en, "seed", ts)
 
         baseline_vals: dict[str, float] = {}
         for cid, *_ in CRITERIA:
@@ -116,13 +117,13 @@ def seed() -> None:
                 continue
             summary = payload.get("summary", "")
             conn.execute(
-                "INSERT INTO score(paragraph_id,criterion_id,value,summary,aggregate,criteria_key,kind,created_at) "
-                "VALUES(?,?,?,?,?,?,'seed',?)",
-                (pid, cid, baseline_vals[cid], summary, agg, ckey, ts))
+                "INSERT INTO score(paragraph_id,criterion_id,value,summary,aggregate,criteria_key,kind,created_at,revision_id) "
+                "VALUES(?,?,?,?,?,?,'seed',?,?)",
+                (pid, cid, baseline_vals[cid], summary, agg, ckey, ts, revision_id))
             conn.execute(
-                "INSERT INTO score(paragraph_id,criterion_id,value,summary,aggregate,criteria_key,kind,created_at) "
-                "VALUES(?,?,?,?,?,?,'cache',?)",
-                (pid, cid, cache_vals[cid], summary, cache_agg, ckey, ts))
+                "INSERT INTO score(paragraph_id,criterion_id,value,summary,aggregate,criteria_key,kind,created_at,revision_id) "
+                "VALUES(?,?,?,?,?,?,'cache',?,?)",
+                (pid, cid, cache_vals[cid], summary, cache_agg, ckey, ts, revision_id))
             for it in (payload.get("identified_issues") or []):
                 expl = it.get("explanation", "")
                 issue = sanitize_issue({
@@ -143,6 +144,7 @@ def seed() -> None:
 
     _seed_glossary(conn)
     _seed_grounding_config(conn)
+    _seed_translator_config(conn)
     conn.commit()
     n = conn.execute("SELECT COUNT(*) n FROM paragraph").fetchone()["n"]
     print(f"seeded {n} paragraphs, doc_id={doc_id}, model_key={'set' if os.environ.get('OPENROUTER_API_KEY') else 'EMPTY (cache fallback)'}")
@@ -164,8 +166,33 @@ def _seed_terms(conn, pid: int, ru: str, en: str, terminology) -> None:
         target = t.get("translation_used") or None
         diff = VERDICTS[i % 3]
         ctx = ru[max(0, start - 30): end + 30]
+        # scripts/enrich_seed_terms.py (spec §7) stamps real Wikidata grounding
+        # onto identified_terms entries — qid/candidates/trace instead of the
+        # synthetic Q-id fallback below. "resolved_by" is the marker key.
+        enriched = "resolved_by" in t
+        candidates_json = "[]"
+        trace_json = "{}"
         if diff == "red":
+            # Null rule mirrors the real pipeline (terminology.pipeline.run):
+            # a red-difficulty term never carries a grounded qid or candidates,
+            # even when enrichment did resolve one — see
+            # tests/test_terminology.py::test_pipeline_enforces_null_rule_on_red.
             grounded, pair, rec = None, None, None
+            if enriched:
+                trace_json = json.dumps(t.get("trace") or {})
+        elif enriched:
+            qid = t.get("qid")
+            grounded = None
+            if qid:
+                cand_desc = next(
+                    (c.get("description") for c in (t.get("candidates") or []) if c.get("qid") == qid), None)
+                grounded = {"qid": qid, "label": t.get("label_en") or target or surface,
+                            "description": cand_desc or t.get("domain", "term"),
+                            "url": f"https://www.wikidata.org/wiki/{qid}"}
+            candidates_json = json.dumps(t.get("candidates") or [])
+            trace_json = json.dumps(t.get("trace") or {})
+            pair = "green" if diff == "green" else "yellow"
+            rec = None if pair == "green" else (target or surface)
         else:
             qid = f"Q{100000 + (hash(surface) % 900000)}"
             grounded = {"qid": qid, "label": (target or surface),
@@ -180,8 +207,8 @@ def _seed_terms(conn, pid: int, ru: str, en: str, terminology) -> None:
             "difficulty,grounded_json,candidates_json,target_surface,pair_accuracy,recommended,note,trace_json) "
             "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (pid, surface, surface, ctx, start, end, diff,
-             json.dumps(grounded) if grounded else None, json.dumps([]),
-             target, pair, rec, t.get("domain", ""), "{}"))
+             json.dumps(grounded) if grounded else None, candidates_json,
+             target, pair, rec, t.get("domain", ""), trace_json))
 
 
 def _seed_grounding_config(conn) -> None:
@@ -189,6 +216,16 @@ def _seed_grounding_config(conn) -> None:
         "INSERT INTO grounding_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
         (MODEL_NAME, DEFAULT_GROUNDING_JUDGE_PROMPT,
          json.dumps({"max_tokens": 512, "temperature": 0})))
+
+
+def _seed_translator_config(conn) -> None:
+    """Mirrors _seed_grounding_config (spec 2026-07-05-translator §2.1) — the
+    same default draft prompt every fresh dev/test/e2e DB gets, generalised
+    with {source_lang}/{target_lang} placeholders rendered per document."""
+    prompt = (paths.PROMPTS / "translator" / "default.md").read_text(encoding="utf-8")
+    conn.execute(
+        "INSERT INTO translator_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
+        (DEFAULT_CRITERION_MODEL, prompt, json.dumps({"max_tokens": 2048, "temperature": 0.3})))
 
 
 def _seed_glossary(conn) -> None:

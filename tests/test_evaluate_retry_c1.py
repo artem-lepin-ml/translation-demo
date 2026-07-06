@@ -48,7 +48,7 @@ def eval_client(client, monkeypatch):
     conn.execute("INSERT INTO criterion(id,name,model_name,weight,scale_min,scale_max,enabled) "
                  "VALUES('accuracy','Accuracy','m',1.0,1,10,1)")
     conn.execute("INSERT INTO criterion(id,name,model_name,weight,scale_min,scale_max,enabled) "
-                 "VALUES('cultural','Cultural','m',1.0,1,10,1)")
+                 "VALUES('style','Style','m',1.0,1,10,1)")
     conn.commit()
 
     class _DummyClient:
@@ -220,8 +220,8 @@ def test_precompute_subcap_counts_one_slot_per_criterion_despite_retries(eval_cl
 def test_retry_failed_subset_only_calls_requested_criteria(eval_client, monkeypatch):
     """A retry-failed click with criterionIds=['accuracy'] must call judge_one
     ONLY for 'accuracy' (<= len(criterionIds) * (1+EVAL_RETRIES) calls total),
-    never re-running the already-succeeded 'cultural' criterion."""
-    seen = {"accuracy": 0, "cultural": 0}
+    never re-running the already-succeeded 'style' criterion."""
+    seen = {"accuracy": 0, "style": 0}
 
     def counting_judge(client, criterion_id, source, target, **kw):
         seen[criterion_id] += 1
@@ -232,17 +232,17 @@ def test_retry_failed_subset_only_calls_requested_criteria(eval_client, monkeypa
     monkeypatch.setattr(app_mod, "judge_one", counting_judge)
     pid = _make_para(eval_client)
     full = eval_client.post(f"/api/paragraphs/{pid}/evaluate").json()
-    assert {s["criterionId"] for s in full["scores"]} == {"accuracy", "cultural"}
-    assert seen["cultural"] == 1
+    assert {s["criterionId"] for s in full["scores"]} == {"accuracy", "style"}
+    assert seen["style"] == 1
     baseline_accuracy_calls = seen["accuracy"]
 
     # simulate a retry-failed click for just 'accuracy'
     again = eval_client.post(f"/api/paragraphs/{pid}/evaluate",
                              json={"criterionIds": ["accuracy"]}).json()
-    assert seen["cultural"] == 1                 # untouched by the subset retry
+    assert seen["style"] == 1                 # untouched by the subset retry
     assert seen["accuracy"] > baseline_accuracy_calls
     assert seen["accuracy"] - baseline_accuracy_calls <= 1 + app_mod.EVAL_RETRIES
-    assert {s["criterionId"] for s in again["scores"]} == {"accuracy", "cultural"}
+    assert {s["criterionId"] for s in again["scores"]} == {"accuracy", "style"}
 
 
 # ── 5. budget error-log cost accounting ────────────────────────────────────

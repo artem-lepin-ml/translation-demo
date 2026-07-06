@@ -14,10 +14,10 @@ SRC="${CLAUDE_HOME:-$HOME/.claude}"
 DST=".claude"
 
 # ── what to bring in (edit per repo) ─────────────────────────────────────────
-SKILLS=(verify-spec verify-pr graphify looper playwright-cli)   # user skills this repo uses
+SKILLS=(verify-spec verify-pr looper playwright-cli)            # user skills this repo uses
 AGENTS=(e2e-tester docs-keeper)                                  # user agents (project ones already in repo win)
 COMMANDS=(looper)                                               # user slash-commands
-HOOKS=(graphify-freshness.mjs)                                  # portable SessionStart hooks (repo-relative logic only)
+HOOKS=()                                                        # portable SessionStart hooks (repo-relative logic only)
 PLUGINS_MINIMAL=(superpowers feature-dev code-simplifier)       # + github is official/built-in
 
 echo "→ SRC=$SRC   DST=$(pwd)/$DST"
@@ -81,11 +81,6 @@ cat > "$DST/settings.cloud.json" <<'JSON'
   },
   "extraKnownMarketplaces": {
     "superpowers-dev": { "source": { "source": "git", "url": "https://github.com/obra/superpowers.git" } }
-  },
-  "hooks": {
-    "SessionStart": [
-      { "hooks": [ { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/graphify-freshness.mjs\"" } ] }
-    ]
   }
 }
 JSON

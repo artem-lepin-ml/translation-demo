@@ -80,6 +80,16 @@ export interface Score {
 
 // ─── §1 Paragraph ────────────────────────────────────────────────────────────
 
+/** Best-scoring past revision of a paragraph's target text (S5 §2.2) — argmax
+ * aggregate over kind IN ('seed','live') scores with a non-null revisionId;
+ * null when the paragraph has never been scored against a stamped revision. */
+export interface BestRevision {
+  aggregate: number;
+  revisionId: number;
+  createdAt: string;
+  isCurrent: boolean;
+}
+
 export interface Paragraph {
   id: number;
   idx: number;
@@ -92,8 +102,26 @@ export interface Paragraph {
   aggregateBaseline: number | null;
   /** Client-side only: set by applyEvalToParag from EvaluateResponse.aggregatePrev (rev-4 §5.1). Not present on load. */
   aggregatePrev?: number | null;
+  /** Optional so pre-existing fixtures/mocks across the codebase that predate
+   * this field (added by S5) don't all need updating — always present on the
+   * real wire response (app.py `_para_dict`). */
+  best?: BestRevision | null;
   issues: Issue[];
   terms: Term[];
+}
+
+// ─── §1 target_revision (S5) ──────────────────────────────────────────────────
+
+export type RevisionOrigin = 'seed' | 'upload' | 'edit' | 'apply_edit' | 'translate' | 'restore';
+
+export interface Revision {
+  id: number;
+  origin: RevisionOrigin;
+  createdAt: string;
+  text: string;
+  aggregate: number | null;
+  isBest: boolean;
+  isCurrent: boolean;
 }
 
 // ─── §1 Document ─────────────────────────────────────────────────────────────
@@ -115,6 +143,17 @@ export interface PrecomputeStatus {
    * `done === planned && succeeded === 0` means every precompute call failed
    * (e.g. missing API key) — the caller should surface that, not stay silent. */
   succeeded: number;
+  /** Human-readable cause of a succeeded===0 precompute run (S1 §2.6):
+   * 'no_api_key' | 'budget_exhausted' | 'all_failed'. */
+  errorReason?: string;
+}
+
+/** In-memory status of a background first-pass AI translation (S4 §2.2). */
+export interface TranslationStatus {
+  status: 'running' | 'done' | 'failed';
+  done: number;
+  total: number;
+  errorReason?: string;
 }
 
 export interface Document extends DocumentSummary {
@@ -122,6 +161,7 @@ export interface Document extends DocumentSummary {
   aggregate: number | null;
   paragraphs: Paragraph[];
   precompute?: PrecomputeStatus | null;
+  translation?: TranslationStatus | null;
 }
 
 // ─── §1 ModelRegistryEntryPublic ─────────────────────────────────────────────
@@ -131,6 +171,10 @@ export interface ModelRegistryEntryPublic {
   baseUrl: string;
   apiKeyMasked: string;
   params: Record<string, unknown>;
+  /** What ModelParams.for_model() actually sends to the API after the
+   * capability filter (e.g. a forced seed on models that support it) —
+   * S1 §2.4. */
+  effectiveParams: Record<string, unknown>;
 }
 
 export interface ModelRegistryEntry {
@@ -183,6 +227,9 @@ export interface CreateDocumentBody {
   sourceLang: string;
   targetLang: string;
   precompute: boolean;
+  /** Source-only AI-translate mode (S4 §2.2): all targets must be empty;
+   * server forces precompute off regardless of the flag above. */
+  translate?: boolean;
   paragraphs: ParagraphPair[];
 }
 
@@ -253,7 +300,13 @@ async function put<T>(path: string, body: unknown): Promise<T> {
 
 async function del(path: string): Promise<void> {
   const res = await fetch(`${BASE}${path}`, { method: 'DELETE' });
-  if (!res.ok && res.status !== 204) throw new Error(`DELETE ${path} → ${res.status}`);
+  if (!res.ok && res.status !== 204) {
+    // Include the response body (e.g. `{"detail":"model referenced by a
+    // criterion"}`) so callers can surface the real backend reason instead of
+    // a bare status code (S1 §2.5 — honest fieldError text on Remove).
+    const text = await res.text();
+    throw new Error(`DELETE ${path} → ${res.status}: ${text}`);
+  }
 }
 
 // ─── §2 document endpoints ───────────────────────────────────────────────────
@@ -380,4 +433,59 @@ export function getGroundingConfig(): Promise<GroundingConfig> {
 
 export function updateGroundingConfig(cfg: GroundingConfig): Promise<GroundingConfig> {
   return put('/grounding-config', cfg);
+}
+
+// ─── §2 translator-config endpoint (S4 §3.4 — mirrors grounding-config) ───────
+
+export interface TranslatorConfig {
+  modelName: string | null;
+  prompt: string;
+  params: Record<string, unknown>;
+}
+
+export function getTranslatorConfig(): Promise<TranslatorConfig> {
+  return get('/translator-config');
+}
+
+export function updateTranslatorConfig(cfg: TranslatorConfig): Promise<TranslatorConfig> {
+  return put('/translator-config', cfg);
+}
+
+// ─── §2 health endpoint (S3 §2.3 — server-side limits, SSOT) ──────────────────
+
+export interface HealthLimits {
+  maxParagraphs: number;
+  maxParaChars: number;
+}
+
+export interface HealthStatus {
+  service: string;
+  status: string;
+  limits: HealthLimits;
+}
+
+export function getHealth(): Promise<HealthStatus> {
+  return get('/health');
+}
+
+// ─── §2 translate endpoint (S4 §2.2) ──────────────────────────────────────────
+
+export function translateDocument(docId: number): Promise<{ status: string; total: number }> {
+  return post(`/documents/${docId}/translate`);
+}
+
+// ─── §2 revision history endpoints (S5 §3.3) ──────────────────────────────────
+
+export function getRevisions(pid: number): Promise<{ revisions: Revision[] }> {
+  return get(`/paragraphs/${pid}/revisions`);
+}
+
+export function restoreRevision(pid: number, revisionId: number): Promise<Paragraph> {
+  return post(`/paragraphs/${pid}/restore`, { revisionId });
+}
+
+// ─── §2 export endpoint (S6) ───────────────────────────────────────────────────
+
+export function exportUrl(docId: number, format: 'xlsx' | 'md'): string {
+  return `${BASE}/documents/${docId}/export?format=${format}`;
 }

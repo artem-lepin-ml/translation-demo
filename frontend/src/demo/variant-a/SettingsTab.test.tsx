@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import SettingsTab from './SettingsTab';
 import * as apiClient from '../api-client';
-import type { BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic } from '../api-client';
+import type { BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, TranslatorConfig } from '../api-client';
 
 afterEach(() => {
   cleanup();
@@ -26,12 +26,19 @@ const model: ModelRegistryEntryPublic = {
   baseUrl: '',
   apiKeyMasked: '****',
   params: {},
+  effectiveParams: {},
 };
 
 const groundingConfig: GroundingConfig = {
   modelName: 'openai/gpt-5.4-mini',
   prompt: 'Disambiguate the candidate.',
   params: { max_tokens: 512, temperature: 0 },
+};
+
+const translatorConfig: TranslatorConfig = {
+  modelName: 'openai/gpt-5.4-mini',
+  prompt: 'Translate faithfully.',
+  params: { max_tokens: 2048, temperature: 0.3 },
 };
 
 function renderSettings(overrides: Partial<React.ComponentProps<typeof SettingsTab>> = {}) {
@@ -47,6 +54,8 @@ function renderSettings(overrides: Partial<React.ComponentProps<typeof SettingsT
     onTestModel: vi.fn(),
     groundingConfig,
     onSaveGroundingConfig: vi.fn(),
+    translatorConfig,
+    onSaveTranslatorConfig: vi.fn(),
     ...overrides,
   };
   render(<SettingsTab {...props} />);
@@ -60,7 +69,7 @@ describe('SettingsTab Remove confirm guard (LOW-b)', () => {
 
     fireEvent.click(screen.getByText('Remove'));
 
-    expect(window.confirm).toHaveBeenCalledWith(`Delete “${model.name}”?`);
+    expect(window.confirm).toHaveBeenCalledWith(`Delete "${model.name}"?`);
     expect(props.onRemoveModel).not.toHaveBeenCalled();
   });
 
@@ -84,7 +93,7 @@ describe('SettingsTab Remove confirm guard (LOW-b)', () => {
     const [evaluatorRemove] = screen.getAllByText('Remove');
     fireEvent.click(evaluatorRemove);
 
-    expect(window.confirm).toHaveBeenCalledWith(`Delete “${criterion.name}”?`);
+    expect(window.confirm).toHaveBeenCalledWith(`Delete "${criterion.name}"?`);
     expect(props.onRemoveCriterion).not.toHaveBeenCalled();
   });
 });
@@ -300,7 +309,7 @@ describe('SettingsTab silent mutation failures (fix wave commit 1)', () => {
     const onSaveModel = vi.fn().mockRejectedValue(new Error('PUT /models/x → 500'));
     renderSettings({ onSaveModel });
 
-    fireEvent.click(await screen.findByText('Edit'));
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
     fireEvent.click(screen.getByText('Save'));
 
     expect((await screen.findByTestId('edit-model-error')).textContent).toContain('500');
@@ -346,7 +355,7 @@ describe('SettingsTab rapid double-click guards (fix wave commit 2, BUG-4)', () 
     let resolveSave!: () => void;
     const onSaveModel = vi.fn().mockReturnValue(new Promise<void>((r) => { resolveSave = r; }));
     const props = renderSettings({ onSaveModel });
-    fireEvent.click(await screen.findByText('Edit'));
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
 
     const saveBtn = screen.getByText('Save');
     fireEvent.click(saveBtn);
@@ -372,28 +381,271 @@ describe('SettingsTab rapid double-click guards (fix wave commit 2, BUG-4)', () 
   });
 });
 
-describe('SettingsTab params badge', () => {
+describe('SettingsTab params inline text (S1 §2.4)', () => {
   const paramsModel: ModelRegistryEntryPublic = {
     name: 'openai/gpt-5.4-mini',
     baseUrl: 'https://openrouter.ai/api/v1',
     apiKeyMasked: '****',
     params: { max_tokens: 1536, temperature: 0.2 },
+    effectiveParams: { max_tokens: 1536, temperature: 0.2, seed: 7 },
   };
 
-  it('renders an "N params" badge collapsed by default', async () => {
+  it('renders readable inline params (temp abbreviation, first 3) instead of a raw "N params" badge', async () => {
     renderSettings({ models: [paramsModel] });
-    const badge = await screen.findByTestId(`params-badge-${paramsModel.name}`);
-    expect(badge.textContent).toContain('2 params');
+    const inline = await screen.findByTestId(`params-inline-${paramsModel.name}`);
+    expect(inline.textContent).toContain('max_tokens 1536');
+    expect(inline.textContent).toContain('temp 0.2');
     expect(screen.queryByTestId(`params-expanded-${paramsModel.name}`)).toBeNull();
   });
 
-  it('toggles expansion independently on click', async () => {
+  it('shows "+N" once there are more than 3 params', async () => {
+    const many: ModelRegistryEntryPublic = {
+      ...paramsModel,
+      params: { max_tokens: 1536, temperature: 0.2, top_p: 0.9, seed: 7 },
+    };
+    renderSettings({ models: [many] });
+    const inline = await screen.findByTestId(`params-inline-${many.name}`);
+    expect(inline.textContent).toContain('+1');
+  });
+
+  it('toggles the raw-JSON expansion independently on click', async () => {
     renderSettings({ models: [paramsModel] });
-    const badge = await screen.findByTestId(`params-badge-${paramsModel.name}`);
-    fireEvent.click(badge);
+    const inline = await screen.findByTestId(`params-inline-${paramsModel.name}`);
+    fireEvent.click(inline);
     expect(await screen.findByTestId(`params-expanded-${paramsModel.name}`)).toBeTruthy();
-    fireEvent.click(badge);
+    fireEvent.click(inline);
     expect(screen.queryByTestId(`params-expanded-${paramsModel.name}`)).toBeNull();
+  });
+});
+
+describe('SettingsTab Test button state (S1 §2.5)', () => {
+  it('shows "Testing…" while a test is in flight', async () => {
+    let resolveTest!: (r: unknown) => void;
+    const onTestModel = vi.fn().mockReturnValue(new Promise((r) => { resolveTest = r; }));
+    renderSettings({ onTestModel });
+    fireEvent.click(screen.getByText('Test'));
+    expect(await screen.findByText('Testing…')).toBeTruthy();
+    resolveTest({ ok: true, extracted: [], reference: [], matched: 1, total: 1, share: 1,
+      tokens: { prompt: 0, completion: 0, reasoning: 0 }, costUsd: 0, latencyMs: 10, message: '' });
+  });
+});
+
+describe('SettingsTab Remove-model error surfacing (S1 §2.5, wave5 §4.2)', () => {
+  it('shows a friendly "used by evaluator" message on 409, not the raw method/URL/body dump', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const onRemoveModel = vi.fn().mockRejectedValue(
+      new Error(`DELETE /models/${encodeURIComponent(model.name)} → 409: {"detail":"model referenced by a criterion"}`),
+    );
+    renderSettings({ onRemoveModel });
+    fireEvent.click(screen.getByText('Remove'));
+
+    const err = await screen.findByTestId(`model-field-error-${model.name}`);
+    expect(err.textContent).toBe(`Model is used by evaluator "${criterion.name}" — reassign it first`);
+    expect(err.textContent).not.toContain('DELETE');
+    expect(err.textContent).not.toContain('409');
+    expect(err.textContent).not.toContain('%2F');
+  });
+
+  it('lists multiple referencing evaluators comma-separated', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const fluency: Criterion = { ...criterion, id: 'fluency', name: 'Fluency' };
+    const onRemoveModel = vi.fn().mockRejectedValue(
+      new Error(`DELETE /models/${encodeURIComponent(model.name)} → 409: {"detail":"model referenced by a criterion"}`),
+    );
+    renderSettings({ onRemoveModel, criteria: [criterion, fluency] });
+    fireEvent.click(screen.getByText('Remove'));
+
+    const err = await screen.findByTestId(`model-field-error-${model.name}`);
+    expect(err.textContent).toBe('Model is used by evaluators "Accuracy", "Fluency" — reassign it first');
+  });
+
+  it('shows a short human message (status + detail) for any other error, never the raw dump', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const onRemoveModel = vi.fn().mockRejectedValue(
+      new Error(`DELETE /models/${encodeURIComponent(model.name)} → 500: {"detail":"internal error"}`),
+    );
+    renderSettings({ onRemoveModel });
+    fireEvent.click(screen.getByText('Remove'));
+
+    const err = await screen.findByTestId(`model-field-error-${model.name}`);
+    expect(err.textContent).toBe('Could not remove the model (500): internal error');
+  });
+
+  it('falls back to a generic message when the error has no parseable status at all', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const onRemoveModel = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+    renderSettings({ onRemoveModel });
+    fireEvent.click(screen.getByText('Remove'));
+
+    const err = await screen.findByTestId(`model-field-error-${model.name}`);
+    expect(err.textContent).toBe('Could not remove the model — please try again.');
+  });
+});
+
+describe('SettingsTab EditModelModal — API key clear (S1 §2.5)', () => {
+  it('Save omits apiKey entirely when the field was never touched (does not wipe the stored key)', async () => {
+    const onSaveModel = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onSaveModel });
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
+    fireEvent.click(screen.getByText('Save'));
+
+    await waitFor(() => expect(onSaveModel).toHaveBeenCalled());
+    const entry = (onSaveModel as ReturnType<typeof vi.fn>).mock.calls[0][1];
+    expect('apiKey' in entry).toBe(false);
+  });
+
+  it('Clear key sends apiKey:"" via its own action', async () => {
+    const onSaveModel = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onSaveModel });
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
+    fireEvent.click(screen.getByTestId('clear-key-btn'));
+
+    await waitFor(() => expect(onSaveModel).toHaveBeenCalled());
+    const entry = (onSaveModel as ReturnType<typeof vi.fn>).mock.calls[0][1];
+    expect(entry.apiKey).toBe('');
+  });
+
+  it('typing a new key and saving includes the new apiKey verbatim', async () => {
+    const onSaveModel = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onSaveModel });
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
+    fireEvent.change(screen.getByPlaceholderText('****'), { target: { value: 'sk-new-key' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    await waitFor(() => expect(onSaveModel).toHaveBeenCalled());
+    const entry = (onSaveModel as ReturnType<typeof vi.fn>).mock.calls[0][1];
+    expect(entry.apiKey).toBe('sk-new-key');
+  });
+
+  it('renders the read-only Effective params block from the model registry entry', async () => {
+    const withEffective: ModelRegistryEntryPublic = {
+      ...model,
+      params: { max_tokens: 1536 },
+      effectiveParams: { max_tokens: 1536, seed: 7 },
+    };
+    renderSettings({ models: [withEffective] });
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
+
+    const block = await screen.findByTestId('edit-model-effective');
+    expect(block.textContent).toContain('max_tokens 1536');
+    expect(block.textContent).toContain('seed 7');
+  });
+});
+
+describe('SettingsTab Translator card (S4 §3.4)', () => {
+  it('renders above Evaluators with model/params/prompt from translatorConfig', async () => {
+    renderSettings();
+    const card = await screen.findByTestId('translator-card');
+    expect(within(card).getByText('openai/gpt-5.4-mini', { selector: 'option' })).toBeTruthy();
+    expect(within(card).getByTestId('translator-params').textContent).toContain('2048');
+    expect(screen.getByText('Applies to the next translation run')).toBeTruthy();
+  });
+
+  it('does not render the Translator card when translatorConfig is null', () => {
+    renderSettings({ translatorConfig: null });
+    expect(screen.getByText('Translator')).toBeTruthy();
+    expect(screen.queryByTestId('translator-card')).toBeNull();
+  });
+
+  it('changing the model select calls onSaveTranslatorConfig immediately', async () => {
+    const onSaveTranslatorConfig = vi.fn().mockResolvedValue(undefined);
+    const otherModel: ModelRegistryEntryPublic = { ...model, name: 'anthropic/claude' };
+    renderSettings({ models: [model, otherModel], onSaveTranslatorConfig });
+
+    const card = await screen.findByTestId('translator-card');
+    const select = within(card).getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: otherModel.name } });
+
+    await waitFor(() => expect(onSaveTranslatorConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ modelName: otherModel.name }),
+    ));
+  });
+
+  it('editing params and blurring commits via onSaveTranslatorConfig', async () => {
+    const onSaveTranslatorConfig = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onSaveTranslatorConfig });
+    const textarea = await screen.findByTestId('translator-params');
+    fireEvent.change(textarea, { target: { value: '{"max_tokens": 999}' } });
+    fireEvent.blur(textarea);
+
+    await waitFor(() => expect(onSaveTranslatorConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ params: { max_tokens: 999 } }),
+    ));
+  });
+
+  it('shows an inline error on invalid params JSON', async () => {
+    renderSettings();
+    const textarea = await screen.findByTestId('translator-params');
+    fireEvent.change(textarea, { target: { value: '{not json' } });
+    fireEvent.blur(textarea);
+    expect(await screen.findByTestId('translator-params-error')).toBeTruthy();
+  });
+
+  it('shows an inline error when the save is rejected', async () => {
+    const onSaveTranslatorConfig = vi.fn().mockRejectedValue(new Error('PUT /translator-config → 500'));
+    renderSettings({ onSaveTranslatorConfig });
+    const textarea = await screen.findByTestId('translator-params');
+    fireEvent.change(textarea, { target: { value: '{"max_tokens": 999}' } });
+    fireEvent.blur(textarea);
+    expect((await screen.findByTestId('translator-field-error')).textContent).toContain('500');
+  });
+});
+
+describe('SettingsTab PromptEditor (S1 §2.3, shared by evaluator + translator)', () => {
+  it('defaults to Preview and switches to Edit on click', async () => {
+    renderSettings();
+    fireEvent.click(await screen.findByText('Accuracy'));
+    expect(screen.getByTestId('evaluator-prompt-preview')).toBeTruthy();
+    expect(screen.queryByTestId('evaluator-prompt-editor')).toBeNull();
+
+    fireEvent.click(within(screen.getByTestId('evaluator-prompt-toggle')).getByText('Edit'));
+    expect(screen.getByTestId('evaluator-prompt-editor')).toBeTruthy();
+    expect(screen.queryByTestId('evaluator-prompt-preview')).toBeNull();
+  });
+
+  it('Save prompt is disabled until the draft differs from the saved prompt, then calls onUpdateCriterion with the full body', async () => {
+    const onUpdateCriterion = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onUpdateCriterion, criteria: [{ ...criterion, prompt: 'Rate accuracy.' }] });
+    fireEvent.click(await screen.findByText('Accuracy'));
+    fireEvent.click(within(screen.getByTestId('evaluator-prompt-toggle')).getByText('Edit'));
+
+    const saveBtn = screen.getByTestId('evaluator-prompt-save') as HTMLButtonElement;
+    expect(saveBtn.disabled).toBe(true);
+
+    const textarea = screen.getByTestId('evaluator-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'Rate accuracy more strictly.' } });
+    expect(saveBtn.disabled).toBe(false);
+    expect(screen.getByText('Unsaved changes')).toBeTruthy();
+    expect(screen.getByText('28 chars')).toBeTruthy();
+
+    fireEvent.click(saveBtn);
+    await waitFor(() => expect(onUpdateCriterion).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'accuracy', prompt: 'Rate accuracy more strictly.', name: 'Accuracy' }),
+    ));
+  });
+
+  it('Revert resets the draft to the saved prompt without saving', async () => {
+    renderSettings({ criteria: [{ ...criterion, prompt: 'Original prompt.' }] });
+    fireEvent.click(await screen.findByText('Accuracy'));
+    fireEvent.click(within(screen.getByTestId('evaluator-prompt-toggle')).getByText('Edit'));
+
+    const textarea = screen.getByTestId('evaluator-prompt-editor') as HTMLTextAreaElement;
+    fireEvent.change(textarea, { target: { value: 'Changed.' } });
+    fireEvent.click(screen.getByTestId('evaluator-prompt-revert'));
+
+    expect(textarea.value).toBe('Original prompt.');
+    expect((screen.getByTestId('evaluator-prompt-save') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('shows a server rejection inline via the existing evaluator-field-error pattern', async () => {
+    const onUpdateCriterion = vi.fn().mockRejectedValue(new Error('PUT /criteria/accuracy → 500'));
+    renderSettings({ onUpdateCriterion, criteria: [{ ...criterion, prompt: 'P.' }] });
+    fireEvent.click(await screen.findByText('Accuracy'));
+    fireEvent.click(within(screen.getByTestId('evaluator-prompt-toggle')).getByText('Edit'));
+    fireEvent.change(screen.getByTestId('evaluator-prompt-editor'), { target: { value: 'P2.' } });
+    fireEvent.click(screen.getByTestId('evaluator-prompt-save'));
+
+    expect((await screen.findByTestId('evaluator-field-error')).textContent).toContain('500');
   });
 });
 
