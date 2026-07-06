@@ -3937,3 +3937,191 @@
 {"title": "Ахеменидские сатрапии", "index": 238, "surface": "Сатибарзан", "lemma": "Сатибарзан", "qid": "Q541172", "span_len": 1, "resolved_by": "exact_label"}
 {"title": "Ахеменидские сатрапии", "index": 239, "surface": "Сузиана", "lemma": "Сузиана", "qid": "Q2369687", "span_len": 1, "resolved_by": "exact_label"}
 {"title": "Ахеменидские сатрапии", "index": 241, "surface": "Абулит", "lemma": "Абулит", "qid": "Q335949", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2234, "surface": "Юэчжи", "lemma": "Юэчжи", "qid": "Q467985", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2236, "surface": "Паропамисады", "lemma": "Паропамисады", "qid": "Q1327635", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2238, "surface": "Гермея", "lemma": "Гермей", "qid": "Q1126234", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2244, "surface": "Юэчжи", "lemma": "Юэчжи", "qid": "Q467985", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2245, "surface": "Сападбиз", "lemma": "Сападбиз", "qid": "Q450375", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2266, "surface": "Юэчжи", "lemma": "Юэчжи", "qid": "Q467985", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2277, "surface": "Кушанскую Империю", "lemma": "Кушанская Империя", "qid": "Q25979", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2282, "surface": "Куджула Кадфиз", "lemma": "Куджула Кадфиз", "qid": "Q560157", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2287, "surface": "Гермеем", "lemma": "Гермей", "qid": "Q1610219", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Индо-Греческое царство", "index": 2304, "surface": "индо-скифы", "lemma": "индо-скифы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Индо-Греческое царство", "index": 2306, "surface": "Северной Индией", "lemma": "Северная Индия", "qid": "Q1058785", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2324, "surface": "Парапомисады", "lemma": "Парапомисада", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Индо-Греческое царство", "index": 2326, "surface": "Гандхара", "lemma": "Гандхара", "qid": "Q213651", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Индо-Греческое царство", "index": 2331, "surface": "Сатаваханы", "lemma": "Сатавахана", "qid": "Q5257", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Индо-Греческое царство", "index": 2334, "surface": "индо-греков", "lemma": "индо-греки", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Кесарево безумие", "index": 598, "surface": "Тиберия", "lemma": "Тиберий", "qid": "Q1407", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Кесарево безумие", "index": 600, "surface": "Домициана", "lemma": "Домициан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Кесарево безумие", "index": 603, "surface": "Людовика XI", "lemma": "Людовик XI", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Кесарево безумие", "index": 607, "surface": "Алла эд-Дина", "lemma": "Алла эд-Дин", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Кесарево безумие", "index": 613, "surface": "Грозного", "lemma": "Грозный", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Кесарево безумие", "index": 615, "surface": "Павла I", "lemma": "Павел I", "qid": "Q15189", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Кесарево безумие", "index": 634, "surface": "кесарского помешательства", "lemma": "кесарское помешательство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 0, "surface": "Двадцать седьмая династия", "lemma": "Двадцать седьмая династия", "qid": "Q13527812", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 4, "surface": "Истории Египта", "lemma": "История Египта", "qid": "Q380724", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 6, "surface": "Манефона", "lemma": "Манефон", "qid": "Q174380", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 11, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 13, "surface": "Древним Египтом", "lemma": "Древний Египет", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 24, "surface": "Египет", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 32, "surface": "сатрапий", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 33, "surface": "империи Ахеменидов", "lemma": "империя Ахеменидов", "qid": "Q389688", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 37, "surface": "Первая египетская сатрапия", "lemma": "Первая египетская сатрапия", "qid": "Q926624", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 46, "surface": "Персии", "lemma": "Персия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 47, "surface": "Камбисом II", "lemma": "Камбис II", "qid": "Q182483", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 50, "surface": "битвы при Пелузии", "lemma": "битва при Пелузии", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 65, "surface": "фараона", "lemma": "фараон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 66, "surface": "XXVII династия", "lemma": "XXVII династия", "qid": "Q926624", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 72, "surface": "египтян", "lemma": "египтяне", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 76, "surface": "Амиртея", "lemma": "Амиртей", "qid": "Q318000", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 80, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 86, "surface": "тридцать первой династии Египта", "lemma": "тридцать первая династия Египта", "qid": null, "span_len": 4, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 95, "surface": "фараон", "lemma": "фараон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 96, "surface": "26-й династии", "lemma": "26-я династия", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 98, "surface": "Псамметих III", "lemma": "Псамметих III", "qid": "Q316278", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 102, "surface": "Камбисом II", "lemma": "Камбис II", "qid": "Q182483", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 105, "surface": "битве при Пелузии", "lemma": "битва при Пелузии", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 111, "surface": "Нила", "lemma": "Нил", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 119, "surface": "Камбис", "lemma": "Камбис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 122, "surface": "фараон", "lemma": "фараон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 123, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 138, "surface": "27-я династия", "lemma": "27-я династия", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 145, "surface": "Кипром", "lemma": "Кипр", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 147, "surface": "Финикией", "lemma": "Финикия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 151, "surface": "сатрапию", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 153, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 155, "surface": "Ариандом", "lemma": "Арианд", "qid": "Q717941", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 159, "surface": "сатрапа", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 347, "surface": "Дарий", "lemma": "Дарий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 351, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 355, "surface": "Камбис", "lemma": "Камбис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 361, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 370, "surface": "Суэце", "lemma": "Суэц", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 374, "surface": "Горьких озёр", "lemma": "Горькие озёра", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 377, "surface": "Красному морю", "lemma": "Красное море", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 402, "surface": "Персии", "lemma": "Персия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 406, "surface": "Дарий", "lemma": "Дарий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 414, "surface": "Камбис", "lemma": "Камбис", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 434, "surface": "Арианд", "lemma": "Арианд", "qid": "Q717941", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 453, "surface": "Персидской империи", "lemma": "Персидская империя", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 455, "surface": "Дарий", "lemma": "Дарий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 466, "surface": "Ксеркс I", "lemma": "Ксеркс I", "qid": "Q129165", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 468, "surface": "Ксеркс", "lemma": "Ксеркс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 470, "surface": "сатрапом", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 473, "surface": "Ахемена", "lemma": "Ахемен", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 474, "surface": "Ксеркс", "lemma": "Ксеркс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 478, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 481, "surface": "Дарии", "lemma": "Дарий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 495, "surface": "Грецию", "lemma": "Греция", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 498, "surface": "Ксеркс", "lemma": "Ксеркс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 500, "surface": "зороастрийского", "lemma": "зороастрийский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 502, "surface": "АхураМазду", "lemma": "АхураМазда", "qid": "Q179575", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 506, "surface": "египетских", "lemma": "египетский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 512, "surface": "египетских", "lemma": "египетский", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 514, "surface": "Ксеркс", "lemma": "Ксеркс", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 523, "surface": "Артабаном", "lemma": "Артабан", "qid": "Q705976", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 531, "surface": "Артаксеркс I", "lemma": "Артаксеркс I", "qid": "Q189689", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 538, "surface": "фараоном", "lemma": "фараон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 552, "surface": "ливийским", "lemma": "ливийцы", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 556, "surface": "Инарос II", "lemma": "Инарос II", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 563, "surface": "афиняне", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 564, "surface": "Греции", "lemma": "Греция", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 565, "surface": "Инарос", "lemma": "Инарос", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 571, "surface": "Ахеменидом", "lemma": "Ахеменид", "qid": "Q930198", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 575, "surface": "сатрапа", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 578, "surface": "Мемфис", "lemma": "Мемфис", "qid": "Q5715", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 587, "surface": "Египта", "lemma": "Египет", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "XXVII династия", "index": 588, "surface": "Инарос", "lemma": "Инарос", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 591, "surface": "афинские", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 596, "surface": "персидской", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 602, "surface": "Мегабизом", "lemma": "Мегабиз", "qid": "Q386532", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 609, "surface": "Мегабиз", "lemma": "Мегабиз", "qid": "Q386532", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 611, "surface": "Инаросу", "lemma": "Инарос", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 626, "surface": "персидской", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 631, "surface": "Артаксеркс", "lemma": "Артаксеркс", "qid": "Q706239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 637, "surface": "Инароса", "lemma": "Инарос", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 646, "surface": "Артаксеркс", "lemma": "Артаксеркс", "qid": "Q706239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 37, "surface": "Гай Сосий", "lemma": "Гай Сосий", "qid": "Q705416", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 48, "surface": "Гай", "lemma": "Гай", "qid": "Q5517401", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 56, "surface": "Гай Сосий", "lemma": "Гай Сосий", "qid": "Q705416", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 60, "surface": "претора", "lemma": "претор", "qid": "Q172907", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 72, "surface": "консул", "lemma": "консул", "qid": "Q40779", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 75, "surface": "претура", "lemma": "претура", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 79, "surface": "квестуре", "lemma": "квестура", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Гай Сосий (консул)", "index": 88, "surface": "претор", "lemma": "претор", "qid": "Q172907", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 95, "surface": "консулу", "lemma": "консул", "qid": "Q40779", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 117, "surface": "квестора", "lemma": "квестор", "qid": "Q189430", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 125, "surface": "Греции", "lemma": "Греция", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 129, "surface": "Закинфе", "lemma": "Закинф", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 136, "surface": "триумвира", "lemma": "триумвир", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 137, "surface": "Марка Антония", "lemma": "Марк Антоний", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 145, "surface": "Антоний", "lemma": "Антоний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 147, "surface": "Октавиан", "lemma": "Октавиан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 151, "surface": "Путеолах", "lemma": "Путеолы", "qid": "Q10646925", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 158, "surface": "Сосию", "lemma": "Сосий", "qid": "Q32979427", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 159, "surface": "консулата", "lemma": "консулат", "qid": "Q17522107", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 169, "surface": "Антоний", "lemma": "Антоний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 171, "surface": "Сосия", "lemma": "Сосий", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 173, "surface": "Сирии", "lemma": "Сирия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 179, "surface": "Киликии", "lemma": "Киликия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 188, "surface": "Иудее", "lemma": "Иудея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 190, "surface": "Ироду", "lemma": "Ирод", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 200, "surface": "Ироду", "lemma": "Ирод", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 212, "surface": "Иерусалим", "lemma": "Иерусалим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 213, "surface": "Гай", "lemma": "Гай", "qid": "Q5517401", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 244, "surface": "Гай", "lemma": "Гай", "qid": "Q5517401", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 248, "surface": "Иудее", "lemma": "Иудея", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 251, "surface": "Италию", "lemma": "Италия", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 263, "surface": "Сосий", "lemma": "Сосий", "qid": "Q32979427", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 266, "surface": "консула", "lemma": "консул", "qid": "Q40779", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 271, "surface": "плебей", "lemma": "плебей", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 272, "surface": "Гней Домиций Агенобарб", "lemma": "Гней Домиций Агенобарб", "qid": null, "span_len": 3, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 282, "surface": "триумвирами", "lemma": "триумвир", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 283, "surface": "Консулы", "lemma": "консул", "qid": "Q40779", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 286, "surface": "сената", "lemma": "сенат", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 291, "surface": "Антония", "lemma": "Антоний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 293, "surface": "Востоке", "lemma": "Восток", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 303, "surface": "Риму", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 309, "surface": "Октавиана", "lemma": "Октавиан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 310, "surface": "Сосий", "lemma": "Сосий", "qid": "Q32979427", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 312, "surface": "Агенобарб", "lemma": "Агенобарб", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 315, "surface": "сенаторами", "lemma": "сенатор", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 318, "surface": "Рима", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 324, "surface": "Эфес", "lemma": "Эфес", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 328, "surface": "Антонием", "lemma": "Антоний", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 330, "surface": "Риме", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 334, "surface": "консулы-суффекты", "lemma": "консул-суффект", "qid": "Q629712", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 341, "surface": "Сосий", "lemma": "Сосий", "qid": "Q32979427", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 355, "surface": "Акции", "lemma": "Акций", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Гай Сосий (консул)", "index": 370, "surface": "Октавиана", "lemma": "Октавиан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 379, "surface": "Марку Випсанию Агриппе", "lemma": "Марк Випсаний Агриппа", "qid": "Q48174", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 388, "surface": "Сосий", "lemma": "Сосий", "qid": "Q32979427", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 406, "surface": "Луция Аррунтия", "lemma": "Луций Аррунтий", "qid": null, "span_len": 2, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 410, "surface": "Октавиана", "lemma": "Октавиан", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 411, "surface": "Сосий", "lemma": "Сосий", "qid": "Q32979427", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 421, "surface": "Аполлона", "lemma": "Аполлон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 423, "surface": "Риме", "lemma": "Рим", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 428, "surface": "Аполлона", "lemma": "Аполлон", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Гай Сосий (консул)", "index": 430, "surface": "Ниобидов", "lemma": "Ниобиды", "qid": "Q2738502", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 433, "surface": "Селевкии", "lemma": "Селевкия", "qid": "Q1605894", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 439, "surface": "Templum Apollinis Sosiani", "lemma": "Templum Apollinis Sosiani", "qid": "Q582353", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "Гай Сосий (консул)", "index": 445, "surface": "Сосий", "lemma": "Сосий", "qid": "Q32979427", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Гай Сосий (консул)", "index": 449, "surface": "Секулярных игр", "lemma": "Секулярные игры", "qid": "Q739680", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Керченский пролив", "index": 741, "surface": "Керченский пролив", "lemma": "Керченский пролив", "qid": "Q187890", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 749, "surface": "Россией", "lemma": "Россия", "qid": "Q159", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 751, "surface": "Украиной", "lemma": "Украина", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Керченский пролив", "index": 756, "surface": "Краснодарского края", "lemma": "Краснодарский край", "qid": "Q3680", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Керченский пролив", "index": 767, "surface": "Таманского полуострова", "lemma": "Таманский полуостров", "qid": "Q216664", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 771, "surface": "острова Тузла", "lemma": "остров Тузла", "qid": "Q1284886", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 776, "surface": "Тузлинской косы", "lemma": "Тузлинская коса", "qid": "Q2370029", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Керченский пролив", "index": 792, "surface": "острова Тузла", "lemma": "остров Тузла", "qid": "Q1284886", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 802, "surface": "Украины", "lemma": "Украина", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Керченский пролив", "index": 807, "surface": "Азовского моря", "lemma": "Азовское море", "qid": "Q35000", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 810, "surface": "Керченского пролива", "lemma": "Керченский пролив", "qid": "Q187890", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 817, "surface": "Российской Федерации", "lemma": "Российская Федерация", "qid": "Q159", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 820, "surface": "Украины", "lemma": "Украина", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Керченский пролив", "index": 839, "surface": "Азовского моря", "lemma": "Азовское море", "qid": "Q35000", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Керченский пролив", "index": 857, "surface": "Керчь-Еникальским каналом", "lemma": "Керчь-Еникальский канал", "qid": "Q42738021", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Керченский пролив", "index": 872, "surface": "РСФСР", "lemma": "РСФСР", "qid": null, "span_len": 1, "resolved_by": "judge_unavailable"}
+{"title": "Керченский пролив", "index": 874, "surface": "Украинской ССР", "lemma": "Украинская ССР", "qid": "Q133356", "span_len": 2, "resolved_by": "exact_label"}

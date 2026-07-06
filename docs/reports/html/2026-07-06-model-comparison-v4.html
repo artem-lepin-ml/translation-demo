@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model-comparison wiki-eval — ПРОМЕЖУТОЧНЫЙ отчёт (v4-draft)</title>
+<style>
+  /* Tokyo Night tokens — single source of truth is .claude/rules/tokyo-night.css.
+     Inlined here (self-contained report, no external assets). Do not add new
+     tokens or rename these; the report-generator agent fills content only. */
+  :root {
+    --bg: #1a1b26;
+    --bg2: #1f2335;
+    --panel: #24283b;
+    --line: #2f334d;
+    --tx: #c0caf5;
+    --blue: #7aa2f7;   /* data */
+    --green: #9ece6a;  /* pass */
+    --yel: #e0af68;    /* open/warn */
+    --red: #f7768e;    /* fail */
+    --purple: #bb9af7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--tx);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  a { color: var(--blue); }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: .3rem;
+  }
+  code { padding: .1rem .35rem; }
+  pre { padding: .85rem 1rem; overflow-x: auto; }
+
+  .report-header { border-bottom: 1px solid var(--line); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+  .report-header h1 { margin: 0 0 .35rem; font-size: 1.7rem; }
+  .report-header .meta { margin: 0; color: var(--tx); opacity: .65; font-size: .9rem; }
+
+  .section {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: .6rem;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section h2 {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .section h2 .idx { color: var(--tx); opacity: .4; font-weight: 400; }
+
+  .lead { font-size: 1.05rem; margin: 0 0 1rem; }
+
+  .badge {
+    display: inline-block;
+    padding: .2rem .65rem;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    border: 1px solid currentColor;
+  }
+  .badge--pass { color: var(--green); }
+  .badge--warn { color: var(--yel); }
+  .badge--fail { color: var(--red); }
+  .badge--data { color: var(--blue); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--line); }
+  th { color: var(--tx); opacity: .7; font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+
+  .radar-wrap { display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; }
+  .radar-wrap svg { flex: 0 0 auto; }
+  .radar-wrap .radar-legend { flex: 1 1 260px; min-width: 220px; }
+  svg text { fill: var(--tx); font-size: 11px; }
+  svg .grid { stroke: var(--line); fill: none; }
+  svg .axis { stroke: var(--line); }
+  svg .plot { fill: var(--blue); fill-opacity: .28; stroke: var(--blue); stroke-width: 2; }
+
+  .finding {
+    border-left: 4px solid var(--line);
+    background: var(--bg2);
+    border-radius: .3rem;
+    padding: .65rem 1rem;
+    margin-bottom: .75rem;
+  }
+  .finding:last-child { margin-bottom: 0; }
+  .finding .tag { font-weight: 700; letter-spacing: .03em; font-size: .8rem; }
+  .finding--critical { border-color: var(--red); }
+  .finding--critical .tag { color: var(--red); }
+  .finding--high { border-color: var(--yel); }
+  .finding--high .tag { color: var(--yel); }
+  .finding--info { border-color: var(--blue); }
+  .finding--info .tag { color: var(--blue); }
+
+  .evidence-item {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: .4rem;
+    padding: .85rem 1rem;
+    margin-bottom: .75rem;
+  }
+  .evidence-item:last-child { margin-bottom: 0; }
+  .evidence-item img { max-width: 100%; display: block; border-radius: .3rem; border: 1px solid var(--line); margin-top: .5rem; }
+  .evidence-item .claim { font-weight: 600; }
+
+  ul.next-steps { margin: 0; padding-left: 1.2rem; }
+  ul.next-steps li { margin-bottom: .4rem; }
+
+  .report-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-size: .8rem;
+    color: var(--tx);
+    opacity: .55;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .section { padding: 1.1rem 1.2rem; }
+    .radar-wrap { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="report-header">
+    <h1>Model-comparison wiki-eval — <span style="color:var(--yel);">ПРОМЕЖУТОЧНЫЙ отчёт (v4-draft)</span></h1>
+    <p class="meta">dev-demo · эксперимент <code>2026-07-05-model-comparison</code> · спека
+      <code>docs/superpowers/specs/2026-07-06-finish-model-comparison-runs.md</code> · срез на 2026-07-06 15:30Z ·
+      qwen3.7-plus в полёте — числа ниже будут дополнены версией финального отчёта</p>
+  </header>
+
+  <!-- 1. Главное — summary lead: outcome + verdict, 1-2 sentences. -->
+  <section class="section" id="glavnoe">
+    <h2><span class="idx">1</span> Главное</h2>
+    <p class="lead">
+      На корпусе 100 статей (7&nbsp;959 эталонных упоминаний) <strong>gemini-3.1-flash-lite</strong> опережает
+      <strong>deepseek-v4-flash</strong> по R_doc: <strong>0.690 против 0.614</strong>. Вся разница создаётся
+      покрытием NER-извлечения (0.763 против 0.632) — точность grounding при найденном упоминании у моделей
+      практически идентична (0.814 и 0.815). Сессия сейчас доводит третью модель
+      (<strong>qwen3.7-plus</strong>, 52/100 статей на 15:24Z) и финализирует артефакты (.tex, docx, библиография)
+      для версии 4 отчёта — это <strong>промежуточный, не финальный</strong> срез.
+    </p>
+    <span class="badge badge--warn">ПРОМЕЖУТОЧНЫЙ — v4-draft, qwen в процессе (52/100)</span>
+  </section>
+
+  <!-- 2. 360 diagram — radar with per-aspect scores (aspects map to axes) + overall verdict badge. -->
+  <section class="section" id="radar-360">
+    <h2><span class="idx">2</span> 360&deg; статус сессии</h2>
+    <p style="margin:0 0 1rem;font-size:.85rem;opacity:.75;">
+      Оси — не ревью-аспекты verify-pr, а срез готовности этой сессии (данные эксперимента vs финализация
+      артефактов vs операционная надёжность); шкала 0–100 = доля выполненного по задаче спеки
+      <code>2026-07-06-finish-model-comparison-runs.md</code>.
+    </p>
+    <div class="radar-wrap">
+      <!-- SLOT: radar-svg
+           6 axes, evenly spaced (60° apart) around center 150,150, radius scaled 0-100 -> 10-120px.
+           Grid rings/viewBox/wrapper kept exactly as canonical template. -->
+      <svg viewBox="0 0 300 300" width="280" height="280" role="img" aria-label="360 status radar, 6 axes">
+        <circle class="grid" cx="150" cy="150" r="120" />
+        <circle class="grid" cx="150" cy="150" r="80" />
+        <circle class="grid" cx="150" cy="150" r="40" />
+        <line class="axis" x1="150" y1="150" x2="150" y2="30" />
+        <line class="axis" x1="150" y1="150" x2="254" y2="90" />
+        <line class="axis" x1="150" y1="150" x2="254" y2="210" />
+        <line class="axis" x1="150" y1="150" x2="150" y2="270" />
+        <line class="axis" x1="150" y1="150" x2="46" y2="210" />
+        <line class="axis" x1="150" y1="150" x2="46" y2="90" />
+        <polygon class="plot" points="150,57.5 253.9,90 230.1,196.3 150,248 46.1,210 108,125.8" />
+        <text x="150" y="12" text-anchor="middle">Прогоны</text>
+        <text x="269.5" y="81" text-anchor="start">P_label</text>
+        <text x="269.5" y="219" text-anchor="start">Библио</text>
+        <text x="150" y="288" text-anchor="middle">Артефакты</text>
+        <text x="30.5" y="219" text-anchor="end">Инфра</text>
+        <text x="30.5" y="81" text-anchor="end">API</text>
+      </svg>
+      <!-- /SLOT -->
+      <table class="radar-legend">
+        <thead><tr><th>Ось</th><th>Готовность</th><th>Статус</th></tr></thead>
+        <tbody>
+          <!-- SLOT: radar-table-rows -->
+          <tr><td>Прогоны и метрики (3 модели)</td><td>75/100</td><td><span class="badge badge--warn">2/3 готовы</span></td></tr>
+          <tr><td>P_label + числа в драфтах</td><td>100/100</td><td><span class="badge badge--pass">готово, сверено</span></td></tr>
+          <tr><td>Библиография .tex (веб-верификация)</td><td>75/100</td><td><span class="badge badge--warn">контент верен, compile не прогнан</span></td></tr>
+          <tr><td>Артефакты (png / docx / .tex сборка)</td><td>80/100</td><td><span class="badge badge--warn">черновик готов, финал после qwen</span></td></tr>
+          <tr><td>Инфраструктура и гигиена сессии</td><td>100/100</td><td><span class="badge badge--pass">готово</span></td></tr>
+          <tr><td>Надёжность внешних API (gpt-5.5 / qwen)</td><td>35/100</td><td><span class="badge badge--fail">риск, вне нашего контроля</span></td></tr>
+          <!-- /SLOT -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3. Structured overview — goal -> what changed (tables/cards) -> key decisions and why. -->
+  <section class="section" id="overview">
+    <h2><span class="idx">3</span> Что сделано</h2>
+    <!-- SLOT: overview -->
+    <p><strong>Цель сессии:</strong> довести матрицу model-comparison до 3 (в идеале 4) моделей и выпустить
+       финальную версию 4 отчёта (RU + EN-секция статьи + .tex + артефакт) с реальными числами вместо
+       оставшихся плейсхолдеров; новых экспериментов сверх этого списка не проводить
+       (<code>docs/superpowers/specs/2026-07-06-finish-model-comparison-runs.md</code>).</p>
+
+    <p><strong>Ключевые числа готовых прогонов</strong> (корпус v2: 100 статей, 7&nbsp;959 эталонных упоминаний,
+       config <code>111</code>; все значения сверены против committed <code>metrics.json</code> до 4-го знака):</p>
+    <table>
+      <thead><tr><th>Model</th><th>R_doc [95% CI]</th><th>R_span</th><th>R_strict</th><th>P_mention</th><th>P_type</th><th>P_label</th></tr></thead>
+      <tbody>
+        <tr><td>gemini-3.1-flash-lite</td><td><strong>0.690</strong> [0.680–0.700]</td><td>0.630</td><td>0.610</td><td>0.300</td><td>0.451</td><td>0.526</td></tr>
+        <tr><td>deepseek-v4-flash</td><td><strong>0.614</strong> [0.604–0.625]</td><td>0.524</td><td>0.509</td><td>0.305</td><td>0.458</td><td>0.530</td></tr>
+        <tr style="opacity:.5;"><td>qwen3.7-plus</td><td colspan="6">— в процессе, 52/100 статей на 15:24Z, спенд $1.88 / $12 капа —</td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:1rem;"><strong>Декомпозиция recall</strong> (главный аналитический вывод — покрытие
+       извлечения × точность grounding при найденном упоминании):</p>
+    <table>
+      <thead><tr><th></th><th>gemini</th><th>deepseek</th></tr></thead>
+      <tbody>
+        <tr><td>Extraction coverage</td><td><strong>0.763</strong> (6,070 / 7,959)</td><td><strong>0.632</strong> (5,031 / 7,959)</td></tr>
+        <tr><td>Grounding accuracy (covered positions)</td><td><strong>0.814</strong></td><td><strong>0.815</strong></td></tr>
+        <tr><td>— exact-label path (R_span)</td><td>0.921 (n&nbsp;=&nbsp;2,453)</td><td>0.929 (n&nbsp;=&nbsp;2,028)</td></tr>
+        <tr><td>— judge path (R_span)</td><td>0.847 (n&nbsp;=&nbsp;3,165)</td><td>0.862 (n&nbsp;=&nbsp;2,571)</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.85rem;opacity:.7;">Точность grounding идентична — вся разница между моделями создаётся
+       покрытием NER-стадии, а не качеством разрешения найденных упоминаний. Источник:
+       <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code> §3.3.</p>
+
+    <p style="margin-top:1rem;"><strong>Что изменилось в этой сессии</strong> (после передачи из сессии
+       <code>eb7d84db</code>; коммиты ниже — из статуса, переданного оркестратором на момент отчёта, git log
+       напрямую в этой задаче не проверялся — см. § 4 «Открытые вопросы честности»):</p>
+    <table>
+      <thead><tr><th>Задача</th><th>Статус</th><th>Коммит</th><th>Примечание</th></tr></thead>
+      <tbody>
+        <tr><td>P_label 0.526 / 0.530 вписан в RU/EN драфты</td><td><span class="badge badge--pass">done</span></td><td><code>c0ba457</code></td><td>сверено с <code>metrics.json</code> (<code>p3_ex</code>)</td></tr>
+        <tr><td>acmart .tex пересобран с нуля</td><td><span class="badge badge--pass">done</span></td><td><code>549b57d</code></td><td>booktabs, ≤6 стр.</td></tr>
+        <tr><td>Верификация 7 библиозаписей (ACL Anthology / arXiv / OpenReview)</td><td><span class="badge badge--pass">done</span></td><td><code>a78e264</code></td><td>найдены и исправлены 5 сфабрикованных соавторов (<code>decao2022mgenre</code>) и выдуманные названия (<code>gerlach2021</code>, <code>conia2024kgmt</code>) — см. § 4</td></tr>
+        <tr><td><code>g6-pipeline.png</code> (рис. 1) отрендерен</td><td><span class="badge badge--pass">done</span></td><td><code>b1e9e6d</code></td><td>2000×3400</td></tr>
+        <tr><td>md→docx конвейер написан и провалидирован, драфт docx собран</td><td><span class="badge badge--pass">done</span></td><td><code>987e6f9</code></td><td>inline python-docx скрипт</td></tr>
+        <tr><td><code>scripts/sitelink_contamination.py</code> регенерирован в git-tracked</td><td><span class="badge badge--warn">done, валидация в процессе</span></td><td>—</td><td>реплей для deepseek ещё не завершён</td></tr>
+        <tr><td>Регистрация 15 vendored-агентов починена</td><td><span class="badge badge--pass">done</span></td><td><code>e6e04ba</code></td><td>—</td></tr>
+        <tr><td>graphify-хук удалён (решение владельца)</td><td><span class="badge badge--pass">done</span></td><td><code>375f98c</code></td><td>—</td></tr>
+        <tr><td>qwen3.7-plus <code>--resume</code>: переграундинг чекпойнта через живую Wikidata</td><td><span class="badge badge--warn">in progress</span></td><td>—</td><td>кэш погиб со старым контейнером; 52/100 на 15:24Z, спенд $1.88/$12</td></tr>
+        <tr><td>gpt-5.5</td><td><span class="badge badge--fail">not run</span></td><td>—</td><td>upstream OpenAI 429 на всех маршрутах с 23:20Z 05-07, 52+ мин непрерывного вотчинга в этой сессии</td></tr>
+        <tr><td>Компиляция .tex</td><td><span class="badge badge--fail">not run</span></td><td>—</td><td>в песочнице нет LaTeX-тулчейна, GitHub закрыт политикой сессии; статические проверки пройдены</td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:1rem;"><strong>Ключевые решения и почему:</strong></p>
+    <ul>
+      <li>Веб-верификация реконструированной библиографии сделана обязательной после находки сфабрикованных
+        метаданных (см. критичную находку в § 4) — урок пойдёт в <code>docs/experiments/LESSONS.md</code>.</li>
+      <li>gpt-5.5 не форсируется повторными попытками — задокументирован как reliability-находка; «последний слот
+        на одну модель» от владельца отдан qwen3.7-plus, а не бесконечным ретраям gpt-5.5.</li>
+      <li>qwen-чекпойнт возобновлён через полный переграундинг по живой Wikidata, а не через доверие к мёртвому
+        кэшу — иначе в финальные числа могли бы незаметно просочиться рассинхронизированные данные.</li>
+    </ul>
+    <!-- /SLOT -->
+  </section>
+
+  <!-- 4. Critical findings & shortcomings — bugs, risks, tech debt, unresolved flags; severity-tagged, nothing hidden. -->
+  <section class="section" id="findings">
+    <h2><span class="idx">4</span> Критичные находки</h2>
+    <!-- SLOT: findings -->
+
+    <div class="finding finding--critical">
+      <span class="tag">CRITICAL</span> — <strong>в реконструированной библиографии EN-статьи найдены
+      сфабрикованные метаданные.</strong> При верификации 7 библиозаписей против ACL Anthology/arXiv/OpenReview
+      обнаружены и исправлены 5 сфабрикованных соавторов в <code>decao2022mgenre</code> и выдуманные названия в
+      <code>gerlach2021</code>/<code>conia2024kgmt</code> (коммит <code>a78e264</code>). Урок сессии: любая
+      реконструированная из памяти библиография требует обязательной веб-верификации перед доставкой — записать
+      в <code>docs/experiments/LESSONS.md</code> (ещё не сделано, см. § 6).
+    </div>
+
+    <div class="finding finding--high">
+      <span class="tag">HIGH</span> — <strong>gpt-5.5 недоступен.</strong> Upstream OpenAI отдаёт 429 на все
+      маршруты с 23:20Z 05-07 (52+ минут непрерывного вотчинга в этой сессии). Строка останется
+      <code>unavailable</code> в финальных таблицах — это reliability-находка о самой модели/шлюзе, а не баг
+      нашего пайплайна.
+    </div>
+
+    <div class="finding finding--high">
+      <span class="tag">HIGH</span> — <strong>qwen3.7-plus потребовал полного переграундинга.</strong> Wikidata-кэш
+      предыдущего чекпойнта погиб вместе со старым контейнером, поэтому прогон возобновлён через живые обращения
+      к Wikidata с нуля прогресса на этом фронте. На 15:24Z — 52/100 статей, спенд $1.88 из $12 капа на ран.
+      Третья строка матрицы недоступна ни в одной таблице этого отчёта.
+    </div>
+
+    <div class="finding finding--high">
+      <span class="tag">HIGH</span> — <strong>компиляция .tex не проводилась.</strong> В песочнице нет
+      LaTeX-тулчейна, а GitHub закрыт политикой текущей сессии. Статические проверки (синтаксис BibTeX-ключей,
+      таблиц) пройдены, но перед финальной доставкой нужен один реальный прогон компиляции (например, в Overleaf)
+      — это главный академический артефакт сессии (§3 задачи 3 спеки), и его текущий статус — «не скомпилирован».
+    </div>
+
+    <div class="finding finding--info">
+      <span class="tag">INFO</span> — <strong>главный аналитический вывод: recall = coverage × grounding-accuracy.</strong>
+      Точность grounding при найденном упоминании идентична у обеих готовых моделей (0.814 gemini / 0.815
+      deepseek) — вся разница в R_doc (0.690 против 0.614) создаётся покрытием NER-извлечения (0.763 против
+      0.632), а не качеством разрешения к Wikidata. Источник:
+      <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code> §3.3, независимо
+      подтверждено срезом <code>resolved_by</code> в обоих <code>metrics.json</code>.
+    </div>
+
+    <div class="finding finding--info">
+      <span class="tag">INFO</span> — <strong>именованные vs нарицательные термины — резерв роста.</strong>
+      R_doc: gemini named 0.828 / term 0.414; deepseek named 0.733 / term 0.376 (после снятия шума эталона на
+      ярусе R_term: gemini 0.841/0.474, deepseek 0.745/0.444 — разрыв почти не сужается). Источник:
+      <code>drafts/recall-tiers-analysis.md</code> §1/§3, <code>report-ru-v3.md</code> §3.3/§3.6.
+      <div style="margin-top:.5rem;font-size:.85rem;opacity:.75;">
+        Оговорка о данных: встроенный срез <code>type</code> в самом <code>metrics.json</code> занижает M3 для
+        term-упоминаний (0.343 gemini / 0.309 deepseek) из-за артефакта индекс-based фильтрации предсказаний —
+        это задокументированная и уже объяснённая особенность (<code>recall-tiers-analysis.md</code>, заметка
+        под таблицей §1), а не новое расхождение; для named/term сравнений в отчётах используются
+        пересчитанные <code>match_m3</code>-числа, а не сырое поле <code>type</code> из <code>metrics.json</code>.
+      </div>
+    </div>
+
+    <div class="finding finding--info">
+      <span class="tag">INFO</span> — <strong>sitelink-циркулярность: эффект малый, но задокументирован для всех
+      готовых моделей.</strong> Ступень «заголовок Википедии → sitelink» даёт ~1% граунд-предсказаний с
+      match-rate 52–60% против эталона (выше случайного — признак циркулярности с построением самого эталона).
+      Чистые числа без неё: gemini R_doc 0.684, deepseek 0.609 (Δ −0.5…−0.8 п.п., ранжирование моделей не
+      меняется). Источник: <code>drafts/sitelink-contamination.md</code>. Валидация реплея для deepseek на
+      регенерированном скрипте — в процессе на момент отчёта.
+    </div>
+
+    <!-- /SLOT -->
+  </section>
+
+  <!-- 5. Run artifacts (evidence) — a claim without an artifact doesn't go in the report. -->
+  <section class="section" id="evidence">
+    <h2><span class="idx">5</span> Артефакты запуска</h2>
+    <!-- SLOT: evidence -->
+
+    <div class="evidence-item">
+      <span class="claim">gemini-3.1-flash-lite @ provider-9 — прогон завершён, числа сверены с metrics.json.</span><br>
+      run id <code>2026-07-05T23-06-38Z</code>, config <code>111</code>. Источник:
+      <code>reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z/metrics.json</code>.
+      R_doc(m3)=0.6901620806633999, R_span(m2)=0.6296017087573815, R_strict(m1)=0.6096243246639025,
+      P_mention(p1)=0.30008, P_type(p2)=0.45128, P_label(p3_ex)=0.52560 — все совпадают с округлёнными числами
+      отчёта до 3-го знака. Спенд $0.5973 (extract $0.412 + judge $0.185), wall-clock 9309.1с (~2.59 ч),
+      2&nbsp;644 параграфа, 20&nbsp;960 предсказанных упоминаний, 0 отказов.
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">deepseek-v4-flash @ provider-9 — прогон завершён, числа сверены с metrics.json.</span><br>
+      run id <code>2026-07-05T23-35-52Z</code>, config <code>111</code>. Источник:
+      <code>reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--provider-9/111/2026-07-05T23-35-52Z/metrics.json</code>.
+      R_doc(m3)=0.6143987938183189, R_span(m2)=0.5235582359592914, R_strict(m1)=0.5092348284960422,
+      P_mention(p1)=0.30482, P_type(p2)=0.45837, P_label(p3_ex)=0.53015 — все совпадают с округлёнными числами
+      отчёта. Спенд $0.5639 (extract $0.400 + judge $0.164), wall-clock 12627.9с (~3.51 ч), 2&nbsp;644 параграфа,
+      16&nbsp;931 предсказанное упоминание, 108 потерянных параграфов (4.1% корпуса), 238 failed judge calls
+      (поля <code>n_failed_paragraphs</code>/<code>n_failed_judge_calls</code> в <code>meta.json</code>).
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">Декомпозиция recall и named/term разрез.</span><br>
+      Coverage×grounding-accuracy (0.763×0.814 gemini, 0.632×0.815 deepseek) и named/term R_doc (0.828/0.414
+      gemini, 0.733/0.376 deepseek) — источник
+      <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code> §3.3 и
+      <code>drafts/recall-tiers-analysis.md</code> (независимый пересчёт <code>match_m3</code> по статьям,
+      сверка headline R_doc gemini/deepseek 0.690/0.614 подтверждена дословно).
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">Sitelink-контаминация — реплей из кэшей прогонов, 100% fidelity.</span><br>
+      Источник: <code>docs/experiments/2026-07-05-model-comparison/drafts/sitelink-contamination.md</code>.
+      Gemini: 204 sitelink-предсказания (1.22% граунд-объёма), 60.3% совпадают с эталоном; deepseek: 142 (1.04%),
+      52.1%. Чистый R_doc: gemini 0.6840, deepseek 0.6092. Скрипт <code>scripts/sitelink_contamination.py</code>
+      регенерирован в git-tracked код; повторная валидация для deepseek — в процессе на момент отчёта.
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">qwen3.7-plus — частичный прогон подтверждён на диске, метрик ещё нет.</span><br>
+      Каталог <code>reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/</code>
+      содержит <code>pred.partial.jsonl</code> и <code>progress.jsonl</code> (подтверждено листингом), но не
+      содержит <code>metrics.json</code>/<code>meta.json</code> — это согласуется со статусом «в процессе»,
+      52/100 статей на 15:24Z, спенд $1.88 из $12 капа (числа переданы оркестратором сессии, независимо файлом
+      прогресса в этой задаче не пересчитывались).
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">gpt-5.5 — недоступность подтверждена triage-пробоем и операционным логом инцидентов.</span><br>
+      Источник: <code>docs/experiments/2026-07-05-model-comparison/triage/gpt-5.5.json</code> (пробой 19:15Z
+      05-07: маршруты <code>auto</code> и <code>provider-8</code> были кандидатами, <code>provider-9</code> падал
+      на 400 invalid <code>max_output_tokens</code>) и таблица инцидентов в
+      <code>docs/experiments/2026-07-05-model-comparison/FINDINGS.md</code>/<code>SESSION-LOG.md</code>
+      (инцидент «23:2x gpt-5.5 упал» → 429 upstream, коммит <code>02bc705</code> добавил ретраи, не помогло
+      после 23:20Z). Продолжающийся 429 с 23:20Z 05-07 и 52+ мин вотчинга в текущей сессии — статус, переданный
+      оркестратором; не переверифицирован live-пробоем в рамках этой задачи (нет Bash-доступа).
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">Бюджет эксперимента — в пределах капа.</span><br>
+      До возобновления qwen — спенд ~$4 (<code>SESSION-LOG.md</code> §«Осталось»), qwen resume добавляет $1.88 из
+      собственного капа $12/ран. Общий кап эксперимента $60 (<code>BUDGET.md</code>) — с большим запасом.
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">Коммиты этой сессии (P_label, .tex, библиография, PNG, docx, инфраструктура) — статус
+      получен от вызывающего оркестратора, не переверифицирован напрямую.</span><br>
+      Хэши <code>c0ba457</code>, <code>549b57d</code>, <code>a78e264</code>, <code>b1e9e6d</code>,
+      <code>987e6f9</code>, <code>e6e04ba</code>, <code>375f98c</code> не встречаются в закоммиченном
+      <code>SESSION-LOG.md</code> (который описывает только предыдущую сессию <code>eb7d84db</code>) — это
+      ожидаемо, так как они относятся к работе текущей сессии, ещё не отражённой в этом файле. У этой задачи нет
+      Bash/`git log`-доступа, поэтому хэши приняты как переданный статус, а не независимо проверены; отметить
+      это как открытый пункт верификации.
+    </div>
+
+    <!-- /SLOT -->
+  </section>
+
+  <!-- 6. Next steps / owner decisions needed. -->
+  <section class="section" id="next-steps">
+    <h2><span class="idx">6</span> Дальнейшие шаги</h2>
+    <!-- SLOT: next-steps -->
+    <ul class="next-steps">
+      <li><strong>Довести qwen3.7-plus</strong> (52/100 → 100/100), прогнать
+          <code>wiki_eval.py report --p3</code>, посчитать чистые sitelink-числа через
+          <code>sitelink_contamination.py</code>, вписать строку qwen во все таблицы (Table 1/4/6) и документы.</li>
+      <li>Завершить валидацию sitelink-реплея для deepseek на регенерированном скрипте (сейчас в процессе).</li>
+      <li>Пересобрать docx <code>--final</code> (после интеграции qwen) и финализировать .tex; получить один
+          реальный прогон компиляции (Overleaf или окружение с LaTeX-тулчейном — недоступно в этой песочнице).</li>
+      <li><strong>Обязательная адверсариальная верификация</strong> (модель ≥ Sonnet) всех финальных чисел против
+          <code>metrics.json</code>/<code>sitelink_contamination.json</code>/<code>tier_assignment.json</code>
+          перед доставкой — в прошлой сессии верификатор поймал реальную ошибку CI 0.534→0.535, это не
+          формальность.</li>
+      <li>Doc-parity: обновить <code>docs/stages/wiki-eval.md</code> § Status; дописать
+          <code>docs/experiments/LESSONS.md</code> (сейчас пустой — только заголовок): веб-верификация
+          реконструированной библиографии обязательна; супервизия live-процессов — прямым главным тредом, не
+          субагентом; чекпойнтинг обязателен для длинных прогонов; annotation-mechanism leakage как класс
+          ревью-аспекта. Сбросить <code>docs/experiments/ACTIVE</code> по завершении.</li>
+      <li><strong>Владельцу на решение:</strong> gpt-5.5 остаётся окончательно «unavailable» в версии 4, или
+          стоит повторить пробой маршрута, если апстрим OpenAI восстановится позже?</li>
+    </ul>
+    <!-- /SLOT -->
+  </section>
+
+  <footer class="report-footer">
+    <!-- SLOT: footer-note -->
+    Промежуточный отчёт (v4-draft) собран report-generator'ом (presentation only, анализ не проводился) из
+    <code>docs/experiments/2026-07-05-model-comparison/drafts/report-ru-v3.md</code>,
+    <code>docs/superpowers/specs/2026-07-06-finish-model-comparison-runs.md</code>,
+    <code>drafts/recall-tiers-analysis.md</code>, <code>drafts/sitelink-contamination.md</code> и committed
+    <code>metrics.json</code> прогонов gemini/deepseek. Числа не пересчитывались и не изобретались; qwen3.7-plus
+    и gpt-5.5 намеренно отсутствуют в headline-таблицах (прогоны не завершены/не выполнялись — см. § 3–5).
+    <!-- /SLOT -->
+  </footer>
+
+</div>
+</body>
+</html>
