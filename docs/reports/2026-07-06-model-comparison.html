@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сравнение моделей wiki-eval — промежуточный отчёт (2 из 4)</title>
+<style>
+  /* Tokyo Night tokens — single source of truth is .claude/rules/tokyo-night.css.
+     Inlined here (self-contained report, no external assets). Do not add new
+     tokens or rename these; the report-generator agent fills content only. */
+  :root {
+    --bg: #1a1b26;
+    --bg2: #1f2335;
+    --panel: #24283b;
+    --line: #2f334d;
+    --tx: #c0caf5;
+    --blue: #7aa2f7;   /* data */
+    --green: #9ece6a;  /* pass */
+    --yel: #e0af68;    /* open/warn */
+    --red: #f7768e;    /* fail */
+    --purple: #bb9af7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--tx);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  a { color: var(--blue); }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: .3rem;
+  }
+  code { padding: .1rem .35rem; }
+  pre { padding: .85rem 1rem; overflow-x: auto; }
+
+  .report-header { border-bottom: 1px solid var(--line); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+  .report-header h1 { margin: 0 0 .35rem; font-size: 1.7rem; }
+  .report-header .meta { margin: 0; color: var(--tx); opacity: .65; font-size: .9rem; }
+
+  .section {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: .6rem;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section h2 {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .section h2 .idx { color: var(--tx); opacity: .4; font-weight: 400; }
+
+  .lead { font-size: 1.05rem; margin: 0 0 1rem; }
+
+  .badge {
+    display: inline-block;
+    padding: .2rem .65rem;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    border: 1px solid currentColor;
+  }
+  .badge--pass { color: var(--green); }
+  .badge--warn { color: var(--yel); }
+  .badge--fail { color: var(--red); }
+  .badge--data { color: var(--blue); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--line); }
+  th { color: var(--tx); opacity: .7; font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+
+  .radar-wrap { display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; }
+  .radar-wrap svg { flex: 0 0 auto; }
+  .radar-wrap .radar-legend { flex: 1 1 260px; min-width: 220px; }
+  svg text { fill: var(--tx); font-size: 11px; }
+  svg .grid { stroke: var(--line); fill: none; }
+  svg .axis { stroke: var(--line); }
+  svg .plot { fill: var(--blue); fill-opacity: .28; stroke: var(--blue); stroke-width: 2; }
+
+  .finding {
+    border-left: 4px solid var(--line);
+    background: var(--bg2);
+    border-radius: .3rem;
+    padding: .65rem 1rem;
+    margin-bottom: .75rem;
+  }
+  .finding:last-child { margin-bottom: 0; }
+  .finding .tag { font-weight: 700; letter-spacing: .03em; font-size: .8rem; }
+  .finding--critical { border-color: var(--red); }
+  .finding--critical .tag { color: var(--red); }
+  .finding--high { border-color: var(--yel); }
+  .finding--high .tag { color: var(--yel); }
+  .finding--info { border-color: var(--blue); }
+  .finding--info .tag { color: var(--blue); }
+
+  .evidence-item {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: .4rem;
+    padding: .85rem 1rem;
+    margin-bottom: .75rem;
+  }
+  .evidence-item:last-child { margin-bottom: 0; }
+  .evidence-item img { max-width: 100%; display: block; border-radius: .3rem; border: 1px solid var(--line); margin-top: .5rem; }
+  .evidence-item .claim { font-weight: 600; }
+
+  ul.next-steps { margin: 0; padding-left: 1.2rem; }
+  ul.next-steps li { margin-bottom: .4rem; }
+
+  .report-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-size: .8rem;
+    color: var(--tx);
+    opacity: .55;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .section { padding: 1.1rem 1.2rem; }
+    .radar-wrap { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="report-header">
+    <h1>Сравнение моделей wiki-eval — промежуточный отчёт (2 из 4)</h1>
+    <p class="meta">dev-demo · эксперимент <code>2026-07-05-model-comparison</code> · config 111 · корпус v2 (100 статей, 7&nbsp;959 GT-кортежей) · Scenario A, шаг «Verify»</p>
+  </header>
+
+  <!-- 1. Главное — summary lead: outcome + verdict, 1-2 sentences. -->
+  <section class="section" id="glavnoe">
+    <h2><span class="idx">1</span> Главное</h2>
+    <p class="lead">
+      Готовы 2 из 4 прогонов сравнения моделей на wiki-eval: baseline <strong>gemini-3.1-flash-lite</strong>
+      уверенно опережает <strong>deepseek-v4-flash</strong> на +0.106 recall&nbsp;M2 (0.630 против 0.524,
+      95%&nbsp;CI не пересекаются) при почти одинаковой цене ($0.60 vs $0.56). <strong>gpt-5.5</strong> и
+      <strong>qwen3.7-plus</strong> всё ещё выполняются в фоне (стоп ~11:30 UTC) — их ячейки в таблицах ниже
+      помечены «идёт» в приглушённом стиле и будут дозаполнены по завершении.
+    </p>
+    <span class="badge badge--warn">промежуточный отчёт — 2/4 прогона</span>
+  </section>
+
+  <!-- 2. Вместо радара — горизонтальное сравнение recall/precision по моделям (per-metric bars + Wilson CI). -->
+  <section class="section" id="radar-360">
+    <h2><span class="idx">2</span> 360&deg; обзор</h2>
+    <p style="margin:0 0 1rem;">
+      <span class="badge badge--warn">промежуточный отчёт</span>
+      <span style="opacity:.7;font-size:.85rem;margin-left:.5rem;">recall M1/M2/M3 (span-overlap) и precision P1/P2 по моделям, засечки — 95% Wilson CI</span>
+    </p>
+    <div class="radar-wrap">
+      <div style="flex:1 1 640px;min-width:320px;">
+
+        <!-- M1 -->
+        <div style="margin-bottom:1.1rem;">
+          <div style="font-size:.8rem;font-weight:600;color:var(--tx);opacity:.8;margin-bottom:.35rem;">M1 — recall (exact span)</div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">gemini</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:61.0%;background:var(--blue);border-radius:3px;"></div>
+              <div style="position:absolute;left:59.9%;top:-4px;bottom:-4px;width:2.1%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.610 [0.599–0.620]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">deepseek</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:50.9%;background:var(--purple);border-radius:3px;"></div>
+              <div style="position:absolute;left:49.8%;top:-4px;bottom:-4px;width:2.2%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.509 [0.498–0.520]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">gpt-5.5</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">qwen3.7-plus</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+        </div>
+
+        <!-- M2 -->
+        <div style="margin-bottom:1.1rem;">
+          <div style="font-size:.8rem;font-weight:600;color:var(--tx);opacity:.8;margin-bottom:.35rem;">M2 — recall (span-overlap, ratchet-метрика)</div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">gemini</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:63.0%;background:var(--blue);border-radius:3px;"></div>
+              <div style="position:absolute;left:61.9%;top:-4px;bottom:-4px;width:2.1%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.630 [0.619–0.640]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">deepseek</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:52.4%;background:var(--purple);border-radius:3px;"></div>
+              <div style="position:absolute;left:51.3%;top:-4px;bottom:-4px;width:2.2%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.524 [0.513–0.534]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">gpt-5.5</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">qwen3.7-plus</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+        </div>
+
+        <!-- M3 -->
+        <div style="margin-bottom:1.1rem;">
+          <div style="font-size:.8rem;font-weight:600;color:var(--tx);opacity:.8;margin-bottom:.35rem;">M3 — recall (relaxed)</div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">gemini</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:69.0%;background:var(--blue);border-radius:3px;"></div>
+              <div style="position:absolute;left:68.0%;top:-4px;bottom:-4px;width:2.0%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.690 [0.680–0.700]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">deepseek</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:61.4%;background:var(--purple);border-radius:3px;"></div>
+              <div style="position:absolute;left:60.4%;top:-4px;bottom:-4px;width:2.1%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.614 [0.604–0.625]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">gpt-5.5</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">qwen3.7-plus</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+        </div>
+
+        <!-- P1 -->
+        <div style="margin-bottom:1.1rem;">
+          <div style="font-size:.8rem;font-weight:600;color:var(--tx);opacity:.8;margin-bottom:.35rem;">P1 — precision (exact span)</div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">gemini</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:30.0%;background:var(--blue);border-radius:3px;"></div>
+              <div style="position:absolute;left:29.3%;top:-4px;bottom:-4px;width:1.4%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.300 [0.293–0.307]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">deepseek</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:30.5%;background:var(--purple);border-radius:3px;"></div>
+              <div style="position:absolute;left:29.7%;top:-4px;bottom:-4px;width:1.5%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.305 [0.297–0.313]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">gpt-5.5</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">qwen3.7-plus</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+        </div>
+
+        <!-- P2 -->
+        <div>
+          <div style="font-size:.8rem;font-weight:600;color:var(--tx);opacity:.8;margin-bottom:.35rem;">P2 — precision (relaxed)</div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">gemini</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:45.1%;background:var(--blue);border-radius:3px;"></div>
+              <div style="position:absolute;left:44.1%;top:-4px;bottom:-4px;width:2.0%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.451 [0.441–0.461]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;">
+            <div style="width:118px;font-size:.82rem;">deepseek</div>
+            <div style="position:relative;flex:1;height:16px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:45.8%;background:var(--purple);border-radius:3px;"></div>
+              <div style="position:absolute;left:44.7%;top:-4px;bottom:-4px;width:2.2%;border-left:1px solid var(--tx);border-right:1px solid var(--tx);opacity:.55;"></div>
+            </div>
+            <div style="width:170px;font-size:.78rem;opacity:.85;">0.458 [0.447–0.469]</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">gpt-5.5</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;opacity:.35;">
+            <div style="width:118px;font-size:.82rem;">qwen3.7-plus</div>
+            <div style="flex:1;height:16px;background:var(--bg2);border:1px dashed var(--line);border-radius:3px;"></div>
+            <div style="width:170px;font-size:.78rem;">— идёт —</div>
+          </div>
+        </div>
+
+        <p style="font-size:.75rem;opacity:.55;margin:.9rem 0 0;">
+          Заливка = значение метрики (0–100% шкалы), засечка = 95% Wilson CI. Источник: committed
+          <code>metrics.json</code> прогонов gemini <code>2026-07-05T23-06-38Z</code> и deepseek <code>2026-07-05T23-35-52Z</code>.
+        </p>
+      </div>
+
+      <table class="radar-legend">
+        <thead><tr><th>Модель</th><th>Recall M2 [95% CI]</th><th>Статус</th></tr></thead>
+        <tbody>
+          <tr><td>gemini-3.1-flash-lite @ provider-9</td><td>0.630 [0.619–0.640]</td><td><span class="badge badge--pass">готово, лидирует</span></td></tr>
+          <tr><td>deepseek-v4-flash @ provider-9</td><td>0.524 [0.513–0.534]</td><td><span class="badge badge--warn">готово, отстаёт</span></td></tr>
+          <tr style="opacity:.4;"><td>gpt-5.5 @ provider-8</td><td>—</td><td><span class="badge badge--data">идёт</span></td></tr>
+          <tr style="opacity:.4;"><td>qwen3.7-plus @ auto</td><td>—</td><td><span class="badge badge--data">идёт</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3. Structured overview — goal -> what changed (tables/cards) -> key decisions and why. -->
+  <section class="section" id="overview">
+    <h2><span class="idx">3</span> Что сделано</h2>
+    <p><strong>Цель:</strong> получить honest-метрики wiki-eval (recall M1/M2/M3, precision P1/P2, срезы,
+       Wilson CI) для 4 моделей через CloseRouter на полном корпусе v2, плюс стоимость/скорость/надёжность
+       маршрутов — чтобы выбрать рабочую модель extractor+judge по трейд-оффу качество/цена/скорость
+       (спека: <code>docs/superpowers/specs/2026-07-05-model-comparison-wiki-eval.md</code>).</p>
+
+    <p><strong>Корпус v2:</strong> 100 статей, 10 тематических секций (achaemenid_iran, assyria, china, egypt,
+       greece, hittite, india, phoenicia, rome, sumer), 7&nbsp;959 GT-кортежей, 2&nbsp;644 параграфа.</p>
+
+    <p><strong>4 модели и выбранные маршруты</strong> (провайдерский triage, 186 проб, $0.017):</p>
+    <table>
+      <thead><tr><th>Модель</th><th>ID</th><th>Маршрут</th><th>Обоснование</th></tr></thead>
+      <tbody>
+        <tr><td>gemini-3.1-flash-lite (baseline)</td><td><code>google/gemini-3.1-flash-lite</code></td><td>provider-9</td>
+            <td>10/10 успех на <code>auto</code> и <code>provider-9</code>; min cost/call $2e-6, tie-break латентность 1.41с</td></tr>
+        <tr><td>deepseek-v4-flash</td><td><code>deepseek/deepseek-v4-flash</code></td><td>provider-9</td>
+            <td>10/10 успех на <code>auto</code> и <code>provider-9</code>; min cost/call $2e-6, tie-break латентность 1.85с</td></tr>
+        <tr><td>gpt-5.5</td><td><code>openai/gpt-5.5</code></td><td>provider-8 <span style="opacity:.6;font-size:.8rem;">(идёт)</span></td>
+            <td>правило triage считало дешевле <code>auto</code> (9/10, $1.11e-5); оркестратор переопределил
+                на <code>provider-8</code> (10/10 против 9/10, цена в пределах шума) — см. расхождение ниже</td></tr>
+        <tr><td>qwen3.7-plus</td><td><code>qwen/qwen3.7-plus</code></td><td>auto <span style="opacity:.6;font-size:.8rem;">(идёт)</span></td>
+            <td>правило triage выбрало RELAXED <code>provider-8</code> (6/10, честные токены); оркестратор
+                переопределил на <code>auto</code> (8/10 сырой успех важнее 11% разницы в цене) —
+                «чистого» маршрута для qwen нет вообще, это отдельная находка о надёжности</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.85rem;opacity:.7;margin-top:.4rem;">
+      ⚠ Источники расходятся: <code>docs/experiments/2026-07-05-model-comparison/triage/summary.md</code>
+      (рассчитанный по правилу маршрут) и <code>docs/experiments/2026-07-05-model-comparison/PLAN.md</code>
+      (фактическое решение оркестратора после triage) называют разные маршруты для gpt-5.5 и qwen3.7-plus.
+      В таблице выше — маршрут, реально запущенный в матрице (по PLAN.md); маршрут по чистому правилу triage
+      указан в обосновании для прозрачности.
+    </p>
+
+    <p><strong>Параметры матрицы прогонов</strong> (config <code>111</code>, идентичны для всех 4 моделей,
+       источник — <code>meta.json</code> завершённых прогонов и <code>PLAN.md</code>):</p>
+    <table>
+      <thead><tr><th>Параметр</th><th>Значение</th></tr></thead>
+      <tbody>
+        <tr><td>llm-workers (semaphore)</td><td>16 (наблюдаемый max in-flight — 16)</td></tr>
+        <tr><td>article-workers</td><td>10</td></tr>
+        <tr><td>wikidata-workers</td><td>2</td></tr>
+        <tr><td>max-judge-calls</td><td>30 000</td></tr>
+        <tr><td>капа на прогон (--max-usd)</td><td>$12</td></tr>
+        <tr><td>капа на эксперимент</td><td>$60</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Ключевое решение:</strong> обе роли (extractor и judge) отданы одной и той же модели-кандидату —
+       мерим полную замену в пайплайне, а не только экстракцию. Ratchet-метрика для итогового решения — recall
+       M2 при сопоставимой precision P1, с учётом cost/1k GT-кортежей и надёжности маршрута.</p>
+  </section>
+
+  <!-- 4. Critical findings & shortcomings — bugs, risks, tech debt, unresolved flags; severity-tagged, nothing hidden. -->
+  <section class="section" id="findings">
+    <h2><span class="idx">4</span> Критичные находки</h2>
+
+    <div class="finding finding--info">
+      <span class="tag">INFO</span> — <strong>gemini-база уверенно впереди deepseek</strong>: +0.106 recall M2
+      при непересекающихся 95% CI, практически одинаковой precision и почти одинаковой цене ($0.60 vs $0.56).
+      «Дешевизна» deepseek по прайс-листу не конвертировалась в реальную экономию: апстрим медленнее
+      (3.5 ч вместо 2.6 ч wall-clock) и ненадёжнее (см. следующий пункт).
+    </div>
+
+    <div class="finding finding--info">
+      <span class="tag">INFO</span> — <strong>разрыв создаёт экстракция, не grounding.</strong> Срез
+      <code>resolved_by</code> почти идентичен у обеих моделей: exact_label recall M2 0.921 (gemini) / 0.929
+      (deepseek), llm_disambiguation 0.847 / 0.862 — когда кандидаты найдены, обе модели граундят одинаково
+      хорошо. deepseek теряет на покрытии упоминаний (16&nbsp;931 предсказанных против 20&nbsp;960 у gemini)
+      и на отказах маршрута.
+    </div>
+
+    <div class="finding finding--high">
+      <span class="tag">HIGH</span> — <strong>надёжность маршрута — измеряемый фактор качества.</strong>
+      Патч устойчивости честно зафиксировал у deepseek 108 потерянных параграфов (4.1% корпуса) и 238
+      judge-отказов; грубая поправка на покрытие даёт «route-corrected» recall&nbsp;M2 ≈ 0.546 —
+      <em>это приближённая оценка коррекции на покрытие, не измеренное значение</em>, и разрыв с gemini
+      сохраняется даже с этой поправкой. Отказы кластеризованы по секциям: hittite просела до 0.351
+      (у gemini на той же секции — 0.646).
+    </div>
+
+    <div class="finding finding--info">
+      <span class="tag">INFO</span> — <strong>секционные срезы работают</strong> (замена страт 50/50 на
+      тематические секции оправдалась): у gemini разброс recall M2 от 0.526 (phoenicia) до 0.747 (sumer);
+      у deepseek — от 0.351 (hittite) до 0.628 (achaemenid_iran). Общий recall взвешен богатыми секциями
+      (greece — 1&nbsp;506 GT-кортежей против china — 458).
+      <div style="margin-top:.6rem;">
+        <table>
+          <thead><tr><th>Секция</th><th>GT-кортежей</th><th>gemini M2</th><th>deepseek M2</th></tr></thead>
+          <tbody>
+            <tr><td>achaemenid_iran</td><td>713</td><td>0.686</td><td><strong>0.628</strong> (max)</td></tr>
+            <tr><td>assyria</td><td>879</td><td>0.744</td><td>0.523</td></tr>
+            <tr><td>china</td><td>458</td><td>0.552</td><td>0.428</td></tr>
+            <tr><td>egypt</td><td>579</td><td>0.551</td><td>0.470</td></tr>
+            <tr><td>greece</td><td>1&nbsp;506</td><td>0.566</td><td>0.535</td></tr>
+            <tr><td>hittite</td><td>649</td><td>0.646</td><td><strong>0.351</strong> (min)</td></tr>
+            <tr><td>india</td><td>843</td><td>0.656</td><td>0.575</td></tr>
+            <tr><td>phoenicia</td><td>1&nbsp;036</td><td><strong>0.526</strong> (min)</td><td>0.457</td></tr>
+            <tr><td>rome</td><td>683</td><td>0.587</td><td>0.549</td></tr>
+            <tr><td>sumer</td><td>613</td><td><strong>0.747</strong> (max)</td><td>0.581</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="finding finding--high">
+      <span class="tag">HIGH</span> — <strong>named vs term остаётся главной зоной роста.</strong>
+      У gemini recall M2: named 0.786 против term 0.291 (с оговоркой спеки — тип определяется по
+      капитализации якоря). Терминология-нарицательное («term») систематически теряется чаще, чем
+      именованные сущности («named»), независимо от модели.
+      <div style="margin-top:.4rem;font-size:.85rem;opacity:.75;">
+        Для контекста (не в исходном выводе FINDINGS, но из того же <code>metrics.json</code>): у deepseek
+        аналогичный разрыв ещё шире — named 0.645 / term 0.254.
+      </div>
+    </div>
+
+    <p style="font-weight:600;margin:1.1rem 0 .5rem;">Операционные инциденты ночи</p>
+    <table>
+      <thead><tr><th>Время (UTC)</th><th>Что</th><th>Причина</th><th>Фикс</th></tr></thead>
+      <tbody>
+        <tr><td>20:58</td><td>canary gemini упал</td><td>Wikidata 429: <code>Retry-After</code> обрезался до 10с при запросе 60с+</td><td><code>a40690f</code>: уважение Retry-After до 120с, ретраи всех 5xx, <code>--wikidata-workers</code></td></tr>
+        <tr><td>~23:00</td><td>canary v2 умер молча</td><td>супервизия через субагента потеряла процесс и stdout</td><td>матрица переведена под прямой контроль главного треда</td></tr>
+        <tr><td>23:16</td><td>qwen@auto 503</td><td>circuit-breaker auto подавил единственный апстрим</td><td>пин provider-8 (временно, до переопределения маршрута)</td></tr>
+        <tr><td>23:2x</td><td>gpt-5.5 упал</td><td>429 от OpenAI-апстрима на капе 16, 3 ретраев мало</td><td><code>02bc705</code>: 6 попыток/backoff 60с + громкий пропуск; llm-workers 8</td></tr>
+        <tr><td>00:0x</td><td>deepseek упал</td><td>3 подряд таймаута 30с</td><td>перезапуск на патче <code>02bc705</code></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.85rem;opacity:.7;margin-top:.5rem;">
+      Общий вывод: у прогона на ~35k вызовов должна быть пер-вызовная устойчивость и чекпойнтинг —
+      pred-результаты сейчас пишутся только в конце (упавший ран теряет всю LLM-работу; см. §6 tech-debt).
+      Каждый инцидент дал коммит и тест.
+    </p>
+  </section>
+
+  <!-- 5. Run artifacts (evidence) — a claim without an artifact doesn't go in the report. -->
+  <section class="section" id="evidence">
+    <h2><span class="idx">5</span> Артефакты запуска</h2>
+
+    <div class="evidence-item">
+      <span class="claim">gemini-3.1-flash-lite @ provider-9 — прогон завершён.</span><br>
+      run id <code>2026-07-05T23-06-38Z</code>, коммит данных <code>909da11</code>, config <code>111</code>.
+      Источник: <code>reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z/metrics.json</code>,
+      <code>meta.json</code>. Спенд $0.5973 (extract $0.412 + judge $0.185), wall-clock 9309.1с (2.6 ч),
+      2&nbsp;644 параграфа, 20&nbsp;960 предсказанных упоминаний, 0 отказов.
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">deepseek-v4-flash @ provider-9 — прогон завершён.</span><br>
+      run id <code>2026-07-05T23-35-52Z</code>, коммит данных — <span style="color:var(--yel);">TBD (не передан)</span>,
+      config <code>111</code>. Источник: <code>reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--provider-9/111/2026-07-05T23-35-52Z/metrics.json</code>,
+      <code>meta.json</code>. Спенд $0.5639 (extract $0.400 + judge $0.164), wall-clock 12627.9с (3.5 ч),
+      2&nbsp;644 параграфа, 16&nbsp;931 предсказанное упоминание. Счётчики отказов: <strong>108</strong> потерянных
+      параграфов / <strong>238</strong> failed judge calls (поля <code>n_failed_paragraphs</code> /
+      <code>n_failed_judge_calls</code> в <code>meta.json</code>).
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">Устойчивость раннера — 2 патча за ночь.</span><br>
+      <code>a40690f</code> — уважение Wikidata <code>Retry-After</code> до 120с + ретраи 5xx + <code>--wikidata-workers</code>
+      (инцидент 20:58 UTC). <code>02bc705</code> — 6 попыток/backoff 60с на 429 + громкий пропуск + llm-workers 8
+      (инцидент 23:2x UTC, использован также для перезапуска deepseek в 00:0x UTC). Источник: incident-таблица
+      в <code>docs/experiments/2026-07-05-model-comparison/FINDINGS.md</code>.
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">gpt-5.5 / qwen3.7-plus — прогоны ещё выполняются.</span><br>
+      Статус на момент отчёта: «идёт», нет ни <code>metrics.json</code>, ни <code>meta.json</code> —
+      данных для этих двух моделей в отчёте нет и не выдумываются. Ограничены капом $12/ран и стопом
+      эксперимента ~11:30 UTC.
+    </div>
+
+    <div class="evidence-item">
+      <span class="claim">Бюджет эксперимента: в пределах капа.</span><br>
+      Triage $0.017 + завершённые прогоны $1.16 (0.597 + 0.564) + аварийный overhead ≈ $1–2 + идущие ≤ $24
+      (2 × капа $12) ⇒ прогноз итога <strong>≤ $10 из капа $60</strong>. Источник: раздел «Бюджет» в
+      <code>FINDINGS.md</code> и <code>BUDGET.md</code> (капа $60, per-run $12, triage ≤ $2).
+      Исходная консервативная оценка стоимости была завышена ×5 (judge-эскалаций 51/статью на корпусе
+      против 241/статью на плотном пилоте, заложенных в прогноз).
+    </div>
+  </section>
+
+  <!-- 6. Next steps / owner decisions needed. -->
+  <section class="section" id="next-steps">
+    <h2><span class="idx">6</span> Дальнейшие шаги</h2>
+    <ul class="next-steps">
+      <li><strong>Достроить прогоны gpt-5.5 и qwen3.7-plus</strong> (стоп эксперимента ~11:30 UTC) и обновить
+          этот отчёт финальными числами по всем 4 моделям — до этого рекомендация «какую модель брать»
+          не может быть окончательной.</li>
+      <li><strong>Владельцу на решение:</strong> маршрут для gpt-5.5 и qwen3.7-plus в матрице — фактическое
+          решение оркестратора (provider-8 / auto), а не расчёт по чистому правилу triage (auto / provider-8
+          RELAXED) — см. расхождение в §3. Для qwen «чистого» маршрута нет вообще; стоит ли это
+          дисквалифицирующим фактором для qwen как кандидата, решает владелец.</li>
+      <li><strong>Tech-debt (зафиксировать отдельным тикетом):</strong> пер-вызовая устойчивость и
+          чекпойнтинг pred-результатов — сейчас упавший ран на 35k вызовов теряет всю LLM-работу, так как
+          запись происходит только в конце; плюс прогресс-логирование в файл, чтобы не терять супервизию
+          «молча» (как в инциденте ~23:00 UTC).</li>
+      <li><strong>P3 (label-justified precision) не активирован</strong> в прогонах (заглушка
+          <code>label_exists=False</code>) — в отчёте только P1/P2, как и заявлено в спеке §5; активация
+          P3 — отдельная задача, не в скоупе этого сравнения.</li>
+      <li>После получения всех 4 <code>metrics.json</code> — doc-parity: обновить
+          <code>docs/stages/wiki-eval.md</code> § Status и зафиксировать уроки ночи в
+          <code>docs/experiments/LESSONS.md</code>.</li>
+    </ul>
+  </section>
+
+  <footer class="report-footer">
+    Промежуточный отчёт собран агентом report-generator (presentation only, анализ не проводился) из
+    <code>docs/experiments/2026-07-05-model-comparison/FINDINGS.md</code>, committed <code>metrics.json</code>/<code>meta.json</code>
+    прогонов gemini и deepseek, <code>triage/summary.md</code> и спеки
+    <code>docs/superpowers/specs/2026-07-05-model-comparison-wiki-eval.md</code>. Числа не пересчитывались
+    и не изобретались; отсутствующие данные помечены явно.
+  </footer>
+
+</div>
+</body>
+</html>
