@@ -129,7 +129,7 @@ Demo uses **G6 label_first** grounding + P1/P3 pairing (P1 baseline, P3 verdicts
 | deterministic (caps + gazetteer) | 0.50 | 0.73 | 0.41 |
 | **llm (E1, claude-haiku-4.5 via OpenRouter, temperature 0)** | **0.906** | **0.909** | **0.437** |
 
-**Model choice (2026-07-02 tournament).** A 7-model real-OpenRouter tournament + adversarial LLM-judge panel picked **`anthropic/claude-haiku-4.5`** as the E1 default. Full evidence: [docs/reports/2026-07-02-ner-model-tournament.html](../reports/2026-07-02-ner-model-tournament.html).
+**Model choice (2026-07-02 tournament).** A 7-model real-OpenRouter tournament + adversarial LLM-judge panel picked **`anthropic/claude-haiku-4.5`** as the E1 default. ⚠️ The tournament's full HTML report (`docs/reports/2026-07-02-ner-model-tournament.html`) was never committed to any branch in this repo (confirmed via `git log --all --diff-filter=A`) — this paragraph plus the recall/precision table above is the surviving evidence.
 
 Demo seed: 15 body paragraphs ([scripts/rebuild_seed_texts.py](../../scripts/rebuild_seed_texts.py)); terminology regenerated via `scripts/rebuild_demo.py` (haiku extract → G6 grounding, live judge on the CloseRouter gateway → P1/P3 pairing) into `data/seed/terminology_out.json`, loaded by [scripts/load_terms_into_seed.py](../../scripts/load_terms_into_seed.py) / [scripts/load_terms.py](../../scripts/load_terms.py) (or `make reseed`, which chains seed + load) — see the [seed-refresh plan](../superpowers/plans/2026-07-02-seed-refresh.md) and [webapp.md](../subsystems/webapp.md) `seed.py` row. Current difficulty distribution (single source of truth): [docs/testing/e2e-data.md](../testing/e2e-data.md).
 

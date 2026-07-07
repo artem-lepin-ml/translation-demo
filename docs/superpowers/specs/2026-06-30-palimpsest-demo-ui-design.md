@@ -1,6 +1,6 @@
 # Palimpsest demo — консолидированный дизайн UI/UX
 
-> ⚠️ **Исторический decisions-log (не as-built).** Здесь — обоснования и решения брейншторма. Живой источник правды по фактическому виду UI (токены, классы, скриншоты) — [docs/subsystems/webapp-ui-design.md](../../subsystems/webapp-ui-design.md). As-built пути в §12 устарели: код теперь в `frontend/src/demo/variant-a/`, скриншоты — в `docs/reports/e2e/shots*/`.
+⚠️ **LEGACY (historical decisions log, not as-built).** Здесь — обоснования и решения брейншторма, не текущее состояние UI. Живой источник правды по фактическому виду UI (токены, классы, скриншоты) — [docs/subsystems/webapp-ui-design.md](../../subsystems/webapp-ui-design.md). As-built пути в §12 устарели: код теперь в `frontend/src/demo/variant-a/`, скриншоты — в `docs/reports/e2e/shots*/`.
 
 Дизайн-наработки демки для EMNLP demo-track (дедлайн ~2026-07-10): сюда сведены все решения брейншторма. Бэкенд-контракт и git-план ведёт отдельный трек. Артефакты — в §12.
 
