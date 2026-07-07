@@ -366,6 +366,7 @@
   border-radius: 6px;
   padding: 2px 8px;
   transition: background 0.3s;
+  cursor: help; /* hints the per-criterion breakdown tooltip on hover */
 }
 
 .va-score-chip-label {
