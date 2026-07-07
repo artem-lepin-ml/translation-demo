@@ -14,7 +14,7 @@ user-invoked skill never calls another user-invoked skill.**
 
 ## Classification
 
-16 skill dirs currently under `.claude/skills/`, each with a `SKILL.md`.
+18 dirs currently under `.claude/skills/`; 16 of them have their own `SKILL.md` (`lessons/` and `superpowers/` are support dirs without one, not standalone skills).
 
 | Skill | Class | Trigger / role |
 |---|---|---|

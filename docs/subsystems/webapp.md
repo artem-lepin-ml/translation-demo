@@ -107,6 +107,7 @@ Full request/response shapes are in the contracts spec. Compact route table:
 | POST | `/api/budget/reset` | Reset the in-process spend/call counters |
 | GET | `/api/paragraphs/{pid}/revisions` | Revision history for a paragraph, newest first, with the best-scored one flagged (rev-5) |
 | POST | `/api/paragraphs/{pid}/restore` | Restore `target` to an earlier revision's text; writes a new `origin='restore'` revision (rev-5) |
+| GET/PUT | `/api/grounding-config` | Singleton grounding config (model/prompt/params) used by `_grounding_judge_live` |
 | GET/PUT | `/api/translator-config` | Singleton translator config (model/prompt/params), mirrors `/api/grounding-config` (rev-5) |
 | POST | `/api/documents/{doc_id}/translate` | Kick off/resume background AI translation of empty paragraphs; 403 for `origin='seed'`, 409 in-progress/no-config/budget (rev-5) |
 | GET | `/api/documents/{doc_id}/export` | `?format=xlsx\|md` — download a parallel-text file (rev-5) |
