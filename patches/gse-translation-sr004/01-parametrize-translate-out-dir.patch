@@ -1,0 +1,63 @@
+--- a/scripts/02_translate_json.py
++++ b/scripts/02_translate_json.py
+@@ -33,13 +33,15 @@
+ app = typer.Typer(add_completion=False)
+ 
+ 
+-def _build_out_dir(*, run_name: str, bucket: str) -> Path:
+-    """Return data/pilot/translating[/<bucket>]/<run_name>/.
++def _build_out_dir(*, run_name: str, bucket: str, out_root: Path) -> Path:
++    """Return out_root[/<bucket>]/<run_name>/.
+ 
+     Empty bucket keeps the legacy flat layout; "small"/"large"/"local"
+-    nest under the matching subdirectory.
++    nest under the matching subdirectory. `out_root` defaults to
++    data/pilot/translating (legacy default) but callers may pass e.g.
++    data/wiki/translating via --out-root for a different corpus.
+     """
+-    root = REPO_ROOT / "data" / "pilot" / "translating"
++    root = out_root
+     if bucket:
+         root = root / bucket
+     return root / run_name
+@@ -54,6 +56,7 @@
+     user_prompt_rel: str,
+     max_concurrency: int,
+     input_json: Path,
++    out_root: Path,
+ ):
+     models = load_models()
+     if model_key not in models:
+@@ -72,7 +75,7 @@
+     # Read source paragraphs from JSON file (list of strings)
+     paragraphs: list[str] = json.loads(input_json.read_text(encoding="utf-8"))
+ 
+-    out_dir = _build_out_dir(run_name=run_name, bucket=bucket)
++    out_dir = _build_out_dir(run_name=run_name, bucket=bucket, out_root=out_root)
+     out_dir.mkdir(parents=True, exist_ok=True)
+     progress_log = ProgressLog(out_dir / "progress.jsonl")
+     done_chunks, done_paragraphs = progress_log.load()
+@@ -187,6 +190,15 @@
+         "--input",
+         help="Source JSON file: a list of strings (one paragraph per string).",
+     ),
++    out_root: Path = typer.Option(  # noqa: B008
++        REPO_ROOT / "data" / "pilot" / "translating",
++        "--out-root",
++        help=(
++            "Output root directory; the run writes to out-root/bucket/run-name "
++            "(bucket optional). Defaults to the legacy data/pilot/translating; "
++            "pass e.g. data/wiki/translating for wiki-corpus runs."
++        ),
++    ),
+ ) -> None:
+     cfg = load_translate()
+     code = asyncio.run(
+@@ -199,6 +211,7 @@
+             user_prompt_rel=user_prompt or cfg.user_prompt,
+             max_concurrency=max_concurrency,
+             input_json=input_json,
++            out_root=out_root,
+         )
+     )
+     raise typer.Exit(code)
