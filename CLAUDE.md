@@ -105,8 +105,7 @@ Registered battle-tier agents (18: 14 vendored + 4 native), each lane made mutua
 
 Repo topology after the 2026-07-01 reorg:
 
-- **`main`** — stable base (shared root). Never commit directly to it.
-- **`dev-demo`** — active integration line (this branch): the demo web app + the terminology module. Branches off `main`; all new work starts here.
+- **`dev-demo`** — the trunk: active integration line (this branch) for the demo web app + the terminology module. There is currently no `main` branch (checked 2026-07-07: absent locally and on origin, `origin/HEAD` points at `dev-demo`) — `dev-demo` is the base all new work starts from. Never commit directly to it.
 - **`feat/<topic>`** — task branches off **`dev-demo`** (e.g. `feat/model-registry`). One task per branch, merged back into `dev-demo` via PR.
 - **`old-gse-translating`** — ⚠️ retired research pipeline (former `artem`: translate / scoring / factcheck research, judge-report CLI, usage tracking). Kept for reference, not the active line.
 

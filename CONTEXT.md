@@ -25,10 +25,7 @@ copy.
 
 | Term | Meaning | Code anchor |
 |---|---|---|
-| **`--va-*` token system** | The variant-A visual design system: `:root` CSS custom properties (surface stack, accent, semantic verdict colours, radii, fonts) plus the `va-*` component classes built on them. Single source of truth for styling — new UI must reuse these tokens/classes, never invent a parallel style (CLAUDE.md § Ground before you design). | [`frontend/src/demo/variant-a/variant-a.css:4-20`](frontend/src/demo/variant-a/variant-a.css#L4-L20) (`:root` block); documented in [`docs/subsystems/webapp-ui-design.md:12-35`](docs/subsystems/webapp-ui-design.md#L12-L35) |
-| `--va-bg` | Page/root background, deepest layer (`#1a1b26`, Tokyo-Night base). | [`variant-a.css:4`](frontend/src/demo/variant-a/variant-a.css#L4) |
-| `--va-accent` | Primary accent blue — active tab, focused input, links, selected row, brand (`#7aa2f7`). | [`variant-a.css:12`](frontend/src/demo/variant-a/variant-a.css#L12) |
-| `--va-green` / `--va-yellow` / `--va-red` | Semantic verdict triad — green/yellow/red pass-warn-fail colouring used across score bands, term difficulty and pair-accuracy verdicts. | [`variant-a.css:14-16`](frontend/src/demo/variant-a/variant-a.css#L14-L16) |
+| **`--va-*` token system** | The variant-A visual design system: `:root` CSS custom properties (surface stack, accent, semantic verdict colours, radii, fonts) plus the `va-*` component classes built on them. Single source of truth for styling — new UI must reuse these tokens/classes, never invent a parallel style (CLAUDE.md § Ground before you design). Full token table (names, hex values, roles): [`docs/subsystems/webapp-ui-design.md` § Design tokens](docs/subsystems/webapp-ui-design.md#design-tokens-root-in-variant-acss) — not duplicated here. | [`frontend/src/demo/variant-a/variant-a.css`](frontend/src/demo/variant-a/variant-a.css) (`:root` block) |
 
 ## 3. Evaluator terminology
 
