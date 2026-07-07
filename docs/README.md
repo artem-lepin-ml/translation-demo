@@ -16,6 +16,7 @@ Up-link: [README.md](../README.md)
 | [docs/superpowers/plans/2026-07-02-pair-upload.md](superpowers/plans/2026-07-02-pair-upload.md) | Custom pair upload — implementation plan (task breakdown) |
 | [docs/superpowers/plans/2026-07-02-audit-fixes.md](superpowers/plans/2026-07-02-audit-fixes.md) | Site-audit fixes + Evaluators redesign — implementation plan |
 | [docs/stages/terminology.md](stages/terminology.md) | Terminology module — extract → ground (difficulty) → pair (pairAccuracy) → `Term[]` over live Wikidata; strategies, verdict rules, tournament results |
+| [docs/stages/translation-eval.md](stages/translation-eval.md) | sr004 runbook for the wiki-100 LLM-judge + refinement eval (Danil's pipeline as-is) — prereqs, patches, `models.yaml` deltas, vLLM bring-up, Ф0–Ф2 phases |
 | [docs/superpowers/specs/2026-07-01-terminology-e2e-design.md](superpowers/specs/2026-07-01-terminology-e2e-design.md) | Terminology e2e design spec + `/verify-spec` rework decisions |
 | [docs/superpowers/specs/2026-07-01-terminology-consolidation-design.md](superpowers/specs/2026-07-01-terminology-consolidation-design.md) | Consolidation design — how the three parallel terminology efforts were merged; decisions D1–D8 |
 | [docs/superpowers/specs/2026-07-01-terminology-extract-design.md](superpowers/specs/2026-07-01-terminology-extract-design.md) | Extract-stage design — real LLM-NER extractor (lowercase terms) + gazetteer fallback, NerConfig/live-re-extract contract, real-OpenRouter e2e |
