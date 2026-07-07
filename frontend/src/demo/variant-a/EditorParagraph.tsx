@@ -14,7 +14,7 @@ import { useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { reviewPluginKey, createReviewExtension } from './review-extension';
-import type { Issue, Term, Criterion } from '../api-client';
+import type { Issue, Term, Criterion, Score } from '../api-client';
 
 export interface SegmentClickInfo {
   issues: Issue[];
@@ -202,6 +202,41 @@ interface ScoreChipProps {
   delta: number | null;
   cached?: boolean;
   stale?: boolean;
+  /** Enabled criteria + this paragraph's per-criterion scores — drives the
+   * hover tooltip's breakdown. Optional/defaulted so existing chip call
+   * sites (and the pre-existing unit tests) that only care about the
+   * aggregate keep working unchanged; omitting them just shortens the
+   * tooltip to the aggregate line. */
+  criteria?: Criterion[];
+  scores?: Score[];
+}
+
+/** Builds the score chip's hover-tooltip text: the aggregate line, one line
+ * per enabled criterion (name + value), then any provenance notes (cached /
+ * stale). A criterion value is rendered "…" while a rescore is in flight and
+ * "—" when the paragraph genuinely has no score yet for that criterion —
+ * same pending/absent convention the chip itself and InspectorPanel already
+ * use, so no row is ever left blank or shows a broken/undefined value. */
+export function buildScoreChipTooltip(
+  label: string,
+  score: number | null,
+  loading: boolean,
+  criteria: Criterion[],
+  scores: Score[],
+  cached?: boolean,
+  stale?: boolean,
+): string {
+  const lines: string[] = [];
+  const aggText = loading ? '…' : score !== null ? score.toFixed(1) : '—';
+  lines.push(`${label} aggregate: ${aggText}`);
+  for (const c of criteria.filter((c) => c.enabled)) {
+    const v = scores.find((s) => s.criterionId === c.id)?.value ?? null;
+    const valText = loading ? '…' : v !== null ? v.toFixed(1) : '—';
+    lines.push(`${c.name}: ${valText}`);
+  }
+  if (cached) lines.push('Cached: offline fallback estimate, not a live judgment');
+  if (stale) lines.push('Stale: scores refer to an earlier version of this paragraph');
+  return lines.join('\n');
 }
 
 export interface DeltaBadge {
@@ -233,11 +268,25 @@ export function deltaBadge(delta: number | null): DeltaBadge | null {
   return { glyph: delta > 0 ? '▲' : '▼', magnitude: Math.abs(delta).toFixed(1) };
 }
 
-export function ScoreChip({ label, score, loading, delta, cached, stale }: ScoreChipProps) {
+export function ScoreChip({
+  label,
+  score,
+  loading,
+  delta,
+  cached,
+  stale,
+  criteria = [],
+  scores = [],
+}: ScoreChipProps) {
   const band = score !== null ? (score >= 8 ? 'green' : score >= 6 ? 'yellow' : 'red') : null;
   const badge = loading ? null : deltaBadge(delta);
+  const tooltip = buildScoreChipTooltip(label, score, loading, criteria, scores, cached, stale);
   return (
-    <span className={`va-score-chip${band ? ' ' + band : ''}`} data-testid="score-chip">
+    <span
+      className={`va-score-chip${band ? ' ' + band : ''}`}
+      data-testid="score-chip"
+      title={tooltip}
+    >
       <span className="va-score-chip-label">{label}</span>
       {loading ? (
         <span className="va-score-chip-loading">…</span>

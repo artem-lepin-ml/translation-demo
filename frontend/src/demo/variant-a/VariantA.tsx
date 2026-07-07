@@ -680,6 +680,8 @@ export default function VariantA() {
                             delta={chipDelta}
                             cached={es.cached}
                             stale={es.stale}
+                            criteria={criteria}
+                            scores={para.scores}
                           />
                           {showBestMarker && (
                             <span
