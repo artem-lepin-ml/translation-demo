@@ -34,9 +34,16 @@ mean 63 / p90 123 / max 392 — [отчёт](../../reports/python-pro-wiki-corpu
   (`{"source","hypothesis","reference"}` JSONL; wo_ref = `reference:""`; comet-вход кастомный `{"src","hyp","ref"}`)
   и выходов (`metricx/scores{,_wo_ref}.jsonl` с `prediction`; `comet/scores.json`). **Чекпоинты не названы нигде** — Д1.
   Прецедента reference-free COMET (CometKiwi) в его данных нет — для wiki строим сами.
-- **Скрипта корреляций нет** (VENDORED.md) — 12 ячеек Спирмена Данил считал вне гита; методология — только
-  заметка о judge-ансамбле пилота. Наш `scripts/judge_metric_stats.py` — новый код; валидируется
-  воспроизведением его скриншот-таблицы на вендоренных выходах (задача запущена).
+- **Скрипта корреляций нет** (VENDORED.md) — 12 ячеек Спирмена Данил считал вне гита. Наш
+  `scripts/judge_metric_stats.py` **написан и провалидирован** на его вендоренных выходах
+  ([отчёт](../../reports/python-pro-bouquet-spearman-validation.md), дамп `reports/bouquet/judge_metric_stats.json`):
+  23/24 ячейки скриншота воспроизведены точно (mean |residual| = 0.0000); его колонка «MetX» = **ref-based**
+  MetricX (не QE); выброс — Qwen Accuracy/Comet (−0.0690 у него vs −0.0069 у нас), почти наверняка описка
+  в десятичном знаке — уточнить у Данила вместе с Д1. Headline-средние тоже совпали. Новые числа для статьи:
+  sign-agreement Δjudge×Δmetric на не-ничьих парах — accuracy 60–63% (обе системы, ожидаемое направление,
+  tau_b −0.12…−0.17), fluency/style ≈ шум; средние дельты авто-метрик на refinement ≈ 0 (у TG даже слегка
+  хуже: MetricX +0.013…+0.036) при позитивных judge-дельтах (+0.14…+0.21) — ровно та точка, где wiki-масштаб
+  (×8 данных, n_nonzero_both сейчас всего 17–54) должен дать решающий ответ.
 - **`<think>`-защиты в коде нет** — полагается на reasoning-parser vLLM-сервера. Наш гард (§ 4) — новый
   предохранитель, у Данила его нет.
 - Наши `prompts/scoring/*` = его `v2` (байт-идентичны, кроме одного имени поля во fluency); `universal` —

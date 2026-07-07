@@ -1,0 +1,806 @@
+{
+  "eval_root": "/home/user/translation-demo/external/gse-translation/data/bouquet/evaluation",
+  "systems": {
+    "Qwen3.6-27B": "qwen-27b-bouquet",
+    "Qwen3.6-27B Refined": "qwen-27b-bouquet-refined",
+    "Translate Gemma": "translate-gemma-bouquet",
+    "Translate Gemma Refined": "translate-gemma-bouquet-refined"
+  },
+  "spearman": {
+    "Qwen3.6-27B": {
+      "accuracy": {
+        "metricx_ref": {
+          "rho": 0.0185,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": 0.0951,
+          "n": 198
+        },
+        "comet": {
+          "rho": -0.0069,
+          "n": 198
+        }
+      },
+      "fluency": {
+        "metricx_ref": {
+          "rho": -0.0798,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": -0.0677,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1064,
+          "n": 198
+        }
+      },
+      "style": {
+        "metricx_ref": {
+          "rho": -0.0614,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": 0.0684,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1721,
+          "n": 198
+        }
+      }
+    },
+    "Qwen3.6-27B Refined": {
+      "accuracy": {
+        "metricx_ref": {
+          "rho": -0.0036,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": 0.0579,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1331,
+          "n": 198
+        }
+      },
+      "fluency": {
+        "metricx_ref": {
+          "rho": -0.0686,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": 0.0253,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.0682,
+          "n": 198
+        }
+      },
+      "style": {
+        "metricx_ref": {
+          "rho": -0.0506,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": 0.0912,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1727,
+          "n": 198
+        }
+      }
+    },
+    "Translate Gemma": {
+      "accuracy": {
+        "metricx_ref": {
+          "rho": -0.1285,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": 0.0142,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1719,
+          "n": 198
+        }
+      },
+      "fluency": {
+        "metricx_ref": {
+          "rho": -0.1104,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": 0.0576,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1451,
+          "n": 198
+        }
+      },
+      "style": {
+        "metricx_ref": {
+          "rho": -0.3061,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": -0.0787,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.2851,
+          "n": 198
+        }
+      }
+    },
+    "Translate Gemma Refined": {
+      "accuracy": {
+        "metricx_ref": {
+          "rho": -0.1255,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": -0.0039,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1094,
+          "n": 198
+        }
+      },
+      "fluency": {
+        "metricx_ref": {
+          "rho": -0.0963,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": -0.0857,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1854,
+          "n": 198
+        }
+      },
+      "style": {
+        "metricx_ref": {
+          "rho": -0.0589,
+          "n": 198
+        },
+        "metricx_qe": {
+          "rho": -0.0332,
+          "n": 198
+        },
+        "comet": {
+          "rho": 0.1382,
+          "n": 198
+        }
+      }
+    }
+  },
+  "headline": {
+    "Qwen3.6-27B": {
+      "judge": {
+        "accuracy": {
+          "n": 198,
+          "distinct_values": 4,
+          "modal_value": 10.0,
+          "modal_share": 0.8586,
+          "share_9_10": 0.9899,
+          "mean": 9.8384
+        },
+        "fluency": {
+          "n": 198,
+          "distinct_values": 3,
+          "modal_value": 10.0,
+          "modal_share": 0.9343,
+          "share_9_10": 0.9899,
+          "mean": 9.9242
+        },
+        "style": {
+          "n": 198,
+          "distinct_values": 3,
+          "modal_value": 10.0,
+          "modal_share": 0.7172,
+          "share_9_10": 0.9899,
+          "mean": 9.7071
+        }
+      },
+      "metricx_ref_mean": 2.6957,
+      "metricx_qe_mean": 3.7891,
+      "comet_mean": 0.7235
+    },
+    "Qwen3.6-27B Refined": {
+      "judge": {
+        "accuracy": {
+          "n": 198,
+          "distinct_values": 3,
+          "modal_value": 10.0,
+          "modal_share": 0.9242,
+          "share_9_10": 0.9949,
+          "mean": 9.9091
+        },
+        "fluency": {
+          "n": 198,
+          "distinct_values": 3,
+          "modal_value": 10.0,
+          "modal_share": 0.9394,
+          "share_9_10": 0.9949,
+          "mean": 9.9293
+        },
+        "style": {
+          "n": 198,
+          "distinct_values": 3,
+          "modal_value": 10.0,
+          "modal_share": 0.7626,
+          "share_9_10": 0.9949,
+          "mean": 9.7576
+        }
+      },
+      "metricx_ref_mean": 2.6856,
+      "metricx_qe_mean": 3.768,
+      "comet_mean": 0.724
+    },
+    "Translate Gemma": {
+      "judge": {
+        "accuracy": {
+          "n": 198,
+          "distinct_values": 5,
+          "modal_value": 10.0,
+          "modal_share": 0.7828,
+          "share_9_10": 0.9596,
+          "mean": 9.702
+        },
+        "fluency": {
+          "n": 198,
+          "distinct_values": 5,
+          "modal_value": 10.0,
+          "modal_share": 0.7071,
+          "share_9_10": 0.9192,
+          "mean": 9.5758
+        },
+        "style": {
+          "n": 198,
+          "distinct_values": 5,
+          "modal_value": 10.0,
+          "modal_share": 0.5909,
+          "share_9_10": 0.9545,
+          "mean": 9.5253
+        }
+      },
+      "metricx_ref_mean": 2.4112,
+      "metricx_qe_mean": 3.5471,
+      "comet_mean": 0.736
+    },
+    "Translate Gemma Refined": {
+      "judge": {
+        "accuracy": {
+          "n": 198,
+          "distinct_values": 3,
+          "modal_value": 10.0,
+          "modal_share": 0.9293,
+          "share_9_10": 0.9899,
+          "mean": 9.9091
+        },
+        "fluency": {
+          "n": 198,
+          "distinct_values": 4,
+          "modal_value": 10.0,
+          "modal_share": 0.798,
+          "share_9_10": 0.9747,
+          "mean": 9.7626
+        },
+        "style": {
+          "n": 198,
+          "distinct_values": 4,
+          "modal_value": 10.0,
+          "modal_share": 0.6869,
+          "share_9_10": 0.9848,
+          "mean": 9.6667
+        }
+      },
+      "metricx_ref_mean": 2.4243,
+      "metricx_qe_mean": 3.5833,
+      "comet_mean": 0.7361
+    }
+  },
+  "refinement_deltas": [
+    {
+      "pair": "Qwen3.6-27B -> Qwen3.6-27B Refined",
+      "n": 198,
+      "mean_delta_judge": {
+        "accuracy": 0.0707,
+        "fluency": 0.0051,
+        "style": 0.0505
+      },
+      "mean_delta_metric": {
+        "metricx_ref": -0.0101,
+        "metricx_qe": -0.0211,
+        "comet": 0.0005
+      },
+      "sign_agreement": {
+        "accuracy": {
+          "metricx_ref": {
+            "agreement_rate": 0.6333,
+            "n_nonzero_both": 30,
+            "n_paired": 198
+          },
+          "metricx_qe": {
+            "agreement_rate": 0.6,
+            "n_nonzero_both": 30,
+            "n_paired": 198
+          },
+          "comet": {
+            "agreement_rate": 0.6333,
+            "n_nonzero_both": 30,
+            "n_paired": 198
+          }
+        },
+        "fluency": {
+          "metricx_ref": {
+            "agreement_rate": 0.1765,
+            "n_nonzero_both": 17,
+            "n_paired": 198
+          },
+          "metricx_qe": {
+            "agreement_rate": 0.2941,
+            "n_nonzero_both": 17,
+            "n_paired": 198
+          },
+          "comet": {
+            "agreement_rate": 0.3529,
+            "n_nonzero_both": 17,
+            "n_paired": 198
+          }
+        },
+        "style": {
+          "metricx_ref": {
+            "agreement_rate": 0.5,
+            "n_nonzero_both": 26,
+            "n_paired": 198
+          },
+          "metricx_qe": {
+            "agreement_rate": 0.4615,
+            "n_nonzero_both": 26,
+            "n_paired": 198
+          },
+          "comet": {
+            "agreement_rate": 0.4615,
+            "n_nonzero_both": 26,
+            "n_paired": 198
+          }
+        }
+      },
+      "kendall_tau_b": {
+        "accuracy": {
+          "metricx_ref": -0.1668,
+          "metricx_qe": -0.1235,
+          "comet": 0.1619
+        },
+        "fluency": {
+          "metricx_ref": 0.3023,
+          "metricx_qe": 0.1935,
+          "comet": -0.143
+        },
+        "style": {
+          "metricx_ref": 0.0139,
+          "metricx_qe": 0.0405,
+          "comet": -0.0559
+        }
+      }
+    },
+    {
+      "pair": "Translate Gemma -> Translate Gemma Refined",
+      "n": 198,
+      "mean_delta_judge": {
+        "accuracy": 0.2071,
+        "fluency": 0.1869,
+        "style": 0.1414
+      },
+      "mean_delta_metric": {
+        "metricx_ref": 0.013,
+        "metricx_qe": 0.0362,
+        "comet": 0.0001
+      },
+      "sign_agreement": {
+        "accuracy": {
+          "metricx_ref": {
+            "agreement_rate": 0.6222,
+            "n_nonzero_both": 45,
+            "n_paired": 198
+          },
+          "metricx_qe": {
+            "agreement_rate": 0.6222,
+            "n_nonzero_both": 45,
+            "n_paired": 198
+          },
+          "comet": {
+            "agreement_rate": 0.6,
+            "n_nonzero_both": 45,
+            "n_paired": 198
+          }
+        },
+        "fluency": {
+          "metricx_ref": {
+            "agreement_rate": 0.5185,
+            "n_nonzero_both": 54,
+            "n_paired": 198
+          },
+          "metricx_qe": {
+            "agreement_rate": 0.5,
+            "n_nonzero_both": 54,
+            "n_paired": 198
+          },
+          "comet": {
+            "agreement_rate": 0.5185,
+            "n_nonzero_both": 54,
+            "n_paired": 198
+          }
+        },
+        "style": {
+          "metricx_ref": {
+            "agreement_rate": 0.6154,
+            "n_nonzero_both": 52,
+            "n_paired": 198
+          },
+          "metricx_qe": {
+            "agreement_rate": 0.5769,
+            "n_nonzero_both": 52,
+            "n_paired": 198
+          },
+          "comet": {
+            "agreement_rate": 0.5577,
+            "n_nonzero_both": 52,
+            "n_paired": 198
+          }
+        }
+      },
+      "kendall_tau_b": {
+        "accuracy": {
+          "metricx_ref": -0.1472,
+          "metricx_qe": -0.1539,
+          "comet": 0.1334
+        },
+        "fluency": {
+          "metricx_ref": -0.0144,
+          "metricx_qe": -0.0065,
+          "comet": -0.0144
+        },
+        "style": {
+          "metricx_ref": -0.1246,
+          "metricx_qe": -0.0806,
+          "comet": 0.074
+        }
+      }
+    }
+  ],
+  "validation_vs_colleague_screenshot": {
+    "spearman_cells": [
+      {
+        "system": "Translate Gemma",
+        "criterion": "accuracy",
+        "target_metx": -0.1285,
+        "computed_metricx_ref": -0.1285,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": 0.0142,
+        "resid_metricx_qe": 0.1427,
+        "target_comet": 0.1719,
+        "computed_comet": 0.1719,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Translate Gemma",
+        "criterion": "fluency",
+        "target_metx": -0.1104,
+        "computed_metricx_ref": -0.1104,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": 0.0576,
+        "resid_metricx_qe": 0.168,
+        "target_comet": 0.1451,
+        "computed_comet": 0.1451,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Translate Gemma",
+        "criterion": "style",
+        "target_metx": -0.3061,
+        "computed_metricx_ref": -0.3061,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": -0.0787,
+        "resid_metricx_qe": 0.2274,
+        "target_comet": 0.2851,
+        "computed_comet": 0.2851,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "criterion": "accuracy",
+        "target_metx": -0.1255,
+        "computed_metricx_ref": -0.1255,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": -0.0039,
+        "resid_metricx_qe": 0.1216,
+        "target_comet": 0.1094,
+        "computed_comet": 0.1094,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "criterion": "fluency",
+        "target_metx": -0.0963,
+        "computed_metricx_ref": -0.0963,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": -0.0857,
+        "resid_metricx_qe": 0.0106,
+        "target_comet": 0.1854,
+        "computed_comet": 0.1854,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "criterion": "style",
+        "target_metx": -0.0589,
+        "computed_metricx_ref": -0.0589,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": -0.0332,
+        "resid_metricx_qe": 0.0257,
+        "target_comet": 0.1382,
+        "computed_comet": 0.1382,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "criterion": "accuracy",
+        "target_metx": 0.0185,
+        "computed_metricx_ref": 0.0185,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": 0.0951,
+        "resid_metricx_qe": 0.0766,
+        "target_comet": -0.069,
+        "computed_comet": -0.0069,
+        "resid_comet": 0.0621
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "criterion": "fluency",
+        "target_metx": -0.0798,
+        "computed_metricx_ref": -0.0798,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": -0.0677,
+        "resid_metricx_qe": 0.0121,
+        "target_comet": 0.1064,
+        "computed_comet": 0.1064,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "criterion": "style",
+        "target_metx": -0.0614,
+        "computed_metricx_ref": -0.0614,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": 0.0684,
+        "resid_metricx_qe": 0.1298,
+        "target_comet": 0.1721,
+        "computed_comet": 0.1721,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "criterion": "accuracy",
+        "target_metx": -0.0036,
+        "computed_metricx_ref": -0.0036,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": 0.0579,
+        "resid_metricx_qe": 0.0615,
+        "target_comet": 0.1331,
+        "computed_comet": 0.1331,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "criterion": "fluency",
+        "target_metx": -0.0686,
+        "computed_metricx_ref": -0.0686,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": 0.0253,
+        "resid_metricx_qe": 0.0939,
+        "target_comet": 0.0682,
+        "computed_comet": 0.0682,
+        "resid_comet": 0.0
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "criterion": "style",
+        "target_metx": -0.0506,
+        "computed_metricx_ref": -0.0506,
+        "resid_metricx_ref": 0.0,
+        "computed_metricx_qe": 0.0912,
+        "resid_metricx_qe": 0.1418,
+        "target_comet": 0.1727,
+        "computed_comet": 0.1727,
+        "resid_comet": 0.0
+      }
+    ],
+    "mean_abs_residual_by_metricx_variant": {
+      "metricx_ref": 0.0,
+      "metricx_qe": 0.101
+    },
+    "best_matching_metricx_variant": "metricx_ref",
+    "headline_cells": [
+      {
+        "system": "Translate Gemma",
+        "field": "accuracy",
+        "target": 9.7,
+        "computed": 9.702,
+        "resid": 0.002
+      },
+      {
+        "system": "Translate Gemma",
+        "field": "fluency",
+        "target": 9.58,
+        "computed": 9.5758,
+        "resid": -0.0042
+      },
+      {
+        "system": "Translate Gemma",
+        "field": "style",
+        "target": 9.53,
+        "computed": 9.5253,
+        "resid": -0.0047
+      },
+      {
+        "system": "Translate Gemma",
+        "field": "metricx_ref",
+        "target": 2.41,
+        "computed": 2.4112,
+        "resid": 0.0012
+      },
+      {
+        "system": "Translate Gemma",
+        "field": "metricx_qe",
+        "target": 3.55,
+        "computed": 3.5471,
+        "resid": -0.0029
+      },
+      {
+        "system": "Translate Gemma",
+        "field": "comet",
+        "target": 0.736,
+        "computed": 0.736,
+        "resid": 0.0
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "field": "accuracy",
+        "target": 9.91,
+        "computed": 9.9091,
+        "resid": -0.0009
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "field": "fluency",
+        "target": 9.76,
+        "computed": 9.7626,
+        "resid": 0.0026
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "field": "style",
+        "target": 9.67,
+        "computed": 9.6667,
+        "resid": -0.0033
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "field": "metricx_ref",
+        "target": 2.42,
+        "computed": 2.4243,
+        "resid": 0.0043
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "field": "metricx_qe",
+        "target": 3.58,
+        "computed": 3.5833,
+        "resid": 0.0033
+      },
+      {
+        "system": "Translate Gemma Refined",
+        "field": "comet",
+        "target": 0.7361,
+        "computed": 0.7361,
+        "resid": 0.0
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "field": "accuracy",
+        "target": 9.84,
+        "computed": 9.8384,
+        "resid": -0.0016
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "field": "fluency",
+        "target": 9.92,
+        "computed": 9.9242,
+        "resid": 0.0042
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "field": "style",
+        "target": 9.7,
+        "computed": 9.7071,
+        "resid": 0.0071
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "field": "metricx_ref",
+        "target": 2.696,
+        "computed": 2.6957,
+        "resid": -0.0003
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "field": "metricx_qe",
+        "target": 3.79,
+        "computed": 3.7891,
+        "resid": -0.0009
+      },
+      {
+        "system": "Qwen3.6-27B",
+        "field": "comet",
+        "target": 0.7235,
+        "computed": 0.7235,
+        "resid": 0.0
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "field": "accuracy",
+        "target": 9.91,
+        "computed": 9.9091,
+        "resid": -0.0009
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "field": "fluency",
+        "target": 9.93,
+        "computed": 9.9293,
+        "resid": -0.0007
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "field": "style",
+        "target": 9.76,
+        "computed": 9.7576,
+        "resid": -0.0024
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "field": "metricx_ref",
+        "target": 2.686,
+        "computed": 2.6856,
+        "resid": -0.0004
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "field": "metricx_qe",
+        "target": 3.77,
+        "computed": 3.768,
+        "resid": -0.002
+      },
+      {
+        "system": "Qwen3.6-27B Refined",
+        "field": "comet",
+        "target": 0.724,
+        "computed": 0.724,
+        "resid": 0.0
+      }
+    ]
+  }
+}
