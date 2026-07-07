@@ -44,7 +44,7 @@ This is the seeded document (`origin='seed'`), always present and never deletabl
 
 Data is whatever the tester types or drags into the modal at run time (no fixed fixture — the
 feature's whole point is arbitrary user input). Use a short synthetic DE→FR pair for live-scoring
-states (10–12) to keep cost near zero. Full design: [contracts spec §5](../superpowers/specs/2026-07-02-custom-pair-upload-design.md).
+states (10–12) to keep cost near zero. Full design: [upload-design spec §5](../superpowers/specs/2026-07-02-custom-pair-upload-design.md).
 States, 1:1 with the spec's e2e checklist (§5.8) — each is at least one screenshot with provenance:
 
 1. Top bar: open `doc-dropdown` — seed + upload docs listed, language-pair badges, delete icon only on `origin='upload'`.

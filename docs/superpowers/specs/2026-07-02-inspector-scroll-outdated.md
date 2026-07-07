@@ -1,5 +1,7 @@
 # Спека: попап правок — позиционирование, живой список, исчезновение перекрытых (волна 3, задача 2) — rev-2
 
+*Filename note (2026-07-07 doc-audit): "outdated" in the filename refers to the `Issue.status='outdated'` feature this spec introduces (overlapped siblings flip to `outdated`), not to the spec's own currency — this spec is active and implemented; see [webapp.md](../../subsystems/webapp.md) "Issue lifecycle" for the as-built behavior.*
+
 Дата: 2026-07-02. Ветка: `feat/inspector-fixes`. Статус: **rev-2 после /verify-spec (3 аспекта: 2 CRITICAL, 2 HIGH закрыты)**.
 
 **Done when:** Accept/Dismiss достижимы при любом числе карточек и высоте экрана; после принятия правки попап живёт дальше, а перекрытые правки исчезают из него и инспектора немедленно и целиком.

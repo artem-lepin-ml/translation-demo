@@ -19,7 +19,7 @@ Up-link: [архитектура](2026-06-30-demo-architecture-design.md) · д�
 // ───────── общие ─────────
 type Verdict = 'green' | 'yellow' | 'red';
 type CriterionId = string;          // произвольный, задаётся пользователем; PK критерия, неизменяем
-type IssueStatus = 'open' | 'accepted' | 'dismissed';
+type IssueStatus = 'open' | 'accepted' | 'dismissed' | 'outdated';  // rev-5: 'outdated' — сосед, перекрытый чужим apply-edit (§3, webapp.md "Issue lifecycle"). Backend-only 'superseded'/'archived' НЕ входят сюда: _para_issues их всегда отфильтровывает, на wire они не попадают (webapp.md prediction-preservation invariant)
 type Severity = 'minor' | 'major';
 
 interface WikidataRef {
@@ -97,15 +97,21 @@ interface Paragraph {
   scoresBaseline: Score[] | null; // самая первая (seed) на критерий → дельта «к оригиналу»
   aggregate: number | null;     // взвешенная сумма по enabled-критериям, ЗАМОРОЖЕНА на момент оценки
   aggregateBaseline: number | null; // взвешенная сумма на baseline
-  issues: Issue[];              // только status='open' + те, что accepted/dismissed (для истории)
+  issues: Issue[];              // status='open' + accepted/dismissed/outdated (для истории; rev-5 добавил outdated) — superseded/archived никогда не доходят до wire, см. _para_issues
   terms: Term[];
+  best: { aggregate: number; revisionId: number; createdAt: string; isCurrent: boolean } | null;  // rev-5 (score-history-best): argmax(aggregate) среди kind IN ('seed','live') с non-null revision_id; null пока нет ни одной оценённой ревизии
 }
 
-interface DocumentSummary { id: number; title: string; sourceLang: string; targetLang: string; nParagraphs: number; }
+interface DocumentSummary {
+  id: number; title: string; sourceLang: string; targetLang: string; nParagraphs: number;
+  origin: 'seed' | 'upload';    // предшествует rev-5, но не был занесён сюда раньше (app.py сериализует с самого начала) — backfilled по итогам doc-audit 2026-07-07
+}
 interface Document extends DocumentSummary {
   sourceModel: string;
   aggregate: number | null;     // среднее paragraph.aggregate (на лету, из замороженных)
   paragraphs: Paragraph[];
+  precompute: { status: 'running' | 'done' | 'stopped' | 'skipped'; done: number; planned: number; succeeded: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-4 (custom-pair-upload); присутствует для origin='upload', null для origin='seed'
+  translation: { status: 'running' | 'done' | 'failed'; done: number; total: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-5 (translator): присутствует, когда присутствует precompute (т.е. origin='upload'); зеркалит форму precompute
 }
 
 // ───────── реестр моделей (роудмапа п.4) ─────────
@@ -364,10 +370,10 @@ GET  /api/health -> {service, status, limits: {maxParagraphs, maxParaChars}}
 `POST /api/documents` body gains an optional `translate: boolean` (default `false`):
 - `translate:true` ⇒ every `paragraphs[].target` MUST be empty (`""`) — a non-empty target on ANY paragraph → `422 {detail:'mixed_targets'}`. Server FORCES `precompute:false` regardless of the body's `precompute` value (translating into empty targets must never trigger a paid judge pass over garbage).
 - `translate:true` documents get `target=seed_target=''` at creation; the first `target_revision` (`origin='upload'`) is written once translate.py actually fills a paragraph in (`origin='translate'`), not at creation time.
-- Document DTO gains a `translation` block (present whenever `precompute` is, i.e. `origin==='upload'`): `{status:'running'|'done'|'failed', done, total, errorReason?}`, mirroring `precompute`'s shape.
-- **Pre-existing gap surfaced by this delta:** `document.origin: 'seed'|'upload'` (used above and by `DELETE`/`/reset`/`/translate`'s 403/409 gates) predates rev-5 but was never added to the §1 `DocumentSummary`/`Document` interfaces or the §4 `document` DDL — `app.py` has always serialized it (`"origin": d["origin"]`) and [webapp.md](../../subsystems/webapp.md) documents the column, but this SSOT doc does not. Flagged, not backfilled here (out of the rev-5 delta's own scope — the field itself shipped with the original demo, not this wave).
+- Document DTO gains a `translation` block (present whenever `precompute` is, i.e. `origin==='upload'`): `{status:'running'|'done'|'failed', done, total, errorReason?}`, mirroring `precompute`'s shape. (`precompute` itself predates rev-5 — rev-4 custom-pair-upload — and, like `origin` below, was never added to §1's `Document` interface until the 2026-07-07 doc-audit backfill.)
+- **Pre-existing gap surfaced by this delta — RESOLVED 2026-07-07 doc-audit.** `document.origin: 'seed'|'upload'` (used above and by `DELETE`/`/reset`/`/translate`'s 403/409 gates) predates rev-5 but was never added to the §1 `DocumentSummary`/`Document` interfaces or the §4 `document` DDL — `app.py` has always serialized it (`"origin": d["origin"]`) and [webapp.md](../../subsystems/webapp.md) documents the column, but this SSOT doc did not. Was flagged here without backfilling (out of the rev-5 delta's own scope); the 2026-07-07 doc-audit closed the gap by adding `origin` to §1 `DocumentSummary` directly, with a comment noting it predates rev-5. Same audit also backfilled §1 with `Paragraph.best`, `Document.precompute`/`translation`, and `IssueStatus`'s `'outdated'` member (all documented by name below/above but previously absent from the §1 interfaces themselves) — chosen treatment: **backfill §1 with an inline rev-tag comment per field**, consistent with how `Term.traceJson` was already handled (§7.2 note below), rather than leaving every non-rev-2 field as §7-prose-only.
 
-`GET /api/documents/{id}` paragraph DTO gains `best: {aggregate, revisionId, createdAt, isCurrent} | null` — the highest-`aggregate` scored revision (`kind IN ('seed','live')` only, `kind='cache'` excluded, tie-break newest); `null` if the paragraph has no scored revision yet.
+`GET /api/documents/{id}` paragraph DTO gains `best: {aggregate, revisionId, createdAt, isCurrent} | null` — the highest-`aggregate` scored revision (`kind IN ('seed','live')` only, `kind='cache'` excluded, tie-break newest); `null` if the paragraph has no scored revision yet. (Backfilled into the §1 `Paragraph` interface — see above.)
 
 `precompute`/`translation` status blocks gain an optional `errorReason: 'no_api_key'|'budget_exhausted'|'all_failed'` — set when `done && succeeded===0` (precompute) or the run terminates with zero translated paragraphs (translate), so the frontend can show *why* instead of a bare unexplained banner.
 
