@@ -1,4 +1,4 @@
-.PHONY: install fmt test parse pipeline judge serve
+.PHONY: install fmt test parse reseed serve
 
 install:
 	uv sync --extra dev
@@ -13,11 +13,11 @@ test:
 parse:
 	uv run python scripts/01_parse_pdf.py $(FILE)
 
-pipeline:
-	uv run python scripts/02_run_pipeline.py
-
-judge:
-	uv run python scripts/03_run_judge.py
+# Canonical demo reseed: fresh demo.db from seed_paragraphs.jsonl, then the real
+# disambiguated Term[] (terminology_out.json) loaded over the mock rotation.
+reseed:
+	uv run python -m palimpsest.webapp.seed
+	uv run python scripts/load_terms.py
 
 serve:
-	uv run python scripts/04_serve_webapp.py
+	uv run uvicorn palimpsest.webapp.app:app --port 8000 --workers 1
