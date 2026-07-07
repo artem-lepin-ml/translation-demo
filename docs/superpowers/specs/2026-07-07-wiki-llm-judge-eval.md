@@ -86,8 +86,13 @@ mean 63 / p90 123 / max 392 — [отчёт](../../reports/python-pro-wiki-corpu
 
 Оцениваемые системы — 4: `translate_gemma-27b` (репак Infomaniak, как у Данила), **`Qwen/Qwen3-4B-Instruct-2507`**
 (решение В5: не-thinking, стабильный vLLM; в реестр Данила добавляется новой записью), `qwen3_6-27b`,
-`deepseek/deepseek-v4-flash` (CloseRouter, пин маршрута; для него в `models.yaml` — запись с base_url CloseRouter).
-Сэмплинг переводов = как у Данила (temp 0.7 у локальных; deepseek T=0.3, проба подтверждает reasoning_tokens==0).
+`deepseek/deepseek-v4-flash` (CloseRouter; для него в `models.yaml` — запись с base_url CloseRouter).
+Сэмплинг переводов = как у Данила (temp 0.7 у локальных; deepseek T=0.3). **Смоук 2026-07-07 выполнен**
+([отчёт](../../reports/2026-07-07-deepseek-closerouter-smoke.md), 10/10 переводов + 9/9 judge-парсов кодом
+Данила, $0.0052): deepseek по умолчанию reasoning-ит на provider-9 (пустой контент при тесном max_tokens) —
+обязательный `extra_body: {reasoning: {enabled: false}}` для всех ролей; для judge-роли (JSON-режим) пин
+provider-9 несовместим с `response_format=json_object` (400) — J′ ходит маршрутом `auto`; перевод — с пином.
+Готовые yaml-дельты — в отчёте смоука; оба капкана записаны в [known_issues](../../known_issues.md).
 
 **Судья.** Три роли конфига:
 1. **Пилот (механика)** — вербатим Данила: `qwen3_6-27b`, temp 0.7, top_k 20, `enable_thinking: True`, universal.
@@ -113,13 +118,14 @@ per-model — как в v2 (TG recipe 0.14.1+ / Qwen ≥0.19; смоук все�
 Наш репо добавляет только: экспорт корпуса, sidecar, статистику/корреляции, отчёт, QE-раннеры. Гарды v2
 (think-guard, бюджет, chunking-гард QE) переносятся **чек-листами и обвязом**, не портом кода.
 
-### Ф-1 — из облака (сегодня, $≈0)
-1. `scripts/export_wiki_corpus.py`: `gt_v2.jsonl`+HTML-кэш → `wiki_original.json` + `wiki_index.json`;
-   схема-валидация против `bouquet_original.json`; отбор пилотных страт.
-2. `scripts/judge_metric_stats.py` (наш новый код) — валидация на вендоренных BOUQUET-выходах:
-   воспроизвести 12 ячеек скриншота (заодно выяснится, какой MetricX-вариант в его «MetX»-колонке), tie-rates,
-   paired-дельты. **Запущено.**
-3. Смоук deepseek через CloseRouter на 10 абзацах (его клиент, наш ключ): 2xx, reasoning_tokens==0, цена/абзац.
+### Ф-1 — из облака — **ВЫПОЛНЕНО 2026-07-07, все три пункта**
+1. ✅ `scripts/export_wiki_corpus.py` → `wiki_original.json` (2 553) + `wiki_index.json` + `pilot_articles.json`
+   (10 статей / 274 абзаца); схема = bouquet_original, вывод детерминирован.
+2. ✅ `scripts/judge_metric_stats.py` провалидирован на вендоренных BOUQUET-выходах: 23/24 ячейки скриншота
+   точно; «MetX» = ref-based; sign-agreement accuracy 60–63% (§ 0).
+3. ✅ Смоук deepseek через CloseRouter кодом Данила: 10/10 переводов, 9/9 judge-парсов, $0.0052; два капкана
+   найдены и закрыты конфигом (§ 3, known_issues). Watchpoint: его клиент не ставит User-Agent — 403 от WAF
+   в этой сессии не было, но патч-заготовка (default_headers) держится наготове для sr004.
 
 ### Ф0 — probe на sr004 (день 1, до платного объёма) — как в v2, плюс:
 паритет-смоук: 3 абзаца BOUQUET через наш поднятый стек → скоры совпадают по формату с вендоренными.
