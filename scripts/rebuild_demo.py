@@ -4,9 +4,12 @@
 Grounding: G6 (label_first) via ``pipeline.run`` — deterministic exact-label
 match first, LLM judge escalation only on genuine ambiguity (per-decision
 trace written to ``term.trace``, see spec 2026-07-03-grounding-label-first-design.md
-§3). The judge is a live OpenAI client (gpt-4o-mini, temperature=0) when
-``OPENAI_API_KEY`` is available; otherwise ``judge=None`` and every escalation
-degrades honestly to yellow/judge_unavailable (no silent top-1 fallback).
+§3). The judge is the live CloseRouter gateway (``google/gemini-3.1-flash-lite``
+@ ``provider-9``, temperature=0 — same provider selection as
+``scripts/eval_grounding.py``/``scripts/wiki_eval.py``) when
+``OPENROUTER_API_KEY`` is available; otherwise ``judge=None`` and every
+escalation degrades honestly to yellow/judge_unavailable (no silent top-1
+fallback).
 
 Pairing: P1 (link_locate, deterministic) as the baseline, with the curated P3
 (llm_judge) verdicts overlaid on the hard cases from
@@ -17,6 +20,7 @@ full P3 with a P1→P3 escalation (see docs/stages/terminology.md).
 
 Output: data/seed/terminology_out.json  (loaded into demo.db by load_terms.py).
 """
+
 from __future__ import annotations
 
 import json
@@ -38,64 +42,121 @@ MENTIONS = ROOT / "data/seed/terminology_terms.jsonl"
 PAIR_P3 = ROOT / "reports/terminology/judgments_pairing.json"
 OUT = ROOT / "data/seed/terminology_out.json"
 CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
-# .env lives in the main repo checkout, not per-worktree (this worktree has none).
-ENV_FILE = Path("/Users/a1111/Projects/Work/gse-translation/.env")
+# .env is not committed and not per-worktree; try the worktree root, the main
+# translation-demo checkout, then the legacy sibling — first existing file wins.
+ENV_CANDIDATES = (
+    ROOT / ".env",
+    Path("/Users/a1111/Projects/Work/translation-demo/.env"),
+    Path("/Users/a1111/Projects/Work/gse-translation/.env"),
+)
 
-GROUNDING_MODEL = "gpt-4o-mini"
-OPENAI_BASE_URL = "https://api.openai.com/v1"
+JUDGE_MAX_TOKENS = 512
+JUDGE_SYSTEM = "You are a Wikidata disambiguation judge. Return strict JSON only."
+MAX_JUDGE_CALLS = 400  # hard safety cap on live calls for one rebuild
 
 
-def _load_dotenv(path: Path = ENV_FILE) -> None:
-    """Manual .env parser -> os.environ. Never prints/logs the value."""
-    if not path.exists():
-        return
-    for line in path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
+def _load_dotenv(paths: tuple[Path, ...] = ENV_CANDIDATES) -> None:
+    """Manual .env parser -> os.environ. Never prints/logs the value.
+
+    Loads the first existing candidate file (worktrees carry no .env of their
+    own); already-set env vars are never overwritten.
+    """
+    for path in paths:
+        if not path.exists():
             continue
-        key, _, value = line.partition("=")
-        key, value = key.strip(), value.strip()
-        if key and key not in os.environ:
-            os.environ[key] = value
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key, value = key.strip(), value.strip()
+            if key and key not in os.environ:
+                os.environ[key] = value
+        return
 
 
 def _build_judge():
-    """Live OpenAI-direct judge (gpt-4o-mini) for grounding escalation.
+    """Live grounding judge for LLM disambiguation escalation.
 
-    Repo's default closerouter/OPENROUTER_API_KEY is dead for this purpose
-    (see task briefing) — this hits OpenAI directly with OPENAI_API_KEY.
-    Returns (judge_callable, path_used) — judge_callable is None on any
-    setup failure so the caller can degrade to judge_unavailable honestly.
+    Same provider selection as the eval harness (scripts/eval_grounding.py /
+    scripts/wiki_eval.py): the CloseRouter gateway running
+    ``google/gemini-3.1-flash-lite`` @ ``provider-9`` on the repo's live
+    ``OPENROUTER_API_KEY`` — model/provider/base-url are env-overridable
+    (``CLOSEROUTER_MODEL`` / ``CLOSEROUTER_PROVIDER`` / ``OPENROUTER_BASE_URL``).
+    Returns ``(judge_callable, path_used, stats)`` — ``judge_callable`` is
+    ``None`` on any setup failure so the caller degrades to
+    ``judge_unavailable`` honestly (no silent top-1 fallback). ``stats`` is a
+    live-updated dict of call count + token/cost totals for the run report.
     """
     _load_dotenv()
-    api_key = os.environ.get("OPENAI_API_KEY")
+    api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
-        return None, "no OPENAI_API_KEY — judge=None (fallback)"
+        return None, "no OPENROUTER_API_KEY — judge=None (fallback)", None
+
+    model = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
+    provider = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
+    base_url = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
 
     # Lazy import: keep this module importable without `openai` installed
     # when the judge path isn't exercised (mirrors term_pipeline.py's pattern).
     from palimpsest.llm.client import LLMClient, LLMConfig
 
-    client = LLMClient(LLMConfig(
-        model=GROUNDING_MODEL, base_url=OPENAI_BASE_URL, api_key=api_key,
-        temperature=0, max_tokens=512,
-    ))
+    client = LLMClient(
+        LLMConfig(
+            model=model,
+            base_url=base_url,
+            api_key=api_key,
+            temperature=0,
+            max_tokens=JUDGE_MAX_TOKENS,
+            extra_body={"provider": provider},
+        )
+    )
+
+    stats = {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "reasoning_tokens": 0,
+        "cost_usd": 0.0,
+    }
 
     def judge(prompt: str) -> dict:
-        res = client.complete(system="", user=prompt)
-        return json.loads(res.content)
+        if stats["calls"] >= MAX_JUDGE_CALLS:
+            raise RuntimeError(f"MAX_JUDGE_CALLS={MAX_JUDGE_CALLS} reached")
+        res = client.complete_retrying(system=JUDGE_SYSTEM, user=prompt)
+        stats["calls"] += 1
+        u = res.usage
+        stats["prompt_tokens"] += u.prompt_tokens
+        stats["completion_tokens"] += u.completion_tokens
+        stats["reasoning_tokens"] += u.reasoning_tokens
+        cost = u.cost_usd if u.cost_usd is not None else 0.0
+        stats["cost_usd"] += cost
 
-    return judge, f"live OpenAI judge ({GROUNDING_MODEL})"
+        text = res.content.strip()
+        if text.startswith("```"):  # gemini occasionally fences its JSON
+            text = text.strip("`")
+            if text.startswith("json"):
+                text = text[4:]
+        parsed = json.loads(text)
+        parsed["_usage"] = {
+            "prompt_tokens": u.prompt_tokens,
+            "completion_tokens": u.completion_tokens,
+            "reasoning_tokens": u.reasoning_tokens,
+        }
+        parsed["_cost_usd"] = cost
+        return parsed
+
+    return judge, f"live CloseRouter judge ({model} @ {provider})", stats
 
 
 def main() -> int:
-    rows = {json.loads(l)["id"]: json.loads(l) for l in SEED.open(encoding="utf-8")}
+    rows = {json.loads(line)["id"]: json.loads(line) for line in SEED.open(encoding="utf-8")}
     by_para = load_mentions(MENTIONS)
     p3 = json.loads(PAIR_P3.read_text(encoding="utf-8")) if PAIR_P3.exists() else {}
     wd = WikidataClient(cache_path=CACHE)
     grounder, pairer = LabelFirstGrounding(wd), LinkLocatePairing(wd)
 
-    judge, judge_path = _build_judge()
+    judge, judge_path, judge_stats = _build_judge()
     print(f"grounding judge: {judge_path}")
     judge_cache: dict = {}  # one sense per discourse, shared across the whole demo doc
 
@@ -107,9 +168,14 @@ def main() -> int:
         row = rows[pid]
         target = row.get("translated", "")
         terms = pipeline.run(
-            row["source"], target, mentions,
-            grounder=grounder, pairer=pairer,
-            judge=judge, scope_id=pid, judge_cache=judge_cache,
+            row["source"],
+            target,
+            mentions,
+            grounder=grounder,
+            pairer=pairer,
+            judge=judge,
+            scope_id=pid,
+            judge_cache=judge_cache,
         )
         term_dicts = []
         for t in terms:
@@ -129,21 +195,37 @@ def main() -> int:
 
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     total = sum(counts.values())
-    print(f"rebuilt {total} terms (G6 label_first grounding + P1/P3 pairing) → {OUT.relative_to(ROOT)}")
+    rel_out = OUT.relative_to(ROOT)
+    print(f"rebuilt {total} terms (G6 label_first grounding + P1/P3 pairing) -> {rel_out}")
     print(f"  difficulty:   {counts}")
     print(f"  resolved_by:  {resolved_by_counts}")
     print(f"  pairAccuracy: {pair_counts}  (P3 overlaid on {p3_overlaid} occurrences)")
     print(f"  live wikidata api calls this run: {wd.n_calls}")
+    if judge_stats is not None:
+        print(
+            f"  live judge calls: {judge_stats['calls']}  "
+            f"(prompt {judge_stats['prompt_tokens']} + completion "
+            f"{judge_stats['completion_tokens']} + reasoning "
+            f"{judge_stats['reasoning_tokens']} tokens, "
+            f"${judge_stats['cost_usd']:.4f})"
+        )
     return 0
 
 
 def _term(t, ts, pa, rec) -> dict:
     return {
-        "sourceSurface": t.source_surface, "sourceLemma": t.source_lemma, "context": t.context,
-        "charStart": t.char_start, "charEnd": t.char_end, "difficulty": t.difficulty,
+        "sourceSurface": t.source_surface,
+        "sourceLemma": t.source_lemma,
+        "context": t.context,
+        "charStart": t.char_start,
+        "charEnd": t.char_end,
+        "difficulty": t.difficulty,
         "grounded": t.grounded.as_dict() if t.grounded else None,
         "candidates": [c.as_dict() for c in t.candidates],
-        "targetSurface": ts, "pairAccuracy": pa, "recommended": rec, "note": t.note,
+        "targetSurface": ts,
+        "pairAccuracy": pa,
+        "recommended": rec,
+        "note": t.note,
         "trace": t.trace,
     }
 
