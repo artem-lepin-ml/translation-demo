@@ -1,0 +1,12 @@
+# Тут вроде логично
+
+# Factcheck stage — atomic-fact extraction (RU + EN) + two-sided LLM-judge overlap.
+# Models referenced here must exist in configs/models.yaml.
+# Endpoints are OpenAI-compatible; plug in vLLM / cloud APIs externally — no
+# provider-specific logic lives in the codebase.
+
+extractor_model: qwen3-4b-thinking              # <-- fill with a model key from models.yaml
+judge_model:     qwen3-4b-thinking              # <-- fill with a model key from models.yaml
+extraction_temperature: 0.0
+judge_temperature: 0.0
+few_shot_k: 3

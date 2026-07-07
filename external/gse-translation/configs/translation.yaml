@@ -1,0 +1,11 @@
+# Translate stage — RU to EN text translation
+# Models referenced here must exist in configs/models.yaml.
+# Endpoints are OpenAI-compatible; plug in vLLM / cloud APIs externally — no
+# provider-specific logic lives in the codebase.
+#
+# system_prompt and user_prompt are paths relative to prompts/ (e.g.
+# "02_draft/system.md" or "02_translate/gemma_translate.md").
+
+translator_model: gpt-5.5-medium
+system_prompt: 02_draft/system.md
+user_prompt:   02_draft/user.md

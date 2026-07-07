@@ -1,0 +1,16 @@
+# P1 — RQ2 top-vs-baseline: large frontier top (-high) vs Danil OSS baseline.
+# Most critical bucket. Answers "is opus/gemini-pro/gpt-5.5 worth it over qwen-edited?".
+# Also covers RQ1 par_by_par anchor for the three large frontier families.
+# Judge profile: single (gpt-5.5-low). Other judges plug back in later via D5.
+base_dir: data/pilot
+prompts_variant: v1
+max_concurrency: 32
+judges:
+  - model: gpt-5.5-low
+runs:
+  - large/claude-opus-4.7-high_par_by_par
+  - large/gemini-3.1-pro-high_par_by_par
+  - large/gpt-5.5-high_par_by_par
+  - local/qwen_edited_par_by_par
+  - local/qwen_par_by_par
+  - local/gemma_par_by_par

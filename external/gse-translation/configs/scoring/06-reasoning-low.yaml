@@ -1,0 +1,17 @@
+# P6 — RQ2 -low reasoning side-question.
+# Lowest priority: only needed for "does reasoning effort help?" sub-analysis.
+# If budget is tight, this bucket can be skipped without breaking main RQ answers.
+# Judge profile: single (gpt-5.5-low). Other judges plug back in later via D5.
+base_dir: data/pilot
+prompts_variant: v1
+max_concurrency: 32
+judges:
+  - model: gpt-5.5-low
+runs:
+  - large/claude-opus-4.7-low_par_by_par
+  - large/gemini-3.1-pro-low_par_by_par
+  - large/gpt-5.5-low_par_by_par
+  - large/claude-sonnet-4.6-low_par_by_par
+  - large/gpt-5.4-low_par_by_par
+  - small/gpt-5.4-mini-low_par_by_par
+  - small/gemini-3.1-flash-lite-preview-low_par_by_par

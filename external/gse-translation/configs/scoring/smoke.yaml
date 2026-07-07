@@ -1,0 +1,12 @@
+# Smoke test: real CloseRouter calls on N paragraphs of local/qwen_par_by_par.
+# Output: tests/.scoring_smoke/evaluation/ (gitignored, off the real pilot tree).
+# Re-runnable: load_existing_ids skips paragraphs already on disk.
+# Run: bash scripts/03_scoring_smoke.sh
+base_dir: tests/.scoring_smoke
+evaluation_subdir: evaluation
+prompts_variant: v1
+max_concurrency: 4
+judges:
+  - model: gpt-5.5-low
+runs:
+  - local/qwen_par_by_par

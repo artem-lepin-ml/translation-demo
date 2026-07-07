@@ -1,0 +1,17 @@
+# Small-low profile: 3 small judges in -low effort, v1 variant prompts.
+base_dir: data/pilot
+prompts_variant: v1
+max_concurrency: 32
+judges:
+  # `-low` effort variants for Claude/Gemini dropped from models.yaml — proxy
+  # ignores `reasoning.effort` for these providers (no-op). Canonical entries
+  # used here; `gemini-3.1-flash-lite` (without `-preview`) is 404 on
+  # CloseRouter, so `gemini-3.1-flash-lite-preview` is the only working variant.
+  - model: claude-sonnet-4.6
+  - model: gemini-3.1-flash-lite-preview
+  - model: gpt-5.4-mini-low
+runs:
+  - small/claude-haiku-4.5_par_by_par
+  - small/gemini-3.1-flash-lite-low_par_by_par
+  - small/gpt-5.4-mini-low_par_by_par
+  - small/qwen3.6-flash_par_by_par

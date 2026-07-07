@@ -1,0 +1,3 @@
+editor_model: qwen3_6-27b
+system_prompt: 04_refinement/system.md
+refinement_criterias: ['accuracy', 'fluency', 'style']

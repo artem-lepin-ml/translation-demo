@@ -1,0 +1,11 @@
+# Focused scoring pass: gpt-5.5-low, v2 prompts (5 criteria; same axes as v1
+# but reworded), same two pilot translations as the v1 pilot run.
+# Factcheck off (default).
+base_dir: data/pilot
+prompts_variant: v2
+max_concurrency: 32
+judges:
+  - model: gpt-5.5-low
+runs:
+  - local/qwen_edited_par_by_par
+  - large/claude-opus-4.7_par_by_par
