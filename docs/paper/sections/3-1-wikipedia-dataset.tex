@@ -1,30 +1,57 @@
-\textit{Wikipedia} is our corpus of Russian Wikipedia articles on ancient
-history. It comprises 100 articles drawn from ten fixed thematic sections:
-Sumer and Mesopotamia, Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia,
-Achaemenid Iran, Ancient India, Ancient China, Ancient Greece, and Ancient
-Rome. Each section is defined by a root category in the Russian Wikipedia
-category graph, and its candidate pool consists of all article pages in the
-corresponding category subtree. A candidate article is accepted if its body
-paragraphs contain at least 30 unique links to other articles, which serves as
-a proxy for substantive encyclopedic content, and if the earliest date recorded
-for it in Wikidata precedes 500~CE.\footnote{We consider the Wikidata
-properties inception (P571), start time (P580), point in time (P585), date of
-birth (P569), and publication date (P577). Articles with no recorded date are
-retained.} Articles typed in Wikidata as films, paintings, or museums are
-excluded. Candidates within each section are shuffled with a fixed random
-seed, and the first ten articles that satisfy these criteria are selected,
-which makes the corpus construction deterministic and reproducible. Since the
-Wikipedia category structure is noisy, a small number of retained undated
-articles fall outside the target period. We keep them to avoid manual
-curation. The article HTML was collected in July 2026. We remove navigation
-elements, infoboxes, tables, and reference markup, and extract body
-paragraphs. After removal of empty segments, the corpus contains 2553
-paragraphs and 160836 words of Russian source text, with an average paragraph
-length of 63 words. The same articles are also used in the terminology
-recognition and grounding evaluation (Section~\ref{sec:results-terminology}).
-Corpus statistics are summarized in Table~\ref{tab:data-statistics}.
+% Section 3.1, Wikipedia dataset. Two variants for supervisor choice (owner review 2026-07-08); appendix details at the bottom.
+% ===== VARIANT 1 (main, conservative) =====
+\textit{Wikipedia} is a corpus of 100 encyclopedic articles on ancient history
+that we assemble for terminology-oriented evaluation. The articles are drawn
+from the Russian edition across ten thematic sections (Sumer and Mesopotamia,
+Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia, Achaemenid Iran,
+Ancient India, Ancient China, Ancient Greece, and Ancient Rome), ten per
+section. Within each section, candidates from the corresponding category
+subtree are shuffled with a fixed seed and admitted through a deterministic
+gate, which requires at least 30 unique in-text links and an earliest
+associated Wikidata date before 500~CE, so the selection is reproducible and
+involves no manual curation. We use this corpus primarily to evaluate
+terminology extraction and Wikidata grounding. The hyperlinks that editors
+place in article bodies act as human annotation: each link target resolves
+deterministically to a Wikidata item, so every in-text link yields a gold
+mention grounded to a QID at no additional labeling cost. This annotation is
+precise but incomplete, since editorial convention is to link an entity only
+at its first mention~\citep{damuel2023}, and our evaluation protocol accounts
+for this (Section~\ref{sec:eval-metrics}). The same articles also serve as
+source texts for the reference-free evaluation of translation and refinement
+quality. After markup removal and paragraph segmentation, the corpus contains
+2553 paragraphs and 160836 words, with an average paragraph length of 63 words
+(Table~\ref{tab:data-statistics}).
 
-% Table 1 (Evaluation Data Statistics), Wikipedia column values:
-%   # topics = 100, # words = 160836, # paragraphs = 2553, Avg par. length = 63
-% Provenance: computed from data/eval/wiki/ (wiki_original.json + wiki_index.json),
-% whitespace tokenization of the Russian source; matches documented 100/2553.
+% ===== VARIANT 2 (creative lead, recommended by orchestrator) =====
+% \textit{Wikipedia} builds on an annotation resource that encyclopedia editors
+% maintain by hand: in-text hyperlinks. Each link target resolves
+% deterministically to a Wikidata item, so every link in an article body
+% provides a gold entity mention grounded to a QID at no labeling cost, which
+% makes the corpus a natural benchmark for terminology extraction and Wikidata
+% grounding. We assemble 100 articles on ancient history from the Russian
+% edition, spanning ten thematic sections (Sumer and Mesopotamia, Ancient Egypt,
+% Assyria, the Hittite Kingdom, Phoenicia, Achaemenid Iran, Ancient India,
+% Ancient China, Ancient Greece, and Ancient Rome). The selection is
+% deterministic and involves no manual curation: within each section, candidates
+% from the category subtree are shuffled with a fixed seed, and the first ten
+% articles pass a gate requiring at least 30 unique in-text links and an
+% earliest Wikidata date before 500~CE. The resulting annotation is precise but
+% incomplete, as editors typically link an entity only at its first
+% mention~\citep{damuel2023}, a property our evaluation protocol accounts for
+% (Section~\ref{sec:eval-metrics}). Beyond grounding, the same articles serve as
+% source texts for the reference-free evaluation of translation and refinement
+% quality. The corpus comprises 2553 paragraphs and 160836 words, averaging 63
+% words per paragraph (Table~\ref{tab:data-statistics}).
+
+% ===== APPENDIX SNIPPET (construction details) =====
+% \paragraph{Wikipedia corpus construction details.}
+% Candidate pools are the article-namespace category subtrees of the ten section
+% root categories. An article reachable from several sections is assigned to the
+% first in a fixed order and used once. For the chronological criterion we take
+% the earliest value among the Wikidata properties inception (P571), start time
+% (P580), point in time (P585), date of birth (P569), and publication date
+% (P577). Articles with no recorded date are retained. Articles typed as films,
+% paintings, or museums are excluded. Shuffling uses seed 42. Article HTML was
+% collected in July 2026. Because the Wikipedia category graph is noisy, roughly
+% three of the 100 articles fall outside the target period. They are disclosed
+% and retained to avoid manual curation.
