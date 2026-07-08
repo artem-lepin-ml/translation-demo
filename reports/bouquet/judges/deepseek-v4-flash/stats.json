@@ -1,0 +1,243 @@
+{
+  "judge_slug": "deepseek-v4-flash",
+  "generated_at": "2026-07-08T22:03:43.166047+00:00",
+  "n_paragraphs_total": 198,
+  "systems": {
+    "qwen-27b-bouquet": {
+      "accuracy": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      },
+      "fluency": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      },
+      "style": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      }
+    },
+    "qwen-27b-bouquet-refined": {
+      "accuracy": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      },
+      "fluency": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      },
+      "style": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      }
+    },
+    "translate-gemma-bouquet": {
+      "accuracy": {
+        "n": 5,
+        "mean": 9.8,
+        "tie_rate_9_10": 1.0,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.7071,
+            "n": 5
+          },
+          "metricx_qe": {
+            "rho": -0.7071,
+            "n": 5
+          },
+          "comet": {
+            "rho": 0.7071,
+            "n": 5
+          }
+        }
+      },
+      "fluency": {
+        "n": 5,
+        "mean": 9.8,
+        "tie_rate_9_10": 1.0,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.7071,
+            "n": 5
+          },
+          "metricx_qe": {
+            "rho": -0.7071,
+            "n": 5
+          },
+          "comet": {
+            "rho": 0.7071,
+            "n": 5
+          }
+        }
+      },
+      "style": {
+        "n": 5,
+        "mean": 9.2,
+        "tie_rate_9_10": 0.8,
+        "spearman": {
+          "metricx_ref": {
+            "rho": 0.1054,
+            "n": 5
+          },
+          "metricx_qe": {
+            "rho": 0.1054,
+            "n": 5
+          },
+          "comet": {
+            "rho": 0.6325,
+            "n": 5
+          }
+        }
+      }
+    },
+    "translate-gemma-bouquet-refined": {
+      "accuracy": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      },
+      "fluency": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      },
+      "style": {
+        "n": 0,
+        "mean": null,
+        "tie_rate_9_10": null,
+        "spearman": {
+          "metricx_ref": {
+            "rho": null,
+            "n": 0
+          },
+          "metricx_qe": {
+            "rho": null,
+            "n": 0
+          },
+          "comet": {
+            "rho": null,
+            "n": 0
+          }
+        }
+      }
+    }
+  }
+}

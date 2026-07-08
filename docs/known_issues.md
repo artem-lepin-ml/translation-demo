@@ -140,3 +140,17 @@ Same smoke run: `response_format={"type":"json_object"}` works on route `auto` a
 orthogonal, but combining the `provider-9` pin with json_object yields a deterministic 400 Bad Request from the
 upstream. Judge-style calls (strict JSON) to deepseek must use `auto` (10/10 success in the 2026-07-05 triage,
 ~equal cost); keep the pin only for plain-text roles (translation).
+
+### deepseek-v4-flash still reasons on route `auto` even with `reasoning.enabled=false` (2026-07-08)
+The 2026-07-07 smoke's fix (`extra_body: {reasoning: {enabled: false}}` → `reasoning_tokens=0`) was verified on
+the pinned `provider-9` route. On route `auto` — the route judge-role calls are forced onto by the 400 above —
+the same flag does NOT suppress reasoning: `scripts/bouquet_judge_rerun.py run --judge deepseek-v4-flash
+--pilot 5 --system translate-gemma-bouquet` sent `"reasoning": {"enabled": false}` on all 15 calls and every
+single one still returned `reasoning_tokens > 0` (262–3443, mean ≈1330, ~45% of `completion_tokens`). Output was
+never empty at `max_tokens=4096` (0/15 parse failures, all `final_score` in [8,10]) — this is a *cost* quirk,
+not a correctness one — but it means judge-role token/cost budgets for this model on `auto` should assume
+reasoning fires regardless of the flag, roughly doubling completion-token spend versus the provider-9 smoke
+numbers. Neither `usage.cost` nor `usage.cost_usd` was present in any of the 15 raw responses either (unlike
+provider-9, which the wiki-eval doc says surfaces `cost_usd`) — `scripts/bouquet_judge_rerun.py`'s
+`PRICE_TABLE_USD_PER_MTOK` catalog-price fallback covers this gap for cost reporting. Real spend for the pilot:
+$0.0049 estimated (0.07/0.14 $ per Mtok in/out), well under the $0.50 validation cap.
