@@ -18,7 +18,7 @@
 | 3.1 | Initial translation | In/out + formalization — partial |
 | 3.2 | Terminology Extraction (NER + Wikidata grounding) — **Artem** | Drafted; "Ambiguous Terminology Resolution" — **TODO**; exact/ambiguous/unknown formalism to write |
 | 3.3 | LLM-as-a-judge Evaluation + Refinement — **Danil** | Drafted (judge 1–10, Accuracy/Fluency/Style; issues → editor) |
-| 3.x | Datasets paragraphs | 3 datasets: history volume (томик), BOUQUET, Wikipedia-100. Table 1 (data statistics) — **to fill** |
+| 3.x | Datasets paragraphs | 3 datasets: history volume (томик), BOUQUET, Wikipedia-100. Wikipedia paragraph drafted (docs/paper/sections/3-1-wikipedia-dataset.tex, owner-reviewed pending); Table 1 Wikipedia column: 100 articles / 160836 words / 2553 paragraphs / 63 avg length. Other datasets **to fill** |
 | 3.x | Demo ↔ methodology figure | **TODO** (figure linking demo interfaces to methodology) |
 | 3.x | Demo interfaces | TipTap (cite GitHub), LLMs via OpenRouter, HuggingFace record — **to write** |
 | 4 | **Evaluation setup** | 4.1 Evaluation Data — partial; 4.2 Evaluation metrics — **TODO**. Maximize model overlap across tables for consistency |

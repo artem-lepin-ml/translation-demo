@@ -1,0 +1,30 @@
+\textit{Wikipedia} is our corpus of Russian Wikipedia articles on ancient
+history. It comprises 100 articles drawn from ten fixed thematic sections:
+Sumer and Mesopotamia, Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia,
+Achaemenid Iran, Ancient India, Ancient China, Ancient Greece, and Ancient
+Rome. Each section is defined by a root category in the Russian Wikipedia
+category graph, and its candidate pool consists of all article pages in the
+corresponding category subtree. A candidate article is accepted if its body
+paragraphs contain at least 30 unique links to other articles, which serves as
+a proxy for substantive encyclopedic content, and if the earliest date recorded
+for it in Wikidata precedes 500~CE.\footnote{We consider the Wikidata
+properties inception (P571), start time (P580), point in time (P585), date of
+birth (P569), and publication date (P577). Articles with no recorded date are
+retained.} Articles typed in Wikidata as films, paintings, or museums are
+excluded. Candidates within each section are shuffled with a fixed random
+seed, and the first ten articles that satisfy these criteria are selected,
+which makes the corpus construction deterministic and reproducible. Since the
+Wikipedia category structure is noisy, a small number of retained undated
+articles fall outside the target period. We keep them to avoid manual
+curation. The article HTML was collected in July 2026. We remove navigation
+elements, infoboxes, tables, and reference markup, and extract body
+paragraphs. After removal of empty segments, the corpus contains 2553
+paragraphs and 160836 words of Russian source text, with an average paragraph
+length of 63 words. The same articles are also used in the terminology
+recognition and grounding evaluation (Section~\ref{sec:results-terminology}).
+Corpus statistics are summarized in Table~\ref{tab:data-statistics}.
+
+% Table 1 (Evaluation Data Statistics), Wikipedia column values:
+%   # topics = 100, # words = 160836, # paragraphs = 2553, Avg par. length = 63
+% Provenance: computed from data/eval/wiki/ (wiki_original.json + wiki_index.json),
+% whitespace tokenization of the Russian source; matches documented 100/2553.
