@@ -2,7 +2,6 @@
   "mcpServers": {
     "playwright":       { "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--isolated"] },
     "chrome-devtools":  { "command": "npx", "args": ["-y", "chrome-devtools-mcp@latest"] },
-    "context7":         { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] },
-    "pxpipe":           { "command": "node", "args": [".claude/pxpipe/mcp-supervisor.mjs"] }
+    "context7":         { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] }
   }
 }

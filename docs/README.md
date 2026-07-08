@@ -28,4 +28,3 @@ Up-link: [README.md](../README.md)
 | [docs/superpowers/plans/2026-07-01-demo-build.md](superpowers/plans/2026-07-01-demo-build.md) | Build plan — task breakdown and implementation order for the demo |
 | [docs/known_issues.md](known_issues.md) | Open limitations & gotchas — terminology descopes (GPU strategies, recall, extraction precision), live-Wikidata cache, webapp cache staleness, bundle size |
 | [docs/PROBLEMS.md](PROBLEMS.md) | Systemic/complex pipeline problems log (process step 7 "Fix") — root-cause passes and tournament-picked resolutions, referenced from CLAUDE.md |
-| [docs/subsystems/pxpipe-proxy.md](subsystems/pxpipe-proxy.md) | Vendored pxpipe token-saving proxy — Fable-only compression gate, cloud activation runbook, verify/disable steps |

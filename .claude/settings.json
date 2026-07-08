@@ -43,14 +43,6 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-context-pointer.py\""
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/pxpipe/ensure-pxpipe.mjs\""
-          }
-        ]
       }
     ],
     "PreToolUse": [
