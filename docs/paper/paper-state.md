@@ -18,7 +18,7 @@
 | 3.1 | Initial translation | In/out + formalization — partial |
 | 3.2 | Terminology Extraction (NER + Wikidata grounding) — **Artem** | Drafted; "Ambiguous Terminology Resolution" — **TODO**; exact/ambiguous/unknown formalism to write |
 | 3.3 | LLM-as-a-judge Evaluation + Refinement — **Danil** | Drafted (judge 1–10, Accuracy/Fluency/Style; issues → editor) |
-| 3.x | Datasets paragraphs | 3 datasets: history volume (томик), BOUQUET, Wikipedia-100. Wikipedia paragraph revised (docs/paper/sections/3-1-wikipedia-dataset.tex): two owner-review variants after revision round (footnote moved to appendix, topics in parentheses, tautology fixed, added grounding-annotation rationale + DaMuEL incompleteness citation, added usage statement); Table 1 Wikipedia column: 100 articles / 160836 words / 2553 paragraphs / 63 avg length. Other datasets **to fill** |
+| 3.x | Datasets paragraphs | 3 datasets: history volume (томик), BOUQUET, Wikipedia-100. Wikipedia paragraph revised round 2 (docs/paper/sections/3-1-wikipedia-dataset.tex): encyclopedic→Wikipedia, per-dataset stats removed (single shared sentence after all three), appendix ref added, variant 2 reframed (problem→resource); Table 1 Wikipedia column: 100 articles / 160836 words / 2553 paragraphs / 63 avg length. Other datasets **to fill** |
 | 3.x | Demo ↔ methodology figure | **TODO** (figure linking demo interfaces to methodology) |
 | 3.x | Demo interfaces | TipTap (cite GitHub), LLMs via OpenRouter, HuggingFace record — **to write** |
 | 4 | **Evaluation setup** | 4.1 Evaluation Data — partial; 4.2 Evaluation metrics — **TODO**. Maximize model overlap across tables for consistency |
