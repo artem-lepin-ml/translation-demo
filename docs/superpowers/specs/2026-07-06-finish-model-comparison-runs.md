@@ -1,3 +1,7 @@
+> ⚠️ **Superseded.** The qwen decision described in this spec has since been made and executed —
+> see the outcome in [docs/PROBLEMS.md](../../PROBLEMS.md), [docs/stages/wiki-eval.md](../../stages/wiki-eval.md)
+> § Status, and the delivered v4 model-comparison report. Kept for historical context only.
+
 # Спека: довести прогоны model-comparison и финализировать отчёт
 
 Дата: 2026-07-06. Автор: оркестратор (сессия eb7d84db). **Назначение: передача в новую сессию.**
