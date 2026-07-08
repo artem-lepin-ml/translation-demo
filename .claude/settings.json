@@ -1,4 +1,7 @@
 {
+  "env": {
+    "ANTHROPIC_MODEL": "claude-fable-5[1m]"
+  },
   "permissions": {
     "allow": [
       "Bash(uv sync)",
