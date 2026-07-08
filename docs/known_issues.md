@@ -135,6 +135,26 @@ gpt-5.4-mini reasoning-billing note in [model_matrix.py](../src/palimpsest/webap
 verified 19/19 calls: `extra_body: {reasoning: {enabled: false}}` → `reasoning_tokens=0`, clean output.
 Any tight-`max_tokens` call to this model without the flag risks silent empty responses.
 
+### pxpipe cloud base-URL honoring is unverified
+
+The vendored [pxpipe proxy](subsystems/pxpipe-proxy.md) is started and kept
+alive automatically in every session (MCP supervisor + SessionStart hook),
+but whether a claude.ai/code **cloud** session actually routes its API calls
+through a locally-set `ANTHROPIC_BASE_URL` is not confirmed — the cloud
+container sets `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST=1`, and cloud sessions
+may call the API from Anthropic-managed infra that bypasses a local base URL
+entirely. If unverified, there's no harm: traffic just flows through the
+normal path with no compression and no savings. Verify per-session by
+checking whether `/tmp/pxpipe/events.jsonl` grows during Fable activity —
+see [pxpipe-proxy.md](subsystems/pxpipe-proxy.md#how-to-verify-it-works).
+
+**4xx-body-on-disk risk, mitigated:** pxpipe persists the full request body
+to `PXPIPE_LOG`'s directory on any 4xx response (its own debug aid). We
+relocate `PXPIPE_LOG` to `/tmp/pxpipe/events.jsonl` (ephemeral, outside the
+repo) instead of its upstream default under `~/.pxpipe/`, so captured
+request bodies never land in a git-tracked location. See
+[VENDORED.md](../.claude/pxpipe/VENDORED.md) for the full risk list.
+
 ### CloseRouter: provider-9 pin + response_format=json_object → 400 on deepseek-v4-flash
 Same smoke run: `response_format={"type":"json_object"}` works on route `auto` and the reasoning-off flag is
 orthogonal, but combining the `provider-9` pin with json_object yields a deterministic 400 Bad Request from the
