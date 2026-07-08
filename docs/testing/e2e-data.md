@@ -10,7 +10,9 @@ Up-link: [docs/subsystems/webapp.md](../subsystems/webapp.md) · process: global
 
 ## Real seed data (single source)
 
-`data/seed/seed_paragraphs.jsonl` — 15 body paragraphs from the book opening (RU source `data/pilot/pilot_original.md`, EN target the `gemma_par_by_par` translation), rebuilt by [scripts/rebuild_seed_texts.py](../../scripts/rebuild_seed_texts.py) as part of [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md) (was: 16 curated paragraphs from the pilot run, `gpt-5.4-mini` par-by-par, top-by-issue-density). Seed-refresh Phases A–C are complete: each record carries genuine LLM-judge baselines (`openai/gpt-5.4-mini`) for 4 seeded criteria plus real terminology (haiku-4.5 extract + subagent G3/P3 grounding/pairing, 204 terms — see [terminology stage doc](../stages/terminology.md) Status). The `term` table's real difficulty/pairAccuracy verdicts reach the DB via a separate step, `uv run python scripts/load_terms.py`, run **after** `python -m palimpsest.webapp.seed` — `seed.py` alone still writes its placeholder `VERDICTS[i % 3]` rotation for difficulty/pairAccuracy (see [webapp.md](../subsystems/webapp.md) `seed.py` row and [known_issues.md](../known_issues.md)).
+`data/seed/seed_paragraphs.jsonl` — 15 body paragraphs from the book opening (RU source `data/pilot/pilot_original.md`, EN target the `gemma_par_by_par` translation), rebuilt by [scripts/rebuild_seed_texts.py](../../scripts/rebuild_seed_texts.py) as part of [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md) (was: 16 curated paragraphs from the pilot run, `gpt-5.4-mini` par-by-par, top-by-issue-density). Seed-refresh Phases A–C are complete: each record carries genuine LLM-judge baselines (`openai/gpt-5.4-mini`) for 4 seeded criteria plus real terminology (haiku-4.5 extract + G6 `label_first` grounding/pairing, 204 terms — see [terminology stage doc](../stages/terminology.md) Status). The `term` table's real difficulty/pairAccuracy verdicts reach the DB via a separate step, `uv run python scripts/load_terms.py` (or `make reseed`, which chains both steps), run **after** `python -m palimpsest.webapp.seed` — `seed.py` alone still writes its placeholder `VERDICTS[i % 3]` rotation for difficulty/pairAccuracy (see [webapp.md](../subsystems/webapp.md) `seed.py` row and [known_issues.md](../known_issues.md)).
+
+**Difficulty distribution (single source of truth for this fact — link here, don't copy the numbers elsewhere).** As of the 2026-07-07 disambiguation pass ([scripts/rebuild_demo.py](../../scripts/rebuild_demo.py) with the live CloseRouter judge, `google/gemini-3.1-flash-lite` @ `provider-9`, over `data/seed/terminology_out.json`): **204 terms, 🟢45 / 🟡90 / 🔴69** (`resolved_by`: `exact_label` 45, `llm_disambiguation` 90, `judge_rejected` 21, `no_candidates` 48 — zero `judge_unavailable`, every escalation carries a real judge decision). Before this pass: 🟢44/🟡63/🔴97 with 8 yellow terms stuck unresolved (`judge_unavailable`/hand-patched `ambiguous_candidates`) — root cause was `data/seed/terminology_terms.jsonl` carrying `lemma == surface` (the raw inflected form) for most mentions, so candidate search missed the demo's own core entities (Mesopotamia/Babylon/Euphrates/Assyria/Sumer) on every non-nominative occurrence; fixed by [scripts/fix_mention_lemmas.py](../../scripts/fix_mention_lemmas.py) (nominative-lemma correction: `data/seed/lemmas.json` + an LLM lemmatizer pass for the surfaces it doesn't cover) before re-running the disambiguation.
 
 Served as one document:
 
@@ -21,7 +23,7 @@ Served as one document:
 | Paragraphs | 15 |
 | Criteria (evaluators) seeded | 4 — accuracy, fluency, style, terminology (Cultural Adaptation dropped wave-4 Б4; `consistency` present in source data but **not** seeded as an evaluator) |
 | Issues (seed) | real, from `/evaluate`-generated baselines (see [terminology stage doc](../stages/terminology.md) and [known_issues.md](../known_issues.md) for the advice-guard corpus) |
-| Terms | 204, difficulty 🟢62/🟡31/🔴111 — real G3/P3 output, `data/seed/terminology_out.json`, loaded via `scripts/load_terms.py` |
+| Terms | 204, real G6 `label_first` grounding + P1/P3 pairing output, `data/seed/terminology_out.json`, loaded via `scripts/load_terms.py` — difficulty breakdown above (single source: this file) |
 | Paragraph 1 aggregate (baseline) | real, from the regenerated 15-paragraph seed (no longer the pre-refresh 6.44/10 figure) |
 
 This is the seeded document (`origin='seed'`), always present and never deletable. There is no auth, no roles. The demo now also supports user-uploaded documents (`origin='upload'`) created live through the upload modal — see the "Upload a custom pair" journey below. The document switcher in the top bar lists both.
@@ -44,7 +46,7 @@ This is the seeded document (`origin='seed'`), always present and never deletabl
 
 Data is whatever the tester types or drags into the modal at run time (no fixed fixture — the
 feature's whole point is arbitrary user input). Use a short synthetic DE→FR pair for live-scoring
-states (10–12) to keep cost near zero. Full design: [contracts spec §5](../superpowers/specs/2026-07-02-custom-pair-upload-design.md).
+states (10–12) to keep cost near zero. Full design: [upload-design spec §5](../superpowers/specs/2026-07-02-custom-pair-upload-design.md).
 States, 1:1 with the spec's e2e checklist (§5.8) — each is at least one screenshot with provenance:
 
 1. Top bar: open `doc-dropdown` — seed + upload docs listed, language-pair badges, delete icon only on `origin='upload'`.

@@ -8,7 +8,7 @@ Up-link: [README](../../README.md) · [docs/README.md](../README.md) · subsyste
 
 - **Tokens + component classes:** [`frontend/src/demo/variant-a/variant-a.css`](../../frontend/src/demo/variant-a/variant-a.css) (one file, `:root` custom properties + `va-*` classes).
 - **Components that consume them:** the `variant-a/` `.tsx` files listed in [webapp.md](webapp.md#frontend-frontendsrcdemovariant-a).
-- **Rendered ground truth (open these before proposing any visual change):** [`docs/reports/e2e/shots/`](../reports/e2e/shots/) — 14 canonical shots (cold load, scores tab, accept flow, glossary, settings, ranking, variant B) — plus `shots-fixes/` and `shots-rerun/` for the most recent state.
+- **Rendered ground truth (open these before proposing any visual change):** [`docs/reports/e2e/shots/`](../reports/e2e/shots/) — per-run subdirectories (`audit/`, `audit-fix/`, `wave5/`, `wave5-addendum/`); `wave5-addendum/` is the most recent state.
 
 ## Design tokens (`:root` in variant-a.css)
 

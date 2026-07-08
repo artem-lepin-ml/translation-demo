@@ -1,8 +1,15 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
-import { ScoreChip } from '../EditorParagraph';
+import { ScoreChip, buildScoreChipTooltip } from '../EditorParagraph';
+import type { Criterion, Score } from '../../api-client';
 
 afterEach(cleanup);
+
+const criteria: Criterion[] = [
+  { id: 'accuracy', name: 'Accuracy', modelName: 'm', prompt: '', scaleMin: 0, scaleMax: 10, weight: 1, color: '#7aa2f7', enabled: true },
+  { id: 'fluency', name: 'Fluency', modelName: 'm', prompt: '', scaleMin: 0, scaleMax: 10, weight: 1, color: '#9ece6a', enabled: true },
+  { id: 'cultural', name: 'Cultural Adaptation', modelName: 'm', prompt: '', scaleMin: 0, scaleMax: 10, weight: 1, color: '#bb9af7', enabled: false },
+];
 
 describe('ScoreChip compact chip', () => {
   it('band classes green/yellow/red for 8.0/6.4/5.7', () => {
@@ -52,5 +59,66 @@ describe('ScoreChip compact chip', () => {
   it('no stale badge when not stale', () => {
     render(<ScoreChip label="§1" score={8.0} loading={false} delta={null} />);
     expect(screen.queryByText('stale')).toBeNull();
+  });
+
+  // S5 — hover tooltip: per-criterion breakdown + provenance.
+  describe('hover tooltip (title attribute)', () => {
+    it('with no criteria/scores passed, tooltip still shows the aggregate line', () => {
+      render(<ScoreChip label="§1" score={8.4} loading={false} delta={null} />);
+      expect(screen.getByTestId('score-chip').title).toBe('§1 aggregate: 8.4');
+    });
+
+    it('breaks down enabled criteria only, in order, skipping disabled ones', () => {
+      const scores: Score[] = [
+        { criterionId: 'accuracy', value: 9.0, summary: '' },
+        { criterionId: 'fluency', value: 7.5, summary: '' },
+        { criterionId: 'cultural', value: 2.0, summary: '' },
+      ];
+      render(
+        <ScoreChip
+          label="§2"
+          score={8.25}
+          loading={false}
+          delta={null}
+          criteria={criteria}
+          scores={scores}
+        />,
+      );
+      const title = screen.getByTestId('score-chip').title;
+      expect(title).toBe('§2 aggregate: 8.3\nAccuracy: 9.0\nFluency: 7.5');
+      expect(title).not.toContain('Cultural Adaptation');
+    });
+
+    it('a criterion with no score yet renders "—" in the tooltip, not blank/undefined', () => {
+      const scores: Score[] = [{ criterionId: 'accuracy', value: 9.0, summary: '' }];
+      render(
+        <ScoreChip label="§3" score={null} loading={false} delta={null} criteria={criteria} scores={scores} />,
+      );
+      const title = screen.getByTestId('score-chip').title;
+      expect(title).toBe('§3 aggregate: —\nAccuracy: 9.0\nFluency: —');
+    });
+
+    it('while loading, every line (aggregate + each criterion) shows "…", never blank', () => {
+      const scores: Score[] = [{ criterionId: 'accuracy', value: 9.0, summary: '' }];
+      render(
+        <ScoreChip label="§4" score={7.1} loading={true} delta={null} criteria={criteria} scores={scores} />,
+      );
+      const title = screen.getByTestId('score-chip').title;
+      expect(title).toBe('§4 aggregate: …\nAccuracy: …\nFluency: …');
+    });
+
+    it('appends cached/stale provenance notes when set', () => {
+      render(<ScoreChip label="§1" score={8.0} loading={false} delta={null} cached stale />);
+      const title = screen.getByTestId('score-chip').title;
+      expect(title).toContain('Cached: offline fallback estimate, not a live judgment');
+      expect(title).toContain('Stale: scores refer to an earlier version of this paragraph');
+    });
+
+    it('buildScoreChipTooltip is a pure function matching the rendered title', () => {
+      const scores: Score[] = [{ criterionId: 'accuracy', value: 6.0, summary: '' }];
+      expect(buildScoreChipTooltip('§5', 6.0, false, criteria, scores)).toBe(
+        '§5 aggregate: 6.0\nAccuracy: 6.0\nFluency: —',
+      );
+    });
   });
 });
