@@ -1,6 +1,7 @@
 {
   "env": {
-    "ANTHROPIC_MODEL": "claude-fable-5[1m]"
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "800000",
+    "_CLAUDE_CODE_ASSUME_FIRST_PARTY_BASE_URL": "1"
   },
   "permissions": {
     "allow": [
