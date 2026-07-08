@@ -1,0 +1,15 @@
+# P5 — RQ2 within-family size + large-alt families.
+# Sonnet/gpt-5.4-high cover within-family hierarchy (opus>sonnet, gpt-5.5>gpt-5.4).
+# deepseek/glm/qwen-plus cover closed non-Western providers (large-alt tier).
+# Judge profile: single (gpt-5.5-low). Other judges plug back in later via D5.
+base_dir: data/pilot
+prompts_variant: v1
+max_concurrency: 32
+judges:
+  - model: gpt-5.5-low
+runs:
+  - large/claude-sonnet-4.6-high_par_by_par
+  - large/gpt-5.4-high_par_by_par
+  - large/deepseek-v4-pro_par_by_par
+  - large/glm-5.1_par_by_par
+  - large/qwen3.6-plus_par_by_par

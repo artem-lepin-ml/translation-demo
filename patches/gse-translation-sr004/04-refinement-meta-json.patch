@@ -1,0 +1,34 @@
+--- a/src/palimpsest/refinement.py
++++ b/src/palimpsest/refinement.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import json
++from datetime import UTC, datetime
+ from pathlib import Path
+ 
+ from tqdm.asyncio import tqdm
+@@ -103,4 +104,20 @@
+             encoding="utf-8",
+         )
+     else:
+-        output.write_text('\n'.join(results), encoding='utf-8')
+\ No newline at end of file
++        output.write_text('\n'.join(results), encoding='utf-8')
++
++    # Manifest, mirroring the judge/factcheck meta.json in scoring.py: which
++    # judge report drove this refinement pass, which editor model/prompt/
++    # criteria, and when it ran. Refinement previously wrote no provenance at
++    # all next to translation.json.
++    meta = {
++        "scores_jsonl": str(scores_jsonl),
++        "output": str(output),
++        "editor_model": cfg.editor_model,
++        "system_prompt": cfg.system_prompt,
++        "refinement_criterias": cfg.refinement_criterias,
++        "created_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
++    }
++    (output.parent / "meta.json").write_text(
++        json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
++    )
+\ No newline at end of file

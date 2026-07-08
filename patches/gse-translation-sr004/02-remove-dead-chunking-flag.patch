@@ -1,0 +1,10 @@
+--- a/scripts/02_translate_json.py
++++ b/scripts/02_translate_json.py
+@@ -172,7 +172,6 @@
+ 
+ @app.command()
+ def main(
+-    chunking: Path = typer.Option(..., "--chunking", help="Path to chunking JSON."),  # noqa: B008
+     run_name: str = typer.Option(..., "--run-name", help="Output subdir name."),  # noqa: B008
+     bucket: str = typer.Option(  # noqa: B008
+         "", "--bucket",

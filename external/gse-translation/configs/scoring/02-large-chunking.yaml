@@ -1,0 +1,15 @@
+# P2 — RQ1 large chunking sweep: by_5_par and by_10_par for the 3 large -high families.
+# Combined with P1 par_by_par anchors → full chunking effect for large frontier.
+# Judge profile: single (gpt-5.5-low). Other judges plug back in later via D5.
+base_dir: data/pilot
+prompts_variant: v1
+max_concurrency: 32
+judges:
+  - model: gpt-5.5-low
+runs:
+  - large/claude-opus-4.7-high_by_5_par
+  - large/claude-opus-4.7-high_by_10_par
+  - large/gemini-3.1-pro-high_by_5_par
+  - large/gemini-3.1-pro-high_by_10_par
+  - large/gpt-5.5-high_by_5_par
+  - large/gpt-5.5-high_by_10_par

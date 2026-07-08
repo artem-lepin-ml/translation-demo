@@ -1,0 +1,28 @@
+--- a/src/palimpsest/llm/client.py
++++ b/src/palimpsest/llm/client.py
+@@ -16,6 +16,12 @@
+ 
+ from ..config import ModelConfig
+ 
++# CloseRouter's WAF blocks the OpenAI SDK's default User-Agent (HTTP 403 "Your
++# request was blocked") before it ever routes to a model — any neutral UA
++# passes. Sent on every OpenAI-compatible client (vLLM / CloseRouter /
++# OpenRouter / OpenAI) so the same code works against all of them.
++USER_AGENT = "palimpsest-llm/1.0"
++
+ 
+ # Anthropic SDK appends `/v1/messages` to the base_url itself, so we must hand it
+ # the proxy host without the `/v1` suffix that the yaml entry uses for OpenAI-compat
+@@ -165,7 +171,11 @@
+                 base_url=_anthropic_base_url(config.base_url),
+             )
+         else:
+-            self._openai = AsyncOpenAI(base_url=config.base_url, api_key=config.api_key)
++            self._openai = AsyncOpenAI(
++                base_url=config.base_url,
++                api_key=config.api_key,
++                default_headers={"User-Agent": USER_AGENT},
++            )
+         effective = max_concurrency if max_concurrency > 0 else self._UNLIMITED
+         self._gate = asyncio.Semaphore(effective)
+ 

@@ -1,0 +1,14 @@
+# P4 — RQ1 small chunking sweep: by_10_par for the 4 small families.
+# Combined with P3 par_by_par anchors → RQ1 small completes.
+# (by_5_par for small was not run upstream.)
+# Judge profile: single (gpt-5.5-low). Other judges plug back in later via D5.
+base_dir: data/pilot
+prompts_variant: v1
+max_concurrency: 32
+judges:
+  - model: gpt-5.5-low
+runs:
+  - small/claude-haiku-4.5_by_10_par
+  - small/gpt-5.4-mini-high_by_10_par
+  - small/gemini-3.1-flash-lite-preview-high_by_10_par
+  - small/qwen3.6-flash_by_10_par

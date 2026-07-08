@@ -1,0 +1,12 @@
+# Focused scoring pass: gpt-5.5-low, v2 prompts (5 criteria; same axes as v1
+# but reworded), same two pilot translations as the v1 pilot run.
+# Factcheck off (default).
+base_dir: data/bouquet
+original_json: data/bouquet/bouquet_original.json
+translation_json: data/bouquet/translation/translate-gemma-bouquet-refined/translation.json
+prompts_variant: universal
+max_concurrency: 360
+judges:
+  - model: qwen3_6-27b
+runs:
+  - local/translate-gemma-bouquet-refined
