@@ -61,22 +61,37 @@ flat T2/T3 numbering:
 - **Wiki-100 corpus** built & handed to Danil: 2 553 paragraphs / 100 articles
   (`data/eval/wiki/`, README + sha256), pilot = 10 articles / 274 par.
 - **deepseek CloseRouter smoke** ($0.0052): reasoning-off flag mandatory; provider-9 pin
-  incompatible with json_object (judge role → route auto).
+  incompatible with json_object (judge role → route auto). **Superseded 2026-07-08**:
+  locked protocol is reasoning **ON** for the judge role (see Table A protocol below).
 
 ### In flight (current task)
 
-**Table A — LLM-as-a-judge, 7-judge lineup (owner-locked, 2026-07-08):**
+**Table A — LLM-as-a-judge, 7-judge lineup (owner-locked, 2026-07-08; updated 2026-07-08 —
+Gemini judge swapped to flash-lite):**
 - Local vLLM: `qwen3.6-27b` (prod anchor), `qwen3-4b-instruct`, `gemma-3-27b-it`
   (same family/scale as TranslateGemma → family-bias check; also a Gemma-vs-Gemini
   open-vs-cloud same-vendor angle).
 - Cloud via CloseRouter: `deepseek-v4-flash`, `claude-opus-4.8`, `gpt-5.5`,
-  `gemini-3.1-pro` (exact router IDs pending probe).
+  **`gemini-3.1-flash-lite`** (replaces `gemini-3.1-pro`; exact router ID still being
+  confirmed by a smoke test — `google/gemini-3.1-flash-lite` or `-preview`, mirroring
+  the `-preview` suffix pattern found for pro in the probe). Side benefit: flash-lite
+  already appears in the Table B translator matrix and the Table C grounding eval, so
+  the swap increases model overlap across tables, per the §4 "maximize model overlap
+  across tables" note.
 
-**Table A protocol (owner-locked, 2026-07-08):**
+**Table A protocol (owner-locked, 2026-07-08; updated 2026-07-08):**
 - Local/open judges → `temperature=0`, thinking OFF.
-- Frontier judges (Opus / GPT / Gemini-pro) → no temperature param, DEFAULT effort,
-  thinking ON.
-- `deepseek-v4-flash` → `T=0`, reasoning OFF (mandatory per smoke, see Done above).
+- `deepseek-v4-flash` → `T=0`, **reasoning ON** (locked protocol as of 2026-07-08 —
+  supersedes the earlier "reasoning OFF mandatory" note from the smoke test; per the
+  probe, `reasoning.enabled:false` didn't actually suppress thinking anyway, so ON is
+  now the honest, locked setting).
+- GPT-5.5 / Opus 4.8 / Gemini-3.1-Flash-Lite → no temperature param, **default effort**,
+  thinking on where the gateway honors it. Disclosed quirk (probe, 2026-07-08): the
+  OpenAI-compat bridge on CloseRouter silently drops reasoning params for Opus
+  (0 reasoning tokens across all 3 parameter forms tried) — Opus judges without
+  thinking in practice; GPT-5.5 reasons normally at default effort (110–292 reasoning
+  tokens/call). Full per-judge config disclosure goes to the paper appendix
+  (`app:judge-configs`), not the compact main-paper table.
 - Prompts = **`v1_core3`** (filtered variant of `v1`, 3 criteria only: accuracy/fluency/style;
   `cultural.md` / `terminology.md` dropped — `load_prompts` globs `*.md` in the variant dir,
   no code change needed). The old Danil-verbatim `qwen3.6-27b` run (T=0.7, thinking on —
@@ -87,6 +102,11 @@ flat T2/T3 numbering:
 - Execution split: the 4 cloud judges run from the cloud session via CloseRouter; the
   3 local judges run via the sr004 vLLM runbook (Danil pipeline +
   `patches/gse-translation-sr004/`).
+- Cost estimates (from the judge probe,
+  [docs/experiments/2026-07-08-judge-probe/probe-results.md](../experiments/2026-07-08-judge-probe/probe-results.md),
+  per full 2 376-call BOUQUET run): Opus 4.8 ≈ $2.3, GPT-5.5 ≈ $1.3, DeepSeek-V4-Flash
+  ≈ $1.5. `gemini-3.1-pro` (≈ $9–14) was dropped in favor of flash-lite, partly on cost —
+  flash-lite pricing/cost still TBD, to be confirmed by the pending smoke test.
 
 **Table B — Wiki-100 LLM-judge + refinement eval**, extended matrix: 5 systems
   (TranslateGemma-27B, Qwen3-4B-Instruct-2507, Qwen3.6-27B — local vLLM on 4×A100;
