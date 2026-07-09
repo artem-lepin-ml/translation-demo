@@ -41,6 +41,14 @@
    "ci_lo": 0.459,
    "ci_hi": 0.4827,
    "underpowered": false
+  },
+  "p3_ex": {
+   "matched": 3773,
+   "total": 7037,
+   "value": 0.5361659798209464,
+   "ci_lo": 0.5245,
+   "ci_hi": 0.5478,
+   "underpowered": false
   }
  },
  "slices": {
@@ -937,8 +945,14 @@
   ],
   "n_gt_tuples": 7959,
   "n_gt_tuples_in_missing_articles": 347,
-  "p3_label_exists_degraded_count": 0,
+  "p3_label_exists_degraded_count": 3,
   "deviation_note": "COVERAGE DEVIATION: computed over 99/100 articles. Missing: ['Яффа'] (347 GT mentions, 4.4% of the corpus's GT tuples) still in-flight in a background wiki_eval.py process at snapshot time (process never crashed -- article is the 3rd-densest in the 100-article corpus, 347 GT mentions vs a 79.6 mean/52 median, so it legitimately needs far more Wikidata+judge calls than a typical article). All missing article's GT mentions count as unmatched (0) in every recall denominator below -- every recall figure here is therefore a STRICT LOWER BOUND on the model's true recall, not a point estimate.",
-  "generated_at": "2026-07-09T06:55:47.767388+00:00"
+  "generated_at": "2026-07-09T06:55:47.767388+00:00",
+  "p3_computed_at": "2026-07-09T08:35:07.379948+00:00",
+  "p3_network_calls": 1771,
+  "p3_unique_surfaces_needing_lookup": 1603,
+  "p3_elapsed_s": 671.2,
+  "p3_label_cache_path": "docs/experiments/2026-07-05-model-comparison/drafts/sitelink_replay/.wikidata_cache.label_exists.openai--gpt-5.4--auto.jsonl",
+  "p3_note": "P_label (P3\\exact headline) computed post-hoc once Wikidata maxlag cleared (probed 08:18Z, healthy; live pass ran 08:23:47Z-08:35:07Z, see docs/reports/ml-engineer-grounding-run-gpt54.md addendum). Only the p3_ex headline was computed for real -- the stub-based (all-False) per-resolved_by-slice P3 cells below (slices.resolved_by.*.precision.p3) were left untouched, matching scripts/sitelink_contamination.py's precedent of avoiding the tautological/wasteful full per-slice real-label recomputation (see that script's module docstring, 2026-07-09 postmortem)."
  }
 }

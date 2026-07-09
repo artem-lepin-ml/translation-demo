@@ -630,3 +630,105 @@ editing in this worktree.
   A 5th resume was deliberately not attempted (see "Progress cadence") given
   4 consecutive failures against a worsening external condition; left for a
   future attempt once Wikidata's `maxlag` clears (see "Open questions").
+
+## Addendum (2026-07-09T08:35Z) — P_label / P3\exact computed
+
+Written by the `python-pro` agent, same shared worktree/branch, dispatched
+specifically to retry the P3 pass this report's "NOT done" section and
+"Open questions" flagged as parked on Wikidata `maxlag`. Supersedes only
+that one line — every other number/caveat above (99/100 coverage, R_term,
+cost) is unchanged and still authoritative.
+
+**Maxlag probe first, per instruction — did not grind against a lagged
+replica.** Three checks before touching the run:
+1. `wbsearchentities` with `maxlag=5` (the harness's own threshold,
+   `wikidata.py:88`) at `08:18:03Z` — succeeded, `0.63s`.
+2. A stricter `maxlag=1` probe to surface the actual number — `4.27s`
+   lagged on `wdqs1019` (down from the `5.3s→10.4s` climbing trend this
+   report documented across `wdqs1011`/`wdqs1014` roughly 1.5-2h earlier).
+3. Three more spaced `maxlag=5` calls (`08:18:18/21/24Z`) — all succeeded,
+   `0.27-0.5s` each, no error bodies.
+
+Verdict: replicas had recovered. Proceeded.
+
+**Invocation — headline-only, not the full `report --p3` recompute.**
+`scripts/wiki_eval.py report --pred <dir>` requires `pred.jsonl`, which
+this run never wrote (only `pred.partial.jsonl`, 99/100, same frozen
+snapshot this report's own `metrics.99of100.json` was built from — md5
+verified identical to the snapshot used here). Rather than materializing a
+`pred.jsonl` inside the real run dir (risking collision with the harness's
+own eventual 100/100 completion output) or calling
+`M.aggregate_corpus(articles, label_exists=...)` in full (which — per
+`scripts/sitelink_contamination.py`'s own module-docstring postmortem —
+also recomputes a REAL per-`resolved_by`-slice P3 for every slice
+including the huge, tautological `exact_label` one, driving live call
+counts to ~1.7x the needed amount for zero requested benefit), this pass
+computed only `precision.p3_ex` — the actual "P3/P_label" headline cell
+this report's table and "NOT done" section refer to — via
+`metrics._precision_counts_p3_ex` directly, summed across all 100 GT
+articles (Jaffa contributing an empty prediction set, same convention the
+headline recall/P1/P2 numbers already use). The existing stub-based
+(all-`False`) per-`resolved_by`-slice `p3` cells in `metrics.99of100.json`
+are left exactly as this report originally wrote them — out of scope here,
+not silently "fixed".
+
+**Resilience — reused `_resilient_label_exists` verbatim (commit
+4770157, `scripts/sitelink_contamination.py`)**, since the plain
+`_label_exists_fn` path (mirrored from `scripts/wiki_eval.py`) has no outer
+retry beyond `WikidataClient._fetch`'s own ~12s/5-attempt internal maxlag
+retry — exactly the gap this report's own P3 attempt hit at 06:49-06:55Z.
+Same parameters as the precedent: 4 attempts, backoff `(5, 15, 30, 60)`s,
+give-up sticky per `norm(surface)`, conservative `False` fallback (never
+silently counts an unverifiable surface as label-justified), failures
+recorded rather than raised.
+
+**Scale, cost, evidence.** 1603 unique surfaces needed a live
+`wbsearchentities(..., limit=1)` lookup (exact count via a zero-network
+collecting stub through the real `_precision_counts_p3_ex` accounting, not
+an estimate) — the same order of magnitude the aborted 06:49Z attempt was
+grinding through one at a time before this report parked it. Prewarmed
+concurrently (`ThreadPoolExecutor`, `network_concurrency=3`, matching
+`sitelink_contamination.py`'s default), then the real single-threaded
+accounting pass. **1771 network calls, 3 failures (0.19%), 671.2s
+(≈11.2 min) wall-clock** (`08:23:47Z`→`08:35:07Z`) — night-and-day versus
+the aborted attempt's 23/23 failures in ~5 min under the earlier degraded
+condition. The 3 failures were all the same transient cause (`maxlag` on
+`wdqs1016`, `5.52s` lagged, mid-pass) and correctly fell back to
+conservative `False` rather than crashing the batch — evidence:
+`scratchpad/p3_result.json`'s `label_exists_failures` (not committed,
+ephemeral per this repo's convention), surfaces `Греция`/`Сицилия`/`Малую
+Азию`. New on-disk cache (append-only, 1600 entries — 1603 unique minus the
+3 that never got a successful response to cache, `_fetch`'s `_store` is
+success-only): `docs/experiments/2026-07-05-model-comparison/drafts/
+sitelink_replay/.wikidata_cache.label_exists.openai--gpt-5.4--auto.jsonl`.
+
+**Result — P_label (P3\exact headline, label-justified precision excl.
+the tautological exact-label path), same Wilson-CI convention as every
+other cell in this report:**
+
+| Metric | Matched/Total | Value | 95% CI |
+|---|---|---|---|
+| P_label / P3\exact | 3773/7037 | **0.5362** | [0.5245, 0.5478] |
+
+Appended to `metrics.99of100.json`'s `precision.p3_ex` (verified `recall`/
+`p1`/`p2` byte-identical to this report's original numbers before the
+edit — nothing else changed) and `meta` (`p3_label_exists_degraded_count:
+3`, `p3_computed_at`, `p3_network_calls: 1771`,
+`p3_unique_surfaces_needing_lookup: 1603`, `p3_elapsed_s: 671.2`,
+`p3_label_cache_path`). `report.99of100.html` regenerated from the updated
+result via the same `report.render_html` the harness itself uses — the
+page's own "P3\exact headline" section now renders `0.536` instead of
+being absent.
+
+**Coverage caveat still applies unchanged**: this is the SAME 99/100
+snapshot every other number in this report is computed against — Jaffa's
+non-exact-label mentions (never attempted) are simply absent from both the
+numerator and denominator here, same convention as R_strict/R_span/R_doc/
+P1/P2 above. Not re-derived as a separate bound.
+
+**NOT done in this addendum**: the `maxlag` uncaught-`RuntimeError` gap in
+`wikidata.py`'s `_fetch` (flagged in the base report) was not touched — the
+resilient wrapper here works AROUND it (retry outside `_fetch`, as
+`sitelink_contamination.py` already established), not IN it. Article 100
+("Яффа") is still ungrounded — out of scope for this addendum, which only
+retried the P3 pass this report itself parked.
