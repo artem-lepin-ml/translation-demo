@@ -120,8 +120,10 @@ already modified/untracked by a concurrent agent in this worktree
 
 ## NOT done
 
-- **P_label / P3\exact clean values** — not computed (network-call budget, see Decisions).
-  Reported as an exact "calls needed" diagnostic instead of a number.
+- **P_label / P3\exact clean values** — not computed in THIS (first) commit (network-call
+  budget, see Decisions). **Superseded**: computed for real in the follow-up (owner
+  approved live calls) — see "Follow-up — live P_label computation" below. Left this
+  bullet in place as an honest record of what the first commit did and did not do.
 - **R_all/R_term tier filtering for the new metrics** — the task only asked for
   full-corpus (all 7,959 GT tuples) R_span/R_strict/precision; tier-filtered clean
   variants (as exist for R_doc in the prior extraction report, sourced from a
@@ -171,7 +173,7 @@ methodology exactly, before any sitelink filtering is applied.
 | R_doc (M3) | 0.6840 | [0.6737–0.6941] | 5444/7959 | 0.6902 | −0.62pp |
 | P_mention (P1) | 0.3002 | [0.2933–0.3073] | 4955/16505 | 0.3001 | +0.01pp |
 | P_type (P2) | 0.4523 | [0.4421–0.4624] | 4163/9205 | 0.4513 | +0.10pp |
-| P_label (P3\exact) | **not computed** — 2,419 live calls needed, none made | — | — | 0.5256 | n/a |
+| P_label (P3\exact) | **0.5304** | [0.5206–0.5401] | 5340/10068 | 0.5256 | +0.48pp |
 
 **deepseek-v4-flash**
 
@@ -182,17 +184,18 @@ methodology exactly, before any sitelink filtering is applied.
 | R_doc (M3) | 0.6092 | [0.5985–0.6199] | 4849/7959 | 0.6144 | −0.52pp |
 | P_mention (P1) | 0.3051 | [0.2974–0.3130] | 4131/13538 | 0.3048 | +0.03pp |
 | P_type (P2) | 0.4599 | [0.4488–0.4710] | 3561/7743 | 0.4584 | +0.15pp |
-| P_label (P3\exact) | **not computed** — 1,991 live calls needed, none made | — | — | 0.5302 | n/a |
+| P_label (P3\exact) | **0.5346** | [0.5238–0.5453] | 4409/8248 | 0.5302 | +0.44pp |
 
 ### Sanity checks
 
 - Monotonicity `R_strict ≤ R_span ≤ R_doc` on the clean set: gemini
   0.6023 ≤ 0.6222 ≤ 0.6840 ✅; deepseek 0.5043 ≤ 0.5187 ≤ 0.6092 ✅.
-- Drift bound (task: "expected drift ≤ ~1pp"): all 8 span/strict/precision cells land
-  between −0.74pp and +0.15pp — well inside bound. Recall drift is consistently negative
-  (sitelink removal costs recall, as expected); precision drift is consistently small and
-  slightly positive (removing a below-average-precision rung nudges precision up
-  marginally) — directionally sensible, not just in-bound by luck.
+- Drift bound (task: "expected drift ≤ ~1pp"): all 10 span/strict/precision/label cells
+  (now including the two live P_label cells, added in the follow-up below) land between
+  −0.74pp and +0.48pp — well inside bound. Recall drift is consistently negative (sitelink
+  removal costs recall, as expected); precision-family drift (P_mention/P_type/P_label) is
+  consistently small and positive (removing a below-average-precision rung nudges
+  precision up marginally) — directionally sensible, not just in-bound by luck.
 - All figures above independently re-derived and cross-checked via a standalone script
   (not just eyeballed from the JSON) — see "ran" below.
 
@@ -219,7 +222,161 @@ methodology exactly, before any sitelink filtering is applied.
 - A full repo-wide test/lint pass — out of scope for a targeted script extension; ran the
   directly-relevant test files and linted only the files this task touched.
 
-## Commit
+## Commit (first commit)
 
-`feat(eval): sitelink-clean replay for span/strict/precision metrics` — hash filled in
-after commit (see chat reply).
+`feat(eval): sitelink-clean replay for span/strict/precision metrics` — see chat reply /
+git log for hash.
+
+---
+
+## Follow-up — live P_label computation (2026-07-09, owner-approved)
+
+### Scope of the follow-up
+
+Coordinator approved spending real `wbsearchentities(limit=1)` label-existence calls to
+fill in the one metric the first commit deliberately left as a diagnostic-only count:
+clean P_label (P3\exact) for both models. Constraints: label-existence checks only (no
+LLM calls, zero token cost), max 3 concurrent, honor 429/`maxlag`/`Retry-After` with
+backoff, cache every response to a new committed `limit=1` cache file (separate from the
+existing `limit=7` candidate-generation cache, so the computation stays replayable).
+
+### Incident 1 — unhandled `maxlag` exception killed the deepseek phase mid-batch
+
+First live run (`bg4081dd9`) finished gemini cleanly (4014 live calls,
+`P_label=0.5304`, 5340/10068) but then died on deepseek at 55/~1991 cached entries.
+
+**Root cause**: `WikidataClient._fetch`'s own internal retry (5 attempts, ≤~12s total)
+tripped on a genuinely lagged Wikidata replica (`maxlag` error, `host: wdqs1012,
+lag: 5.28s` reported, but `queryserviceLag: 317` — a replica minutes behind, not
+seconds) and, after exhausting those 5 attempts, raised `RuntimeError`. That exception
+propagated out of one `ThreadPoolExecutor` worker, through `pool.map`'s result
+iteration, and crashed the whole process — taking every other still-in-flight deepseek
+lookup down with it, not just the one stuck call. Nothing wrote `sitelink-clean-full-
+metrics.json` afterward since the script never reached its final `json.dump`.
+
+**Fix**: added `_resilient_label_exists()` to `scripts/sitelink_contamination.py` — wraps
+every prewarm call with its own OUTER retry (4 attempts, backoff `5/15/30/60s`, longer
+than `_fetch`'s internal one, since a genuinely lagged replica needs minutes not
+seconds), falls back to the conservative `False` only after exhausting all attempts (per
+project convention: "pick the conservative option, log the deviation, keep going" — never
+counts an unverifiable surface as label-justified), and makes the give-up **sticky** per
+`norm(surface)` so a persistently broken lookup is never retried twice (once in prewarm,
+once again in the final aggregation pass). Unit-tested offline (no network) before
+re-spending any live budget — 4/4 cases passed (success, false, permanent-failure→False,
+sticky-skip-on-repeat).
+
+### Incident 2 (found before relaunch, budget/time blow-up) — accidental extra network cost
+
+Before relaunching, noticed gemini's actual `live_calls_made` (4014) was ~1.7× the
+diagnosed estimate (2419) — worth explaining, not shrugging off, since the same
+overshoot on deepseek (1991 estimated) would have meant a materially longer, more
+call-hungry rerun.
+
+**Root cause**: passing `label_exists` into `metrics.aggregate_corpus()` doesn't only
+compute the P_label headline (`p3_ex`) — it *also* unconditionally activates a SEPARATE
+per-`resolved_by`-slice P3 computation inside `aggregate_corpus`'s own axis-slicing loop
+(`metrics.py:331-337`, `_precision_counts(..., variant="p3", label_exists=...)` for every
+value of the `resolved_by` axis, including the huge `exact_label` slice that the P_label
+headline's own denominator explicitly excludes). This is legitimate `aggregate_corpus`
+behavior (feeds `metrics.json`'s per-slice P3 numbers when `wiki_eval.py cmd_report --p3`
+runs it), but this script never reads or reports that slice — it was pure wasted network
+cost, silently incurred as a side effect of reusing the convenient one-call API.
+
+**Fix**: stopped calling `aggregate_corpus(clean_articles, label_exists=...)` for the
+`compute_p_label=True` path. Recall/P1/P2 now come from a label-free
+`aggregate_corpus(clean_articles)` call (as before, no network); P_label is accumulated
+directly via `metrics._precision_counts_p3_ex` (the exact same private helper
+`aggregate_corpus` itself uses for the headline cell) summed across articles, then
+wrapped with `metrics._cell` for the CI — same formula, same private helper, just without
+the unrequested slice loop around it. **Verified the fix doesn't change the computed
+value**: ran both the old (`aggregate_corpus`-with-`label_exists`) and new (direct
+accumulation) paths against gemini's real clean-article set with a deterministic fake
+`label_exists` stub (no network) — both produced byte-identical `{matched: 6444, total:
+10068, value: 0.6400476758045291, ...}`. Confirms the fix only removes wasted calls, not
+correctness.
+
+### Relaunch and completion
+
+Relaunched the full driver (`bg buo9h9mdc`) with both fixes in place:
+- **gemini**: `live_calls_made: 0` — the 4141 already-cached entries from the first
+  (over-eager) run fully covered the leaner 2419-surface need; P_label recomputed to the
+  **exact same value** as the crashed-but-partially-successful first run
+  (`0.5303933253873659`, 5340/10068) — a second independent confirmation the fix is
+  value-neutral.
+- **deepseek**: `live_calls_made: 2061` against `unique_surfaces_queried: 1991` (the
+  extra ~70 are `_fetch`-internal retry attempts for transient errors that ultimately
+  succeeded — request attempts, not unique keys; final cache file has exactly 1991 lines,
+  matching the diagnosed count exactly, zero duplicates). `label_exists_failures: 0` for
+  both models — every resilient-wrapper retry eventually succeeded; nothing fell back to
+  the conservative `False`.
+
+### Final clean P_label — both models, with CIs and drift
+
+| Model | Clean P_label | 95% CI | matched/total | Original (full, from metrics.json) | Drift |
+|---|---|---|---|---|---|
+| gemini-3.1-flash-lite | **0.5304** | [0.5206–0.5401] | 5340/10068 | 0.5256 | +0.48pp |
+| deepseek-v4-flash | **0.5346** | [0.5238–0.5453] | 4409/8248 | 0.5302 | +0.44pp |
+
+Both drifts land inside the same small, positive, "removing a below-average-precision
+rung nudges precision up marginally" pattern already seen on P_mention/P_type — directionally
+consistent, not an outlier.
+
+### Files changed (follow-up, on top of the first commit)
+
+- `scripts/sitelink_contamination.py` — `_label_exists_fn` (mirrors
+  `wiki_eval.py::_label_exists_fn`), `_resilient_label_exists` (retry/backoff/sticky
+  give-up wrapper), `_needed_label_surfaces` (refactored from the first commit's
+  `_count_label_exists_calls_required`, now also reused to build the prewarm dispatch
+  list), and `run()` wiring for `compute_p_label`/`label_cache_path`/
+  `label_network_concurrency` + matching CLI flags (`--compute-p-label`, `--label-cache`,
+  `--label-network-concurrency`).
+- `scripts/sitelink_clean_full_metrics.py` — `--compute-p-label` /
+  `--label-network-concurrency` CLI flags, per-model `label_cache_path` wiring, richer
+  stderr summary line.
+- `docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json` — both
+  models' `p_label_p3ex` now `status: "computed"` with real matched/total/CI, plus
+  `unique_surfaces_queried`/`live_calls_made`/`cache_hits`/`cache_path`/
+  `label_exists_failures` for provenance.
+- `docs/experiments/2026-07-05-model-comparison/drafts/sitelink_replay/.wikidata_cache.label_exists.google--gemini-3.1-flash-lite--provider-9.jsonl`
+  (new, committed, 4141 lines, 2.4MB) and the deepseek equivalent (new, committed, 1991
+  lines, 1.2MB) — the new `limit=1` caches, alongside (not replacing) the existing
+  `limit=7` candidate-generation caches.
+- This report.
+
+**Checked, left untouched**: `reports/bouquet/judges/summary.md` has an unrelated diff
+(a concurrent agent's `claude-opus-4.8` BOUQUET judge stats regeneration, timestamped
+`2026-07-08T23:21:51`, nothing to do with this task) — confirmed via `git diff` before
+staging anything, per instruction; not staged.
+
+### Ran / didn't run (follow-up)
+
+**Ran:**
+- Unit test of `_resilient_label_exists` in isolation (no network, synthetic flaky
+  function) — 4/4 assertions passed before spending any live budget.
+- Offline equivalence check of the old vs. new p3_ex accumulation path against gemini's
+  real clean-article set with a deterministic fake `label_exists` — byte-identical
+  result, confirming the budget fix is value-neutral.
+- `PYTHONPATH=src uv run python scripts/sitelink_clean_full_metrics.py` (no
+  `--compute-p-label`) — regression check after each code change, confirming
+  `R_doc_clean`/call-counts stayed exactly as in the first commit.
+- `uv run pytest tests/test_wiki_matching.py tests/test_wiki_metrics.py -q` — 34 passed,
+  after both fixes.
+- `uv run ruff check scripts/sitelink_contamination.py scripts/sitelink_clean_full_metrics.py`
+  — clean except the same 3 pre-existing baseline E501s from the first commit (verified
+  via `git stash` again).
+- Two live background runs: `bg4081dd9` (crashed on deepseek, gemini succeeded) and
+  `buo9h9mdc` (completed both models cleanly after the fixes).
+- Final combined re-run with `--compute-p-label` after `buo9h9mdc` completed, to produce
+  the JSON committed here (`wikidata_network_calls_made: 0` for the candidate-ladder
+  client on both models, confirming the R_doc/R_span/R_strict/P_mention/P_type numbers
+  from the first commit are unchanged).
+
+**Did not run:**
+- Any re-verification of `label_exists_failures > 0` handling end-to-end (both models
+  finished with zero permanent failures, so the conservative-`False`-fallback path was
+  exercised only by the unit test, not by a real run).
+
+## Commit (follow-up)
+
+`feat(eval): clean P_label via live label checks for sitelink-clean replay` — see chat
+reply / git log for hash.

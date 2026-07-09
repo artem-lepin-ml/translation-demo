@@ -123,9 +123,19 @@
    }
   },
   "p_label_p3ex": {
-   "status": "not_computed",
-   "reason": "P_label (P3\\exact) needs a live wbsearchentities(..., limit=1) call per unmatched, non-exact_label prediction surface (label_exists) -- a different cache-key shape than the limit=7 candidate-generation ladder this script replays, so no committed cache covers it. Not computed to avoid making live/uncached Wikidata calls.",
-   "estimated_unique_live_calls_required_clean": 2419
+   "status": "computed",
+   "matched": 5340,
+   "total": 10068,
+   "value": 0.5303933253873659,
+   "ci_lo": 0.5206,
+   "ci_hi": 0.5401,
+   "underpowered": false,
+   "unique_surfaces_queried": 2419,
+   "live_calls_made": 0,
+   "cache_hits": 2419,
+   "cache_path": "/home/user/translation-demo/docs/experiments/2026-07-05-model-comparison/drafts/sitelink_replay/.wikidata_cache.label_exists.google--gemini-3.1-flash-lite--provider-9.jsonl",
+   "label_exists_failures": 0,
+   "label_exists_failure_examples": []
   },
   "wikidata_network_calls_made": 0
  },
@@ -253,9 +263,19 @@
    }
   },
   "p_label_p3ex": {
-   "status": "not_computed",
-   "reason": "P_label (P3\\exact) needs a live wbsearchentities(..., limit=1) call per unmatched, non-exact_label prediction surface (label_exists) -- a different cache-key shape than the limit=7 candidate-generation ladder this script replays, so no committed cache covers it. Not computed to avoid making live/uncached Wikidata calls.",
-   "estimated_unique_live_calls_required_clean": 1991
+   "status": "computed",
+   "matched": 4409,
+   "total": 8248,
+   "value": 0.5345538312318138,
+   "ci_lo": 0.5238,
+   "ci_hi": 0.5453,
+   "underpowered": false,
+   "unique_surfaces_queried": 1991,
+   "live_calls_made": 2061,
+   "cache_hits": 55,
+   "cache_path": "/home/user/translation-demo/docs/experiments/2026-07-05-model-comparison/drafts/sitelink_replay/.wikidata_cache.label_exists.deepseek--deepseek-v4-flash--provider-9.jsonl",
+   "label_exists_failures": 0,
+   "label_exists_failure_examples": []
   },
   "wikidata_network_calls_made": 0
  }

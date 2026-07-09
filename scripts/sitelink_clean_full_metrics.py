@@ -6,19 +6,28 @@ into one JSON for the paper's Table C.
 
 Pure driver -- no matching/CI/replay logic of its own; it just calls
 ``sitelink_contamination.run()`` twice against the two runs' own already-warm
-on-disk caches (``docs/experiments/2026-07-05-model-comparison/drafts/
+candidate cache (``docs/experiments/2026-07-05-model-comparison/drafts/
 sitelink_replay/.wikidata_cache.<model-slug>.jsonl``, built by a prior run of
 that script) and writes the combined result. ``allow_network=False`` (the
-default) means this makes zero live Wikidata calls on a warm cache -- see
-``sitelink_contamination.py``'s module docstring for what that guarantees and
-what it does NOT cover (P_label / P3\\exact, reported as a diagnostic count
-only, never computed here).
+default) means the *candidate-ladder* replay makes zero live Wikidata calls
+on a warm cache -- see ``sitelink_contamination.py``'s module docstring.
+
+``--compute-p-label`` (off by default) additionally computes the clean
+P_label (P3\\exact) headline via real, cached, rate-limited
+``label_exists`` calls (``sitelink_contamination.run(compute_p_label=True)``)
+-- expected ~2,400 (gemini) + ~2,000 (deepseek) live calls at
+``label-network-concurrency`` (default 3), cached to a NEW
+``.wikidata_cache.label_exists.<model-slug>.jsonl`` per model, alongside the
+existing ``limit=7`` candidate cache but keyed by a different (``limit=1``)
+query shape so the two stay independently replayable. Without the flag,
+P_label stays a diagnostic call-count only, exactly as before.
 
 Usage (from the worktree root, with PYTHONPATH=src):
-  uv run python scripts/sitelink_clean_full_metrics.py
+  uv run python scripts/sitelink_clean_full_metrics.py [--compute-p-label]
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -47,21 +56,42 @@ RUNS = {
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--compute-p-label", action="store_true",
+                         help="also compute clean P_label via live label_exists calls (slow, "
+                              "~20-40 min; off by default, see module docstring)")
+    parser.add_argument("--label-network-concurrency", type=int, default=3)
+    args = parser.parse_args()
+
     results: dict = {}
     for name, pred_dir in RUNS.items():
         meta = json.loads((pred_dir / "meta.json").read_text(encoding="utf-8"))
         model_slug = f"{meta['model'].replace('/', '--')}--{meta['provider']}"
         cache_path = REPLAY_DIR / f".wikidata_cache.{model_slug}.jsonl"
+        label_cache_path = REPLAY_DIR / f".wikidata_cache.label_exists.{model_slug}.jsonl"
 
         result = run(
             pred_dir, GT_PATH, meta,
             network_concurrency=1, cache_path=cache_path, allow_network=False,
+            compute_p_label=args.compute_p_label,
+            label_cache_path=label_cache_path,
+            label_network_concurrency=args.label_network_concurrency,
         )
         results[name] = result
+        p_label = result["p_label_p3ex"]
+        if p_label["status"] == "computed":
+            p_label_summary = (
+                f"P_label={p_label.get('value')} ({p_label.get('matched')}/{p_label.get('total')}) "
+                f"live_calls={p_label.get('live_calls_made')}"
+            )
+        else:
+            n_needed = p_label["estimated_unique_live_calls_required_clean"]
+            p_label_summary = f"P_label not computed ({n_needed} calls needed)"
         print(
             f"=== {name}: wikidata_network_calls_made={result['wikidata_network_calls_made']} "
             f"R_doc_clean={result['R_doc_clean']['value']} "
-            f"({result['R_doc_clean']['matched']}/{result['R_doc_clean']['total']}) ===",
+            f"({result['R_doc_clean']['matched']}/{result['R_doc_clean']['total']}) "
+            f"{p_label_summary} ===",
             file=sys.stderr,
         )
 
