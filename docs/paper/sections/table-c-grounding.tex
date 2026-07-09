@@ -1,0 +1,48 @@
+% Table C: Terminology extraction + Wikidata grounding (Wikipedia corpus).
+% All values are sitelink-clean (title-sitelink fallback excluded; replay
+% provenance: docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json).
+% P_label marked $^{\S}$ is from the original runs; clean recomputation pending
+% live label checks. Canonical row order fixed by owner 2026-07-09.
+% XX rows: qwen3-4b / gemma-27b / qwen3.6-27b (sr004 runbook), gpt-5.5 (provider-8
+% smoke in flight), opus-4.8 (provider sweep in flight).
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & \multicolumn{3}{c}{Recall $\uparrow$} & \multicolumn{3}{c}{Precision (lower bound) $\uparrow$} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Model & $R_{\mathrm{doc}}$ & $R_{\mathrm{span}}$ & $R_{\mathrm{strict}}$
+      & $P_{\mathrm{mention}}$ & $P_{\mathrm{type}}$ & $P_{\mathrm{label}}$ \\
+\midrule
+\multicolumn{7}{@{}l}{\textit{Local models (vLLM)}} \\
+Qwen3-4B-Instruct      & XX & XX & XX & XX & XX & XX \\
+Gemma-3-27B-it         & XX & XX & XX & XX & XX & XX \\
+Qwen3.6-27B            & XX & XX & XX & XX & XX & XX \\
+\addlinespace
+\multicolumn{7}{@{}l}{\textit{Cloud models (API)}} \\
+Gemini-3.1-Flash-Lite  & 0.684 {\scriptsize[.674--.694]} & 0.622 & 0.602 & 0.300 & 0.452 & 0.526$^{\S}$ \\
+DeepSeek-V4-Flash$^{\dagger}$ & 0.609 {\scriptsize[.599--.620]} & 0.519 & 0.504 & 0.305 & 0.460 & 0.530$^{\S}$ \\
+GPT-5.5                & XX & XX & XX & XX & XX & XX \\
+Claude Opus 4.8        & XX & XX & XX & XX & XX & XX \\
+\bottomrule
+\end{tabular}
+\caption{Terminology extraction and Wikidata grounding on the Wikipedia corpus
+(100 articles, 7959 gold mentions from editor hyperlinks, 3868 unique
+entities). Each candidate model serves as both the extractor and the
+disambiguation judge in an otherwise fixed deterministic pipeline. A gold
+mention counts as recovered under document-level recall ($R_{\mathrm{doc}}$)
+if its entity is predicted anywhere in the same article, under
+$R_{\mathrm{span}}$ if token spans overlap, and under $R_{\mathrm{strict}}$ if
+position, surface, and entity all match. Because the link annotation is
+precise but incomplete, precision is reported as a conservative lower bound:
+$P_{\mathrm{mention}}$ scores every prediction, $P_{\mathrm{type}}$
+deduplicates repeated (surface, entity) pairs, and $P_{\mathrm{label}}$
+additionally credits predictions whose surface exists as a Wikidata label.
+The title-sitelink fallback is disabled, as it reuses the mechanism the
+annotation is built from. Wilson 95\% confidence intervals are given for
+$R_{\mathrm{doc}}$. $^{\dagger}$4.1\% of paragraphs were lost to transient
+API failures during this run and are declared in the run metadata.}
+\label{tab:grounding-results}
+\end{table*}

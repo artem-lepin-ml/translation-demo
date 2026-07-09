@@ -42,8 +42,11 @@ flat T2/T3 numbering:
 - **Table B — Refinement usefulness** (contribution: refinement module). Cross
   base×refiner matrix — the 7-row proposal below, still pending owner confirmation —
   on wiki-100, reported with QE metrics.
-- **Table C — NER + Wikidata grounding** (contribution: terminology extraction). From
-  model-comparison v4, pending the qwen3.7-plus clean re-run.
+- **Table C — NER + Wikidata grounding** (contribution: terminology extraction). 7-model
+  lineup (canonical row order fixed by owner 2026-07-09): Qwen3-4B-Instruct, Gemma-3-27B-it,
+  Qwen3.6-27B, Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash, GPT-5.5, Claude Opus 4.8; qwen3.7-plus
+  dropped. 2/7 rows filled with sitelink-clean numbers (commit 229529a replay); remaining 5 rows
+  pending (3 local via sr004, gpt-5.5 provider smoke, opus provider sweep).
 
 ### Done
 - **BOUQUET ru2en (by paragraphs)** → feeds **Table A**. Systems: TranslateGemma / TG-Refined /
@@ -52,12 +55,11 @@ flat T2/T3 numbering:
   Danil-verbatim (qwen3_6-27b, T=0.7, thinking on) — kept as a **sensitivity footnote**,
   not recomputed; Table A itself uses the new 7-judge protocol below.
 - **NER+Wikidata grounding, wiki corpus v2 (model-comparison v4)** → **Table C** / §5.1.
-  4-model matrix: `google/gemini-3.1-flash-lite` (provider-9, clean R_doc 0.684),
-  `deepseek/deepseek-v4-flash` (provider-9, clean R_doc 0.609), `qwen/qwen3.7-plus`
-  (provider-8 — run INVALIDATED by provider outage, re-run queued), `openai/gpt-5.5`
-  (provider-3 — EXCLUDED, no stable route >16h).
+  7-model matrix: 3 local (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B via sr004),
+  2 filled (Gemini-3.1-Flash-Lite provider-9 R_doc 0.684, DeepSeek-V4-Flash provider-9 R_doc 0.609),
+  2 pending (GPT-5.5 provider-3 smoke, Opus-4.8 provider sweep). qwen3.7-plus dropped.
   Artifacts: `reports/terminology/wiki-eval/`, paper section draft
-  `docs/experiments/2026-07-05-model-comparison/drafts/paper-section-en.tex`.
+  `docs/paper/sections/table-c-grounding.tex`.
 - **Wiki-100 corpus** built & handed to Danil: 2 553 paragraphs / 100 articles
   (`data/eval/wiki/`, README + sha256), pilot = 10 articles / 274 par.
 - **deepseek CloseRouter smoke** ($0.0052): reasoning-off flag mandatory; provider-9 pin
