@@ -15,29 +15,47 @@
 Judge & Config & Acc & Flu & Sty & Acc & Flu & Sty & Acc & Flu & Sty & Ties, \% \\
 \midrule
 \multicolumn{12}{@{}l}{\textit{Local judges (vLLM)}} \\
-Qwen3.6-27B            & $T{=}0$            & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\
-Qwen3-4B-Instruct      & $T{=}0$            & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\
-Gemma-3-27B-it         & $T{=}0$            & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\
+% TODO: pending owner-side sr004 vLLM runs (runbook: docs/runbooks/sr004-local-eval-runbook.md, commit 0c48124).
+Qwen3.6-27B            & $T{=}0$            & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+Qwen3-4B-Instruct      & $T{=}0$            & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+Gemma-3-27B-it         & $T{=}0$            & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
 \addlinespace
 \multicolumn{12}{@{}l}{\textit{Cloud judges (API)}} \\
-DeepSeek-V4-Flash      & $T{=}0$, reas.\ on & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\
-Claude Opus 4.8        & default            & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\
-GPT-5.5                & default, reas.\ on & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\
-Gemini-3.1-Flash-Lite  & default            & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\
+% TODO: DeepSeek-V4-Flash PARTIAL (19/2376 calls) -- gateway flapping, run parked twice
+% (commits 501c394, 85e5435); resume pending gateway stability.
+DeepSeek-V4-Flash      & $T{=}0$, reas.\ on & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+Claude Opus 4.8        & default            & 9.36 & 9.71 & 8.80 & $-$0.08 & $-$0.08 & $-$0.13 & 0.19 & 0.09 & 0.23 & 88.8 \\
+% NOTE: GPT-5.5 DONE at 2375/2376 calls -- one cell (translate-gemma-bouquet-refined,
+% fluency) has n=197 due to a disclosed deterministic model-output JSON bug; the
+% aggregate mean/rho below are computed over the available calls.
+GPT-5.5                & default, reas.\ on & 9.24 & 9.40 & 8.36 & $-$0.13 & $-$0.13 & $-$0.20 & 0.20 & 0.13 & 0.30 & 72.3 \\
+Gemini-3.1-Flash-Lite  & default            & 9.48 & 9.52 & 8.67 & $-$0.07 & $-$0.30 & $-$0.04 & 0.18 & 0.25 & 0.15 & 87.8 \\
+% TODO: Gemini-3.1-Flash-Lite reasoning-on variant (slug gemini-3.1-flash-lite-think)
+% PARTIAL (797/2376 calls) -- gateway outage across the whole Gemini family
+% (HTTP 503 no_available_provider, 6316 failure rows as evidence); run is resumable,
+% poller live.
+\addlinespace
+Gemini-3.1-Flash-Lite  & default, reas.\ on & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
 % --- optional sensitivity row (previous verbatim config) ---
 % \addlinespace
 % Qwen3.6-27B & $T{=}0.7$, think.\ on & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\
 \bottomrule
 \end{tabular}
-\caption{LLM-as-a-judge comparison on BOUQuET (ru$\rightarrow$en, 198 paragraphs).
+\caption{LLM-as-a-judge comparison on BOUQuET (ru$\rightarrow$en).
 Every judge re-scores the same four fixed translation systems (TranslateGemma,
-Qwen3.6-27B, and their refined variants) on three 1--10 criteria; translations are
-never regenerated, so all differences are attributable to the judge. Mean scores
-are averaged over the four systems. $\rho$ --- Spearman correlation between
-per-paragraph judge scores and automatic metrics: MetricX-24 (reference-based,
-lower is better --- negative $\rho$ indicates agreement) and CometKiwi
-(reference-free, higher is better). Ties --- share of scores in $\{9,10\}$.
-Per-system score breakdowns and exact judge configurations (incl.\ reasoning
-settings) are listed in Appendix~\ref{app:judge-configs}.}
+Qwen3.6-27B, and their refined variants) over 198 paragraphs on three 1--10
+criteria (accuracy, fluency, style), for $198 \times 4 \times 3 = 2\,376$ judge
+calls per judge. Translations are never regenerated, so all differences are
+attributable to the judge. All judges use the identical \texttt{v1\_core3}
+prompt set. Local judges run at $T{=}0$ with thinking off. Frontier judges
+(Claude Opus 4.8, GPT-5.5, Gemini-3.1-Flash-Lite) run at provider-default
+effort, with the exact per-judge reasoning configuration disclosed in
+Appendix~\ref{app:judge-configs}. Mean scores are averaged over the four
+systems. $\rho$ is the Spearman correlation between per-paragraph judge
+scores and automatic metrics: MetricX-24 (reference-based, lower is better,
+so a negative $\rho$ indicates agreement) and CometKiwi (reference-free,
+higher is better). Ties is the share of scores in $\{9,10\}$.
+Per-system score breakdowns and exact judge configurations are listed in
+Appendix~\ref{app:judge-configs}.}
 \label{tab:judge-comparison}
 \end{table*}

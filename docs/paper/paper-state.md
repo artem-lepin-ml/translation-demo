@@ -85,6 +85,23 @@ flat T2/T3 numbering:
 
 ### In flight (current task)
 
+**Table A fill status (2026-07-09): 3/8 rows DONE, 2 PARTIAL (gateway outages), 3 local
+rows pending sr004.**
+- DONE: `gemini-3.1-flash-lite` (reasoning off, data commit `ced45c3`), `claude-opus-4.8`
+  (no thinking available via gateway, commit `6a90dec`), `gpt-5.5` (default effort, auto
+  route, 2375/2376 calls, commit `336f272` — 1 cell short due to a disclosed
+  deterministic model-output JSON bug).
+- PARTIAL, marked `---` with TODO in the table: `gemini-3.1-flash-lite-think`
+  (Gemini-3.1-Flash-Lite + reasoning, 797/2376) — gateway outage across the whole Gemini
+  family (HTTP 503 `no_available_provider`, 6316 failure rows as evidence), run
+  resumable, poller live; `deepseek-v4-flash` (reasoning on, 19/2376) — gateway
+  flapping, run parked twice (commits `501c394`, `85e5435`).
+- Pending, marked `---` with TODO: the 3 local judges (`qwen3.6-27b`, `qwen3-4b-instruct`,
+  `gemma-3-27b-it`, all $T{=}0$, thinking off) await owner-side sr004 vLLM runs per the
+  runbook [sr004-local-eval-runbook.md](../runbooks/sr004-local-eval-runbook.md)
+  (commit `0c48124`).
+- Table skeleton + fills: `docs/paper/table-a-judges.tex`.
+
 **Table A — LLM-as-a-judge, 7-judge lineup (owner-locked, 2026-07-08; updated 2026-07-08 —
 Gemini judge swapped to flash-lite):**
 - Local vLLM: `qwen3.6-27b` (prod anchor), `qwen3-4b-instruct`, `gemma-3-27b-it`
