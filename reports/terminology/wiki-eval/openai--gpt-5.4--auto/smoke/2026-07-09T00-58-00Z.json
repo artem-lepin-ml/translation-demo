@@ -1,0 +1,109 @@
+{
+ "model": "openai/gpt-5.4",
+ "provider": "auto",
+ "padding_check": [
+  {
+   "title": "Первая династия Страны Моря",
+   "ok": false,
+   "latency_s": 30.331760024000687,
+   "error_class": "APITimeoutError",
+   "error_message": "Request timed out.",
+   "http_status": null
+  },
+  {
+   "title": "Ибаль-пи-Эль II",
+   "ok": true,
+   "latency_s": 17.579453995998847,
+   "full_prompt_words": 482,
+   "observed_prompt_tokens": 1408,
+   "observed_completion_tokens": 430,
+   "observed_reasoning_tokens": 204,
+   "cost_usd": null,
+   "json_sanity_ok": true,
+   "n_surfaces_parsed": 11,
+   "content_preview": "[{\"surface\":\"Ибаль-пи-Эль\",\"lemma\":\"Ибаль-пи-Эль\",\"category\":\"person\"},{\"surface\":\"Верхней Месопотамии\",\"lemma\":\"Верхняя Месопотамия\",\"category\":\"place\"},{\"surface\":\"Шамши-Ададом\",\"lemma\":\"Шамши-Адад\""
+  },
+  {
+   "title": "Нур-Адад",
+   "ok": true,
+   "latency_s": 15.743081588998393,
+   "full_prompt_words": 525,
+   "observed_prompt_tokens": 1489,
+   "observed_completion_tokens": 579,
+   "observed_reasoning_tokens": 340,
+   "cost_usd": null,
+   "json_sanity_ok": true,
+   "n_surfaces_parsed": 12,
+   "content_preview": "[{\"surface\":\"Нур-Адад\",\"lemma\":\"Нур-Адад\",\"category\":\"person\"},{\"surface\":\"Ларсы\",\"lemma\":\"Ларса\",\"category\":\"place\"},{\"surface\":\"династии Нур-Адада\",\"lemma\":\"династия Нур-Адада\",\"category\":\"dynasty\"}"
+  }
+ ],
+ "burst_check": [
+  {
+   "i": 0,
+   "ok": true,
+   "latency_s": 11.123590037999747,
+   "prompt_tokens": 21,
+   "completion_tokens": 15,
+   "cost_usd": null
+  },
+  {
+   "i": 1,
+   "ok": true,
+   "latency_s": 10.733130148000782,
+   "prompt_tokens": 21,
+   "completion_tokens": 15,
+   "cost_usd": null
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "latency_s": 5.06746252999983,
+   "prompt_tokens": 21,
+   "completion_tokens": 16,
+   "cost_usd": null
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "latency_s": 6.203571602000011,
+   "prompt_tokens": 21,
+   "completion_tokens": 15,
+   "cost_usd": null
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "latency_s": 5.335601118000341,
+   "prompt_tokens": 21,
+   "completion_tokens": 15,
+   "cost_usd": null
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "latency_s": 6.11516626500088,
+   "prompt_tokens": 21,
+   "completion_tokens": 15,
+   "cost_usd": null
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "latency_s": 4.8772687389991916,
+   "prompt_tokens": 21,
+   "completion_tokens": 16,
+   "cost_usd": null
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "latency_s": 3.541577515999961,
+   "prompt_tokens": 21,
+   "completion_tokens": 16,
+   "cost_usd": null
+  }
+ ],
+ "burst_wall_s": 52.99795608699969,
+ "burst_n_success": 8,
+ "burst_n_calls": 8
+}
