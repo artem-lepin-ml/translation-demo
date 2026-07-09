@@ -1,12 +1,23 @@
 # BOUQUET judge run — deepseek-v4-flash
 
-**STATUS: RUN PARKED (4th time) — provider outage relapse (independent of a
-2nd container recycle), resumable.** Not the final report.
-`deepseek/deepseek-v4-flash` has no available upstream provider on the
-CloseRouter gateway (`503 no_available_provider`) as of this writing.
+**STATUS: PARKED TERMINALLY at 290/2376 — resident-poll stood down on
+coordinator decision, ~14:05Z.** This is NOT the final report — the run is
+resumable from 290/2376 (append-only, keyed rows) whenever the route heals.
+`deepseek/deepseek-v4-flash` has been down (`503 no_available_provider`) for
+most of the last 12+ hours, across 4 outage cycles, with only 3 brief
+windows of real availability — one of which (~09:55–10:15Z) produced the
+only real progress this run has made: 19→290 scored. After a 2nd container
+recycle and a further ~2.7h of resident polling (11:20Z→14:05Z, 60+ gate
+cycles, 0/3 realistic-payload success every single time, zero flicker), the
+coordinator called a stand-down: stop polling, park cleanly, leave the row
+disclosed as an honest partial (290/2376) for the owner to resume when the
+route heals. `stats.json` is explicitly **NOT** computed at this point —
+290/2376 (12.2%) is too partial a sample to report as a judge-comparison
+data point; computing it now would risk it being mistaken for a real result.
 
-**Timeline of four park cycles + two container recycles**, all against the
-same underlying flapping route:
+**Timeline of four outage cycles (3 brief recovery windows) + two container
+recycles + a resident-poll stand-down**, all against the same underlying
+flapping route:
 
 1. **Park #1** (commit `501c394`): outage first observed, ~55+ min sustained
    503, one misleading brief flicker (mixed 503/400) that did not stabilize.
@@ -82,35 +93,70 @@ same underlying flapping route:
    got here. New strategy from the coordinator: stay resident inside this
    task's own tool-call loop for the remainder of the run, rather than
    trusting any detached daemon to survive to completion.
-8. **Park #4 (this commit)**: re-ran the 3x realistic-payload gate
+8. **Park #4** (commit `70e9ba5`): re-ran the 3x realistic-payload gate
    immediately on resuming — **0/3 this time**, still `503
    no_available_provider`, independent of and unrelated to the container
    recycle (the recycle interrupted a *healthy* run; this is a fresh,
    separate relapse of the underlying route). 290 scored rows committed
    (safety, given two recycles already happened this session), 1506
-   cumulative diagnostic failure rows. Continuing to probe the gate from
-   within this same resident task (2-3 min cadence) rather than spawning
-   another background poller that would just die on the next recycle.
+   cumulative diagnostic failure rows.
+9. **Resident-poll stand-down (this commit)**: continued probing the 3x
+   realistic-payload gate from within this same resident task at a 2-3 min
+   cadence (per the coordinator's "stay resident, your activity is the
+   keep-alive" strategy, since two container recycles had already proven
+   detached background pollers unreliable) from **11:20Z to 14:05Z — 2h45m,
+   60+ gate cycles, 180+ individual probes, 0/3 success every single time,
+   zero flicker at any point**. This is a materially different, longer,
+   more sustained outage than any of the prior four cycles (each of which
+   resolved — even if falsely — within roughly an hour). The coordinator
+   called a stand-down at ~14:05Z: stop polling, park terminally, leave
+   290/2376 as an honest disclosed partial rather than continue an
+   open-ended resident loop against a route showing no sign of recovery.
+   No `stats.json` computed (290/2376 too partial to be a meaningful data
+   point — see STATUS above). Final counts at stand-down: **290 scored
+   rows, 1506 diagnostic failure rows**, cumulative cost ≈$0.128
+   (catalog-estimated at 0.07/0.14 $ per Mtok in/out — the gateway surfaces
+   no real `cost`/`cost_usd` for any of the 290 rows, same as every prior
+   observation for this model on this route; 389,655 prompt + 719,366
+   completion tokens, of which 602,328 (83.7%) were reasoning), well under
+   the original $4.00 cap even projected to the full 2376 calls (≈$1.05).
+   0 committed rows lost across either container recycle (append-only +
+   committed regularly throughout).
 
 **Resume command** (skips the 290 already-scored rows automatically via the
-runner's resume-by-existing-keys logic). Given the coordinator's guidance
-that time is boxed, this resumes straight into the **full run** (no
-`--pilot`) rather than the original 240-call pilot gate — launch via the
-supervisor (auto-restart/step-up/relapse-park) but **stay resident and
-watch it from the same task/session** rather than relying on any detached
-process to survive to completion (two container recycles have now proven
-that assumption wrong regardless of how well the process is detached):
+runner's resume-by-existing-keys logic). Whoever resumes this should first
+re-run the realistic-payload gate (not a trivial ping — see cycle 4 above
+for why that produced false positives) and require 3/3 before trusting the
+route, then launch conservatively and stay resident rather than trusting a
+detached process to survive a container recycle:
 
 ```
-setsid nohup .venv/bin/python3 <supervisor-script-copy> > <fresh-log> 2>&1 < /dev/null &
-```
+# 1. Gate (repeat until 3/3; a single success is not sufficient evidence,
+#    per this run's repeated false-positive flickers):
+for i in 1 2 3; do
+  python3 -c "
+import sys; sys.path.insert(0, 'scripts'); sys.path.insert(0, '.')
+from bouquet_judge_rerun import load_prompts, _USER_MSG_TEMPLATE, _load_original, _load_translation, USER_AGENT, load_judges, build_payload, parse_judge_response, JudgeParseError
+import httpx, os
+from pathlib import Path
+base = os.environ['OPENROUTER_BASE_URL'].rstrip('/'); key = os.environ['OPENROUTER_API_KEY']
+j = load_judges(Path('configs/bouquet_judges.yaml'))['deepseek-v4-flash']
+prompts = load_prompts(); original = _load_original(); translated = _load_translation('qwen-27b-bouquet')
+payload = build_payload(j, prompts['accuracy'], _USER_MSG_TEMPLATE.format(original[19], translated[19]))
+r = httpx.post(f'{base}/chat/completions', headers={'Authorization': f'Bearer {key}', 'User-Agent': USER_AGENT}, json=payload, timeout=90.0)
+print(r.status_code); sys.exit(0 if r.status_code == 200 else 1)
+"
+  sleep 5
+done
 
-or, manually, starting conservatively (concurrency 4, not 12 — both prior
-attempts at higher/uncontrolled concurrency relapsed within seconds to
-~90s of resuming):
-
-```
+# 2. Resume (only after 3/3 gate success), conservative start:
 .venv/bin/python3 scripts/bouquet_judge_rerun.py run --judge deepseek-v4-flash --concurrency 4
+# watch reports/bouquet/judges/deepseek-v4-flash/scores.jsonl for 5 min of
+# real growth before considering --concurrency 8 (kill + relaunch; resume
+# logic skips already-scored rows automatically).
+
+# 3. On completion (2376/2376):
+.venv/bin/python3 scripts/bouquet_judge_rerun.py stats --judge deepseek-v4-flash
 ```
 
 Then continue: watch for real growth → step concurrency up cautiously if
@@ -239,18 +285,20 @@ back.
   raised after the case #3 truncation-driven parse failure above). Header
   comment block updated to document the superseded regime and point at this
   report.
-- `reports/bouquet/judges/deepseek-v4-flash/scores.jsonl` — 19 rows (append-only,
-  0 deleted/overwritten): 15 pre-existing validation rows (`t0_no_reasoning`,
-  `translate-gemma-bouquet` ids 0-4) + 4 new rows from the `t0_reasoning_on`
-  smoke test (`qwen-27b-bouquet` id=0, all 3 criteria, plus 1 row from the
-  brief provider-flicker window).
-- `reports/bouquet/judges/deepseek-v4-flash/parse_failures.jsonl` — 1312 rows
-  as of park #3 (442 from park #1 + 794 from resume attempt #1 + 76 from
-  resume attempt #2, almost all `no_available_provider`/`rate_limited`/`400`).
-  Diagnostic only — none of these represent a real judge-response parse
-  failure; absence from `scores.jsonl` is what drives the resume, so all of
-  them will be retried automatically
-  once the provider is stable.
+- `reports/bouquet/judges/deepseek-v4-flash/scores.jsonl` — **290 rows final**
+  (append-only, 0 deleted/overwritten): 15 pre-existing validation rows
+  (`t0_no_reasoning`, `translate-gemma-bouquet` ids 0-4) + 4 rows from the
+  `t0_reasoning_on` smoke test + 271 rows from the one genuinely healthy
+  window (~09:55–10:15Z, cycle 6 in the timeline above: 19→58 at
+  concurrency 4, auto-stepped to 8, →290 before the 2nd container recycle
+  cut it off). 12.2% of the 2376-call target.
+- `reports/bouquet/judges/deepseek-v4-flash/parse_failures.jsonl` — **1506
+  rows final** (442 park #1 + 794 resume attempt #1 + 76 resume attempt #2
+  + 194 park #4's resume attempt, almost all
+  `no_available_provider`/`rate_limited`/`400` — outage noise, not judge
+  parse failures). Diagnostic only; absence from `scores.jsonl` is what
+  drives the resume, so all of them will be retried automatically once the
+  provider is stable and the run is resumed.
 
 **Multi-agent shared-worktree note**: `configs/bouquet_judges.yaml` and
 `scripts/bouquet_judge_rerun.py` are edited concurrently by up to 3 other
@@ -293,33 +341,56 @@ is confirmed model-specific (other judges in this same session are healthy)
 and was still active after ~55+ minutes of direct observation with a
 misleading brief flicker in between. Parking with the runner
 hardening/config already committed means the branch isn't blocked on this
-judge while the outage resolves, and the 19 real scored rows +
+judge while the outage resolves, and the real scored rows +
 diagnostic failure log are preserved (append-only) rather than sitting
 uncommitted and at risk in a shared worktree for an unknown number of
 further hours.
 
+**Why stand down the resident poll instead of continuing indefinitely.**
+2h45m of continuous, zero-flicker `503` (60+ gate cycles) is a materially
+different signal than the prior three outage windows, each of which
+resolved (even if falsely) within about an hour. With 290/2376 already safe
+on disk and committed, and no new information being learned by repeating an
+identical failing probe every 3 minutes, the coordinator's call to stop and
+disclose the partial result rather than continue an open-ended loop is the
+right one — an honest 12.2%-complete row the owner can resume later is more
+useful than an agent burning session time against a route showing no signal
+of recovery.
+
 ## Open questions
 
-- Is the deepseek-v4-flash route's flakiness (503 outage + a brief
-  flicker) a known, recurring CloseRouter issue for this specific model, or
-  a one-off? **Now observed three times**, each with the same shape: a
-  lightweight/isolated probe returns `200`, but real concurrent
-  production-shaped load relapses to `503` within seconds to ~90s. This
-  looks like a real, recurring capacity characteristic of this specific
-  model/route (very limited concurrent capacity, enough for an occasional
-  single light request but not a sustained batch) rather than a one-off,
-  worth flagging in `docs/known_issues.md` once the run is finally complete
-  (not done yet — would rather record the full picture in one edit).
-- **Probe fidelity matters for recovery detection.** Two of the three
-  "recovery" signals that triggered a resume attempt turned out to be
-  false positives from trivial-payload probes (a cheap ping succeeding
-  doesn't mean the real workload will). Fixed for future cycles by
-  rebuilding the poller's probe around the runner's own `build_payload()` +
-  `parse_judge_response()` (real judge-shaped call, real parse validation) —
-  but even that is only evidence, not proof; the run itself (via
+- **Recommend flagging `deepseek-v4-flash` on this CloseRouter route in
+  `docs/known_issues.md` as having recurring, severe availability problems**
+  — not done by this task (run never reached completion, and the owner may
+  want to fold this into a broader gateway-reliability note alongside the
+  `setsid`-detach entries rather than have this task add a fourth,
+  possibly-overlapping entry). Evidence for the recommendation: across
+  ~12+ hours of intermittent observation, the route was down far more than
+  it was up — 3 brief recovery windows (one producing real progress:
+  19→290; two others were false-positive flickers that relapsed within
+  seconds to ~90s of real load) versus a final, uninterrupted ~2h45m
+  `503` stretch with zero success and zero flicker. This does not look like
+  ordinary transient flakiness; it looks like a route with structurally
+  insufficient upstream capacity for this model on this gateway right now.
+- **Probe fidelity matters for recovery detection.** 2 of the 3 "recovery"
+  signals that triggered a resume attempt were false positives from
+  trivial-payload probes (a cheap ping succeeding doesn't mean the real
+  workload will — confirmed by a supervisor self-park within ~90s of one
+  such resume). Fixed by rebuilding the poller's probe around the runner's
+  own `build_payload()` + `parse_judge_response()` — but even a 3/3
+  realistic-payload gate is only evidence, not proof; the run itself (via
   `run_supervisor.py`'s fast ~90s relapse detector) remains the actual
-  arbiter, and correctly self-parked on this run's own first sign of
-  trouble rather than needing manual intervention.
+  arbiter. Worth noting for whoever resumes: even this stronger gate never
+  once passed during the final 2h45m stand-down window, so it wasn't a
+  false-positive problem this time — the route was genuinely, continuously
+  down.
+- **Is a resume worth automating (e.g. a scheduled check) rather than
+  requiring a human/agent to notice and act?** Given the container-recycle
+  discovery (`docs/known_issues.md` amendment, commit `e61692d`) that no
+  local daemon survives a reclaim, any future automation would need to be
+  external to this session (a scheduled job outside the container, or a
+  human periodically re-triggering a fresh session) — out of scope for this
+  task to build.
 - Should the widened `httpx.TransportError` retry-catch and the
   whole-batch-crash fix in `_one()` be treated as a general reliability fix
   worth flagging to the other 3 agents' judge runs (they use the same shared
@@ -329,20 +400,28 @@ further hours.
   up the fix automatically only if/when they next restart their own `run`
   invocation.
 
-## NOT done (explicit)
+## NOT done (explicit) — final state at terminal park
 
-- **Pilot gate not evaluated** — blocked by the provider outage described
-  above. No pass/fail verdict yet.
-- **Full run not started** — depends on the pilot gate passing first.
-- **`stats` subcommand not run** — no `stats.json` for `deepseek-v4-flash`
-  yet; `reports/bouquet/judges/summary.md` currently reflects only the other
-  3 judges (regenerated by another agent's `stats` run) and is intentionally
-  left untouched/uncommitted by this task.
-- **Final cost not known** — only $0.0073 spent so far (19 real scored
-  rows' worth of usage, catalog-estimated since the gateway surfaces no
-  `cost`/`cost_usd` for this model).
+- **Run not complete: 290/2376 (12.2%).** Never reached even a first full
+  240-call pilot-gate-equivalent sample cleanly — the only real progress
+  (271 rows) happened in one ~25-minute healthy window before the 2nd
+  container recycle cut it off.
+- **`stats` subcommand deliberately NOT run.** 290/2376 is too partial a
+  sample to report as a meaningful judge-comparison data point (per-system
+  breakdown would be 290 rows split unevenly across 4 systems × 3 criteria
+  — some system/criterion cells could have very few or zero rows). No
+  `stats.json` for `deepseek-v4-flash`; `reports/bouquet/judges/summary.md`
+  reflects only the other 3 (complete) judges and is intentionally left
+  untouched/uncommitted by this task.
+- **No headline per-system means to report** — direct consequence of not
+  computing `stats` on a non-representative partial sample. The Table A row
+  for this judge stays an honest gap until the run is resumed and completed.
 - **Final commit (`feat(eval): BOUQUET judge run — deepseek-v4-flash (2376
-  calls)`) not made** — this park commit is an interim checkpoint, not the
-  task's completion.
-- Continuing to poll for provider recovery (every 5-10 min per the
-  coordinator's guidance, not 90s) after this park commit lands.
+  calls)`) not made** — every commit in this run (`501c394` → `85e5435` →
+  `02e4f25` → `70e9ba5` → this one) is a park checkpoint, not completion.
+- **Resident polling stood down** at the coordinator's explicit instruction
+  (~14:05Z) after 2h45m of zero-signal `503`. Nothing is currently watching
+  this route — resuming requires a human or a future agent session to
+  re-run the gate and resume from 290/2376 (exact commands above).
+- Cost so far (≈$0.128, catalog-estimated) is well under the original
+  $4.00 cap, so budget was never the constraint — availability was.
