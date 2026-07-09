@@ -49,11 +49,15 @@ flat T2/T3 numbering:
   (`\label{app:grounding-full}`). 6-model lineup (canonical row order fixed by owner 2026-07-09):
   Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B, Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash, GPT-5.5.
   Claude Opus 4.8 dropped from Table C (kept in Table A as the no-thinking judge row). qwen3.7-plus
-  dropped. Fill status: 2/6 rows have $R_{\mathrm{doc}}$ (Gemini-3.1-Flash-Lite 0.735, DeepSeek-V4-Flash
-  0.657, both $R_{\mathrm{term}}$-tier sitelink-clean); $P_{\mathrm{label}}$ is pending live
-  recomputation for every row, including the two filled $R_{\mathrm{doc}}$ rows. Remaining 4
-  $R_{\mathrm{doc}}$ rows pending (3 local via sr004, GPT-5.5 provider smoke / gpt-5.4 fallback
-  pending effort-probe).
+  dropped. Fill status: 2/6 rows FULLY filled — both $R_{\mathrm{doc}}$ and $P_{\mathrm{label}}$
+  (Gemini-3.1-Flash-Lite: $R_{\mathrm{doc}}$ 0.735 $R_{\mathrm{term}}$-tier sitelink-clean,
+  $P_{\mathrm{label}}$ 0.530 [.521--.540]; DeepSeek-V4-Flash: $R_{\mathrm{doc}}$ 0.657
+  $R_{\mathrm{term}}$-tier sitelink-clean, $P_{\mathrm{label}}$ 0.535 [.524--.545] — clean values
+  from `docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json`, also
+  applied to the appendix full-grid table since $P_{\mathrm{label}}$ has no gold-tier dependence).
+  Remaining 4 rows pending: 3 local via sr004 (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B),
+  and the GPT row, where the `gpt-5.4` grounding run (fallback for `gpt-5.5`) is in progress
+  (see `docs/reports/ml-engineer-grounding-run-gpt54.md`).
 
 ### Done
 - **BOUQUET ru2en (by paragraphs)** → feeds **Table A**. Systems: TranslateGemma / TG-Refined /
@@ -65,8 +69,10 @@ flat T2/T3 numbering:
   6-model matrix: 3 local (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B via sr004),
   2 filled with $R_{\mathrm{term}}$-tier (n=7174) sitelink-clean $R_{\mathrm{doc}}$
   (Gemini-3.1-Flash-Lite 0.735, DeepSeek-V4-Flash 0.657; the earlier $R_{\mathrm{all}}$/T0-tier
-  figures 0.684/0.609 now live only in the appendix full-grid table), 1 pending (GPT-5.5
-  provider-3 smoke). $P_{\mathrm{label}}$ live computation in progress for both filled rows.
+  figures 0.684/0.609 now live only in the appendix full-grid table), 1 pending (GPT row,
+  `gpt-5.4` fallback run in progress). $P_{\mathrm{label}}$ now filled for both rows via live
+  label checks (Gemini 0.530 [.521--.540], DeepSeek 0.535 [.524--.545]) — see
+  `docs/reports/python-pro-sitelink-clean-replay.md`.
   Opus-4.8 dropped (reasoning unreachable via gateway on all 7 providers). qwen3.7-plus dropped.
   Main table now reports only $R_{\mathrm{doc}}$ + $P_{\mathrm{label}}$ (owner-locked 2026-07-09);
   full 6-metric grid moved to an appendix table. Artifacts: `reports/terminology/wiki-eval/`,
