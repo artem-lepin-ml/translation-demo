@@ -184,14 +184,159 @@ any external metric.
   last (or a dedicated aggregation step) should regenerate and commit the
   final combined version once all 4 judges are done.
 
-## NOT done (explicit)
+## NOT done (explicit, for the reasoning-OFF run above)
 
 - `scripts/bouquet_judge_rerun.py` changes (the `vendor_default` regime)
-  are **not committed** by this task (explicit instruction) — they exist
-  only in the shared worktree's working copy alongside the deepseek agent's
-  own uncommitted edits to the same file.
+  were **not committed** by the reasoning-off task (explicit instruction) —
+  by the time of the reasoning-on run below, another agent's commit had
+  already folded the whole file (including this addition) into `HEAD`, so
+  this is now moot.
 - `reports/bouquet/judges/summary.md` regeneration is **not committed**
-  (shared file, out of scope).
+  (shared file, out of scope) — still true for this task too.
 - No cross-judge comparison beyond the single-sentence sign-consistency
   check above — a full 4-judge comparison is a separate, later task once
   all judges finish.
+
+---
+
+# Part 2 — gemini-3.1-flash-lite-think (reasoning-ON protocol fix)
+
+Status: **complete**. 2376/2376 scored, `stats.json` generated, committed.
+
+## Scope
+
+Owner protocol fix, mid-mission: the locked protocol for frontier judges is
+thinking **ENABLED** at default effort, not vendor default. The completed
+Part 1 run (`gemini-3.1-flash-lite`, reasoning OFF) stays as a sensitivity
+row; this is a **second, separate** full run of the same underlying model
+with reasoning forced on via a new judge slug `gemini-3.1-flash-lite-think`
+(`regime: frontier_default`, router ID `google/gemini-3.1-flash-lite-preview`
+per the owner's explicit instruction — the `-preview` alias, confirmed to
+resolve to the same model as the non-preview alias used in Part 1). New cost
+cap $6.00.
+
+## Smoke test (before touching config)
+
+2 realistic calls (accuracy/id72/qwen-refined, style/id178/translate-gemma),
+`reasoning: {enabled: true}` + `response_format=json_object` together:
+200 OK both times, JSON parsed cleanly, **reasoning_tokens = 738 and 1695**
+(>0, confirms it actually engages — unlike the Part 1 vendor-default run),
+latency 11.6s / 14.3s (~13s, matched the owner's expectation).
+
+## Config change (selective staging, same technique as Part 1)
+
+Added a `gemini-3.1-flash-lite-think` entry to `configs/bouquet_judges.yaml`
+on top of the (by-then-committed) Part 1 config, again via `git show
+HEAD:... ` → apply only my new entry to a scratch copy → `git hash-object -w`
+→ `git update-index --cacheinfo`, since the deepseek agent still had
+concurrent in-flight edits to the same file. Verified `load_judges()` loads
+all 6 (later 9, as other agents added more) judges cleanly from both the
+staged blob and the live working-tree file (which also needed the entry
+appended directly, since `run` reads off disk, not the git index).
+
+## Pilot gate: PASS
+
+`--pilot 20` (240 calls) → 240/240 scored, 0 parse failures. Failure rate
+**0.00%** (≤2% required), valid-score share **100.00%** (≥98% required).
+Reasoning confirmed active at scale: avg **1116 reasoning tokens/call**.
+Real cost of the pilot: $0.0471.
+
+## Outage timeline (the reason this run took ~11 hours of wall-clock time)
+
+| Time (UTC) | Event |
+|---|---|
+| 00:57Z | Full run launched, concurrency 6 (resumed from 240 pilot rows) |
+| 01:16Z | Coordinator pacing check (460/2376, ETA too slow for morning deadline) → stopped cleanly, relaunched at concurrency 24 |
+| 01:21Z | **HTTP 503 storm begins** (`no_available_provider` — Google-family gateway outage, confirmed NOT a self-inflicted 429/rate-limit: 0 429s observed, 6316/6317 failure rows were 503; non-Google routes (`gpt-5.5`, `deepseek-v4-flash`) worked fine at the time) |
+| 01:21–01:57Z | Stall-monitor correctly detected zero `scores.jsonl` growth and executed exactly 3 restart attempts (its designed policy) — all 3 failed completely (0 new scores each) because the outage was external/provider-side, not fixable by restarting |
+| 03:05Z | Root-caused via live multi-model probes (both flash-lite aliases + `gemini-3.1-pro-preview` all 503; `gpt-5.5`/`deepseek` still 200). Launched a probe-then-resume poller (`nohup ... & disown`) |
+| 05:41Z | Poller found dead (silent, no crash trace) — diagnosed: plain `nohup`+`disown` detaches from job control but not from the invoking shell's *session*; when that session was torn down, the child was reaped with it |
+| 07:29Z | Relaunched via `setsid` (verified genuine new session: `PID=SID=PGID`, `PPID=1`) |
+| 09:13:49Z | **Whole container recycled** (firecracker microVM reboot, per `docs/reports/debugger-poller-silence-diagnosis.md`) — `setsid` survives shell-session teardown but **not** a full container reclaim; the poller (and the entire process table) was gone. Disk survived (797/2376 intact, append-only). Structural lesson: no detached process survives container recycling — only a resident, actively-running agent turn does |
+| ~09:17–11:33Z | Route flickered (isolated single 200s reported/observed amid runs of 503s) — treated as genuinely unstable, not resumed on a single success |
+| 11:20–11:33Z | Switched to **resident polling with real judge payloads** (not light pings) directly via tool calls, ~2.5 min apart, per the coordinator's revised instruction. First real success at 11:30:52Z |
+| 11:33:49Z | 3rd consecutive real-payload success → **resumed the run** at concurrency 8 |
+| 11:33Z–12:17Z | Resident watch loop (2.5 min cadence) confirmed sustained growth throughout: 799→889→982→1080→1160→1264→1350→1452→1535→1611→1707→1784→1879→1959→2041→2120→2205→2265 |
+| 12:17Z | Batch finished naturally (not crashed) at 2265/2376 — 111 residual failures this batch, mostly HTTP 400 `invalid_request` (100/111) scattered across 94 different paragraphs, 1–2 criteria each (not consistently blocking the same paragraph on all 3 criteria) → judged transient gateway noise, not content-policy blocks |
+| 12:17–12:26Z | 3 short mop-up resumes (concurrency 8 → 8 → 1) cleared the stragglers: 111→6→1→**0 remaining** |
+| 12:26Z | **2376/2376 complete** |
+
+Total elapsed from first stall to completion: **~11 hours** (01:21Z→12:26Z),
+of which the overwhelming majority was the provider-side outage plus two
+rounds of detached-process death (session teardown, then container
+recycle) — not compute time. Actual model call time across all phases
+(pilot + full + mop-ups) was well under an hour.
+
+## Run artifacts (evidence)
+
+**2376/2376 scored.** Real cost **$0.4749** (2376/2376 rows surfaced a real
+`usage.cost`), comfortably under the $6.00 cap — cost was never the binding
+constraint on this run, availability was. Reasoning engaged on every row:
+2,826,990 total reasoning tokens, avg **1190/call**.
+
+### Per-system / per-criterion summary (from `stats.json`, n=198 per cell)
+
+| System | Accuracy mean | Fluency mean | Style mean | Acc tie%{9,10} | Flu tie% | Sty tie% |
+|---|---|---|---|---|---|---|
+| Qwen3.6-27B | 9.662 | 9.919 | 9.066 | — | — | — |
+| Qwen3.6-27B Refined | 9.758 | 9.909 | 9.071 | — | — | — |
+| Translate Gemma | 9.576 | 9.843 | 8.924 | — | — | — |
+| Translate Gemma Refined | 9.722 | 9.818 | 9.040 | — | — | — |
+| **Avg across systems** | **9.679** | **9.872** | **9.025** | **97.7%** | **98.2%** | **85.4%** |
+
+### Spearman ρ vs. vendored automatic metrics (avg across 4 systems, n=198 each)
+
+| Criterion | ρ MetricX-ref | ρ MetricX-QE | ρ COMET |
+|---|---|---|---|
+| Accuracy | −0.077 | −0.019 | +0.150 |
+| Fluency | −0.165 | −0.128 | +0.139 |
+| Style | −0.114 | −0.023 | +0.198 |
+
+## Reasoning-ON vs. reasoning-OFF comparison
+
+| | **OFF** (`gemini-3.1-flash-lite`, vendor default) | **ON** (`gemini-3.1-flash-lite-think`, `reasoning: {enabled: true}`) | Δ |
+|---|---|---|---|
+| Accuracy mean | 9.479 | 9.679 | +0.200 |
+| Fluency mean | 9.524 | 9.872 | +0.348 |
+| Style mean | 8.674 | 9.025 | +0.351 |
+| Accuracy tie%{9,10} | 96.7% | 97.7% | +1.0pp |
+| Fluency tie%{9,10} | 95.6% | 98.2% | +2.6pp |
+| Style tie%{9,10} | 71.1% | 85.4% | +14.3pp |
+| ρ accuracy/COMET | +0.182 | +0.150 | −0.032 |
+| ρ fluency/COMET | +0.247 | +0.139 | −0.108 |
+| ρ style/COMET | +0.149 | +0.198 | +0.049 |
+| Reasoning tokens/call | 0 | ~1190 | — |
+| Real cost (2376 calls) | $0.4985 | $0.4749 | ~flat (pricing dominated by prompt tokens either way) |
+
+**Reading:** enabling reasoning made the judge uniformly **more generous**
+(every mean score is higher, every tie-rate is higher — style moved the
+most, +14.3pp on tie-rate) but did **not** improve, and mostly slightly
+*worsened*, agreement with the vendored automatic metrics (COMET
+correlation dropped for accuracy and fluency, only style improved). This is
+consistent with a judge that reasons its way toward higher confidence in
+already-high scores rather than toward more discriminating ones — a
+genuine finding for the paper, not just an operational footnote. Style
+tie-rate at 85.4% (up from 71.1%) is the most extreme shift; both regimes
+still show only weak-to-moderate correlation with automatic metrics
+(|ρ| < 0.35 throughout), so neither run should be over-interpreted as a
+strong ground-truth proxy.
+
+## Open questions (Part 2)
+
+- The reasoning-on judge is more generous but not better-correlated with
+  automatic metrics — worth flagging to whoever writes the paper's judge
+  section as a real methodological finding, not just noise.
+- The `-preview` alias router ID was used per explicit owner instruction;
+  it resolves to the same underlying model as the non-`-preview` alias used
+  in Part 1 (confirmed identical pricing/model card), so the two rows are a
+  clean regime-only A/B, not confounded by a different model version.
+- 3 outage/detachment cycles (session-teardown death, container-recycle
+  death) happened on this one judge alone — worth a durable process note
+  (beyond `docs/known_issues.md`'s existing `setsid` entry) that **no**
+  detached background process is safe to rely on across a container
+  recycle; only resident, actively-polled turns are.
+
+## NOT done (Part 2, explicit)
+
+- No further action needed — run, stats, report, and (below) commit/push
+  are all complete for this judge.
