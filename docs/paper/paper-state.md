@@ -113,8 +113,10 @@ Gemini judge swapped to flash-lite):**
   judge↔MetricX-ref / MetricX-QE / COMET; tie-rate (share of {9,10} scores). Full
   per-judge tables → appendix; compact table in the main paper.
 - Execution split: the 4 cloud judges run from the cloud session via CloseRouter; the
-  3 local judges run via the sr004 vLLM runbook (Danil pipeline +
-  `patches/gse-translation-sr004/`).
+  3 local judges run via [docs/runbooks/sr004-local-eval-runbook.md](../runbooks/sr004-local-eval-runbook.md)
+  — `scripts/bouquet_judge_rerun.py` against a local vLLM server per model, no Danil-pipeline clone needed
+  (that clone + `patches/gse-translation-sr004/` is Table B's runbook, [translation-eval.md](../stages/translation-eval.md),
+  not Table A's).
 - Cost estimates (from the judge probe,
   [docs/experiments/2026-07-08-judge-probe/probe-results.md](../experiments/2026-07-08-judge-probe/probe-results.md),
   per full 2 376-call BOUQUET run): Opus 4.8 ≈ $2.3, GPT-5.5 ≈ $1.3, DeepSeek-V4-Flash

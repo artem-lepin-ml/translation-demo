@@ -235,6 +235,21 @@ def test_resolve_route_non_auto_provider_still_pins_explicit_route():
     assert route["judge_extra_body"] == {"provider": "provider-8"}
 
 
+def test_resolve_route_explicit_extra_body_wins_over_provider_pin():
+    """sr004 local-judge patch (2026-07-09): an explicit extra_body override
+    (e.g. vLLM's chat_template_kwargs thinking toggle) replaces the
+    provider-pin default entirely, applied to both extract and judge roles."""
+    extra_body = {"chat_template_kwargs": {"enable_thinking": False}}
+    route = wiki_eval._resolve_route("Qwen/Qwen3.6-27B", "auto", extra_body)
+    assert route["extract_extra_body"] == extra_body
+    assert route["judge_extra_body"] == extra_body
+
+
+def test_resolve_route_extra_body_none_preserves_prior_provider_pin_behavior():
+    route = wiki_eval._resolve_route("openai/gpt-5.5", "provider-8", None)
+    assert route["extract_extra_body"] == {"provider": "provider-8"}
+
+
 # ── CLI parsing ──────────────────────────────────────────────────────────
 
 
@@ -261,6 +276,34 @@ def test_cli_run_model_provider_and_max_judge_calls_override():
 def test_cli_run_dry_run_flag():
     args = wiki_eval._build_parser().parse_args(["run", "--dry-run"])
     assert args.dry_run is True
+
+
+def test_cli_run_extra_body_default_and_override():
+    args = wiki_eval._build_parser().parse_args(["run"])
+    assert args.extra_body is None
+
+    args2 = wiki_eval._build_parser().parse_args([
+        "run", "--extra-body", '{"chat_template_kwargs": {"enable_thinking": false}}',
+    ])
+    assert args2.extra_body == '{"chat_template_kwargs": {"enable_thinking": false}}'
+
+
+def test_cli_ablate_extra_body_default_and_override():
+    args = wiki_eval._build_parser().parse_args(["ablate"])
+    assert args.extra_body is None
+
+    args2 = wiki_eval._build_parser().parse_args(["ablate", "--extra-body", '{"a": 1}'])
+    assert args2.extra_body == '{"a": 1}'
+
+
+def test_parse_extra_body_none_when_flag_absent():
+    assert wiki_eval._parse_extra_body(None) is None
+
+
+def test_parse_extra_body_parses_json_object_string():
+    assert wiki_eval._parse_extra_body('{"chat_template_kwargs": {"enable_thinking": false}}') == {
+        "chat_template_kwargs": {"enable_thinking": False},
+    }
 
 
 def test_cli_ablate_accepts_same_model_provider_flags():

@@ -72,7 +72,8 @@ CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
 JUDGE_MAX_TOKENS = 512
 
 
-def _resolve_route(model: str | None = None, provider: str | None = None) -> dict:
+def _resolve_route(model: str | None = None, provider: str | None = None,
+                    extra_body: dict | None = None) -> dict:
     """Resolve the extractor+judge route config for this call.
 
     Computed as a function (not module-level constants) so CLI ``--model``/
@@ -82,6 +83,18 @@ def _resolve_route(model: str | None = None, provider: str | None = None) -> dic
     (ticket 002). ``model``/``provider`` override the env vars only on the
     default ``closerouter`` branch; the ``openrouter``/``openai-direct``
     fallbacks keep their own fixed model, unaffected by CLI overrides.
+
+    ``extra_body`` (sr004 local-judge patch, 2026-07-09, docs/runbooks/
+    sr004-local-eval-runbook.md): an explicit ``--extra-body`` CLI override
+    wins over the provider-pin default -- needed to route to a local vLLM
+    server, where a CloseRouter-style ``{"provider": ...}`` field means
+    nothing but a thinking-capable model (Qwen3.6-27B) still needs
+    ``chat_template_kwargs.enable_thinking`` set explicitly (vLLM's
+    OpenAI-compat server exposes that as a first-party top-level request
+    field -- the same mechanism Danil's ``models.yaml`` `extra_body` already
+    uses for this exact model, see docs/stages/translation-eval.md). Applied
+    to both extract and judge roles equally, same as the provider-pin default
+    it replaces.
     """
     cr_model = model or CLOSEROUTER_MODEL
     cr_provider = provider or CLOSEROUTER_PROVIDER
@@ -92,7 +105,10 @@ def _resolve_route(model: str | None = None, provider: str | None = None) -> dic
         # verified in ticket-003 triage for models with no clean pinned route
         # (e.g. qwen3.7-plus). model_slug() still appends "--auto" to the
         # run-dir slug since it just formats whatever --provider was passed.
-        cr_extra_body = None if cr_provider == "auto" else {"provider": cr_provider}
+        if extra_body is not None:
+            cr_extra_body = extra_body
+        else:
+            cr_extra_body = None if cr_provider == "auto" else {"provider": cr_provider}
         return {
             "extract_model": cr_model, "judge_model": cr_model,
             "extract_base_url": base, "judge_base_url": base,
@@ -381,7 +397,8 @@ def _complete_with_slot(client, system: str, user: str,
 
 
 def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
-                       model: str | None = None, provider: str | None = None):
+                       model: str | None = None, provider: str | None = None,
+                       extra_body: dict | None = None):
     """Real NER extraction entry point: LLMClient + DEFAULT_NER_PROMPT ->
     llm_surfaces -> mentions_from_surfaces -> list[TermMention].
 
@@ -422,7 +439,7 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
     from palimpsest.llm.client import LLMClient, LLMConfig
 
     _load_dotenv()
-    route = _resolve_route(model, provider)
+    route = _resolve_route(model, provider, extra_body)
     api_key = os.environ.get(route["extract_api_key_env"])
     if not api_key:
         raise RuntimeError(f"{route['extract_api_key_env']} not set (checked .env and environment) -- required for extraction")
@@ -540,7 +557,7 @@ JUDGE_REASK_SYSTEM_PROMPT = (
 
 def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
                   model: str | None = None, provider: str | None = None,
-                  tracker: FailureTracker | None = None):
+                  tracker: FailureTracker | None = None, extra_body: dict | None = None):
     """Judge on the same provider as the extractor (default CloseRouter
     claude-haiku-4.5, pinned via CLOSEROUTER_PROVIDER). Returns None when the
     provider key is unset so the caller can fall back to judge=None.
@@ -580,7 +597,7 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
     from palimpsest.llm.client import LLMClient, LLMConfig, is_transient_error
 
     _load_dotenv()
-    route = _resolve_route(model, provider)
+    route = _resolve_route(model, provider, extra_body)
     api_key = os.environ.get(route["judge_api_key_env"])
     if not api_key:
         return None
@@ -910,7 +927,7 @@ def _process_articles_parallel(
 
 
 def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_run: bool, guard: BudgetGuard | None,
-                     model: str | None = None, provider: str | None = None,
+                     model: str | None = None, provider: str | None = None, extra_body: dict | None = None,
                      article_workers: int = DEFAULT_ARTICLE_WORKERS,
                      llm_workers: int = DEFAULT_LLM_WORKERS,
                      wikidata_cache: str | Path = WIKIDATA_CACHE,
@@ -957,8 +974,10 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
     # and into _process_articles_parallel (per-paragraph extraction tolerance)
     # so both loud-accounting counters land in this run's meta.json.
     tracker = FailureTracker()
-    judge = _build_judge(guard, llm_semaphore, model=model, provider=provider, tracker=tracker)
-    extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider)
+    judge = _build_judge(guard, llm_semaphore, model=model, provider=provider, tracker=tracker,
+                          extra_body=extra_body)
+    extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider,
+                                    extra_body=extra_body)
 
     # Checkpointer (container-restart resilience patch): built only when the
     # caller (cmd_run) hands us a run dir -- ``n_done_start``/``skip_titles``
@@ -1029,10 +1048,19 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
     return pred_records, counters
 
 
+def _parse_extra_body(raw: str | None) -> dict | None:
+    """``--extra-body`` CLI value (a JSON object string) -> dict, or ``None``
+    when the flag wasn't passed (sr004 local-judge patch, 2026-07-09).
+    Deliberately not caught here -- a malformed JSON string should fail loud
+    at argument-parse time, not silently fall back to no override."""
+    return json.loads(raw) if raw else None
+
+
 def cmd_run(args) -> int:
     gt_records = _load_gt(Path(args.gt))
     guard = BudgetGuard(args.max_usd, max_judge_calls=args.max_judge_calls)
     use_sitelink = False if getattr(args, "no_sitelink", False) else None
+    extra_body = _parse_extra_body(getattr(args, "extra_body", None))
 
     if args.dry_run:
         _, counters = _run_one_config(args.config, gt_records, args.cache, dry_run=True, guard=None,
@@ -1092,7 +1120,8 @@ def cmd_run(args) -> int:
 
     new_pred_records, counters = _run_one_config(
         args.config, gt_records, args.cache, dry_run=False, guard=guard,
-        model=args.model, provider=args.provider, article_workers=args.article_workers,
+        model=args.model, provider=args.provider, extra_body=extra_body,
+        article_workers=args.article_workers,
         llm_workers=args.llm_workers, wikidata_cache=args.wikidata_cache,
         wikidata_workers=args.wikidata_workers, use_sitelink=use_sitelink,
         out_dir=out_dir, skip_titles=frozenset(skip_titles), n_done_start=len(skip_titles),
@@ -1301,6 +1330,11 @@ def _build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--max-usd", type=float, default=DEFAULT_MAX_USD)
     p_run.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
     p_run.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
+    p_run.add_argument("--extra-body", default=None,
+                        help="JSON object merged into the extractor+judge request body, overriding "
+                             "the provider-pin default (sr004 local-judge patch: e.g. "
+                             "'{\"chat_template_kwargs\": {\"enable_thinking\": false}}' for a local "
+                             "vLLM thinking-capable model -- see docs/runbooks/sr004-local-eval-runbook.md)")
     p_run.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_run.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
                         help="articles processed concurrently (ticket 002b); LLM calls "
@@ -1335,6 +1369,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p_ablate.add_argument("--max-usd", type=float, default=DEFAULT_MAX_USD)
     p_ablate.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
     p_ablate.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
+    p_ablate.add_argument("--extra-body", default=None,
+                           help="JSON object merged into the extractor+judge request body -- see "
+                                "`run --extra-body`'s help for the sr004 local-judge use case")
     p_ablate.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_ablate.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
                            help="articles processed concurrently (ticket 002b); LLM calls "

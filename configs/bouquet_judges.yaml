@@ -137,3 +137,71 @@ judges:
     regime: vendor_default
     max_tokens: 8192
     enabled: true
+
+  # 2026-07-08 owner protocol fix: the locked protocol for frontier judges is
+  # thinking ENABLED at default effort, not vendor default -- the
+  # `gemini-3.1-flash-lite` entry above (reasoning OFF) stays as-is and is
+  # kept as a sensitivity row; this is a second, separate full run of the
+  # SAME model with reasoning forced on via `frontier_default`. Router ID is
+  # the `-preview` alias per the owner's explicit instruction (same
+  # underlying model as `google/gemini-3.1-flash-lite` above -- see that
+  # entry's comment for the alias confirmation).
+  #
+  # Smoke (2 realistic calls, docs/reports/python-pro-judge-run-gemini-flash-lite.md
+  # "reasoning-on run"): `reasoning: {enabled: true}` + response_format=
+  # json_object together -- 200 OK both times, JSON parses cleanly,
+  # reasoning_tokens=738 and 1695 (>0, confirms it actually engages, unlike
+  # the vendor-default run above), latency 11.6s/14.3s (~13s, matches the
+  # owner's expectation).
+  - slug: gemini-3.1-flash-lite-think
+    router_id: google/gemini-3.1-flash-lite-preview
+    regime: frontier_default
+    max_tokens: 8192
+    enabled: true
+
+  # ---- Local judges (sr004, 4xA100): owner-locked Table A lineup
+  # (docs/paper/paper-state.md "Table A -- LLM-as-a-judge, 7-judge lineup"),
+  # protocol = T=0, thinking OFF for every local/open judge. Not reachable
+  # from this cloud session (no GPU) -- run via a local vLLM OpenAI-compat
+  # server per model, `OPENROUTER_BASE_URL` pointed at localhost, full
+  # bring-up + `run`/`stats` recipe in
+  # docs/runbooks/sr004-local-eval-runbook.md. `enabled: false` is the same
+  # hard run-gate the frontier judges above used before their sr004
+  # counterpart ran -- flip to true (or pass --allow-disabled) only on sr004,
+  # once the corresponding vLLM server is confirmed up (Ф0 probe in the
+  # runbook). `regime: t0_local` (added alongside this block, sr004
+  # local-judge patch 2026-07-09): temperature=0, no `reasoning` key --
+  # unlike the CloseRouter judges above, a raw vLLM server doesn't implement
+  # that OpenRouter-specific field.
+  - slug: qwen3-4b-instruct
+    router_id: Qwen/Qwen3-4B-Instruct-2507
+    regime: t0_local
+    max_tokens: 8192
+    enabled: false  # enable on sr004
+    # Non-thinking by construction (the "-Instruct-2507" variant, not
+    # "-Thinking-2507") -- no chat_template_kwargs toggle needed.
+
+  - slug: gemma-3-27b-it
+    router_id: google/gemma-3-27b-it
+    regime: t0_local
+    max_tokens: 8192
+    enabled: false  # enable on sr004
+    # Not a reasoning/thinking model at all -- "thinking OFF" is a no-op for
+    # this family, no extra_body needed. Distinct from TranslateGemma
+    # (Infomaniak-AI/vllm-translategemma-27b-it, the Table B/translation-eval
+    # translation system) -- same base size, different fine-tune, different
+    # role (judge here, not translator).
+
+  - slug: qwen3.6-27b
+    router_id: Qwen/Qwen3.6-27B
+    regime: t0_local
+    max_tokens: 8192
+    enabled: false  # enable on sr004
+    # Hybrid thinking model, thinking ON by default in its chat template --
+    # `chat_template_kwargs.enable_thinking: false` is the vLLM-native way to
+    # force it off per request (same mechanism Danil's models.yaml already
+    # uses for this exact model, docs/stages/translation-eval.md). Same
+    # server as the fixed-J judge role in the Table B runbook -- if that
+    # server is already up for a concurrent Table B run, reuse it instead of
+    # starting a second one (one vLLM process per model, not per table).
+    extra_body: {chat_template_kwargs: {enable_thinking: false}}

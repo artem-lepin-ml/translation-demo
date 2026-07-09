@@ -182,7 +182,7 @@ def parse_judge_response(raw: str, criterion: str) -> dict[str, Any]:
 # Judge config
 # ---------------------------------------------------------------------------
 
-_REGIMES = ("t0_no_reasoning", "frontier_default", "t0_reasoning_on")
+_REGIMES = ("t0_no_reasoning", "frontier_default", "t0_reasoning_on", "vendor_default", "t0_local")
 
 
 @dataclass(slots=True)
@@ -193,6 +193,16 @@ class JudgeSpec:
     max_tokens: int = 8192
     enabled: bool = True
     supports_structured_output: bool = True
+    # Raw dict merged verbatim into the request body (sr004 local-judge patch,
+    # 2026-07-09: docs/runbooks/sr004-local-eval-runbook.md). Only consumer
+    # today is a local vLLM judge that needs `chat_template_kwargs:
+    # {enable_thinking: false}` -- vLLM's OpenAI-compat server exposes that as
+    # a first-party top-level request field (same mechanism Danil's
+    # models.yaml `extra_body` already uses for this exact model, see
+    # docs/stages/translation-eval.md). Not an OpenRouter/CloseRouter
+    # `extra_body` passthrough (this runner has no such wrapper) -- the dict's
+    # keys are merged straight into the top-level JSON payload.
+    extra_body: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if self.regime not in _REGIMES:
@@ -212,6 +222,7 @@ def load_judges(path: Path) -> dict[str, JudgeSpec]:
             max_tokens=int(entry.get("max_tokens", 8192)),
             enabled=bool(entry.get("enabled", True)),
             supports_structured_output=bool(entry.get("supports_structured_output", True)),
+            extra_body=entry.get("extra_body"),
         )
         if spec.slug in specs:
             raise ValueError(f"duplicate judge slug in {path}: {spec.slug!r}")
@@ -253,6 +264,29 @@ def build_payload(judge: JudgeSpec, system_prompt: str, user_msg: str) -> dict[s
         # bridge's known Claude behaviour) and works as intended for GPT-5.5 /
         # Gemini 3.1 Pro (both reason with it set).
         payload["reasoning"] = {"enabled": True}
+    elif judge.regime == "vendor_default":
+        # Neither `temperature` nor `reasoning` is sent -- true provider
+        # defaults, no override either way. 2026-07-08 smoke (2 realistic
+        # calls, docs/reports/python-pro-judge-run-gemini-flash-lite.md)
+        # confirmed gemini-3.1-flash-lite reasons OFF by default on this route
+        # (reasoning_tokens=0 both times) and accepts response_format=
+        # json_object cleanly (unlike gemini-3.1-pro-preview's frontier_default
+        # regime, which needs supports_structured_output: false).
+        pass
+    elif judge.regime == "t0_local":
+        # sr004 local vLLM judges (2026-07-09, docs/runbooks/
+        # sr004-local-eval-runbook.md): temperature=0 only, deliberately no
+        # `reasoning` key -- that field is an OpenRouter/CloseRouter
+        # convention a raw vLLM OpenAI-compat server doesn't implement.
+        # Thinking-capable local models (Qwen3.6-27B) toggle via
+        # `judge.extra_body`'s `chat_template_kwargs.enable_thinking` below,
+        # not via this regime.
+        payload["temperature"] = 0
+    # `extra_body` (any regime): merged last so it can add fields no regime
+    # branch above sets (e.g. vLLM's `chat_template_kwargs`) without needing
+    # a bespoke regime per model.
+    if judge.extra_body:
+        payload.update(judge.extra_body)
     return payload
 
 
