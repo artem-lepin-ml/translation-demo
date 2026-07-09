@@ -882,7 +882,12 @@ def cmd_stats(args: argparse.Namespace) -> int:
         stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"[{slug}] stats written to {stats_path.relative_to(ROOT)}", file=sys.stderr)
 
-    summary_slugs = args.judge or sorted(
+    # summary.md always aggregates every judge dir with a stats.json on disk,
+    # regardless of --judge -- that flag scopes only the stats recomputation
+    # above. Using the CLI-filtered `slugs` here silently dropped every other
+    # judge's rows from summary.md (2026-07-09, docs/reports/
+    # docs-keeper-tree-cleanup-b0ozsc.md).
+    summary_slugs = sorted(
         d.name for d in out_dir.iterdir() if d.is_dir() and (d / "stats.json").is_file()
     )
     summary_md = build_summary_md(out_dir, summary_slugs)

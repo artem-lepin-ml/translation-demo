@@ -12,6 +12,8 @@ tests/test_wiki_eval_runner.py already uses for scripts/wiki_eval.py.
 """
 from __future__ import annotations
 
+import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -67,3 +69,74 @@ def test_load_judges_parses_extra_body_from_yaml(tmp_path):
 
 def test_t0_local_is_a_known_regime():
     assert "t0_local" in bjr._REGIMES
+
+
+def _write_minimal_stats(judge_dir: Path, judge_slug: str) -> None:
+    """A one-system/one-criterion stats.json, just enough for
+    `build_summary_md` to emit a row (`c["n"] == 0` rows are skipped)."""
+    judge_dir.mkdir(parents=True, exist_ok=True)
+    stats = {
+        "judge_slug": judge_slug,
+        "generated_at": "2026-07-09T00:00:00+00:00",
+        "n_paragraphs_total": 1,
+        "systems": {
+            "qwen-27b-bouquet": {
+                criterion: {
+                    "n": 1 if criterion == "accuracy" else 0,
+                    "mean": 8.0 if criterion == "accuracy" else None,
+                    "tie_rate_9_10": 0.0 if criterion == "accuracy" else None,
+                    "spearman": {
+                        "metricx_ref": {"rho": None, "n": 0},
+                        "metricx_qe": {"rho": None, "n": 0},
+                        "comet": {"rho": None, "n": 0},
+                    },
+                }
+                for criterion in bjr.CRITERIA
+            }
+        },
+    }
+    (judge_dir / "stats.json").write_text(json.dumps(stats), encoding="utf-8")
+
+
+def test_cmd_stats_with_explicit_judge_keeps_other_judges_in_summary(tmp_path, monkeypatch):
+    """Regression for the 2026-07-09 bug: `stats --judge <one>` must not wipe
+    the other judges' rows from summary.md -- --judge scopes only the stats
+    recomputation, summary.md is always rebuilt from every judge dir on disk
+    that has a stats.json."""
+    out_dir = tmp_path / "judges"
+    for slug in ("judge-a", "judge-b"):
+        judge_dir = out_dir / slug
+        judge_dir.mkdir(parents=True)
+        (judge_dir / "scores.jsonl").write_text(
+            json.dumps({
+                "judge_slug": slug, "system": "qwen-27b-bouquet", "id": 0,
+                "criterion": "accuracy", "score": 8,
+            }) + "\n",
+            encoding="utf-8",
+        )
+        _write_minimal_stats(judge_dir, slug)
+
+    original = ["source paragraph"]
+    monkeypatch.setattr(bjr, "_load_original", lambda: original)
+
+    def fake_compute_stats_for_judge(judge_slug, out_dir, eval_root, systems):
+        return json.loads((out_dir / judge_slug / "stats.json").read_text(encoding="utf-8"))
+
+    monkeypatch.setattr(bjr, "compute_stats_for_judge", fake_compute_stats_for_judge)
+    # `--judge` is validated against the judge registry YAML before scoping
+    # the recomputation -- stub it so the fake "judge-a"/"judge-b" slugs pass.
+    monkeypatch.setattr(bjr, "load_judges", lambda path: {"judge-a": object(), "judge-b": object()})
+    # cmd_stats logs paths via `.relative_to(ROOT)`; tmp_path lives outside
+    # the real repo root, so point ROOT at tmp_path for this test only.
+    monkeypatch.setattr(bjr, "ROOT", tmp_path)
+
+    args = argparse.Namespace(
+        judge=["judge-a"], config=bjr.DEFAULT_JUDGE_CONFIG, system=None,
+        out_dir=out_dir, eval_root=bjr.DEFAULT_EVAL_ROOT,
+    )
+    rc = bjr.cmd_stats(args)
+    assert rc == 0
+
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "judge-a" in summary
+    assert "judge-b" in summary, "stats --judge judge-a must not drop judge-b from summary.md"
