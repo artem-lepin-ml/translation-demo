@@ -1,0 +1,262 @@
+{
+ "gemini-3.1-flash-lite": {
+  "pred_dir": "/home/user/translation-demo/reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z",
+  "model": "google/gemini-3.1-flash-lite",
+  "provider": "provider-9",
+  "config": "111",
+  "n_articles": 100,
+  "n_gt_tuples": 7959,
+  "n_grounded": 16709,
+  "source_counts": {
+   "wbsearchentities": 16274,
+   "cirrus": 231,
+   "wikipedia_langlink": 204
+  },
+  "sitelink_sourced": 204,
+  "sitelink_share_of_grounded": 0.012208989167514513,
+  "replay_inconsistent_count": 0,
+  "R_doc_full": {
+   "matched": 5493,
+   "total": 7959,
+   "value": 0.6901620806633999,
+   "ci_lo": 0.6799,
+   "ci_hi": 0.7002,
+   "underpowered": false
+  },
+  "R_doc_clean": {
+   "matched": 5444,
+   "total": 7959,
+   "value": 0.6840055283327051,
+   "ci_lo": 0.6737,
+   "ci_hi": 0.6941,
+   "underpowered": false
+  },
+  "R_doc_delta": -0.006156552330694787,
+  "recall_units_lost": 49,
+  "unique_forms_replayed": 6791,
+  "recall_full": {
+   "m1": {
+    "matched": 4852,
+    "total": 7959,
+    "value": 0.6096243246639025,
+    "ci_lo": 0.5989,
+    "ci_hi": 0.6203,
+    "underpowered": false
+   },
+   "m2": {
+    "matched": 5011,
+    "total": 7959,
+    "value": 0.6296017087573815,
+    "ci_lo": 0.6189,
+    "ci_hi": 0.6401,
+    "underpowered": false
+   },
+   "m3": {
+    "matched": 5493,
+    "total": 7959,
+    "value": 0.6901620806633999,
+    "ci_lo": 0.6799,
+    "ci_hi": 0.7002,
+    "underpowered": false
+   }
+  },
+  "recall_clean": {
+   "m1": {
+    "matched": 4794,
+    "total": 7959,
+    "value": 0.6023369770071617,
+    "ci_lo": 0.5915,
+    "ci_hi": 0.613,
+    "underpowered": false
+   },
+   "m2": {
+    "matched": 4952,
+    "total": 7959,
+    "value": 0.6221887171755246,
+    "ci_lo": 0.6115,
+    "ci_hi": 0.6328,
+    "underpowered": false
+   },
+   "m3": {
+    "matched": 5444,
+    "total": 7959,
+    "value": 0.6840055283327051,
+    "ci_lo": 0.6737,
+    "ci_hi": 0.6941,
+    "underpowered": false
+   }
+  },
+  "precision_full": {
+   "p1": {
+    "matched": 5014,
+    "total": 16709,
+    "value": 0.30007780238194987,
+    "ci_lo": 0.2932,
+    "ci_hi": 0.3071,
+    "underpowered": false
+   },
+   "p2": {
+    "matched": 4219,
+    "total": 9349,
+    "value": 0.4512782115734303,
+    "ci_lo": 0.4412,
+    "ci_hi": 0.4614,
+    "underpowered": false
+   }
+  },
+  "precision_clean": {
+   "p1": {
+    "matched": 4955,
+    "total": 16505,
+    "value": 0.30021205695243863,
+    "ci_lo": 0.2933,
+    "ci_hi": 0.3073,
+    "underpowered": false
+   },
+   "p2": {
+    "matched": 4163,
+    "total": 9205,
+    "value": 0.4522542096686583,
+    "ci_lo": 0.4421,
+    "ci_hi": 0.4624,
+    "underpowered": false
+   }
+  },
+  "p_label_p3ex": {
+   "status": "not_computed",
+   "reason": "P_label (P3\\exact) needs a live wbsearchentities(..., limit=1) call per unmatched, non-exact_label prediction surface (label_exists) -- a different cache-key shape than the limit=7 candidate-generation ladder this script replays, so no committed cache covers it. Not computed to avoid making live/uncached Wikidata calls.",
+   "estimated_unique_live_calls_required_clean": 2419
+  },
+  "wikidata_network_calls_made": 0
+ },
+ "deepseek-v4-flash": {
+  "pred_dir": "/home/user/translation-demo/reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--provider-9/111/2026-07-05T23-35-52Z",
+  "model": "deepseek/deepseek-v4-flash",
+  "provider": "provider-9",
+  "config": "111",
+  "n_articles": 100,
+  "n_gt_tuples": 7959,
+  "n_grounded": 13680,
+  "source_counts": {
+   "wbsearchentities": 13356,
+   "cirrus": 182,
+   "wikipedia_langlink": 142
+  },
+  "sitelink_sourced": 142,
+  "sitelink_share_of_grounded": 0.010380116959064328,
+  "replay_inconsistent_count": 0,
+  "R_doc_full": {
+   "matched": 4890,
+   "total": 7959,
+   "value": 0.6143987938183189,
+   "ci_lo": 0.6037,
+   "ci_hi": 0.625,
+   "underpowered": false
+  },
+  "R_doc_clean": {
+   "matched": 4849,
+   "total": 7959,
+   "value": 0.6092473928885538,
+   "ci_lo": 0.5985,
+   "ci_hi": 0.6199,
+   "underpowered": false
+  },
+  "R_doc_delta": -0.005151400929765071,
+  "recall_units_lost": 41,
+  "unique_forms_replayed": 5752,
+  "recall_full": {
+   "m1": {
+    "matched": 4053,
+    "total": 7959,
+    "value": 0.5092348284960422,
+    "ci_lo": 0.4982,
+    "ci_hi": 0.5202,
+    "underpowered": false
+   },
+   "m2": {
+    "matched": 4167,
+    "total": 7959,
+    "value": 0.5235582359592914,
+    "ci_lo": 0.5126,
+    "ci_hi": 0.5345,
+    "underpowered": false
+   },
+   "m3": {
+    "matched": 4890,
+    "total": 7959,
+    "value": 0.6143987938183189,
+    "ci_lo": 0.6037,
+    "ci_hi": 0.625,
+    "underpowered": false
+   }
+  },
+  "recall_clean": {
+   "m1": {
+    "matched": 4014,
+    "total": 7959,
+    "value": 0.5043347154165096,
+    "ci_lo": 0.4934,
+    "ci_hi": 0.5153,
+    "underpowered": false
+   },
+   "m2": {
+    "matched": 4128,
+    "total": 7959,
+    "value": 0.5186581228797588,
+    "ci_lo": 0.5077,
+    "ci_hi": 0.5296,
+    "underpowered": false
+   },
+   "m3": {
+    "matched": 4849,
+    "total": 7959,
+    "value": 0.6092473928885538,
+    "ci_lo": 0.5985,
+    "ci_hi": 0.6199,
+    "underpowered": false
+   }
+  },
+  "precision_full": {
+   "p1": {
+    "matched": 4170,
+    "total": 13680,
+    "value": 0.3048245614035088,
+    "ci_lo": 0.2972,
+    "ci_hi": 0.3126,
+    "underpowered": false
+   },
+   "p2": {
+    "matched": 3600,
+    "total": 7854,
+    "value": 0.45836516424751717,
+    "ci_lo": 0.4474,
+    "ci_hi": 0.4694,
+    "underpowered": false
+   }
+  },
+  "precision_clean": {
+   "p1": {
+    "matched": 4131,
+    "total": 13538,
+    "value": 0.3051410843551485,
+    "ci_lo": 0.2974,
+    "ci_hi": 0.313,
+    "underpowered": false
+   },
+   "p2": {
+    "matched": 3561,
+    "total": 7743,
+    "value": 0.45989926385122043,
+    "ci_lo": 0.4488,
+    "ci_hi": 0.471,
+    "underpowered": false
+   }
+  },
+  "p_label_p3ex": {
+   "status": "not_computed",
+   "reason": "P_label (P3\\exact) needs a live wbsearchentities(..., limit=1) call per unmatched, non-exact_label prediction surface (label_exists) -- a different cache-key shape than the limit=7 candidate-generation ladder this script replays, so no committed cache covers it. Not computed to avoid making live/uncached Wikidata calls.",
+   "estimated_unique_live_calls_required_clean": 1991
+  },
+  "wikidata_network_calls_made": 0
+ }
+}

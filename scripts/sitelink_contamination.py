@@ -30,7 +30,32 @@ per unique form pair instead of 4.
 The ladder is a pure function of (lemma, surface, lang, config) -- independent
 of which article/occurrence a mention came from -- so this is a faithful,
 deterministic reconstruction of the original run's decision, just recomputed
-against Wikidata's current (rather than that day's cached) content.
+against Wikidata's current (rather than that day's cached) content. On a
+*warm* on-disk ``--cache`` (populated by a prior run of this same script
+against the same ``--pred`` dir) every lookup is a cache hit and the replay
+makes zero network calls; ``run()`` asserts this via the client's own
+``n_network_calls`` counter and raises rather than silently mixing cached and
+live data, unless ``--allow-network`` is passed explicitly.
+
+Full-metrics extension (2026-07-09, paper Table C): beyond the headline
+``R_doc_full``/``R_doc_clean`` (M3), ``run()`` now also computes clean/full
+``R_strict`` (M1), ``R_span`` (M2), and precision ``P_mention``/``P_type``
+(P1/P2) for the SAME replayed clean/full prediction sets, via
+``metrics.aggregate_corpus`` -- the exact micro-average code path
+``scripts/wiki_eval.py cmd_report`` uses to build each run's own
+``metrics.json``, so the *full*-set numbers this script computes are a
+direct, exact-match sanity check against that file. ``P_label`` (P3\\exact)
+is deliberately NOT computed: it requires a live
+``wbsearchentities(..., limit=1)`` call per unmatched, non-``exact_label``
+prediction surface (``label_exists``, ``scripts/wiki_eval.py::_label_exists_fn``)
+-- a different cache-key shape (``limit=1``) than the ``limit=7``
+candidate-generation ladder this script replays, so no committed cache covers
+it. ``run()`` instead reports
+``p_label_p3ex.estimated_unique_live_calls_required`` (an exact count, reusing
+the real ``metrics._precision_counts_p3_ex`` accounting with a counting stub
+in place of a network-calling ``label_exists``) so a caller can decide
+whether that many live calls are acceptable, without this script silently
+making them.
 
 Usage (from the worktree root, with PYTHONPATH=src):
   uv run python scripts/sitelink_contamination.py \\
@@ -50,8 +75,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from palimpsest.terminology.base import GroundingConfig, TermMention
-from palimpsest.terminology.evaluation.matching import match_m3
+from palimpsest.terminology.evaluation import metrics as M
 from palimpsest.terminology.grounding.candidates import generate_candidates
+from palimpsest.terminology.grounding.match import norm
 from palimpsest.terminology.wikidata import WikidataClient
 
 Tuple4 = tuple[int, str, str, int]
@@ -127,22 +153,51 @@ def _replay_sources(
         return dict(pool.map(_one, pairs))
 
 
-def _recall_m3(articles: list[tuple[list[Tuple4], list[Tuple4]]]) -> dict:
-    """Corpus M3 (document-level) recall: match each article independently
-    (GT/pred token indices are article-local -- spec E-D6), sum raw
-    matched/total across articles, divide once at the end -- the same
-    micro-average ``aggregate_corpus`` uses, never averaged per-article."""
-    matched = total = 0
-    for gt_tuples, pred_tuples in articles:
-        matched_gt, _matched_pred = match_m3(gt_tuples, pred_tuples)
-        matched += len(matched_gt)
-        total += len(gt_tuples)
-    value = (matched / total) if total else None
-    return {"matched": matched, "total": total, "value": value}
+# -- article-local slice maps, mirroring scripts/wiki_eval.py::cmd_report's
+# same-named helpers exactly (GT/pred token indices reset per article -- spec
+# E-D6 -- so every map below is keyed by an INDEX that is only meaningful
+# within its own article; duplicated here rather than imported to avoid a
+# script-to-script import for three one-liners).
+def _resolved_by_of_for_article(pred_records: list[dict]) -> dict[int, str]:
+    return {r["index"]: r["resolved_by"] for r in pred_records if r.get("resolved_by")}
+
+
+def _stratum_of_for_article(gt_tuples: list[Tuple4], stratum: str) -> dict[int, str]:
+    return {t[0]: stratum for t in gt_tuples}
+
+
+def _type_of_for_article(gt_tuples: list[Tuple4]) -> dict[int, str]:
+    """named vs term, classified by GT anchor surface capitalization (spec Sec.4 caveat)."""
+    return {t[0]: ("named" if t[1][:1].isupper() else "term") for t in gt_tuples}
+
+
+def _count_label_exists_calls_required(articles: list[M.ArticleTuples]) -> int:
+    """Exact count of unique (``norm``-folded) surfaces a real P_label (P3\\exact)
+    computation would need to call ``label_exists`` on for -- reuses the real
+    ``metrics._precision_counts_p3_ex`` accounting (mode="m2", same as
+    ``aggregate_corpus``'s own p3_ex branch) with a counting stub in place of
+    a network-calling predicate, so the count is exact, not estimated, without
+    making a single live call. Deduplicated globally by ``norm(surface)``,
+    mirroring ``scripts/wiki_eval.py::_label_exists_fn``'s own cross-article
+    cache-by-norm(surface) behavior.
+    """
+    needed: set[str] = set()
+
+    def _counting_stub(surface: str) -> bool:
+        needed.add(norm(surface))
+        return False  # value is irrelevant -- only call sites are counted
+
+    for article in articles:
+        M._precision_counts_p3_ex(
+            article["gt_tuples"], article["pred_tuples"], mode="m2",
+            resolved_by_of=article["resolved_by_of"], label_exists=_counting_stub,
+        )
+    return len(needed)
 
 
 def run(
     pred_dir: Path, gt_path: Path, meta: dict, *, network_concurrency: int, cache_path: Path,
+    allow_network: bool = False,
 ) -> dict:
     config_bits = meta.get("config") or pred_dir.parent.name
     config = _config_from_bits(config_bits)
@@ -156,16 +211,25 @@ def run(
         all_grounded, wd=wd, config=config, lang="ru", workers=network_concurrency,
     )
 
+    if wd.n_network_calls and not allow_network:
+        raise RuntimeError(
+            f"sitelink_contamination.py: {wd.n_network_calls} live Wikidata call(s) were "
+            f"made against {cache_path} -- the cache was not fully warm for this --pred dir, "
+            "so this would silently mix cached and live data. Re-run with --allow-network "
+            "if that is intentional (e.g. warming the cache for the first time)."
+        )
+
     def source(r: dict) -> str:
         return source_of[(r.get("lemma") or "", r["surface"])]
 
-    full_articles: list[tuple[list[Tuple4], list[Tuple4]]] = []
-    clean_articles: list[tuple[list[Tuple4], list[Tuple4]]] = []
+    full_articles: list[M.ArticleTuples] = []
+    clean_articles: list[M.ArticleTuples] = []
     source_counts: dict[str, int] = defaultdict(int)
 
     for rec in gt_records:
         gt_tuples = [tuple(t) for t in rec["gt_tuples"]]
-        grounded = _grounded(pred_by_title.get(rec["title"], []))
+        raw_records = pred_by_title.get(rec["title"], [])
+        grounded = _grounded(raw_records)
         for r in grounded:
             source_counts[source(r)] += 1
 
@@ -174,11 +238,28 @@ def run(
             (r["index"], r["surface"], r["qid"], r["span_len"])
             for r in grounded if source(r) != SITELINK_SOURCE
         ]
-        full_articles.append((gt_tuples, full_pred))
-        clean_articles.append((gt_tuples, clean_pred))
+        resolved_by_of = _resolved_by_of_for_article(raw_records)
+        stratum_of = _stratum_of_for_article(gt_tuples, rec.get("stratum", "typical"))
+        type_of = _type_of_for_article(gt_tuples)
 
-    r_full = _recall_m3(full_articles)
-    r_clean = _recall_m3(clean_articles)
+        full_articles.append({
+            "gt_tuples": gt_tuples, "pred_tuples": full_pred,
+            "resolved_by_of": resolved_by_of, "stratum_of": stratum_of, "type_of": type_of,
+        })
+        clean_articles.append({
+            "gt_tuples": gt_tuples, "pred_tuples": clean_pred,
+            "resolved_by_of": resolved_by_of, "stratum_of": stratum_of, "type_of": type_of,
+        })
+
+    # R_strict (m1) / R_span (m2) / R_doc (m3) + P_mention (p1) / P_type (p2),
+    # all with Wilson CI, via the SAME micro-average aggregation
+    # scripts/wiki_eval.py cmd_report uses for metrics.json (label_exists
+    # omitted -- see module docstring -- so no p3_ex key here, matching the
+    # default/no-`--p3` aggregate_corpus behavior exactly).
+    metrics_full = M.aggregate_corpus(full_articles)
+    metrics_clean = M.aggregate_corpus(clean_articles)
+
+    r_full, r_clean = metrics_full["recall"]["m3"], metrics_clean["recall"]["m3"]
 
     n_grounded = sum(source_counts.values())
     n_sitelink = source_counts.get(SITELINK_SOURCE, 0)
@@ -196,6 +277,9 @@ def run(
         "sitelink_sourced": n_sitelink,
         "sitelink_share_of_grounded": (n_sitelink / n_grounded) if n_grounded else None,
         "replay_inconsistent_count": n_inconsistent,
+        # kept for backward compat with drafts/sitelink_replay/{gemini,deepseek}.json
+        # consumers -- same matched/total/value as before, now additionally
+        # carrying ci_lo/ci_hi/underpowered (metrics._cell's shape).
         "R_doc_full": r_full,
         "R_doc_clean": r_clean,
         "R_doc_delta": (
@@ -204,6 +288,25 @@ def run(
         ),
         "recall_units_lost": r_full["matched"] - r_clean["matched"],
         "unique_forms_replayed": len(source_of),
+        # -- full-metrics extension (paper Table C, 2026-07-09) --
+        "recall_full": metrics_full["recall"],      # {"m1": R_strict, "m2": R_span, "m3": R_doc}
+        "recall_clean": metrics_clean["recall"],
+        "precision_full": {k: v for k, v in metrics_full["precision"].items()},   # p1=P_mention, p2=P_type
+        "precision_clean": {k: v for k, v in metrics_clean["precision"].items()},
+        "p_label_p3ex": {
+            "status": "not_computed",
+            "reason": (
+                "P_label (P3\\exact) needs a live wbsearchentities(..., limit=1) call per "
+                "unmatched, non-exact_label prediction surface (label_exists) -- a different "
+                "cache-key shape than the limit=7 candidate-generation ladder this script "
+                "replays, so no committed cache covers it. Not computed to avoid making "
+                "live/uncached Wikidata calls."
+            ),
+            "estimated_unique_live_calls_required_clean": (
+                _count_label_exists_calls_required(clean_articles)
+            ),
+        },
+        "wikidata_network_calls_made": wd.n_network_calls,
     }
 
 
@@ -218,6 +321,9 @@ def main() -> int:
                          help="bound on concurrent live Wikidata HTTP calls (politeness)")
     parser.add_argument("--cache", default=None,
                          help="live-Wikidata JSONL cache path (default: next to --out, else CWD)")
+    parser.add_argument("--allow-network", action="store_true",
+                         help="permit live Wikidata calls on a cache miss (default: off -- run() "
+                              "raises instead of silently mixing cached and live data)")
     args = parser.parse_args()
 
     pred_dir = Path(args.pred)
@@ -233,6 +339,7 @@ def main() -> int:
     result = run(
         pred_dir, gt_path, meta,
         network_concurrency=args.network_concurrency, cache_path=cache_path,
+        allow_network=args.allow_network,
     )
 
     text = json.dumps(result, ensure_ascii=False, indent=1)
