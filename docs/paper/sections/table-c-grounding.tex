@@ -27,8 +27,9 @@ DeepSeek-V4-Flash      & 0.657 {\scriptsize[.646--.668]} & 0.535 {\scriptsize[.5
 % GPT-5.4 substitutes GPT-5.5 (owner fallback, sustained provider rate limits).
 % R_doc filled from docs/reports/ml-engineer-grounding-run-gpt54.md (commit 5546459);
 % sitelink-clean by construction (--no-sitelink), reasoning_effort pinned "medium".
-% P_label pending: a Wikidata maxlag replay pass, not yet computed.
-GPT-5.4$^{\ddagger}$   & 0.583 {\scriptsize[.572--.594]} & --- \\
+% P_label filled from docs/reports/python-pro-p-label-gpt54-grounding-run.md (commit
+% 19c7389): 3773/7037, Wilson 95% CI [.5245, .5478], computed on the 99/100 snapshot.
+GPT-5.4$^{\ddagger}$   & 0.583 {\scriptsize[.572--.594]} & 0.536 {\scriptsize[.525--.548]} \\
 \bottomrule
 \end{tabular}
 \caption{Terminology extraction and Wikidata grounding on the Wikipedia corpus
@@ -71,7 +72,7 @@ Qwen3.6-27B            & XX & XX & XX & XX & XX & XX \\
 \multicolumn{7}{@{}l}{\textit{Cloud models (API)}} \\
 Gemini-3.1-Flash-Lite  & 0.684 {\scriptsize[.674--.694]} & 0.622 & 0.602 & 0.300 & 0.452 & 0.530 \\
 DeepSeek-V4-Flash$^{\dagger}$ & 0.609 {\scriptsize[.599--.620]} & 0.519 & 0.504 & 0.305 & 0.460 & 0.535 \\
-GPT-5.4$^{\ddagger}$   & 0.536 {\scriptsize[.525--.547]} & XX & XX & XX & XX & --- \\
+GPT-5.4$^{\ddagger}$   & 0.536 {\scriptsize[.525--.547]} & XX & XX & XX & XX & 0.536 \\
 \bottomrule
 \end{tabular}
 \caption{Full metric grid for Table~\ref{tab:grounding-results}, on the
