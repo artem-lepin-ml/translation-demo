@@ -10,9 +10,16 @@
 # written here and never logged by the runner.
 #
 # `regime` selects the request-shaping recipe (`build_payload()` in the
-# runner). Grounded on two live sessions:
+# runner). Grounded on three live sessions:
 #   - 2026-07-07 deepseek smoke: docs/reports/2026-07-07-deepseek-closerouter-smoke.md
 #   - 2026-07-08 4-judge route probe: docs/experiments/2026-07-08-judge-probe/probe-results.md
+#   - 2026-07-08 reasoning-suppression follow-up (this judge run,
+#     docs/reports/python-pro-judge-run-deepseek.md): omitting `reasoning`
+#     entirely, and `reasoning.effort="none"`, both STILL reasoned (53-100%
+#     of completion tokens across 4 real-paragraph test calls) -- confirms
+#     nothing suppresses it on this route. Owner decision (2026-07-08,
+#     docs/paper/paper-state.md "Table A protocol"): make the config disclose
+#     the true behavior instead of a misleading `enabled=false`.
 #
 #   t0_no_reasoning   -- temperature=0 (deterministic scoring) + explicit
 #                        `reasoning: {enabled: false}`. For deepseek-v4-flash,
@@ -26,6 +33,14 @@
 #                        still went to reasoning across 15 validation calls) --
 #                        harmless for correctness (0/15 parse failures) but
 #                        budget for it as a cost quirk, not a config bug.
+#                        SUPERSEDED for deepseek-v4-flash 2026-07-08 -- see
+#                        t0_reasoning_on below. Kept in the runner for any
+#                        future judge that genuinely honors reasoning=false.
+#   t0_reasoning_on    -- temperature=0 + explicit `reasoning: {enabled: true}`.
+#                        Locked protocol for deepseek-v4-flash as of 2026-07-08:
+#                        reasoning cannot be suppressed on this route (see
+#                        above), so this regime discloses it honestly instead
+#                        of requesting an off switch that silently no-ops.
 #   frontier_default  -- no `temperature` key at all, `reasoning: {enabled:
 #                        true}` sent explicitly at default effort. Probe
 #                        results per model:
@@ -63,8 +78,14 @@
 judges:
   - slug: deepseek-v4-flash
     router_id: deepseek/deepseek-v4-flash
-    regime: t0_no_reasoning
-    max_tokens: 4096
+    regime: t0_reasoning_on
+    # 4096 was the pre-2026-07-08 budget under the (incorrect) assumption
+    # reasoning was suppressed. Direct evidence it wasn't enough: a real
+    # accuracy-criterion probe call hit the 4096 cap at 100% reasoning share
+    # and failed to parse (docs/reports/python-pro-judge-run-deepseek.md).
+    # 8192 matches the frontier judges' budget and gives headroom for the
+    # actual JSON payload after reasoning.
+    max_tokens: 8192
     enabled: true
 
   # ---- Frontier judges: router ids + regimes PROBE-CONFIRMED 2026-07-08

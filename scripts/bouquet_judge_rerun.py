@@ -182,7 +182,7 @@ def parse_judge_response(raw: str, criterion: str) -> dict[str, Any]:
 # Judge config
 # ---------------------------------------------------------------------------
 
-_REGIMES = ("t0_no_reasoning", "frontier_default")
+_REGIMES = ("t0_no_reasoning", "frontier_default", "t0_reasoning_on")
 
 
 @dataclass(slots=True)
@@ -233,6 +233,17 @@ def build_payload(judge: JudgeSpec, system_prompt: str, user_msg: str) -> dict[s
     if judge.regime == "t0_no_reasoning":
         payload["temperature"] = 0
         payload["reasoning"] = {"enabled": False}
+    elif judge.regime == "t0_reasoning_on":
+        # T=0 (deterministic scoring) + reasoning explicitly ON. 2026-07-08
+        # owner decision (docs/paper/paper-state.md "Table A protocol"):
+        # `reasoning.enabled=false` never actually suppressed deepseek-v4-flash's
+        # thinking on this route (confirmed twice: the judge-probe's 2 realistic
+        # calls at 89% reasoning share, and this runner's own reasoning-suppression
+        # follow-up -- omitting the param entirely, and `reasoning.effort="none"`,
+        # both still reasoned at 53-100% of completion tokens) -- so the config
+        # now discloses the true behavior instead of a misleading `enabled=false`.
+        payload["temperature"] = 0
+        payload["reasoning"] = {"enabled": True}
     elif judge.regime == "frontier_default":
         # No `temperature` (rejected/ignored by several reasoning models on this
         # proxy). `reasoning: {enabled: true}` IS sent explicitly, at default
@@ -293,9 +304,16 @@ async def _post_chat(
                 json=payload,
                 timeout=120.0,
             )
-        except (
-            httpx.ConnectError, httpx.ConnectTimeout, httpx.ReadTimeout, httpx.TimeoutException,
-        ) as exc:
+        except httpx.TransportError as exc:
+            # httpx.TransportError is the base of ConnectError/ConnectTimeout/
+            # ReadTimeout/TimeoutException (already handled below) plus
+            # ReadError/WriteError/RemoteProtocolError -- all connection-drop
+            # variants per the module docstring's "transient errors only:
+            # timeout / connection drop / 429 / 5xx" intent. The narrower
+            # tuple this replaces missed httpx.ReadError, which crashed a
+            # live 2026-07-08 deepseek-v4-flash pilot run mid-flight (an
+            # unhandled exception from asyncio.as_completed aborts the whole
+            # `run` invocation, not just the one in-flight call).
             last_exc = TransientHTTPError(f"{type(exc).__name__}: {exc}")
         else:
             if resp.status_code == 429 or resp.status_code >= 500:
@@ -486,12 +504,18 @@ async def run_judge(
 
     sem = asyncio.Semaphore(concurrency)
     write_lock = asyncio.Lock()
+    # provenance metadata persisted per row -- t0_reasoning_on added alongside
+    # t0_no_reasoning; frontier_default/unknown regimes keep their prior (None,
+    # None) representation unchanged (other judges' in-flight runs read this
+    # same module).
+    _temperature = {"t0_no_reasoning": 0, "t0_reasoning_on": 0}.get(judge.regime)
+    _reasoning_enabled = {"t0_no_reasoning": False, "t0_reasoning_on": True}.get(judge.regime)
     request_params = {
         "router_id": judge.router_id,
         "regime": judge.regime,
         "max_tokens": judge.max_tokens,
-        "temperature": 0 if judge.regime == "t0_no_reasoning" else None,
-        "reasoning_enabled": False if judge.regime == "t0_no_reasoning" else None,
+        "temperature": _temperature,
+        "reasoning_enabled": _reasoning_enabled,
     }
 
     completed = 0
@@ -505,10 +529,23 @@ async def run_judge(
             async with sem:
                 source = original[pid]
                 translated = translations[system][pid]
-                payload, usage = await score_one_criterion(
-                    client, base_url, api_key, judge, criterion,
-                    prompts[criterion], source, translated,
-                )
+                try:
+                    payload, usage = await score_one_criterion(
+                        client, base_url, api_key, judge, criterion,
+                        prompts[criterion], source, translated,
+                    )
+                except (TransientHTTPError, JudgeCallError) as exc:
+                    # score_one_criterion only catches JudgeParseError inline;
+                    # an HTTP failure (transient-exhausted-after-3-attempts, or
+                    # a non-retryable 4xx) previously propagated straight
+                    # through asyncio.as_completed and crashed the WHOLE batch,
+                    # discarding every other in-flight/pending call -- observed
+                    # live on 2026-07-08 (a genuine 400 from the gateway killed
+                    # a 221-call deepseek-v4-flash pilot run after only 1 row).
+                    # Recorded the same way as a parse failure: absence from
+                    # scores.jsonl is what drives the resumable retry.
+                    payload = JudgeParseError(criterion, "", f"http_error: {exc}")
+                    usage = None
             ts = time.time()
             if isinstance(payload, JudgeParseError):
                 failed += 1
