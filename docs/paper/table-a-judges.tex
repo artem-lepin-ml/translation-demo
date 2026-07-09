@@ -21,9 +21,12 @@ Qwen3-4B-Instruct      & $T{=}0$            & --- & --- & --- & --- & --- & --- 
 Gemma-3-27B-it         & $T{=}0$            & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
 \addlinespace
 \multicolumn{12}{@{}l}{\textit{Cloud judges (API)}} \\
-% TODO: DeepSeek-V4-Flash PARTIAL (19-290/2376 calls across parked resumes) -- gateway
-% flapping, run parked four times (commits 501c394, 85e5435, 02e4f25, 70e9ba5);
-% resume pending gateway stability.
+% TODO: DeepSeek-V4-Flash PARKED TERMINALLY at 290/2376 (12.2%) -- route down
+% continuously 11:20-14:05Z (180+ realistic-payload probes, 0 successes) after 4
+% earlier outage cycles (commits 501c394, 85e5435, 02e4f25, 70e9ba5, fa46091);
+% resume state committed (append-only, exact resume commands in
+% docs/reports/python-pro-judge-run-deepseek.md), stats.json intentionally NOT
+% computed -- 290/2376 too partial/uneven a sample to report. Resume when route heals.
 DeepSeek-V4-Flash      & $T{=}0$, reas.\ on & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
 Claude Opus 4.8        & default            & 9.36 & 9.71 & 8.80 & $-$0.08 & $-$0.08 & $-$0.13 & 0.19 & 0.09 & 0.23 & 88.8 \\
 % NOTE: GPT-5.5 DONE at 2375/2376 calls -- one cell (translate-gemma-bouquet-refined,

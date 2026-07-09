@@ -94,8 +94,8 @@ flat T2/T3 numbering:
 
 ### In flight (current task)
 
-**Table A fill status (2026-07-09): 4/8 rows DONE, 1 PARTIAL (gateway flapping), 3 local
-rows pending sr004.**
+**Table A fill status (2026-07-09): 4/8 rows DONE, 1 terminally PARKED (`deepseek-v4-flash`
+at 290/2376, commit `fa46091`, resumable), 3 local rows pending sr004.**
 - DONE: `gemini-3.1-flash-lite` (reasoning off, data commit `ced45c3`), `claude-opus-4.8`
   (no thinking available via gateway, commit `6a90dec`), `gpt-5.5` (default effort, auto
   route, 2375/2376 calls, commit `336f272` — 1 cell short due to a disclosed
@@ -110,10 +110,16 @@ rows pending sr004.**
     tie-rate {9,10} 71.1% -> 85.4%) without improving agreement with COMET/MetricX, except
     style rho vs.\ CometKiwi (0.149 -> 0.198). Worth a line in the paper's judge-protocol
     discussion, not just an operational footnote.
-- PARTIAL, marked `---` with TODO in the table: `deepseek-v4-flash` (reasoning on,
-  19->290/2376 across four parked resumes) — gateway flapping, run parked four times
-  (commits `501c394`, `85e5435`, `02e4f25`, `70e9ba5`); most recent window
-  ~09:55-10:15Z, route dropped again, agent back in a resident probe-retry cycle.
+- TERMINALLY PARKED, marked `---` with TODO in the table: `deepseek-v4-flash` (reasoning
+  on, 290/2376 = 12.2%) — after four earlier parked resumes (commits `501c394`,
+  `85e5435`, `02e4f25`, `70e9ba5`), a resident 2h45m poll (11:20Z-14:05Z, 60+ gate
+  cycles, 180+ realistic-payload probes) recorded 0 successes with zero flicker; the
+  coordinator called a terminal stand-down at ~14:05Z rather than continue an
+  open-ended loop against a route showing no recovery signal. `stats.json`
+  deliberately NOT computed (290/2376 too partial/uneven a sample — disclosed, not
+  silent). Cost ≈$0.128. Resume state (append-only) committed at `fa46091`, exact
+  resume commands in
+  [python-pro-judge-run-deepseek.md](../reports/python-pro-judge-run-deepseek.md).
 - Pending, marked `---` with TODO: the 3 local judges (`qwen3.6-27b`, `qwen3-4b-instruct`,
   `gemma-3-27b-it`, all $T{=}0$, thinking off) await owner-side sr004 vLLM runs per the
   runbook [sr004-local-eval-runbook.md](../runbooks/sr004-local-eval-runbook.md)

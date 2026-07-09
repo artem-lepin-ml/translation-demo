@@ -155,10 +155,11 @@
       закрыты все три готовые строки Table C (gemini, deepseek, gpt-5.4: R_doc + P_label, sitelink-clean); gpt-5.4
       P_label добит отдельным ретраем после расчистки Wikidata maxlag (0.536 [.525&ndash;.548], коммит
       <code>19c7389</code>). Пара flash-lite/flash-lite-think теперь полная по обеим сторонам и даёт готовую
-      методологическую находку про чувствительность судьи к reasoning (см. раздел 3). Остаётся один частичный
-      судья Table A (deepseek-v4-flash, маршрут флапает) — резидентный поллер в цикле проб.
+      методологическую находку про чувствительность судьи к reasoning (см. раздел 3). Один судья Table A
+      (deepseek-v4-flash) терминально припаркован на 290/2376 — маршрут не подавал признаков жизни 2ч45м подряд,
+      резидентный поллер остановлен по решению координатора, состояние резюма закоммичено.
     </p>
-    <span class="badge badge--warn">ЧАСТИЧНЫЙ УСПЕХ — 1 нить ждёт восстановления гейтвея, 3 нити ждут владельца (sr004)</span>
+    <span class="badge badge--warn">ЧАСТИЧНЫЙ УСПЕХ — 1 нить терминально припаркована (маршрут down), 3 нити ждут владельца (sr004)</span>
   </section>
 
   <!-- 2. 360 diagram -->
@@ -194,7 +195,7 @@
           <tr><td>Table A · claude-opus-4.8</td><td>2376/2376 (100%)</td><td><span class="badge badge--pass">DONE</span></td></tr>
           <tr><td>Table A · gpt-5.5</td><td>2375/2376 (99.96%)</td><td><span class="badge badge--pass">DONE</span></td></tr>
           <tr><td>Table A · flash-lite-think</td><td>2376/2376 (100%)</td><td><span class="badge badge--pass">DONE</span></td></tr>
-          <tr><td>Table A · deepseek-v4-flash</td><td>290/2376 (12.2%)</td><td><span class="badge badge--warn">PARTIAL — флап</span></td></tr>
+          <tr><td>Table A · deepseek-v4-flash</td><td>290/2376 (12.2%)</td><td><span class="badge badge--warn">ПАРКОВАН ТЕРМИНАЛЬНО</span></td></tr>
           <tr><td>Table C · gemini + deepseek (R_doc+P_label)</td><td>2/2 строки</td><td><span class="badge badge--pass">DONE</span></td></tr>
           <tr><td>Table C · gpt-5.4 (R_doc+P_label)</td><td>99/100 статей, P_label 0.536</td><td><span class="badge badge--pass">DONE</span></td></tr>
           <tr><td>Локальная тройка (sr004, Table A + C)</td><td>0% — раннбук готов</td><td><span class="badge badge--data">ОЖИДАЕТ ВЛАДЕЛЬЦА</span></td></tr>
@@ -223,7 +224,7 @@
         <tr><td>claude-opus-4.8 (thinking недоступен на гейтвее)</td><td><span class="badge badge--pass">DONE</span></td><td>2376/2376</td><td><code>6a90dec</code></td><td>reasoning_tokens=0 везде, задисклозено, $2.52</td></tr>
         <tr><td>gpt-5.5 (default effort, auto)</td><td><span class="badge badge--pass">DONE</span></td><td>2375/2376 (99.96%)</td><td><code>336f272</code></td><td>$1.32/$4 кап; пилот-гейт 1.25% parse-fail</td></tr>
         <tr><td>gemini-3.1-flash-lite-think (reasoning on)</td><td><span class="badge badge--pass">DONE</span></td><td>2376/2376</td><td><code>f901210</code></td><td>0 parse-fail, $0.47; пережил ~11ч аутеджа Gemini-семьи + 2 гибели детач-процесса (session teardown, container recycle) — резиденный поллинг добил остаток</td></tr>
-        <tr><td>deepseek-v4-flash (reasoning on)</td><td><span class="badge badge--warn">PARTIAL</span></td><td>290/2376</td><td><code>501c394</code>, <code>85e5435</code>, <code>02e4f25</code>, <code>70e9ba5</code></td><td>маршрут флапает, окно ~09:55&ndash;10:15Z дало рост до 290, затем снова упал; агент в резидентном цикле проб</td></tr>
+        <tr><td>deepseek-v4-flash (reasoning on)</td><td><span class="badge badge--warn">ПАРКОВАН ТЕРМИНАЛЬНО</span></td><td>290/2376</td><td><code>501c394</code>, <code>85e5435</code>, <code>02e4f25</code>, <code>70e9ba5</code>, <code>fa46091</code></td><td>маршрут down непрерывно 11:20&ndash;14:05Z (180+ реальных проб, 0 успехов, ни одной вспышки) после 4 циклов аутеджа; координатор остановил резидентный поллинг, состояние резюма закоммичено</td></tr>
         <tr><td>Локальная тройка (qwen3-4b, gemma-3-27b-it, qwen3.6-27b, T=0, thinking off)</td><td><span class="badge badge--data">PENDING</span></td><td>0% — раннбук готов</td><td><code>0c48124</code></td><td>ждёт запуска владельцем на sr004</td></tr>
       </tbody>
     </table>
@@ -320,9 +321,13 @@
       $0.47. Структурный урок: ни один детач-процесс не переживает ресайкл контейнера — только резидентный,
       реально исполняющийся ход агента.</div>
     <div class="finding finding--high"><span class="tag">HIGH</span> — Маршрут <code>deepseek-v4-flash</code>
-      флапает: за ночь резюм дошёл до 290/2376 (окно роста ~09:55&ndash;10:15Z), затем маршрут снова упал.
-      Четыре парк-коммита (<code>501c394</code>, <code>85e5435</code>, <code>02e4f25</code>, <code>70e9ba5</code>),
-      агент в резидентном цикле проб с гейтом из последовательных чистых ответов перед возобновлением full-run.</div>
+      терминально припаркован на 290/2376 (12.2%): после четырёх циклов аутеджа резидентный поллинг с 11:20 по
+      14:05Z (2ч45м, 60+ гейт-циклов, 180+ проб на реальной нагрузке) не дал ни одного успеха и ни одной вспышки
+      &mdash; качественно иной, более устойчивый отказ, чем предыдущие четыре цикла. Координатор остановил
+      поллинг и зафиксировал честный частичный результат вместо бесконечного цикла проб.
+      <code>stats.json</code> сознательно не считался &mdash; 290/2376 слишком неполная и неравномерная выборка
+      для отчёта. Состояние резюма (append-only) закоммичено в <code>fa46091</code>, точные команды резюма &mdash;
+      в <code>docs/reports/python-pro-judge-run-deepseek.md</code>.</div>
     <div class="finding finding--info"><span class="tag">INFO</span> — Методологическая находка: пара
       flash-lite/flash-lite-think (одна модель, единственная переменная — reasoning) показывает, что включение
       reasoning делает судью равномерно щедрее (Acc +0.20, Flu +0.35, Sty +0.35; tie-rate style 71.1%&rarr;85.4%),
@@ -371,9 +376,11 @@
     <div class="evidence-item"><span class="claim">gpt-5.5 — 2375/2376 (99.96%), $1.3243 факт vs $4.00 кап.</span>
       Коммит <code>336f272</code>; <code>reports/bouquet/judges/gpt-5.5/{scores.jsonl (2375), parse_failures.jsonl
       (10699), stats.json}</code>; отчёт <code>docs/reports/python-pro-judge-run-gpt55.md</code>.</div>
-    <div class="evidence-item"><span class="claim">deepseek-v4-flash — 290/2376, парк-коммиты после четырёх циклов
-      аутеджа.</span> Коммиты <code>501c394</code> (park #1), <code>85e5435</code> (park #2),
-      <code>02e4f25</code> (park #3), <code>70e9ba5</code> (park #4, 290/2376 через ресайкл контейнера); отчёт
+    <div class="evidence-item"><span class="claim">deepseek-v4-flash — 290/2376 (12.2%), терминально
+      припаркован.</span> Коммиты <code>501c394</code> (park #1), <code>85e5435</code> (park #2),
+      <code>02e4f25</code> (park #3), <code>70e9ba5</code> (park #4, 290/2376 через ресайкл контейнера),
+      <code>fa46091</code> (терминальная парковка после 2ч45м, 180+ проб, 0 успехов, 11:20&ndash;14:05Z);
+      стоимость &asymp;$0.128, <code>stats.json</code> сознательно не считался; отчёт
       <code>docs/reports/python-pro-judge-run-deepseek.md</code>.</div>
     <div class="evidence-item"><span class="claim">gemini-3.1-flash-lite-think — 2376/2376, $0.4749, 0 parse-fail;
       2 826 990 reasoning-токенов (avg 1190/вызов).</span> Коммит <code>f901210</code>;
@@ -425,9 +432,11 @@
         и 3 строки Table C; раннбук верифицирован 582 тестами, но реальная работа <code>chat_template_kwargs.
         enable_thinking=false</code> на конкретной сборке vLLM sr004 не проверена (GPU недоступен в этой сессии) —
         первый живой прогон должен это подтвердить.</li>
-      <li><strong>Ничего не делать</strong> с deepseek-v4-flash — резидентный поллер сам добьёт прогон
-        (290&rarr;2376), как только маршрут стабилизируется; flash-lite-think уже закрыт (2376/2376,
-        коммит <code>f901210</code>).</li>
+      <li><strong>Решение владельца по deepseek-v4-flash</strong> — прогон терминально припаркован на 290/2376
+        (12.2%), резидентный поллинг остановлен после 2ч45м без единого признака жизни маршрута; добавить
+        возможный ре-ран владельцем или следующей сессией, когда маршрут восстановится (точные команды резюма
+        и гейт на 3/3 реальных пробы &mdash; в <code>docs/reports/python-pro-judge-run-deepseek.md</code>);
+        flash-lite-think уже закрыт (2376/2376, коммит <code>f901210</code>).</li>
       <li><strong>Использовать пару flash-lite/flash-lite-think в статье</strong> как готовую reasoning-sensitivity
         находку (раздел про судейский протокол) — обе стороны пары теперь закрыты, число сравнимо и не требует
         дополнительных прогонов.</li>
