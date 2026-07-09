@@ -1,11 +1,11 @@
 # BOUQUET judge run — deepseek-v4-flash
 
-**STATUS: RUN PARKED (2nd time) — provider outage relapse, resumable.** Not
+**STATUS: RUN PARKED (3rd time) — provider outage relapse, resumable.** Not
 the final report. `deepseek/deepseek-v4-flash` has no available upstream
 provider on the CloseRouter gateway (`503 no_available_provider`) as of this
 writing.
 
-**Timeline of two park cycles**, both against the same underlying flapping
+**Timeline of three park cycles**, all against the same underlying flapping
 route:
 
 1. **Park #1** (commit `501c394`): outage first observed, ~55+ min sustained
@@ -26,19 +26,53 @@ route:
    flicker. Killed the run immediately per the coordinator's own
    step-down/park-again instruction; 3 follow-up sequential probes (10s
    apart) all confirmed `503` again.
-3. **Park #2** (this commit): still 19 scored rows (0 new successes across
-   both resume attempts), cumulative 1236 diagnostic failure rows (442 from
-   park #1 + 794 from the resume attempt: 1165× 503, 65× 400, 6× 429).
+3. **Park #2** (commit `85e5435`): still 19 scored rows (0 new successes
+   across both resume attempts), cumulative 1236 diagnostic failure rows
+   (442 from park #1 + 794 from the resume attempt: 1165× 503, 65× 400,
+   6× 429). Recovery poller relaunched (90s cadence, trivial-payload probe,
+   3-consecutive-clean gate) — then **silently died** when its parent shell
+   session was torn down (job-control `disown` is not session detach; see
+   `docs/known_issues.md`, commit `c1d0289`). A coordinator liveness check
+   caught this ~3h10m after the poller's last log write; relaunched properly
+   `setsid`-detached (verified `PPID=1`, own session) this time.
+4. **Recovery signal #2 + resume attempt #2**: the `setsid`-detached poller
+   hit its 3-consecutive-clean gate (`PROVIDER_BACK_UP_STABLE` at 07:49:46).
+   A coordinator message caught that the run hadn't actually resumed (no
+   auto-chaining from poller exit to run resume) ~28 min after the gate
+   fired. Re-probed once (still `200`), then launched a purpose-built,
+   `setsid`-detached **run supervisor** (`run_supervisor.py`, mirroring the
+   `c1d0289` pattern for the run itself, not just the poller) at
+   concurrency 4. Result: the supervisor's own relapse detector (3
+   consecutive ~30s polls with zero fresh successes + outage-flavored
+   failures, i.e. ~90s) fired and self-parked **before I intervened
+   manually** — 0 new successes, +76 failure rows (all `no_available_provider`)
+   in the ~2 minutes the run was live. Root cause of the false-positive
+   recovery signal: the poller's probe was a **trivial single-token ping**,
+   which apparently succeeds even when the route can't sustain the real
+   payload shape (full system prompt + `response_format=json_object` +
+   `reasoning: {enabled: true}` + `max_tokens=8192`) under concurrent load.
+   Fixed by rebuilding the poller's probe to use the actual runner's
+   `build_payload()` (real judge-shaped call, real parse validation via
+   `parse_judge_response()`) — "stable" now means "the real workload
+   succeeds repeatedly", not "a cheap ping succeeds".
+5. **Park #3** (this commit): still 19 scored rows (0 new successes across
+   all three resume attempts), cumulative 1312 diagnostic failure rows.
 
 **Resume command** (skips the 19 already-scored rows automatically via the
 runner's resume-by-existing-keys logic). Given the coordinator's guidance
-that ~2357 calls remain and time is boxed, this now resumes straight into
-the **full run** (no `--pilot`) rather than the original 240-call pilot
-gate — start conservatively (concurrency 4-6, not 12: this session's 12
-immediately relapsed into 503 within seconds of the "recovery"), watch at
-least 5 minutes of **sustained scored-row growth** (not just process
-liveness — a stuck-but-alive process produced zero growth for 5 straight
-minutes last time) before trusting a higher concurrency:
+that ~2357 calls remain and time is boxed, this resumes straight into the
+**full run** (no `--pilot`) rather than the original 240-call pilot gate —
+prefer launching via the supervisor (auto-restart/step-up/relapse-park, all
+`setsid`-detached — survives session teardown, self-verify via `ps` + log
+mtime rather than trusting notifications) over a bare manual invocation:
+
+```
+setsid nohup .venv/bin/python3 <supervisor-script-copy> > <fresh-log> 2>&1 < /dev/null &
+```
+
+or, manually, starting conservatively (concurrency 4, not 12 — both prior
+attempts at higher/uncontrolled concurrency relapsed within seconds to
+~90s of resuming):
 
 ```
 .venv/bin/python3 scripts/bouquet_judge_rerun.py run --judge deepseek-v4-flash --concurrency 4
@@ -175,12 +209,12 @@ back.
   `translate-gemma-bouquet` ids 0-4) + 4 new rows from the `t0_reasoning_on`
   smoke test (`qwen-27b-bouquet` id=0, all 3 criteria, plus 1 row from the
   brief provider-flicker window).
-- `reports/bouquet/judges/deepseek-v4-flash/parse_failures.jsonl` — 1236 rows
-  as of park #2 (442 from park #1's outage window + 794 from the resume
-  attempt: 1165× `503 no_available_provider` cumulative, 65× `400
-  invalid_request`, 6× `429 rate_limited`). Diagnostic only — none of these
-  represent a real judge-response parse failure; absence from `scores.jsonl`
-  is what drives the resume, so all of them will be retried automatically
+- `reports/bouquet/judges/deepseek-v4-flash/parse_failures.jsonl` — 1312 rows
+  as of park #3 (442 from park #1 + 794 from resume attempt #1 + 76 from
+  resume attempt #2, almost all `no_available_provider`/`rate_limited`/`400`).
+  Diagnostic only — none of these represent a real judge-response parse
+  failure; absence from `scores.jsonl` is what drives the resume, so all of
+  them will be retried automatically
   once the provider is stable.
 
 **Multi-agent shared-worktree note**: `configs/bouquet_judges.yaml` and
@@ -232,14 +266,25 @@ further hours.
 ## Open questions
 
 - Is the deepseek-v4-flash route's flakiness (503 outage + a brief
-  405/mixed-error flicker) a known, recurring CloseRouter issue for this
-  specific model, or a one-off? **Now observed twice** — park #1's flicker,
-  and park #2's near-identical pattern (a "clean 200" seen by another
-  agent's isolated probe, immediately followed by 1117/1188 `503`s under any
-  real concurrent load) — this looks like a real, recurring pattern for this
-  specific model/route rather than a one-off, worth flagging in
-  `docs/known_issues.md` once the run is finally complete (not done yet —
-  would rather record the full picture in one edit than two partial ones).
+  flicker) a known, recurring CloseRouter issue for this specific model, or
+  a one-off? **Now observed three times**, each with the same shape: a
+  lightweight/isolated probe returns `200`, but real concurrent
+  production-shaped load relapses to `503` within seconds to ~90s. This
+  looks like a real, recurring capacity characteristic of this specific
+  model/route (very limited concurrent capacity, enough for an occasional
+  single light request but not a sustained batch) rather than a one-off,
+  worth flagging in `docs/known_issues.md` once the run is finally complete
+  (not done yet — would rather record the full picture in one edit).
+- **Probe fidelity matters for recovery detection.** Two of the three
+  "recovery" signals that triggered a resume attempt turned out to be
+  false positives from trivial-payload probes (a cheap ping succeeding
+  doesn't mean the real workload will). Fixed for future cycles by
+  rebuilding the poller's probe around the runner's own `build_payload()` +
+  `parse_judge_response()` (real judge-shaped call, real parse validation) —
+  but even that is only evidence, not proof; the run itself (via
+  `run_supervisor.py`'s fast ~90s relapse detector) remains the actual
+  arbiter, and correctly self-parked on this run's own first sign of
+  trouble rather than needing manual intervention.
 - Should the widened `httpx.TransportError` retry-catch and the
   whole-batch-crash fix in `_one()` be treated as a general reliability fix
   worth flagging to the other 3 agents' judge runs (they use the same shared
