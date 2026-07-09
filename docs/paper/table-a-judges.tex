@@ -21,8 +21,9 @@ Qwen3-4B-Instruct      & $T{=}0$            & --- & --- & --- & --- & --- & --- 
 Gemma-3-27B-it         & $T{=}0$            & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
 \addlinespace
 \multicolumn{12}{@{}l}{\textit{Cloud judges (API)}} \\
-% TODO: DeepSeek-V4-Flash PARTIAL (19/2376 calls) -- gateway flapping, run parked twice
-% (commits 501c394, 85e5435); resume pending gateway stability.
+% TODO: DeepSeek-V4-Flash PARTIAL (19-290/2376 calls across parked resumes) -- gateway
+% flapping, run parked four times (commits 501c394, 85e5435, 02e4f25, 70e9ba5);
+% resume pending gateway stability.
 DeepSeek-V4-Flash      & $T{=}0$, reas.\ on & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
 Claude Opus 4.8        & default            & 9.36 & 9.71 & 8.80 & $-$0.08 & $-$0.08 & $-$0.13 & 0.19 & 0.09 & 0.23 & 88.8 \\
 % NOTE: GPT-5.5 DONE at 2375/2376 calls -- one cell (translate-gemma-bouquet-refined,
@@ -30,12 +31,14 @@ Claude Opus 4.8        & default            & 9.36 & 9.71 & 8.80 & $-$0.08 & $-$
 % aggregate mean/rho below are computed over the available calls.
 GPT-5.5                & default, reas.\ on & 9.24 & 9.40 & 8.36 & $-$0.13 & $-$0.13 & $-$0.20 & 0.20 & 0.13 & 0.30 & 72.3 \\
 Gemini-3.1-Flash-Lite  & default            & 9.48 & 9.52 & 8.67 & $-$0.07 & $-$0.30 & $-$0.04 & 0.18 & 0.25 & 0.15 & 87.8 \\
-% TODO: Gemini-3.1-Flash-Lite reasoning-on variant (slug gemini-3.1-flash-lite-think)
-% PARTIAL (797/2376 calls) -- gateway outage across the whole Gemini family
-% (HTTP 503 no_available_provider, 6316 failure rows as evidence); run is resumable,
-% poller live.
+% NOTE: reasoning-on sensitivity pair to the row above (same underlying model,
+% slug gemini-3.1-flash-lite-think, 2376/2376 calls, commit f901210). Enabling
+% reasoning shifts the judge uniformly more generous (Acc +0.20, Flu +0.35,
+% Sty +0.35 mean; ties +14.3pp on style) without improving MetricX/CometKiwi
+% agreement, except style rho vs.\ CometKiwi (0.15 -> 0.20). See
+% docs/reports/python-pro-judge-run-gemini-flash-lite.md Part 2.
 \addlinespace
-Gemini-3.1-Flash-Lite  & default, reas.\ on & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+Gemini-3.1-Flash-Lite  & default, reas.\ on & 9.68 & 9.87 & 9.03 & $-$0.08 & $-$0.16 & $-$0.11 & 0.15 & 0.14 & 0.20 & 93.8 \\
 % --- optional sensitivity row (previous verbatim config) ---
 % \addlinespace
 % Qwen3.6-27B & $T{=}0.7$, think.\ on & XX & XX & XX & XX & XX & XX & XX & XX & XX & XX \\

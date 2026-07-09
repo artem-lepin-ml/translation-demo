@@ -94,17 +94,26 @@ flat T2/T3 numbering:
 
 ### In flight (current task)
 
-**Table A fill status (2026-07-09): 3/8 rows DONE, 2 PARTIAL (gateway outages), 3 local
+**Table A fill status (2026-07-09): 4/8 rows DONE, 1 PARTIAL (gateway flapping), 3 local
 rows pending sr004.**
 - DONE: `gemini-3.1-flash-lite` (reasoning off, data commit `ced45c3`), `claude-opus-4.8`
   (no thinking available via gateway, commit `6a90dec`), `gpt-5.5` (default effort, auto
   route, 2375/2376 calls, commit `336f272` — 1 cell short due to a disclosed
-  deterministic model-output JSON bug).
-- PARTIAL, marked `---` with TODO in the table: `gemini-3.1-flash-lite-think`
-  (Gemini-3.1-Flash-Lite + reasoning, 797/2376) — gateway outage across the whole Gemini
-  family (HTTP 503 `no_available_provider`, 6316 failure rows as evidence), run
-  resumable, poller live; `deepseek-v4-flash` (reasoning on, 19/2376) — gateway
-  flapping, run parked twice (commits `501c394`, `85e5435`).
+  deterministic model-output JSON bug), `gemini-3.1-flash-lite-think` (Gemini-3.1-Flash-Lite
+  + reasoning ON, 2376/2376 calls, $0.47, data commit `f901210`; survived a ~11h outage —
+  Google-family gateway 503s, two detached-process deaths (session teardown, container
+  recycle) — see `docs/reports/python-pro-judge-run-gemini-flash-lite.md` Part 2 for the
+  outage timeline).
+  - **Reasoning-sensitivity finding** (the `gemini-3.1-flash-lite` /
+    `gemini-3.1-flash-lite-think` pair is now complete on both sides): enabling reasoning
+    shifts the judge uniformly more generous (mean Acc +0.20, Flu +0.35, Sty +0.35; style
+    tie-rate {9,10} 71.1% -> 85.4%) without improving agreement with COMET/MetricX, except
+    style rho vs.\ CometKiwi (0.149 -> 0.198). Worth a line in the paper's judge-protocol
+    discussion, not just an operational footnote.
+- PARTIAL, marked `---` with TODO in the table: `deepseek-v4-flash` (reasoning on,
+  19->290/2376 across four parked resumes) — gateway flapping, run parked four times
+  (commits `501c394`, `85e5435`, `02e4f25`, `70e9ba5`); most recent window
+  ~09:55-10:15Z, route dropped again, agent back in a resident probe-retry cycle.
 - Pending, marked `---` with TODO: the 3 local judges (`qwen3.6-27b`, `qwen3-4b-instruct`,
   `gemma-3-27b-it`, all $T{=}0$, thinking off) await owner-side sr004 vLLM runs per the
   runbook [sr004-local-eval-runbook.md](../runbooks/sr004-local-eval-runbook.md)
