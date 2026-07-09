@@ -1,0 +1,48 @@
+{
+  "provider-2__reasoning_effort__temp-none": {
+    "ok": true,
+    "latency_s": 6.76,
+    "prompt_tokens": 1859,
+    "completion_tokens": 370,
+    "reasoning_tokens": 0,
+    "cost_usd": null,
+    "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+  },
+  "provider-2__thinking__temp-none": {
+    "ok": true,
+    "latency_s": 7.05,
+    "prompt_tokens": 1859,
+    "completion_tokens": 175,
+    "reasoning_tokens": 0,
+    "cost_usd": null,
+    "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+  },
+  "provider-10__reasoning_effort__temp-none": {
+    "ok": true,
+    "latency_s": 9.3,
+    "prompt_tokens": 8809,
+    "completion_tokens": 165,
+    "reasoning_tokens": 0,
+    "cost_usd": null,
+    "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+  },
+  "provider-10__thinking__temp-none": {
+    "ok": true,
+    "latency_s": 5.9,
+    "prompt_tokens": 8691,
+    "completion_tokens": 165,
+    "reasoning_tokens": 0,
+    "cost_usd": null,
+    "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+  },
+  "provider-5__reasoning_effort__temp-none__retry": {
+    "ok": false,
+    "latency_s": 3.92,
+    "error": "BadRequestError: Error code: 400 - {'error': {'code': 'invalid_request', 'message': '请求失败 [up_bad_request; g=0; c=562; r=20260709004405768764877oST3tWQR] (request id: 202607090044043300642668268d9d6Zorzs9O3)', 'status': 400, 'metadata': {'provider_name': 'Anthropic',"
+  },
+  "provider-8__reasoning_effort__temp-none__retry": {
+    "ok": false,
+    "latency_s": 0.56,
+    "error": "InternalServerError: Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models': ['anthropic/claude-opus-4.8'], 'route_candidate"
+  }
+}

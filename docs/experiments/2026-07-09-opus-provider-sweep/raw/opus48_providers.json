@@ -1,0 +1,140 @@
+{
+  "id": "anthropic/claude-opus-4.8",
+  "name": "Claude Opus 4.8",
+  "selected_provider": "provider-4",
+  "effective_provider": "provider-4",
+  "providers": [
+    {
+      "name": "auto",
+      "label": "Auto",
+      "mode": "auto",
+      "effective_provider": "provider-4",
+      "pricing": {
+        "unit": "usd_per_million_tokens",
+        "input": "0.40000000",
+        "output": "0.40000000"
+      },
+      "context_length": 200000,
+      "max_output_tokens": 32000,
+      "success_rate_24h": 99.49799196787149,
+      "supports_cache_accounting": false,
+      "supports_reasoning_effort": false,
+      "available": true
+    },
+    {
+      "name": "provider-8",
+      "label": "provider-8",
+      "mode": "upstream",
+      "provider_option_id": "79b7e3e8-49d7-48fb-9d82-b0d966c32f85",
+      "pricing": {
+        "unit": "usd_per_million_tokens",
+        "input": "0.75000000",
+        "output": "2.25000000",
+        "cache_write_5m": "0.75000000",
+        "cache_read": "0.07500000"
+      },
+      "context_length": 1000000,
+      "max_output_tokens": null,
+      "success_rate_24h": 92.7710843373494,
+      "supports_cache_accounting": true,
+      "supports_reasoning_effort": true,
+      "available": true
+    },
+    {
+      "name": "provider-10",
+      "label": "provider-10",
+      "mode": "upstream",
+      "provider_option_id": "3ed687c6-7340-4de6-8838-b8b0de9a047c",
+      "pricing": {
+        "unit": "usd_per_million_tokens",
+        "input": "0.45000000",
+        "output": "2.25000000",
+        "cache_write_5m": "0.56250000",
+        "cache_write_1h": "0.90000000",
+        "cache_read": "0.04500000"
+      },
+      "context_length": 200000,
+      "max_output_tokens": 32000,
+      "success_rate_24h": 98.1029810298103,
+      "supports_cache_accounting": true,
+      "supports_reasoning_effort": true,
+      "available": true
+    },
+    {
+      "name": "provider-5",
+      "label": "provider-5",
+      "mode": "upstream",
+      "provider_option_id": "8761f22c-5a16-487f-b78e-1f65c3ab783d",
+      "pricing": {
+        "unit": "usd_per_million_tokens",
+        "input": "2.25000000",
+        "output": "11.25000000",
+        "cache_write_5m": "2.81250000",
+        "cache_write_1h": "4.50000000",
+        "cache_read": "0.22500000"
+      },
+      "context_length": 200000,
+      "max_output_tokens": 32000,
+      "success_rate_24h": null,
+      "supports_cache_accounting": true,
+      "supports_reasoning_effort": true,
+      "available": true
+    },
+    {
+      "name": "provider-9",
+      "label": "provider-9",
+      "mode": "upstream",
+      "provider_option_id": "2d600b00-b65b-4321-a356-5d9b3c1cde73",
+      "pricing": {
+        "unit": "usd_per_million_tokens",
+        "input": "1.27500000",
+        "output": "4.95000000",
+        "cache_write_5m": "1.59375000",
+        "cache_read": "0.12750000"
+      },
+      "context_length": 1000000,
+      "max_output_tokens": null,
+      "success_rate_24h": 99.7697620874904,
+      "supports_cache_accounting": true,
+      "supports_reasoning_effort": false,
+      "available": true
+    },
+    {
+      "name": "provider-2",
+      "label": "provider-2",
+      "mode": "upstream",
+      "provider_option_id": "49f2b3b7-df9f-4dd8-a85a-7dc655ba02a9",
+      "pricing": {
+        "unit": "usd_per_million_tokens",
+        "input": "0.95000000",
+        "output": "0.95000000",
+        "cache_write_5m": "0.95000000",
+        "cache_write_1h": "0.95000000",
+        "cache_read": "0.09500000"
+      },
+      "context_length": 1000000,
+      "max_output_tokens": 128000,
+      "success_rate_24h": 84.42906574394463,
+      "supports_cache_accounting": true,
+      "supports_reasoning_effort": true,
+      "available": true
+    },
+    {
+      "name": "provider-4",
+      "label": "provider-4",
+      "mode": "upstream",
+      "provider_option_id": "89c589e5-a37a-4a04-8eff-126232b99070",
+      "pricing": {
+        "unit": "usd_per_million_tokens",
+        "input": "0.40000000",
+        "output": "0.40000000"
+      },
+      "context_length": 200000,
+      "max_output_tokens": 32000,
+      "success_rate_24h": 99.49115044247787,
+      "supports_cache_accounting": false,
+      "supports_reasoning_effort": false,
+      "available": true
+    }
+  ]
+}

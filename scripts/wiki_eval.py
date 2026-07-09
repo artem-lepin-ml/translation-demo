@@ -17,6 +17,7 @@ Usage (from the worktree root, with PYTHONPATH=src):
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import itertools
 import json
 import os
@@ -195,9 +196,23 @@ def _load_dotenv(path: Path = ENV_FILE) -> None:
             os.environ[key] = value
 
 
-def _config_from_bits(bits: str) -> GroundingConfig:
+def _config_from_bits(bits: str, *, use_sitelink: bool | None = None) -> GroundingConfig:
+    """Build a GroundingConfig from the 3-bit ablation id.
+
+    ``use_sitelink`` overrides the bit-derived value when given (not ``None``)
+    -- the wiki-eval protocol (docs/stages/wiki-eval.md Subtleties, "G6
+    sitelink rung creates evaluation circularity") requires eval-scoring runs
+    to use ``use_cirrus=True, use_sitelink=False`` rather than the historical
+    ``use_fallbacks`` bit-configs that couple both rungs to the same bit --
+    the 3-bit id has no room for a 4th independent toggle, so this keyword
+    lets ``run``'s ``--no-sitelink`` flag force the rung off without changing
+    the bit-string format ablate/tests already depend on.
+    """
     use_lemma, use_fallbacks, match_aliases = (c == "1" for c in bits)
-    return GroundingConfig(use_lemma=use_lemma, use_fallbacks=use_fallbacks, match_aliases=match_aliases)
+    config = GroundingConfig(use_lemma=use_lemma, use_fallbacks=use_fallbacks, match_aliases=match_aliases)
+    if use_sitelink is not None and use_sitelink != config.use_sitelink:
+        config = dataclasses.replace(config, use_sitelink=use_sitelink)
+    return config
 
 
 class BudgetGuard:
@@ -902,8 +917,9 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
                      wikidata_workers: int = DEFAULT_NETWORK_CONCURRENCY,
                      out_dir: str | Path | None = None,
                      skip_titles: frozenset[str] = frozenset(),
-                     n_done_start: int = 0) -> tuple[list[dict], dict]:
-    config = _config_from_bits(bits)
+                     n_done_start: int = 0,
+                     use_sitelink: bool | None = None) -> tuple[list[dict], dict]:
+    config = _config_from_bits(bits, use_sitelink=use_sitelink)
     wd = WikidataClient(cache_path=wikidata_cache, network_concurrency=wikidata_workers)
     canonicalize = _canonicalize_fn(wd)
 
@@ -979,6 +995,15 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         "n_articles": len(gt_records),
         "n_paragraphs": n_paragraphs_total,
         "n_pred_mentions": len(pred_records),
+        # Self-evidencing (wiki-eval sitelink-circularity protocol, Subtleties):
+        # every run's meta.json records the actually-applied grounding toggles,
+        # not just the requested --config bits + --no-sitelink flag.
+        "grounding_config": {
+            "use_lemma": config.use_lemma,
+            "use_cirrus": config.use_cirrus,
+            "use_sitelink": config.use_sitelink,
+            "match_aliases": config.match_aliases,
+        },
         # Observed peak of simultaneous in-flight LLM calls (extract + judge
         # combined) -- must never exceed llm_workers (the llm_semaphore size,
         # ticket 004); recorded so every run's meta.json carries the evidence,
@@ -1007,10 +1032,11 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
 def cmd_run(args) -> int:
     gt_records = _load_gt(Path(args.gt))
     guard = BudgetGuard(args.max_usd, max_judge_calls=args.max_judge_calls)
+    use_sitelink = False if getattr(args, "no_sitelink", False) else None
 
     if args.dry_run:
         _, counters = _run_one_config(args.config, gt_records, args.cache, dry_run=True, guard=None,
-                                       wikidata_cache=args.wikidata_cache)
+                                       wikidata_cache=args.wikidata_cache, use_sitelink=use_sitelink)
         # Forecast: 1 judge call per ~3 mentions (rough escalation-rate prior,
         # matches eval_grounding.py's dry-run intent -- an upper-bound sanity
         # check, not a precise simulation, per spec Sec.5 cap-reconciliation).
@@ -1068,7 +1094,7 @@ def cmd_run(args) -> int:
         args.config, gt_records, args.cache, dry_run=False, guard=guard,
         model=args.model, provider=args.provider, article_workers=args.article_workers,
         llm_workers=args.llm_workers, wikidata_cache=args.wikidata_cache,
-        wikidata_workers=args.wikidata_workers,
+        wikidata_workers=args.wikidata_workers, use_sitelink=use_sitelink,
         out_dir=out_dir, skip_titles=frozenset(skip_titles), n_done_start=len(skip_titles),
     )
     finished_at = datetime.now(timezone.utc)
@@ -1291,6 +1317,12 @@ def _build_parser() -> argparse.ArgumentParser:
                              "bound; matrix runs pass 2 so 4 parallel processes stay under the "
                              "API's rate limit -- 2026-07-05 canary 429-storm adaptation)")
     p_run.add_argument("--dry-run", action="store_true", help="print cost forecast only, write nothing")
+    p_run.add_argument("--no-sitelink", action="store_true",
+                        help="force GroundingConfig.use_sitelink=False regardless of --config's "
+                             "bits (docs/stages/wiki-eval.md Subtleties: the RU-title->Wikidata "
+                             "sitelink rung shares its mapping with wiki-eval's own GT construction, "
+                             "so scoring runs must disable it to avoid annotation-mechanism "
+                             "circularity; use_cirrus stays whatever --config's middle bit says)")
     p_run.add_argument("--resume", default=None,
                         help="resume a prior run dir: skip articles already in its "
                              "pred.partial.jsonl (by title), reuse its run_id, and seed the "
