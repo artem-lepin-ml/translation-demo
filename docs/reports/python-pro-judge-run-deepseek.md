@@ -1,31 +1,56 @@
 # BOUQUET judge run — deepseek-v4-flash
 
-**STATUS: RUN PARKED — provider outage, resumable.** Not the final report.
-`deepseek/deepseek-v4-flash` has no available upstream provider on the
-CloseRouter gateway (`503 no_available_provider`) as of this writing, with a
-brief inconsistent flicker (mixed 503/400) that did not stabilize. This is
-confirmed model-specific, not a gateway-wide outage — the 3 other judges
-running in parallel in this same shared worktree (`gpt-5.5`,
-`claude-opus-4.8`, `gemini-3.1-flash-lite`) all progressed normally over the
-same window (`claude-opus-4.8` and `gemini-3.1-flash-lite` both reached
-2376/2376 and are already committed on this branch). Not a payload/config
-bug on my side either — verified with 5 direct-HTTP variants (old
-`max_tokens=4096`, no `reasoning` key, no `response_format`, a different
-criterion, a different paragraph) that all returned the same 503 once the
-outage resumed.
+**STATUS: RUN PARKED (2nd time) — provider outage relapse, resumable.** Not
+the final report. `deepseek/deepseek-v4-flash` has no available upstream
+provider on the CloseRouter gateway (`503 no_available_provider`) as of this
+writing.
+
+**Timeline of two park cycles**, both against the same underlying flapping
+route:
+
+1. **Park #1** (commit `501c394`): outage first observed, ~55+ min sustained
+   503, one misleading brief flicker (mixed 503/400) that did not stabilize.
+   19 scored rows on disk at park time, 442 diagnostic failure rows.
+2. **Recovery signal + resume attempt**: a coordinator status update reported
+   another agent's live probe got a clean `200` from `deepseek-v4-flash`
+   (while gemini-family routes were themselves 503-down). My own re-probe
+   confirmed the route was reachable but rate-limited (`429 rate_limited`,
+   a materially different signal from `503 no_available_provider` — the
+   model is resolvable, just throttled). Resumed the full run (no `--pilot`,
+   coordinator's explicit call given ~2357 calls remaining and a
+   time-boxed recovery window) at `--concurrency 12` per the coordinator's
+   ramp protocol, with a 5-minute close-watch window before trusting it.
+   Result: **0 new successes in 5 minutes**, 1188 new failure rows, of which
+   1117 were `503 no_available_provider` (not 429) — the "clean 200" was a
+   brief flicker in a still-mostly-down route, same pattern as park #1's
+   flicker. Killed the run immediately per the coordinator's own
+   step-down/park-again instruction; 3 follow-up sequential probes (10s
+   apart) all confirmed `503` again.
+3. **Park #2** (this commit): still 19 scored rows (0 new successes across
+   both resume attempts), cumulative 1236 diagnostic failure rows (442 from
+   park #1 + 794 from the resume attempt: 1165× 503, 65× 400, 6× 429).
 
 **Resume command** (skips the 19 already-scored rows automatically via the
-runner's resume-by-existing-keys logic):
+runner's resume-by-existing-keys logic). Given the coordinator's guidance
+that ~2357 calls remain and time is boxed, this now resumes straight into
+the **full run** (no `--pilot`) rather than the original 240-call pilot
+gate — start conservatively (concurrency 4-6, not 12: this session's 12
+immediately relapsed into 503 within seconds of the "recovery"), watch at
+least 5 minutes of **sustained scored-row growth** (not just process
+liveness — a stuck-but-alive process produced zero growth for 5 straight
+minutes last time) before trusting a higher concurrency:
 
 ```
-.venv/bin/python3 scripts/bouquet_judge_rerun.py run --judge deepseek-v4-flash --pilot 20 --concurrency 6
+.venv/bin/python3 scripts/bouquet_judge_rerun.py run --judge deepseek-v4-flash --concurrency 4
 ```
 
-Then continue exactly as originally planned: pilot gate check (≤2% parse
-failures, ≥98% valid scores across the 240-call pilot) → full run (no
-`--pilot`, background + poll) → `stats` → update this report with final
-numbers → commit `feat(eval): BOUQUET judge run — deepseek-v4-flash (2376
-calls)`.
+Then continue: watch for real growth → step concurrency up cautiously if
+stable → run to 2376/2376 → `stats` → update this report with final numbers
+→ compute parse-failure rate over the *whole* run (successes /
+(successes+diagnostic-failures-that-were-real-parse-failures, i.e.
+excluding outage-window 503/429/400 noise which the resume-by-key logic
+already retries transparently) vs the 2% gate → commit
+`feat(eval): BOUQUET judge run — deepseek-v4-flash (2376 calls)`.
 
 Written by the `python-pro` agent on branch `claude/ner-translation-config-b0ozsc`
 (shared worktree — 3 other agents run other judges in parallel in the same
@@ -150,12 +175,13 @@ back.
   `translate-gemma-bouquet` ids 0-4) + 4 new rows from the `t0_reasoning_on`
   smoke test (`qwen-27b-bouquet` id=0, all 3 criteria, plus 1 row from the
   brief provider-flicker window).
-- `reports/bouquet/judges/deepseek-v4-flash/parse_failures.jsonl` — new file,
-  442 rows, all from the outage window (375× `503 no_available_provider`,
-  67× `400 invalid_request` from the brief flicker). Diagnostic only — none
-  of these represent a real judge-response parse failure; absence from
-  `scores.jsonl` is what drives the resume, so all 442 will be retried
-  automatically once the provider is healthy.
+- `reports/bouquet/judges/deepseek-v4-flash/parse_failures.jsonl` — 1236 rows
+  as of park #2 (442 from park #1's outage window + 794 from the resume
+  attempt: 1165× `503 no_available_provider` cumulative, 65× `400
+  invalid_request`, 6× `429 rate_limited`). Diagnostic only — none of these
+  represent a real judge-response parse failure; absence from `scores.jsonl`
+  is what drives the resume, so all of them will be retried automatically
+  once the provider is stable.
 
 **Multi-agent shared-worktree note**: `configs/bouquet_judges.yaml` and
 `scripts/bouquet_judge_rerun.py` are edited concurrently by up to 3 other
@@ -207,8 +233,13 @@ further hours.
 
 - Is the deepseek-v4-flash route's flakiness (503 outage + a brief
   405/mixed-error flicker) a known, recurring CloseRouter issue for this
-  specific model, or a one-off? Worth checking `docs/known_issues.md` /
-  asking the gateway operator if it recurs on the eventual full run.
+  specific model, or a one-off? **Now observed twice** — park #1's flicker,
+  and park #2's near-identical pattern (a "clean 200" seen by another
+  agent's isolated probe, immediately followed by 1117/1188 `503`s under any
+  real concurrent load) — this looks like a real, recurring pattern for this
+  specific model/route rather than a one-off, worth flagging in
+  `docs/known_issues.md` once the run is finally complete (not done yet —
+  would rather record the full picture in one edit than two partial ones).
 - Should the widened `httpx.TransportError` retry-catch and the
   whole-batch-crash fix in `_one()` be treated as a general reliability fix
   worth flagging to the other 3 agents' judge runs (they use the same shared
