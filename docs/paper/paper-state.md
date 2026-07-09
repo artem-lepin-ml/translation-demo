@@ -42,11 +42,18 @@ flat T2/T3 numbering:
 - **Table B — Refinement usefulness** (contribution: refinement module). Cross
   base×refiner matrix — the 7-row proposal below, still pending owner confirmation —
   on wiki-100, reported with QE metrics.
-- **Table C — NER + Wikidata grounding** (contribution: terminology extraction). 6-model
-  lineup (canonical row order fixed by owner 2026-07-09): Qwen3-4B-Instruct, Gemma-3-27B-it,
-  Qwen3.6-27B, Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash, GPT-5.5. Claude Opus 4.8 dropped from Table C
-  (kept in Table A as the no-thinking judge row). qwen3.7-plus dropped. 2/6 rows filled with sitelink-clean numbers (commit 229529a replay); remaining 4 rows
-  pending (3 local via sr004, gpt-5.5 provider smoke).
+- **Table C — NER + Wikidata grounding** (contribution: terminology extraction). Owner-locked
+  main-table format (2026-07-09): only $R_{\mathrm{doc}}$ and $P_{\mathrm{label}}$, sitelink-clean,
+  $R_{\mathrm{term}}$ tier (n=7174 terminology-relevant gold mentions); the full 6-metric grid
+  (sitelink-clean, $R_{\mathrm{all}}$/T0 tier) moved to an appendix table
+  (`\label{app:grounding-full}`). 6-model lineup (canonical row order fixed by owner 2026-07-09):
+  Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B, Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash, GPT-5.5.
+  Claude Opus 4.8 dropped from Table C (kept in Table A as the no-thinking judge row). qwen3.7-plus
+  dropped. Fill status: 2/6 rows have $R_{\mathrm{doc}}$ (Gemini-3.1-Flash-Lite 0.735, DeepSeek-V4-Flash
+  0.657, both $R_{\mathrm{term}}$-tier sitelink-clean); $P_{\mathrm{label}}$ is pending live
+  recomputation for every row, including the two filled $R_{\mathrm{doc}}$ rows. Remaining 4
+  $R_{\mathrm{doc}}$ rows pending (3 local via sr004, GPT-5.5 provider smoke / gpt-5.4 fallback
+  pending effort-probe).
 
 ### Done
 - **BOUQUET ru2en (by paragraphs)** → feeds **Table A**. Systems: TranslateGemma / TG-Refined /
@@ -56,10 +63,14 @@ flat T2/T3 numbering:
   not recomputed; Table A itself uses the new 7-judge protocol below.
 - **NER+Wikidata grounding, wiki corpus v2 (model-comparison v4)** → **Table C** / §5.1.
   6-model matrix: 3 local (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B via sr004),
-  2 filled (Gemini-3.1-Flash-Lite provider-9 R_doc 0.684, DeepSeek-V4-Flash provider-9 R_doc 0.609),
-  1 pending (GPT-5.5 provider-3 smoke). Opus-4.8 dropped (reasoning unreachable via gateway on all 7 providers). qwen3.7-plus dropped.
-  Artifacts: `reports/terminology/wiki-eval/`, paper section draft
-  `docs/paper/sections/table-c-grounding.tex`.
+  2 filled with $R_{\mathrm{term}}$-tier (n=7174) sitelink-clean $R_{\mathrm{doc}}$
+  (Gemini-3.1-Flash-Lite 0.735, DeepSeek-V4-Flash 0.657; the earlier $R_{\mathrm{all}}$/T0-tier
+  figures 0.684/0.609 now live only in the appendix full-grid table), 1 pending (GPT-5.5
+  provider-3 smoke). $P_{\mathrm{label}}$ live computation in progress for both filled rows.
+  Opus-4.8 dropped (reasoning unreachable via gateway on all 7 providers). qwen3.7-plus dropped.
+  Main table now reports only $R_{\mathrm{doc}}$ + $P_{\mathrm{label}}$ (owner-locked 2026-07-09);
+  full 6-metric grid moved to an appendix table. Artifacts: `reports/terminology/wiki-eval/`,
+  paper section draft `docs/paper/sections/table-c-grounding.tex`.
 - **Wiki-100 corpus** built & handed to Danil: 2 553 paragraphs / 100 articles
   (`data/eval/wiki/`, README + sha256), pilot = 10 articles / 274 par.
 - **deepseek CloseRouter smoke** ($0.0052): reasoning-off flag mandatory; provider-9 pin
