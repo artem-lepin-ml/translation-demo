@@ -1,12 +1,12 @@
 # BOUQUET judge run — deepseek-v4-flash
 
-**STATUS: RUN PARKED (3rd time) — provider outage relapse, resumable.** Not
-the final report. `deepseek/deepseek-v4-flash` has no available upstream
-provider on the CloseRouter gateway (`503 no_available_provider`) as of this
-writing.
+**STATUS: RUN PARKED (4th time) — provider outage relapse (independent of a
+2nd container recycle), resumable.** Not the final report.
+`deepseek/deepseek-v4-flash` has no available upstream provider on the
+CloseRouter gateway (`503 no_available_provider`) as of this writing.
 
-**Timeline of three park cycles**, all against the same underlying flapping
-route:
+**Timeline of four park cycles + two container recycles**, all against the
+same underlying flapping route:
 
 1. **Park #1** (commit `501c394`): outage first observed, ~55+ min sustained
    503, one misleading brief flicker (mixed 503/400) that did not stabilize.
@@ -55,16 +55,51 @@ route:
    `build_payload()` (real judge-shaped call, real parse validation via
    `parse_judge_response()`) — "stable" now means "the real workload
    succeeds repeatedly", not "a cheap ping succeeds".
-5. **Park #3** (this commit): still 19 scored rows (0 new successes across
-   all three resume attempts), cumulative 1312 diagnostic failure rows.
+5. **Park #3** (commit `02e4f25`): still 19 scored rows (0 new successes
+   across all three resume attempts), cumulative 1312 diagnostic failure
+   rows.
+6. **Resume attempt #4 — first genuinely healthy stretch**: coordinator
+   reported a debugger's read-only diagnosis
+   (`docs/reports/debugger-poller-silence-diagnosis.md`): the WHOLE
+   container had been recycled at 09:13:49Z (firecracker microVM reboot,
+   confirmed via `uptime -s`/`/proc/uptime`/`PID 1 = /process_api
+   --firecracker-init`, no OOM traces) — this is what silently killed both
+   `setsid`-detached pollers, not an individual crash. Disk/scratchpad
+   survived; the process table did not. Live probe showed `200` again.
+   Re-ran my own 3x realistic-payload gate: **3/3 success**, resumed via a
+   fresh `setsid`-detached `run_supervisor.py` at concurrency 4. Genuinely
+   clean growth: 19→58 in 5 min at c=4 (0 new failures) → auto-stepped to
+   c=8 → 58→290 over the following ~25 min, still 0 new failures the whole
+   way. First real, sustained progress across the whole outage.
+7. **Container recycle #2, ~11:14Z**: killed the supervisor and run again
+   mid-flight at 290/2376 (rows safe on disk, append-only — confirmed no
+   loss). Root cause now understood as structural, not incidental: this
+   cloud session's container is reclaimed after an idle window, and a
+   detached background process — however well `setsid`-isolated — does not
+   keep the *session* itself alive, so it dies with the next reclaim
+   regardless of its own robustness. `docs/known_issues.md` was amended by
+   another agent (commit `e61692d`) with this exact finding before I even
+   got here. New strategy from the coordinator: stay resident inside this
+   task's own tool-call loop for the remainder of the run, rather than
+   trusting any detached daemon to survive to completion.
+8. **Park #4 (this commit)**: re-ran the 3x realistic-payload gate
+   immediately on resuming — **0/3 this time**, still `503
+   no_available_provider`, independent of and unrelated to the container
+   recycle (the recycle interrupted a *healthy* run; this is a fresh,
+   separate relapse of the underlying route). 290 scored rows committed
+   (safety, given two recycles already happened this session), 1506
+   cumulative diagnostic failure rows. Continuing to probe the gate from
+   within this same resident task (2-3 min cadence) rather than spawning
+   another background poller that would just die on the next recycle.
 
-**Resume command** (skips the 19 already-scored rows automatically via the
+**Resume command** (skips the 290 already-scored rows automatically via the
 runner's resume-by-existing-keys logic). Given the coordinator's guidance
-that ~2357 calls remain and time is boxed, this resumes straight into the
-**full run** (no `--pilot`) rather than the original 240-call pilot gate —
-prefer launching via the supervisor (auto-restart/step-up/relapse-park, all
-`setsid`-detached — survives session teardown, self-verify via `ps` + log
-mtime rather than trusting notifications) over a bare manual invocation:
+that time is boxed, this resumes straight into the **full run** (no
+`--pilot`) rather than the original 240-call pilot gate — launch via the
+supervisor (auto-restart/step-up/relapse-park) but **stay resident and
+watch it from the same task/session** rather than relying on any detached
+process to survive to completion (two container recycles have now proven
+that assumption wrong regardless of how well the process is detached):
 
 ```
 setsid nohup .venv/bin/python3 <supervisor-script-copy> > <fresh-log> 2>&1 < /dev/null &
