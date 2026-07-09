@@ -4,7 +4,7 @@
 % P_label marked $^{\S}$ is from the original runs; clean recomputation pending
 % live label checks. Canonical row order fixed by owner 2026-07-09.
 % XX rows: qwen3-4b / gemma-27b / qwen3.6-27b (sr004 runbook), gpt-5.5 (provider-8
-% smoke in flight), opus-4.8 (provider sweep in flight).
+% smoke in flight). opus-4.8 dropped (owner decision 2026-07-09: reasoning unreachable via gateway on all 7 providers — sweep in docs/reports/ml-engineer-grounding-run-opus48.md).
 \begin{table*}[t]
 \centering
 \small
@@ -25,7 +25,6 @@ Qwen3.6-27B            & XX & XX & XX & XX & XX & XX \\
 Gemini-3.1-Flash-Lite  & 0.684 {\scriptsize[.674--.694]} & 0.622 & 0.602 & 0.300 & 0.452 & 0.526$^{\S}$ \\
 DeepSeek-V4-Flash$^{\dagger}$ & 0.609 {\scriptsize[.599--.620]} & 0.519 & 0.504 & 0.305 & 0.460 & 0.530$^{\S}$ \\
 GPT-5.5                & XX & XX & XX & XX & XX & XX \\
-Claude Opus 4.8        & XX & XX & XX & XX & XX & XX \\
 \bottomrule
 \end{tabular}
 \caption{Terminology extraction and Wikidata grounding on the Wikipedia corpus

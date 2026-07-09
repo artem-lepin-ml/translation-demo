@@ -42,11 +42,11 @@ flat T2/T3 numbering:
 - **Table B — Refinement usefulness** (contribution: refinement module). Cross
   base×refiner matrix — the 7-row proposal below, still pending owner confirmation —
   on wiki-100, reported with QE metrics.
-- **Table C — NER + Wikidata grounding** (contribution: terminology extraction). 7-model
+- **Table C — NER + Wikidata grounding** (contribution: terminology extraction). 6-model
   lineup (canonical row order fixed by owner 2026-07-09): Qwen3-4B-Instruct, Gemma-3-27B-it,
-  Qwen3.6-27B, Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash, GPT-5.5, Claude Opus 4.8; qwen3.7-plus
-  dropped. 2/7 rows filled with sitelink-clean numbers (commit 229529a replay); remaining 5 rows
-  pending (3 local via sr004, gpt-5.5 provider smoke, opus provider sweep).
+  Qwen3.6-27B, Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash, GPT-5.5. Claude Opus 4.8 dropped from Table C
+  (kept in Table A as the no-thinking judge row). qwen3.7-plus dropped. 2/6 rows filled with sitelink-clean numbers (commit 229529a replay); remaining 4 rows
+  pending (3 local via sr004, gpt-5.5 provider smoke).
 
 ### Done
 - **BOUQUET ru2en (by paragraphs)** → feeds **Table A**. Systems: TranslateGemma / TG-Refined /
@@ -55,9 +55,9 @@ flat T2/T3 numbering:
   Danil-verbatim (qwen3_6-27b, T=0.7, thinking on) — kept as a **sensitivity footnote**,
   not recomputed; Table A itself uses the new 7-judge protocol below.
 - **NER+Wikidata grounding, wiki corpus v2 (model-comparison v4)** → **Table C** / §5.1.
-  7-model matrix: 3 local (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B via sr004),
+  6-model matrix: 3 local (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B via sr004),
   2 filled (Gemini-3.1-Flash-Lite provider-9 R_doc 0.684, DeepSeek-V4-Flash provider-9 R_doc 0.609),
-  2 pending (GPT-5.5 provider-3 smoke, Opus-4.8 provider sweep). qwen3.7-plus dropped.
+  1 pending (GPT-5.5 provider-3 smoke). Opus-4.8 dropped (reasoning unreachable via gateway on all 7 providers). qwen3.7-plus dropped.
   Artifacts: `reports/terminology/wiki-eval/`, paper section draft
   `docs/paper/sections/table-c-grounding.tex`.
 - **Wiki-100 corpus** built & handed to Danil: 2 553 paragraphs / 100 articles
