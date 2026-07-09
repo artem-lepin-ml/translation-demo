@@ -152,7 +152,8 @@
     <p class="lead">
       За ночь добиты 3 из 5 облачных судей Table A (gemini-3.1-flash-lite, claude-opus-4.8, gpt-5.5 —
       2375&ndash;2376/2376 вызовов) и полностью закрыты обе готовые строки Table C (gemini, deepseek: R_doc + P_label,
-      sitelink-clean); граундинг gpt-5.4 дошёл до 99/100 статей, финализация метрик — в процессе. Два судьи Table A
+      sitelink-clean); gpt-5.4 закоммичен (<code>5546459</code>) — R_doc 0.583 [.572&ndash;.594] на 99/100 статей,
+      P_label ждёт ретрая из-за Wikidata maxlag. Два судьи Table A
       (flash-lite-think, deepseek-v4-flash) остались частичными из-за аутеджей гейтвея вне нашего контроля —
       recovery-поллеры живы и добьют их автоматически без вмешательства.
     </p>
@@ -194,7 +195,7 @@
           <tr><td>Table A · flash-lite-think</td><td>797/2376 (33.5%)</td><td><span class="badge badge--warn">PARTIAL — аутедж</span></td></tr>
           <tr><td>Table A · deepseek-v4-flash</td><td>19/2376 (0.8%)</td><td><span class="badge badge--warn">PARTIAL — флап</span></td></tr>
           <tr><td>Table C · gemini + deepseek (R_doc+P_label)</td><td>2/2 строки</td><td><span class="badge badge--pass">DONE</span></td></tr>
-          <tr><td>Table C · gpt-5.4</td><td>99/100 статей</td><td><span class="badge badge--warn">IN PROGRESS — финализация</span></td></tr>
+          <tr><td>Table C · gpt-5.4</td><td>99/100 статей, R_doc 0.583</td><td><span class="badge badge--pass">DONE — R_doc; P_label ждёт maxlag-ретрая</span></td></tr>
           <tr><td>Локальная тройка (sr004, Table A + C)</td><td>0% — раннбук готов</td><td><span class="badge badge--data">ОЖИДАЕТ ВЛАДЕЛЬЦА</span></td></tr>
         </tbody>
       </table>
@@ -255,7 +256,7 @@
         <tr><td>Qwen3.6-27B</td><td colspan="2">ждёт sr004</td><td><span class="badge badge--data">PENDING</span></td></tr>
         <tr><td>Gemini-3.1-Flash-Lite</td><td>0.735 [.724&ndash;.745] (5269/7174)</td><td>0.530 [.521&ndash;.540] (5340/10068)</td><td><span class="badge badge--pass">DONE</span></td></tr>
         <tr><td>DeepSeek-V4-Flash</td><td>0.657 [.646&ndash;.668] (4716/7174)</td><td>0.535 [.524&ndash;.545] (4409/8248)</td><td><span class="badge badge--pass">DONE</span></td></tr>
-        <tr><td>GPT-5.4 (честная замена gpt-5.5)</td><td colspan="2">99/100 статей, $5.95/$15; финализация метрик в процессе</td><td><span class="badge badge--warn">IN PROGRESS</span></td></tr>
+        <tr><td>GPT-5.4 (честная замена gpt-5.5)</td><td>0.583 [.572&ndash;.594] (4183/7174)</td><td>не вычислен — ждёт ретрая (Wikidata maxlag)</td><td><span class="badge badge--warn">R_doc DONE, P_label PENDING</span></td></tr>
       </tbody>
     </table>
     <p>
@@ -263,6 +264,14 @@
       precision (P_label 0.530 vs 0.535, deepseek даже чуть точнее на найденных терминах) — gemini находит больше
       правильных сущностей, deepseek немного точнее на том, что находит. Коммиты: формат таблицы
       <code>4975317</code>, P_label данные <code>4770157</code>, заполнение ячеек <code>88c3e93</code>.
+    </p>
+    <p>
+      gpt-5.4 честные оговорки: покрытие 99/100 статей (не завершена "Яффа" — 347 GT-упоминаний, 3-я по плотности
+      в корпусе, Wikidata maxlag не дал добить финальную статью несмотря на 4 попытки resume), поэтому R_doc —
+      строгая нижняя граница, не точечная оценка. P_label (P3) не вычислен — попытка прервана из-за устойчивого
+      throttling Wikidata (`maxlag`, 23 подряд неудачных lookup за ~5 минут на двух хостах); нужен отдельный
+      реплей-проход, когда лаг спадёт. Стоимость $5.95&ndash;6.3 (подтверждённый пол $5.948 на 99/100 + оценка
+      статьи "Яффа"), в рамках $15 капа. Коммит <code>5546459</code>.
     </p>
 
     <h3>Ключевые решения ночи</h3>
@@ -356,10 +365,12 @@
       провайдерах.</span> <code>docs/reports/ml-engineer-grounding-run-opus48.md</code> (17-вызовая матрица);
       сырые JSON в <code>docs/experiments/2026-07-09-opus-provider-sweep/raw/</code>; итог зафиксирован
       <code>docs/reports/docs-keeper-table-c-drop-opus.md</code>.</div>
-    <div class="evidence-item"><span class="claim">gpt-5.4 grounding run — прогресс до 99/100, $4.74 на
-      78/100 контрольной точке.</span> <code>docs/reports/ml-engineer-grounding-run-gpt54.md</code>
+    <div class="evidence-item"><span class="claim">gpt-5.4 grounding run — закоммичен, финализирован на 99/100,
+      R_doc 0.583 [.572&ndash;.594] (4183/7174, R_term тир), стоимость $5.95&ndash;6.3.</span>
+      <code>docs/reports/ml-engineer-grounding-run-gpt54.md</code>, коммит <code>5546459</code>
       (effort-settability пробник, watchdog-парковка после исчерпания <code>max_judge_calls</code>, ручной resume
-      с <code>--max-judge-calls 30000</code>).</div>
+      с <code>--max-judge-calls 30000</code>; P_label/P3 не вычислен — прерван из-за устойчивого Wikidata
+      <code>maxlag</code>, ждёт отдельного ретрая).</div>
     <div class="evidence-item"><span class="claim">sr004-раннбук готов и верифицирован без GPU.</span> Коммит
       <code>0c48124</code>; <code>docs/runbooks/sr004-local-eval-runbook.md</code>;
       <code>uv run pytest tests/test_wiki_eval_runner.py tests/test_bouquet_judge_rerun.py -q</code> &rarr; 81
@@ -384,8 +395,9 @@
         первый живой прогон должен это подтвердить.</li>
       <li><strong>Ничего не делать</strong> с flash-lite-think и deepseek-v4-flash — recovery-поллеры сами добьют
         оба судейских прогона (797&rarr;2376, 19&rarr;2376), как только маршруты гейтвея стабилизируются.</li>
-      <li><strong>Дождаться финализации gpt-5.4</strong> (99/100 статей) + прогнать P_label-реплей для этой
-        строки Table C, чтобы получить полную 6-строчную таблицу.</li>
+      <li><strong>Ретрай P_label (P3) для gpt-5.4</strong>, как только Wikidata maxlag спадёт — R_doc уже
+        закоммичен (0.583 [.572&ndash;.594]); плюс отдельный resume статьи "Яффа" для честного 100/100 покрытия,
+        чтобы строка Table C стала полной.</li>
       <li><strong>Портировать trailing-comma fix</strong> в <code>scripts/bouquet_judge_rerun.py::
         parse_judge_response</code>, чтобы добить последнюю ячейку gpt-5.5 (0.04%) точечным ретраем, а не полным
         прогоном.</li>
