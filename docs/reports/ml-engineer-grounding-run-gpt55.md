@@ -1,10 +1,17 @@
-# Wiki-eval grounding run — openai/gpt-5.5 on provider-6 — BLOCKED (padding cost trap)
+# Wiki-eval grounding run — openai/gpt-5.5 — BLOCKED (provider-6 padding, then provider-8/auto rate-limit saturation)
 
-Status: **NOT RUN**. The mandatory padding smoke (protocol step 2) confirmed the
-exact cost-trap the protocol warned about, and the run was correctly stopped
-before any full-scale (100-article) spend, per explicit instruction: *"if you
-observe padding anywhere near that scale for gpt-5.5, STOP and report instead
-of running (cost trap)."*
+Status: **NOT RUN**. Two sequential blocks, both handled per explicit
+stop-conditions rather than worked around silently:
+
+1. `provider-6`'s mandatory padding smoke (protocol step 2) confirmed the
+   exact cost-trap the protocol warned about — see "Padding smoke — evidence"
+   below. Coordinator reviewed and rejected `provider-6`.
+2. The coordinator's follow-up dispatch (smoke `provider-8`, fall back to
+   `auto` if it also pads/crawls, park if projected runtime >12h) found
+   `provider-8` and `auto` **both currently rate-limited to 0% success** by a
+   shared upstream OpenAI quota that the concurrent BOUQUET `gpt-5.5` judge
+   run is saturating right now — see "Coordinator follow-up" below. Parked
+   per the coordinator's own explicit threshold.
 
 Written by the `ml-engineer` agent, branch `claude/ner-translation-config-b0ozsc`
 (shared worktree — other agents run BOUQUET judges and a parallel Opus
@@ -157,6 +164,99 @@ least to most effort:
    time-varying (unlikely, given two independent measurements 4 days apart
    agree within ~7%) before spending real run budget on it.
 
+## Coordinator follow-up (2026-07-09): provider-8 smoke — PARKED
+
+The coordinator reviewed the above, rejected `provider-6`, and dispatched a
+follow-up: smoke `provider-8` (padding + a rate-limit burst + `cost_usd`
+surfacing), fall back to `auto` with patient backoff if `provider-8` also
+pads or crawls, and park (report expected runtime, do not start) if the
+projected wall-clock exceeds 12h. Full raw evidence:
+[reports/terminology/wiki-eval/openai--gpt-5.5--provider-6/provider8-and-auto-smoke/2026-07-09T00-47-00Z.json](../../reports/terminology/wiki-eval/openai--gpt-5.5--provider-6/provider8-and-auto-smoke/2026-07-09T00-47-00Z.json)
+(`provider-6`'s own smoke dir was left untouched, per instruction).
+
+### What was run
+
+- **(a) Padding check, `provider-8`**: 3 real extraction-sized calls (same
+  shape as the `provider-6` smoke). **All 3 failed** with HTTP 429
+  (`RateLimitError`, `upstream_status: 429`, `provider_name: "OpenAI"`)
+  before any content was generated — padding is **undetermined**, not "not
+  padded". No tokens were billed on a failed request (no completion, no
+  usage), so this cost $0.
+- **(b) Rate-limit burst, `provider-8`**: 10 tiny calls (`max_tokens=8`)
+  fired back-to-back with no delay. **0/10 succeeded**, all 429, latencies
+  0.29-1.06s (fails fast, doesn't hang). Followed by a slower retry with real
+  backoff (5s → 15s → 30s → 60s, 110s cumulative wait): **still 0/5
+  succeeded** — not a momentary blip.
+- **(c) `cost_usd` surfacing**: undetermined — no call on `provider-8`
+  completed at all.
+- **Cross-check, route `auto`** (no provider pin, exactly how
+  `scripts/wiki_eval.py::_resolve_route` builds `auto`): 3 quick calls (2s
+  apart) — **0/3 succeeded**, identical 429 signature. A further "patient
+  backoff" attempt (20s → 40s → 60s+ planned) also came back 429 on every
+  attempt observed before the probe hit this session's own tool timeout —
+  **6/6 failed on `auto`** total across both attempts.
+
+**27/27 calls failed** across `provider-8` and `auto` combined, over roughly
+5 minutes of real elapsed time including deliberate backoff up to 110s
+between individual attempts.
+
+### Root cause: shared upstream quota, not a provider-8-specific throttle
+
+The identical failure (`provider_name: "OpenAI"`, `upstream_status: 429`)
+on both a pinned route (`provider-8`) and the unpinned `auto` route rules out
+"provider-8 specifically crawls" as the explanation — whatever capacity
+CloseRouter's provider labels represent for `openai/gpt-5.5`, they are
+drawing from the same saturated upstream OpenAI bucket right now. Cross-checked
+against the concurrent BOUQUET `gpt-5.5` judge run
+(`reports/bouquet/judges/gpt-5.5/`, a different task on this same key, not
+touched by this task): its `scores.jsonl` was flat at **646 lines** across a
+4-minute window (00:43:22Z → 00:46:58Z) while `parse_failures.jsonl` grew
+**313 → 559** (+246) in that same window — i.e. that run's own
+*successful*-call throughput was ~0 during this test too. This is a
+system-wide `openai/gpt-5.5` saturation on this account, coincident with the
+BOUQUET judge run's active (2376-call) execution, not an artifact of my probe
+or of `provider-8` in particular.
+
+### Runtime projection — decision: PARK
+
+The coordinator's own reference figure (`auto` sustaining ~50 calls/hour for
+the parallel judge run) predates this saturation window and is the most
+optimistic available data point — current observed throughput on every route
+tried is 0 calls/hour. My task's estimated call volume for a full 100-article
+run: ~2644 extraction calls (1/paragraph, from the existing
+`gemini-3.1-flash-lite` reference run's paragraph count,
+`reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z/meta.json`)
++ up to 900 judge calls (default `--max-judge-calls` cap) ≈ up to **~3544
+calls**. At the coordinator's own optimistic 50 calls/hour: **≈71 hours
+(~3 days)** — already far past the 12h ceiling before even accounting for
+today's 0 calls/hour reality or for sharing that budget with the
+still-running BOUQUET judge (~1730 calls left at last check).
+
+**Decision: parked, per the coordinator's own explicit rule** ("do not start
+if projected >12h — park and report instead"). No `scripts/wiki_eval.py run`
+invocation was made.
+
+### What would change this
+
+- **Retest after the BOUQUET `gpt-5.5` judge run finishes** (currently
+  646/2376, check `wc -l reports/bouquet/judges/gpt-5.5/scores.jsonl`) — if
+  the saturation was specific to that run's concurrent load, throughput may
+  recover once it completes. This does not by itself get the projected
+  runtime under 12h at the coordinator's own 50 calls/hour figure (~71h for
+  ~3544 calls) — a materially higher sustained rate (roughly 300+ calls/hour)
+  would be needed, for which there is no current evidence either way.
+  `provider-8`'s true padding/cost_usd behavior also still needs a clean
+  measurement once a call actually completes.
+- **A lower call-volume run** (e.g. a smaller article subset, or a tighter
+  `--max-judge-calls`) would shrink the projection proportionally, but that
+  changes the task's scope (100-article corpus, protocol item 7) — an owner
+  call, not this task's to make unilaterally.
+- **Sequencing rather than parallelizing** `gpt-5.5` consumers on this key:
+  given `provider-8`/`auto` apparently share one upstream bucket, pinning a
+  route does not appear to buy independent capacity for this model — the
+  BOUQUET judge run and this grounding run may need to run one-at-a-time
+  regardless of which CloseRouter provider each requests.
+
 ## Files changed
 
 - `docs/reports/ml-engineer-grounding-run-gpt55.md` — this report.
@@ -165,6 +265,12 @@ least to most effort:
   `111/<run_id>/` pipeline-run dir was created since no pipeline run happened
   — creating one would misrepresent an attempted/completed run that never
   occurred).
+- `reports/terminology/wiki-eval/openai--gpt-5.5--provider-6/provider8-and-auto-smoke/2026-07-09T00-47-00Z.json`
+  — coordinator follow-up: `provider-8` padding/burst/backoff evidence, the
+  `auto` cross-check, and the BOUQUET-judge-run cross-check numbers (all
+  raw). Kept as a sibling dir under the same `provider-6` model-slug
+  namespace per the coordinator's "keep the provider-6 smoke dir as-is"
+  instruction — nothing under `padding-smoke/` was touched.
 
 **Not touched** (shared worktree, other agents' concurrent uncommitted work,
 per the task's explicit "do not touch their files" instruction, confirmed via
@@ -196,16 +302,16 @@ one), `reports/bouquet/judges/summary.md`, `scripts/bouquet_judge_rerun.py`,
   my own edits there risked colliding with in-flight work outside this
   task's authorized paths. Recorded the recommendation to add a
   `known_issues.md` entry under "Next steps" instead of doing it directly.
-- **No git commit performed by this task.** The instructed commit message
-  ("feat(eval): wiki grounding run — gpt-5.5 provider-6 (100 articles,
-  sitelink off)") describes a completed 100-article run that did not happen;
-  using it would misrepresent the state of the repo (Hard Invariant: never
-  claim a check ran without a real run). Left `git add`/`git commit` to the
-  orchestrator/owner once they've reviewed this report and picked a
-  path forward from the Recommendation section — re-running with a corrected
-  `--provider` is one `wiki_eval.py run` invocation away, at which point the
-  full protocol (steps 5-8) still applies and a truthful commit message can
-  be written against what actually ran.
+- **Committed with an honest message instead of the instructed one.** The
+  instructed commit message ("feat(eval): wiki grounding run — gpt-5.5
+  provider-6 (100 articles, sitelink off)") describes a completed 100-article
+  run that did not happen; using it verbatim would misrepresent the state of
+  the repo (Hard Invariant: never claim a check ran without a real run).
+  Committed `d2bbf4f` (`docs(eval): block gpt-5.5 provider-6 wiki-eval run —
+  padding smoke confirms cost trap`) with only this report + the provider-6
+  evidence file, then pushed (clean fast-forward, remote hadn't diverged).
+  The coordinator follow-up work (provider-8/auto smoke, this section) is a
+  second, separate commit on top — see the update to "NOT done" below.
 
 ## Open questions
 
@@ -223,15 +329,20 @@ one), `reports/bouquet/judges/summary.md`, `scripts/bouquet_judge_rerun.py`,
 
 ## NOT done (explicit)
 
-- **The 100-article run did not execute.** No `pred.jsonl`, `meta.json`, or
-  `metrics.json` were produced for `openai--gpt-5.5--provider-6`.
+- **The 100-article run did not execute — on any of the three routes tried
+  (`provider-6`, `provider-8`, `auto`).** No `pred.jsonl`, `meta.json`, or
+  `metrics.json` were produced for `openai/gpt-5.5` under any route.
 - **No `report` step** (`scripts/wiki_eval.py report`) ran — nothing to
   report on.
 - **No headline metrics** (R_doc/R_span/R_strict, P_mention/P_type) —
   not computed.
-- **No git commit** — see "Decisions & rationale" above; the padding-smoke
-  evidence file and this report sit as new, uncommitted files in the shared
-  worktree, ready for the orchestrator to commit or to hand back for a
-  corrected re-run.
+- **`provider-8`'s padding and `cost_usd` behavior remain unmeasured.**
+  Every attempt failed at the rate-limit stage before any content was
+  generated — this is a genuine gap, not a "clean" verdict; it needs a real
+  measurement once a call actually completes (see "What would change this").
 - **No edit to `docs/known_issues.md` or `docs/stages/wiki-eval.md`** —
-  recommended, not performed (see "Decisions & rationale").
+  recommended, not performed (concurrent uncommitted edits from other agents
+  in this shared worktree; see "Decisions & rationale").
+- **The coordinator-follow-up evidence file and this update are committed**
+  as a second commit on top of `d2bbf4f` (see "Decisions & rationale"); no
+  further run was attempted after parking.
