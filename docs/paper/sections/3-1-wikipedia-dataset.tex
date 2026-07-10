@@ -5,20 +5,27 @@
 that we assemble for terminology-oriented evaluation. The articles are drawn
 from the Russian edition across ten thematic sections (Sumer and Mesopotamia,
 Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia, Achaemenid Iran,
-Ancient India, Ancient China, Ancient Greece, and Ancient Rome), ten per
-section. Within each section, candidates from the corresponding category
-subtree are shuffled with a fixed seed and admitted through a deterministic
-gate that bounds the earliest associated Wikidata date to before 500~CE, so
-the selection is reproducible and involves no manual curation
-(Appendix~\ref{app:wiki-corpus}). We use this corpus primarily to evaluate
-terminology extraction and Wikidata grounding. The hyperlinks that editors
-place in article bodies act as human annotation: each link target resolves
-deterministically to a Wikidata item, so every in-text link yields a gold
-mention grounded to a QID at no additional labeling cost. This annotation is
-precise but incomplete, since editorial convention is to link an entity only
-at its first mention~\citep{damuel2023}, and our evaluation protocol accounts
-for this (Section~\ref{sec:eval-metrics}). The same articles also serve as
-source texts for the reference-free evaluation of translation and refinement
+Ancient India, Ancient China, Ancient Greece, and Ancient Rome). Within each
+section, candidates from the corresponding category subtree are shuffled
+with a fixed seed. From each section we select ten articles whose subject
+predates 500~CE and whose body contains at least 30 internal links, yielding
+100 articles in total (Appendix~\ref{app:wiki-corpus}). We use this corpus
+primarily to evaluate terminology extraction and Wikidata grounding. The
+hyperlinks that editors place in article bodies act as human annotation:
+each link target resolves deterministically to a Wikidata item, so every
+in-text link yields a gold mention grounded to a QID at no additional
+labeling cost. The raw annotation yields 7\,658 gold mentions resolving to
+5\,879 gold entities. The annotation is refined in two passes. A
+deterministic filter removes entities from generic lexical classes that a
+terminology task should not reward, such as languages and scripts, taxa,
+materials, and units. A manual review then removes gold mentions that are
+unrelated to the historical domain or mislinked. The refined gold standard
+contains 6\,573 gold mentions resolving to 5\,061 gold entities
+(Appendix~\ref{app:wiki-corpus}). This annotation is precise but incomplete,
+since editorial convention is to link an entity only at its first
+mention~\citep{damuel2023}, and our evaluation protocol accounts for this
+(Section~\ref{sec:eval-metrics}). The same articles also serve as source
+texts for the reference-free evaluation of translation and refinement
 quality.
 
 % ===== VARIANT 2 (problem->resource framing) =====
