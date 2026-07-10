@@ -9,10 +9,6 @@ v3 is the only protocol rendered here (wiki-eval experiment v2, spec
 2026-07-10-wiki-eval-experiment-v2.md Р9/§7) — the mention-level recall/
 precision/slice renderer this module used to carry was retired along with
 ``evaluation.metrics``'s mention-level aggregator.
-
-``methodology_draft`` returns the EN paper-draft paragraph verbatim, per the
-project's "preserve chat formulations" convention. Canonical copy also in
-docs/stages/wiki-eval.md § Methodology; keep byte-identical.
 """
 from __future__ import annotations
 
@@ -119,54 +115,3 @@ def render_html(result: dict, meta: dict) -> str:
     )
     parts.append("</div>")
     return "".join(parts)
-
-
-def methodology_draft() -> str:
-    """EN paper-draft methodology paragraph, verbatim.
-
-    Kept verbatim per the project's "preserve chat formulations" convention —
-    do not paraphrase or reflow. Canonical copy also in
-    docs/stages/wiki-eval.md § Methodology; keep byte-identical.
-    """
-    return (
-        "**Evaluation against Wikipedia link annotations.** We evaluate the "
-        "terminology extraction-and-grounding component against human hyperlink "
-        "annotations on 100 full Russian Wikipedia articles on ancient history, "
-        "organised into ten fixed thematic sections (Sumer/Mesopotamia, Ancient "
-        "Egypt, Assyria, the Hittite kingdom, Phoenicia, Achaemenid Iran, Ancient "
-        "India, Ancient China, Ancient Greece, Ancient Rome), ten articles per "
-        "section. Candidates from each section's category subtree pass a "
-        "deterministic gate — at least 30 unique main-namespace links in body "
-        "paragraphs, an earliest associated Wikidata date before 500 CE with "
-        "undated pages kept, and a small instance-of blacklist for off-topic "
-        "media pages — with a fixed random seed and first-section binding for "
-        "pages reachable from several sections; because Wikipedia's category "
-        "partition is noisy, a small off-period residue (≈3/100) survives the "
-        "gate and is disclosed rather than curated post hoc. Each internal link "
-        "whose target carries a Wikidata item yields a gold tuple *(token index, "
-        "surface, QID)*; chronology targets (years, centuries) are excluded by "
-        "target *P31*. We compare gold and predicted tuple sets under three "
-        "matching modes — strict index, span overlap (primary), and "
-        "document-level *(lemma, QID)* — normalizing surfaces with a shared "
-        "casefold/ё-е/dash normalizer; the strict mode is a deliberate lower "
-        "bound sensitive to multi-word anchor boundaries. Because human "
-        "annotation is precise but incomplete, we treat **recall** as the "
-        "primary metric; precision, measured against Wikipedia's non-exhaustive "
-        "\"don't over-link\" convention, is a conservative lower bound and is "
-        "reported under three complementary denominators: raw, unique-word (to "
-        "offset the convention of not linking repeat mentions), and "
-        "label-justified (a prediction absent from gold is credited when its "
-        "surface exists as a Wikidata label — reported only per resolution "
-        "path, since on the deterministic exact-label path it holds by "
-        "construction). Reporting is sliced by thematic section, by the "
-        "system's own resolution path (exact-label vs. LLM-disambiguated), and "
-        "by entity type (named vs. lowercase term), each with per-cell Wilson "
-        "95 % confidence intervals; underpowered cells are flagged and "
-        "differences within the interval are not interpreted. A full ablation "
-        "over the three retrieval/matching toggles (lemma expansion, search "
-        "fallbacks, alias matching) estimates each component's marginal "
-        "contribution via leave-one-in / leave-one-out. This gives a "
-        "transparent, reproducible measurement of a deterministic-first "
-        "grounding system without recourse to a black-box entity linker as "
-        "the reference."
-    )

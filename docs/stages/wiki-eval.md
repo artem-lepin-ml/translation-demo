@@ -126,5 +126,3 @@ Modules + CLI implemented; unit tests green. Corpus selection v2 committed (100 
 ## Methodology
 
 Methodology prose (evaluation-against-Wikipedia-links setup, the protocol-v3 formalism, ablation design) has one source of truth: [docs/paper/sections/eval-metrics-terminology.tex](../paper/sections/eval-metrics-terminology.tex). This doc no longer carries its own copy of it.
-
-⚠️ **Code drift, not fixed by this doc pass:** [`report.py::methodology_draft()`](../../src/palimpsest/terminology/evaluation/report.py) still exists and still returns the old protocol-v1/v2 paragraph verbatim (three matching modes, label-justified/P3 precision, per-`resolved_by` slicing) — none of that is true of the shipped protocol-v3 code any more. It is dead code (`cmd_report` calls only `render_html_v3`, never `methodology_draft`) left over from spec §4.5 item 12's collapse, which the landed commits (`421c99d`/`0d89242`/`7e7ddfd`) did not carry out on the code side. Flagged for the owner/a follow-up commit — deleting it (or repointing its docstring at the tex SSOT) is a code change outside docs-keeper's remit.

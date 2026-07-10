@@ -8,7 +8,7 @@ mention-level ``render_html`` this file used to test was retired along with
 """
 from __future__ import annotations
 
-from palimpsest.terminology.evaluation.report import methodology_draft, render_html
+from palimpsest.terminology.evaluation.report import render_html
 
 
 def _cell(matched: int, total: int) -> dict:
@@ -79,12 +79,3 @@ def test_render_html_surfaces_ambiguous_and_dropped_tier_counters():
 def test_render_html_missing_meta_keys_render_placeholder_not_crash():
     html = render_html(_fixture_result(), {})
     assert "?" in html
-
-
-def test_methodology_draft_returns_nonempty_string_matching_spec_phrase():
-    text = methodology_draft()
-    assert isinstance(text, str)
-    assert len(text) > 200
-    # distinctive phrase from spec Sec.7 (EN paper-draft section), verbatim
-    assert "Evaluation against Wikipedia link annotations" in text
-    assert "recall" in text.lower()
