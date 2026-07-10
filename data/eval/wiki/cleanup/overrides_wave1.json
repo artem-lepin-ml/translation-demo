@@ -1,0 +1,24 @@
+{
+  "note": "Fable wave-1 verification overrides on top of removals/001-010.json, 2026-07-10",
+  "restore": [
+    {"article": "010", "n": 169, "anchor": "древнеперсидск", "reason": "owner ruling: Old Persian is an anchor (gold-noise review)"}
+  ],
+  "add_removals": [
+    {"article": "001", "n": 2, "anchor": "мумия", "reason": "owner ruling: generic word"},
+    {"article": "001", "n": 36, "anchor": "настоящие древние египтяне не обладали", "reason": "Fable: abstract navigational phrase (flagged to owner)"},
+    {"article": "007", "n": 3, "anchor": "артефактов", "reason": "owner ruling: generic word"},
+    {"article": "007", "n": 31, "anchor": "Браслеты", "reason": "owner ruling: generic word"},
+    {"article": "007", "n": 38, "anchor": "дарами", "reason": "owner ruling: generic word"},
+    {"article": "010", "n": 23, "anchor": "армянской государственности", "reason": "owner ruling: спорно, но фильтруем"},
+    {"article": "010", "n": 19, "anchor": "этногенезе армянского народа", "reason": "Fable: by analogy with n=23 (flagged to owner)"}
+  ],
+  "confirmed_keep": [
+    {"article": "007", "n": 11, "anchor": "геммы"},
+    {"article": "007", "n": 34, "anchor": "рельефах"},
+    {"article": "007", "n": 36, "anchor": "дани"},
+    {"article": "009", "anchor": "латуни"}
+  ],
+  "pending_owner": [
+    {"question": "ancient-language abbreviated tags in 010 (хетт., аккад., урарт., ассир., арм., хеттск., ассирийск.): agents removed as template tags, but owner kept древнеперсидск.; final bucket decided at owner review"}
+  ]
+}

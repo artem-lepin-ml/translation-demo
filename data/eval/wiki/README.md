@@ -39,3 +39,14 @@ bbd61fdda3865a8a2b0b8f3ddf3e137417bd08fb571592e439a20449abdc748a  wiki_index.jso
 Artifacts of the grounding eval and corpus selection, not part of the translation
 handoff: `gt*.jsonl` (ground-truth extractions), `pages/` (cached article HTML),
 `selection_v2.json`, `titles_*.txt`.
+
+## cleanup/ — gold anchor-relevance cleanup campaign (2026-07-10)
+
+LLM-assisted removal of clearly history-irrelevant anchors from the raw markup
+(modern brands/websites, genetics/chemistry vocabulary, generic everyday words,
+language template tags, abstract navigational phrases), later re-verified by a
+human. `audit_prompt_v11.md` is the auditor instruction; `removals-wave1/` holds
+per-article removal lists for articles 001-010; `overrides_wave1.json` is the
+orchestrator verification layer on top of them (restores + added removals +
+open questions). `gt.jsonl` itself is NOT modified until the owner approves the
+final exclusion list. `tools/` holds the campaign scripts (see headers).
