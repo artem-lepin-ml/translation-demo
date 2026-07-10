@@ -1,0 +1,13 @@
+{
+  "note": "Fable wave-2 verification overrides on top of removals/011-020.json + one wave-1 consistency flip, 2026-07-10",
+  "ruling": "Consistency line set by orchestrator: (a) abbreviated language/transliteration template tags (incl. IAST, пиньинь in parenthetical tag usage) = REMOVE; (b) generic-surface anchors (войне, сражении, армию, войск) = REMOVE regardless of how specific the linked QID is — the criterion is whether the surface word itself needs specialized historical translation.",
+  "restore": [],
+  "add_removals": [
+    {"article": "012", "n": 2, "anchor": "IAST", "reason": "transliteration template tag (align with 017 ruling)"},
+    {"article": "020", "n": 25, "anchor": "войне", "reason": "generic surface word (QID-specific target does not save it)"},
+    {"article": "020", "n": 27, "anchor": "решающем сражении", "reason": "generic surface phrase (target Battle of Actium, surface generic)"},
+    {"article": "006", "n": 4, "anchor": "пиньинь", "reason": "transliteration template tag (wave-1 consistency flip)"},
+    {"article": "006", "n": 28, "anchor": "пиньинь", "reason": "transliteration template tag (wave-1 consistency flip)"}
+  ],
+  "agent_removals_verified": "38/38 wave-2 agent removals confirmed correct; zero restores needed"
+}
