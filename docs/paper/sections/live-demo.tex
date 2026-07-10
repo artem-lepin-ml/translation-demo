@@ -78,11 +78,10 @@ alone.
 registry defines each LLM as an OpenAI-compatible endpoint with a base URL,
 an API key, and generation parameters, and ships with preconfigured
 OpenRouter\footnote{\href{https://openrouter.ai}{openrouter.ai}} and local
-vLLM entries, each verifiable with a one-click test call. Every LLM role in the pipeline is a
-reference into this registry paired with an editable prompt: the draft
-translator, each judge criterion, the refiner, and the terminology
-extraction and disambiguation steps. Defaults tuned for the historical
-domain come preloaded, and users can override any of them without
+vLLM entries, each verifiable with a one-click test call. Every pipeline
+role (translation, judging, refinement, terminology extraction, and
+disambiguation) pairs a registry model with an editable prompt. Defaults
+for the historical domain are preloaded and can be overridden without
 redeployment.
 
 \paragraph{Implementation.}
@@ -136,12 +135,12 @@ deploys as a single Docker container with one command.
 % registry declares each LLM as an OpenAI-compatible endpoint (base URL, API
 % key, generation parameters) and comes preloaded with
 % OpenRouter\footnote{\href{https://openrouter.ai}{openrouter.ai}} and local
-% vLLM entries, each verifiable with a one-click test call. The draft
-% translator, each judge criterion, the refiner, and
-% the terminology extraction and disambiguation steps all draw on this
-% registry, so replacing a backbone model or retargeting the system to a new
-% domain is a configuration change rather than a code change. Domain-tuned
-% defaults are included and remain fully overridable.
+% vLLM entries, each verifiable with a one-click test call. Every pipeline
+% role (translation, judging, refinement, terminology extraction, and
+% disambiguation) draws on this registry, so swapping a backbone model or
+% retargeting the domain is a configuration change rather than a code
+% change. Defaults for the historical domain are included and remain fully
+% overridable.
 %
 % \paragraph{Implementation.}
 % \systemname{} is model agnostic by construction. Every LLM call, whether
