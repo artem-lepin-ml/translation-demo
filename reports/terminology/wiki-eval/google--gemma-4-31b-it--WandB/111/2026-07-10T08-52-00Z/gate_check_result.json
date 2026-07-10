@@ -1,0 +1,51 @@
+{
+  "run_dir": "/home/user/translation-demo/reports/terminology/wiki-eval/google--gemma-4-31b-it--WandB/111/2026-07-10T08-52-00Z",
+  "meta_model": "google/gemma-4-31b-it",
+  "meta_provider": "WandB",
+  "n_articles_meta": 3,
+  "n_articles_gt": 3,
+  "n_paragraphs": 33,
+  "kind_counts": {
+    "extract": 33,
+    "judge": 75
+  },
+  "n_calls_total": 108,
+  "reasoning_tokens": {
+    "min": 215,
+    "p50": 364.5,
+    "share_gt0": 1.0
+  },
+  "cost_from_calls_jsonl": 0.036991610000000015,
+  "cost_meta_total": 0.0369916099999999,
+  "cost_per_article": 0.012330536666666633,
+  "spend_by_kind_meta": {
+    "extract": 0.021151820000000012,
+    "judge": 0.015839790000000006,
+    "total": 0.0369916099999999
+  },
+  "gates": {
+    "finish_reason_length_zero": {
+      "value": 0,
+      "pass": true,
+      "detail": {
+        "stop": 108
+      }
+    },
+    "reasoning_tokens_100pct_gt0": {
+      "value": "100.0% (108/108)",
+      "pass": true
+    },
+    "served_provider_100pct_pin": {
+      "value": "100.0% (108/108) pin='WandB'",
+      "pass": true,
+      "detail": {
+        "WandB": 108
+      }
+    },
+    "parse_failures_lt_1pct": {
+      "value": "0.00% (0/33)",
+      "pass": true
+    }
+  },
+  "all_gates_pass": true
+}

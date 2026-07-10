@@ -1,0 +1,84 @@
+{
+  "run_dir": "/home/user/translation-demo/reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--Google-AI-Studio/111/2026-07-10T08-31-04Z",
+  "meta_model": "google/gemini-3.1-flash-lite",
+  "meta_provider": "Google AI Studio",
+  "n_articles_meta": 10,
+  "n_articles_gt": 10,
+  "n_paragraphs": 140,
+  "kind_counts": {
+    "extract": 140,
+    "judge": 335
+  },
+  "n_calls_total": 475,
+  "reasoning_tokens": {
+    "min": 140,
+    "p50": 402,
+    "share_gt0": 1.0
+  },
+  "cost_from_calls_jsonl": 0.48935574999999976,
+  "cost_meta_total": 0.48935575000000126,
+  "cost_per_article": 0.04893557500000013,
+  "spend_by_kind_meta": {
+    "extract": 0.23623825000000032,
+    "judge": 0.25311750000000127,
+    "total": 0.48935575000000126
+  },
+  "gates": {
+    "finish_reason_length_zero": {
+      "value": 0,
+      "pass": true,
+      "detail": {
+        "stop": 475
+      }
+    },
+    "reasoning_tokens_100pct_gt0": {
+      "value": "100.0% (475/475)",
+      "pass": true
+    },
+    "served_provider_100pct_pin": {
+      "value": "100.0% (475/475) pin='Google AI Studio'",
+      "pass": true,
+      "detail": {
+        "Google AI Studio": 475
+      }
+    },
+    "parse_failures_lt_1pct": {
+      "value": "0.00% (0/140)",
+      "pass": true
+    }
+  },
+  "all_gates_pass": true,
+  "extrapolation_3x100": {
+    "rows": {
+      "google/gemini-3.1-flash-lite": {
+        "method": "measured pilot cost x10 (actual run, not token-volume proxy)",
+        "n_articles_pilot": 10,
+        "prompt_tokens_pilot": 262777,
+        "completion_tokens_pilot": 282441,
+        "cost_100_forecast_usd": 4.893557500000012
+      },
+      "deepseek/deepseek-v4-flash": {
+        "method": "gemini pilot token volume (scaled x10) x own pinned-endpoint price",
+        "pin": "Novita",
+        "price_source": "live fetch",
+        "price_prompt_per_token": 1.4e-07,
+        "price_completion_per_token": 2.8e-07,
+        "prompt_tokens_100_proxy": 2627770.0,
+        "completion_tokens_100_proxy": 2824410.0,
+        "cost_100_forecast_usd": 1.1587226000000002
+      },
+      "google/gemma-4-31b-it": {
+        "method": "gemini pilot token volume (scaled x10) x own pinned-endpoint price",
+        "pin": "WandB",
+        "price_source": "live fetch",
+        "price_prompt_per_token": 1.2e-07,
+        "price_completion_per_token": 3.5e-07,
+        "prompt_tokens_100_proxy": 2627770.0,
+        "completion_tokens_100_proxy": 2824410.0,
+        "cost_100_forecast_usd": 1.3038759
+      }
+    },
+    "total_3x100_usd": 7.356156000000013,
+    "gate_pass": true
+  }
+}

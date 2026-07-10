@@ -1,0 +1,3 @@
+{"article": "KV35YL", "done": 1, "of": 3, "spent": 0.03520753999999994, "spent_by_kind": {"extract": 0.021151820000000012, "judge": 0.014055720000000008}, "calls_by_kind": {"extract": 33, "judge": 65}}
+{"article": "XXX династия", "done": 2, "of": 3, "spent": 0.036115869999999925, "spent_by_kind": {"extract": 0.021151820000000012, "judge": 0.01496405000000001}, "calls_by_kind": {"extract": 33, "judge": 68}}
+{"article": "XXVII династия", "done": 3, "of": 3, "spent": 0.0369916099999999, "spent_by_kind": {"extract": 0.021151820000000012, "judge": 0.015839790000000006}, "calls_by_kind": {"extract": 33, "judge": 75}}

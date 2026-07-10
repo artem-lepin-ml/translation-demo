@@ -1,0 +1,1203 @@
+{"title": "KV35YL", "index": 0, "surface": "KV35YL", "lemma": "KV35YL", "qid": "Q516435", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 4, "surface": "Younger Lady", "lemma": "Younger Lady", "qid": "Q516435", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 7, "surface": "Младшая дама", "lemma": "Младшая дама", "qid": "Q516435", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 19, "surface": "KV35", "lemma": "KV35", "qid": "Q1633253", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 21, "surface": "Долине Царей", "lemma": "Долина Царей", "qid": "Q133423", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 24, "surface": "Виктором Лоре", "lemma": "Виктор Лоре", "qid": "Q552436", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 38, "surface": "фараона", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 39, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 41, "surface": "фараона", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 42, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 45, "surface": "царицы", "lemma": "царица", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "KV35YL", "index": 46, "surface": "Тии", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 49, "surface": "Каирском египетском музее", "lemma": "Каирский египетский музей", "qid": "Q201219", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 61, "surface": "Тия", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 67, "surface": "Вебенсену", "lemma": "Вебенсену", "qid": "Q1412960", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 70, "surface": "Аменхотепа II", "lemma": "Аменхотеп II", "qid": "Q158052", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 74, "surface": "Тутмос", "lemma": "Тутмос", "qid": "Q632254", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 77, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 87, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 122, "surface": "Виктор Лоре", "lemma": "Виктор Лоре", "qid": "Q552436", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 138, "surface": "Графтон Эллиот Смит", "lemma": "Графтон Эллиот Смит", "qid": "Q733942", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 147, "surface": "Лоре", "lemma": "Виктор Лоре", "qid": "Q552436", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 155, "surface": "Сьюзен Джеймс", "lemma": "Сьюзен Джеймс", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "KV35YL", "index": 158, "surface": "Джоан Флетчер", "lemma": "Джоан Флетчер", "qid": "Q274473", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 175, "surface": "Нефертити", "lemma": "Нефертити", "qid": "Q40930", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 192, "surface": "Нефертити", "lemma": "Нефертити", "qid": "Q40930", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 198, "surface": "Захи Хавасса", "lemma": "Захи Хавасс", "qid": "Q140575", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 205, "surface": "Флетчер", "lemma": "Флетчер", "qid": "Q1158860", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 227, "surface": "царицы", "lemma": "царица", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "KV35YL", "index": 228, "surface": "Тии", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 232, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 240, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": "Q81794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 242, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 245, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 261, "surface": "Младшая дама", "lemma": "Младшая дама", "qid": "Q516435", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 268, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": "Q81794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 270, "surface": "Нефертити", "lemma": "Нефертити", "qid": "Q40930", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 272, "surface": "Кийей", "lemma": "Кийа", "qid": "Q225845", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 282, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": "Q81794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 289, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": "Q81794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 291, "surface": "Ситамон", "lemma": "Ситамон", "qid": "Q270864", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 292, "surface": "Изидой", "lemma": "Изида", "qid": "Q79876", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 294, "surface": "Хенуттанеб", "lemma": "Хенуттанеб", "qid": "Q470272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 298, "surface": "Великими Царицами", "lemma": "Великая Царица", "qid": "Q1073256", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 304, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 309, "surface": "Эхнатон", "lemma": "Эхнатон", "qid": "Q81794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 320, "surface": "Нефертити", "lemma": "Нефертити", "qid": "Q40930", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 334, "surface": "Аменхотепа III", "lemma": "Аменхотеп III", "qid": "Q42606", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 337, "surface": "Небетах", "lemma": "Небетах", "qid": "Q470261", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 339, "surface": "Бакетатон", "lemma": "Бакетатон", "qid": "Q469607", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 354, "surface": "Меритатон", "lemma": "Меритатон", "qid": "Q153344", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 357, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": "Q81794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 359, "surface": "Нефертити", "lemma": "Нефертити", "qid": "Q40930", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 361, "surface": "Сменхкара", "lemma": "Сменхкар", "qid": "Q158003", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 365, "surface": "Меритатон", "lemma": "Меритатон", "qid": "Q153344", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 369, "surface": "Сменхкара", "lemma": "Сменхкар", "qid": "Q158003", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 372, "surface": "Тутанхамон", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 375, "surface": "Эхнатона", "lemma": "Эхнатон", "qid": "Q81794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 384, "surface": "Эйден Додсон", "lemma": "Эйден Додсон", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "KV35YL", "index": 387, "surface": "Бристольского университета", "lemma": "Бристольский университет", "qid": "Q459506", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 407, "surface": "Элизабет Дейнис", "lemma": "Элизабет Дейнис", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "KV35YL", "index": 413, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 425, "surface": "Нефертити", "lemma": "Нефертити", "qid": "Q40930", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 432, "surface": "Виктор Солкин", "lemma": "Виктор Солкин", "qid": "Q4427740", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 438, "surface": "Дейнес", "lemma": "Элизабет Дейнис", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "KV35YL", "index": 452, "surface": "Солкин", "lemma": "Виктор Солкин", "qid": "Q4427740", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 472, "surface": "Солкин", "lemma": "Виктор Солкин", "qid": "Q4427740", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 493, "surface": "древние египтяне", "lemma": "древние египтяне", "qid": "Q56202338", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 503, "surface": "Солкин", "lemma": "Виктор Солкин", "qid": "Q4427740", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 513, "surface": "Нефертити", "lemma": "Нефертити", "qid": "Q40930", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 525, "surface": "Солкин", "lemma": "Виктор Солкин", "qid": "Q4427740", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 553, "surface": "Дейнес", "lemma": "Элизабет Дейнис", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "KV35YL", "index": 567, "surface": "София Багдасарова", "lemma": "София Багдасарова", "qid": "Q47443191", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 572, "surface": "Солкин", "lemma": "Виктор Солкин", "qid": "Q4427740", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 597, "surface": "Тутанхамона", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 600, "surface": "Дейнес", "lemma": "Элизабет Дейнис", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "KV35YL", "index": 604, "surface": "Графтоном Эллиотом Смитом", "lemma": "Графтон Эллиот Смит", "qid": "Q733942", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 610, "surface": "Графтон Эллиот Смит", "lemma": "Графтон Эллиот Смит", "qid": "Q733942", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 688, "surface": "Аменхотепа II", "lemma": "Аменхотеп II", "qid": "Q158052", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 741, "surface": "Старшей дамы", "lemma": "Старшая дама", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "KV35YL", "index": 743, "surface": "Тия", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 750, "surface": "KV35YL", "lemma": "KV35YL", "qid": "Q516435", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 754, "surface": "Тутанхамону", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 763, "surface": "Туи", "lemma": "Туя", "qid": "Q270376", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 765, "surface": "Тие", "lemma": "Тия", "qid": "Q152230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "KV35YL", "index": 767, "surface": "младшей леди", "lemma": "младшая леди", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "KV35YL", "index": 769, "surface": "КВ35YL", "lemma": "KV35YL", "qid": "Q516435", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "KV35YL", "index": 771, "surface": "Тутанхамону", "lemma": "Тутанхамон", "qid": "Q12154", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 0, "surface": "Двадцать седьмая династия", "lemma": "Двадцать седьмая династия", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 4, "surface": "Истории Египта", "lemma": "История Египта", "qid": "Q380724", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 6, "surface": "Манефона", "lemma": "Манефон", "qid": "Q174380", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 11, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 13, "surface": "Древним Египтом", "lemma": "Древний Египет", "qid": "Q11768", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 24, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 32, "surface": "сатрапий", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 34, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 37, "surface": "Первая египетская сатрапия", "lemma": "Первая египетская сатрапия", "qid": "Q926624", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 46, "surface": "Персии", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 47, "surface": "Камбисом II", "lemma": "Камбис II", "qid": "Q182483", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 50, "surface": "битвы при Пелузии", "lemma": "битва при Пелузии", "qid": null, "span_len": 3, "resolved_by": "judge_rejected"}
+{"title": "XXVII династия", "index": 65, "surface": "фараона", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 66, "surface": "XXVII династия", "lemma": "XXVII династия", "qid": "Q926624", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 72, "surface": "египтян", "lemma": "египтяне", "qid": "Q86723215", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 75, "surface": "фараоном", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 76, "surface": "Амиртея", "lemma": "Амиртей", "qid": "Q318000", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 80, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 86, "surface": "тридцать первой династии Египта", "lemma": "тридцать первая династия Египта", "qid": null, "span_len": 4, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 95, "surface": "фараон", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 96, "surface": "26-й династии", "lemma": "26-я династия", "qid": "Q662410", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 98, "surface": "Псамметих III", "lemma": "Псамметих III", "qid": "Q316278", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 102, "surface": "Камбисом II", "lemma": "Камбис II", "qid": "Q182483", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 105, "surface": "битве при Пелузии", "lemma": "битва при Пелузии", "qid": null, "span_len": 3, "resolved_by": "judge_rejected"}
+{"title": "XXVII династия", "index": 111, "surface": "Нила", "lemma": "Нил", "qid": "Q3392", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 119, "surface": "Камбис", "lemma": "Камбис", "qid": "Q182483", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 122, "surface": "фараоном", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 123, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 135, "surface": "Египтом", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 138, "surface": "27-я династия", "lemma": "27-я династия", "qid": "Q926624", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 141, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 145, "surface": "Кипром", "lemma": "Кипр", "qid": "Q229", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 147, "surface": "Финикией", "lemma": "Финикия", "qid": "Q41642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 151, "surface": "сатрапию", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 152, "surface": "империи Ахеменидов", "lemma": "империя Ахеменидов", "qid": "Q389688", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 155, "surface": "Ариандом", "lemma": "Арианд", "qid": "Q717941", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 159, "surface": "сатрапа", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 164, "surface": "Камбиса", "lemma": "Камбис", "qid": "Q182483", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 165, "surface": "фараона", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 166, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 189, "surface": "Мемфиса", "lemma": "Мемфис", "qid": "Q5715", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 190, "surface": "Гелиополиса", "lemma": "Гелиополис", "qid": "Q191687", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 192, "surface": "Венхема", "lemma": "Венхем", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 194, "surface": "Абусира", "lemma": "Абусир", "qid": "Q336098", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 197, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 209, "surface": "Персию", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 220, "surface": "Бардия", "lemma": "Бардия", "qid": "Q242267", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 229, "surface": "Бардия", "lemma": "Бардия", "qid": "Q242267", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 231, "surface": "Гауматой", "lemma": "Гаумата", "qid": "Q557609", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 236, "surface": "Бардия", "lemma": "Бардия", "qid": "Q242267", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 246, "surface": "Дарий I", "lemma": "Дарий I", "qid": "Q44387", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 268, "surface": "фараон", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 276, "surface": "Дарий", "lemma": "Дарий", "qid": "Q44387", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 306, "surface": "фараоном", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 307, "surface": "Петубастисом III", "lemma": "Петубастис III", "qid": "Q1059998", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 318, "surface": "Полиен", "lemma": "Полиен", "qid": "Q537755", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 326, "surface": "сатрапом", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 327, "surface": "Ариандом", "lemma": "Арианд", "qid": "Q717941", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 332, "surface": "Дарий", "lemma": "Дарий", "qid": "Q44387", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 335, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 345, "surface": "Птаха", "lemma": "Птах", "qid": "Q146321", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 347, "surface": "Дарий", "lemma": "Дарий", "qid": "Q44387", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 351, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 355, "surface": "Камбис", "lemma": "Камбис", "qid": "Q182483", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 361, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 370, "surface": "Суэце", "lemma": "Суэц", "qid": "Q134514", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 374, "surface": "Горьких озёр", "lemma": "Горькие озёра", "qid": "Q37787130", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 377, "surface": "Красному морю", "lemma": "Красное море", "qid": "Q23406", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 390, "surface": "Дарию", "lemma": "Дарий", "qid": "Q44387", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 402, "surface": "Персии", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 406, "surface": "Дарий", "lemma": "Дарий", "qid": "Q44387", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 414, "surface": "Камбис", "lemma": "Камбис", "qid": "Q182483", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 433, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 434, "surface": "Арианд", "lemma": "Арианд", "qid": "Q717941", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 449, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 453, "surface": "Персидской империи", "lemma": "Персидская империя", "qid": "Q83311", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 455, "surface": "Дарий", "lemma": "Дарий", "qid": "Q44387", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 466, "surface": "Ксеркс I", "lemma": "Ксеркс I", "qid": "Q129165", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 468, "surface": "Ксеркс", "lemma": "Ксеркс", "qid": "Q129165", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 470, "surface": "сатрапом", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 473, "surface": "Ахемена", "lemma": "Ахемен", "qid": "Q561925", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 474, "surface": "Ксеркс", "lemma": "Ксеркс", "qid": "Q129165", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 478, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 481, "surface": "Дарии", "lemma": "Дарий", "qid": "Q44387", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 495, "surface": "Грецию", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 498, "surface": "Ксеркс", "lemma": "Ксеркс", "qid": "Q129165", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 502, "surface": "АхураМазду", "lemma": "Ахура-Мазда", "qid": "Q179575", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 514, "surface": "Ксеркс", "lemma": "Ксеркс", "qid": "Q129165", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 523, "surface": "Артабаном", "lemma": "Артабан", "qid": "Q705976", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 531, "surface": "Артаксеркс I", "lemma": "Артаксеркс I", "qid": "Q189689", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 538, "surface": "фараоном", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 556, "surface": "Инарос II", "lemma": "Инарос II", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 563, "surface": "афиняне", "lemma": "афиняне", "qid": "Q120096553", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 564, "surface": "Греции", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 565, "surface": "Инарос", "lemma": "Инарос", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 571, "surface": "Ахеменидом", "lemma": "Ахеменид", "qid": "Q930198", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 575, "surface": "сатрапа", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 578, "surface": "Мемфис", "lemma": "Мемфис", "qid": "Q5715", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 587, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 588, "surface": "Инарос", "lemma": "Инарос", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 602, "surface": "Мегабизом", "lemma": "Мегабиз", "qid": "Q386532", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 609, "surface": "Мегабиз", "lemma": "Мегабиз", "qid": "Q386532", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 611, "surface": "Инаросу", "lemma": "Инарос", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 631, "surface": "Артаксеркс", "lemma": "Артаксеркс", "qid": "Q706239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 637, "surface": "Инароса", "lemma": "Инарос", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXVII династия", "index": 646, "surface": "Артаксеркс", "lemma": "Артаксеркс", "qid": "Q706239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 655, "surface": "Артаксеркса", "lemma": "Артаксеркс", "qid": "Q706239", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 656, "surface": "Ксеркс II", "lemma": "Ксеркс II", "qid": "Q272043", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 667, "surface": "Согдианом", "lemma": "Согдиан", "qid": "Q298631", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 669, "surface": "Согдиан", "lemma": "Согдиан", "qid": "Q298631", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 674, "surface": "Охом", "lemma": "Ох", "qid": "Q6048491", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 677, "surface": "Дарием II", "lemma": "Дарий II", "qid": "Q202236", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 679, "surface": "Дарий II", "lemma": "Дарий II", "qid": "Q202236", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 701, "surface": "Амиртаем", "lemma": "Амиртай", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "XXVII династия", "index": 717, "surface": "Амиртей", "lemma": "Амиртай", "qid": "Q318000", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 723, "surface": "персов", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 725, "surface": "Мемфиса", "lemma": "Мемфис", "qid": "Q5715", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 728, "surface": "фараоном", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 735, "surface": "27-й династии", "lemma": "27-я династия", "qid": "Q926624", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 740, "surface": "Артаксеркс II", "lemma": "Артаксеркс II", "qid": "Q188472", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 748, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 756, "surface": "Киром Младшим", "lemma": "Кир Младший", "qid": "Q297960", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 762, "surface": "Артаксеркс II", "lemma": "Артаксеркс II", "qid": "Q188472", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXVII династия", "index": 767, "surface": "фараоном", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 771, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXVII династия", "index": 786, "surface": "Египту", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 0, "surface": "XXX династия", "lemma": "XXX династия", "qid": "Q386303", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 2, "surface": "Древнего Египта", "lemma": "Древний Египет", "qid": "Q11768", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 9, "surface": "фараонов", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 14, "surface": "Себеннитской", "lemma": "Себеннитская династия", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXX династия", "index": 18, "surface": "Позднему периоду", "lemma": "Поздний период", "qid": "Q621917", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 20, "surface": "Древнего Египта", "lemma": "Древний Египет", "qid": "Q11768", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 26, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 27, "surface": "Персидской империей", "lemma": "Персидская империя", "qid": "Q83311", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 30, "surface": "Нектанеб I", "lemma": "Нектанеб I", "qid": "Q175775", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 34, "surface": "фараон", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 35, "surface": "XXX династии", "lemma": "XXX династия", "qid": "Q386303", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 41, "surface": "Себеннита", "lemma": "Себеннит", "qid": "Q1243772", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 43, "surface": "Теб-Нутер", "lemma": "Теб-Нутер", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "XXX династия", "index": 53, "surface": "Неферита II", "lemma": "Неферит II", "qid": "Q504873", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 70, "surface": "Ахеменидами", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 75, "surface": "Спарты", "lemma": "Спарта", "qid": "Q5690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 77, "surface": "Афин", "lemma": "Афины", "qid": "Q1524", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 81, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 102, "surface": "персами", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 109, "surface": "фараон", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 120, "surface": "Нектанеб", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 124, "surface": "Тахоса", "lemma": "Тахос", "qid": "Q198688", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 131, "surface": "Тахос", "lemma": "Тахос", "qid": "Q198688", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 135, "surface": "персам", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 136, "surface": "Сирию", "lemma": "Сирия", "qid": "Q858", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 138, "surface": "Палестину", "lemma": "Палестина", "qid": "Q23792", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 144, "surface": "Артаксеркса II", "lemma": "Артаксеркс II", "qid": "Q188472", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 146, "surface": "Тахос", "lemma": "Тахос", "qid": "Q198688", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 156, "surface": "Египте", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 166, "surface": "фараона", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 179, "surface": "фараоном", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 182, "surface": "Нектанеб II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 188, "surface": "Тахоса", "lemma": "Тахос", "qid": "Q198688", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 190, "surface": "фараон", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 196, "surface": "Сузы", "lemma": "Сузы", "qid": "Q180773", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 204, "surface": "фараона", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 216, "surface": "Египтом", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 221, "surface": "Нектанеба II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 227, "surface": "Артаксеркс III", "lemma": "Артаксеркс III", "qid": "Q192867", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 240, "surface": "персы", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 244, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 265, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 270, "surface": "Нектанеб II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 274, "surface": "Нубию", "lemma": "Нубия", "qid": "Q135028", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 281, "surface": "Верхний Египет", "lemma": "Верхний Египет", "qid": "Q203751", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 296, "surface": "Эдфу", "lemma": "Эдфу", "qid": "Q239107", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 297, "surface": "Нектанеб II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 302, "surface": "фараоном", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 303, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 305, "surface": "Птолемеях", "lemma": "Птолемеи", "qid": "Q131976", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 310, "surface": "Демотическая хроника", "lemma": "Демотическая хроника", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "XXX династия", "index": 313, "surface": "Нектанеба II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 325, "surface": "мидяне", "lemma": "мидяне", "qid": "Q111476101", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 337, "surface": "Египте", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 352, "surface": "Нектанебу II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 369, "surface": "Нектанеба II", "lemma": "Нектанеб II", "qid": "Q313126", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 372, "surface": "Эфиопии", "lemma": "Эфиопия", "qid": "Q115", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 380, "surface": "персами", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 385, "surface": "Нектанеб", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 403, "surface": "Артаксеркса III", "lemma": "Артаксеркс III", "qid": "Q192867", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 408, "surface": "Нектанеб", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 417, "surface": "Верхнего Египта", "lemma": "Верхний Египет", "qid": "Q203751", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 421, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 422, "surface": "Александром Великим", "lemma": "Александр Великий", "qid": "Q8409", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 432, "surface": "Нектанеба", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 437, "surface": "Романе об Александре", "lemma": "Роман об Александре", "qid": "Q126070", "span_len": 3, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 455, "surface": "персы", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 458, "surface": "Египта", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 465, "surface": "Македонию", "lemma": "Македония", "qid": "Q83958", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 468, "surface": "Пелле", "lemma": "Пелла", "qid": "Q213679", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 476, "surface": "Олимпиаду", "lemma": "Олимпиада", "qid": "Q223134", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 479, "surface": "Филиппа", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "XXX династия", "index": 494, "surface": "Амоном", "lemma": "Амон", "qid": "Q58373", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 519, "surface": "Нектанеба", "lemma": "Нектанеб", "qid": "Q411786", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "XXX династия", "index": 537, "surface": "египтяне", "lemma": "египтяне", "qid": "Q86723215", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "XXX династия", "index": 547, "surface": "египтянин", "lemma": "египтянин", "qid": "Q1061510", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 0, "surface": "Абдмилькат", "lemma": "Абдмилькат", "qid": "Q308132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 1, "surface": "Абдимилькат", "lemma": "Абдимилькат", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 2, "surface": "Абди-милкутти", "lemma": "Абди-милкутти", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 3, "surface": "Абди-милки", "lemma": "Абди-милки", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 7, "surface": "Abdi-milkũti", "lemma": "Abdi-milkũti", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 16, "surface": "Сидона", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 26, "surface": "Абдмилькате", "lemma": "Абдмилькат", "qid": "Q308132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 28, "surface": "«Анналы»", "lemma": "Анналы", "qid": "Q193866", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 29, "surface": "ассирийского", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 31, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 32, "surface": "Абдмилькат", "lemma": "Абдмилькат", "qid": "Q308132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 36, "surface": "Сидоном", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 48, "surface": "Итобаала", "lemma": "Итобаал", "qid": "Q3155928", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 52, "surface": "Абдмильката", "lemma": "Абдмилькат", "qid": "Q308132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 60, "surface": "Синаххериб", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 67, "surface": "Финикии", "lemma": "Финикия", "qid": "Q41642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 80, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 101, "surface": "Египтом", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 116, "surface": "Синаххериб", "lemma": "Синаххериб", "qid": "Q207140", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 117, "surface": "Асархаддон", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 131, "surface": "Абдмильката", "lemma": "Абдмилькат", "qid": "Q308132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 135, "surface": "киликиец", "lemma": "киликиец", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 136, "surface": "Сандуарри", "lemma": "Сандуарри", "qid": "Q48963483", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 138, "surface": "Кунди", "lemma": "Кунди", "qid": "Q1381530", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 140, "surface": "Сузи", "lemma": "Сузи", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Абдмилькат", "index": 153, "surface": "Асархаддон", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 163, "surface": "финикийцев", "lemma": "финикийцы", "qid": "Q1048468", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 164, "surface": "Ассирийцы", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 167, "surface": "Сидону", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 178, "surface": "Анналах Асархаддона", "lemma": "Анналы Асархаддона", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 204, "surface": "Кипре", "lemma": "Кипр", "qid": "Q644636", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 206, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q12824780", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 213, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 222, "surface": "Асархаддон", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 225, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 233, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 240, "surface": "ассирийских анналов", "lemma": "ассирийские анналы", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 242, "surface": "Асархаддон", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 263, "surface": "Кар-Асархаддон", "lemma": "Кар-Асархаддон", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 265, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 279, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 281, "surface": "Сидоне", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 282, "surface": "ассирийцами", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 303, "surface": "Абдимилькат", "lemma": "Абдимилькат", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 316, "surface": "Ниневию", "lemma": "Ниневия", "qid": "Q5680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 320, "surface": "тишриту", "lemma": "тишриту", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 331, "surface": "Сандуарри", "lemma": "Сандуарри", "qid": "Q48963483", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 366, "surface": "финикийцы", "lemma": "финикийцы", "qid": "Q1048468", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 368, "surface": "килицийцы", "lemma": "килицийцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 370, "surface": "сидонцы", "lemma": "сидонцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 378, "surface": "Вавилонию", "lemma": "Вавилония", "qid": "Q47690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 384, "surface": "Сидоне", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 387, "surface": "Асархаддоном", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 389, "surface": "Тира", "lemma": "Тир", "qid": "Q82070", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 390, "surface": "Баалу I", "lemma": "Баал I", "qid": "Q112573", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 404, "surface": "Баала I", "lemma": "Баал I", "qid": "Q112573", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 411, "surface": "Сидона", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 413, "surface": "Марубба", "lemma": "Марубба", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 415, "surface": "Сарепта", "lemma": "Сарепта", "qid": "Q616837", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 418, "surface": "Сидона", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 422, "surface": "Финикии", "lemma": "Финикия", "qid": "Q41642", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 423, "surface": "Леванта", "lemma": "Левант", "qid": "Q81483", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 425, "surface": "Кипра", "lemma": "Кипр", "qid": "Q644636", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 427, "surface": "Асархаддону", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 437, "surface": "Иудеи", "lemma": "Иудея", "qid": "Q104028", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 438, "surface": "Манассия", "lemma": "Манассия", "qid": "Q156328", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 442, "surface": "Акестор", "lemma": "Акестор", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Абдмилькат", "index": 444, "surface": "Идалиона", "lemma": "Идалион", "qid": "Q1656624", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 445, "surface": "Пилагор", "lemma": "Пилагор", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 447, "surface": "Китр", "lemma": "Китр", "qid": "Q1795203", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 448, "surface": "Дамис", "lemma": "Дамис", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Абдмилькат", "index": 450, "surface": "Китиона", "lemma": "Китион", "qid": "Q1743884", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 451, "surface": "Этеандр", "lemma": "Этеандр", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 453, "surface": "Пафоса", "lemma": "Пафос", "qid": "Q180918", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 455, "surface": "Адмит", "lemma": "Адмит", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Абдмилькат", "index": 457, "surface": "Тамассоса", "lemma": "Тамассос", "qid": "Q1720688", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 461, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 480, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 486, "surface": "ассирийцами", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 487, "surface": "финикийских", "lemma": "финикийцы", "qid": "Q1048468", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 493, "surface": "Абдмилькат", "lemma": "Абдмилькат", "qid": "Q308132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 495, "surface": "Баал I", "lemma": "Баал I", "qid": "Q112573", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 501, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 515, "surface": "нубийцев", "lemma": "нубийцы", "qid": "Q15140604", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 520, "surface": "фараона", "lemma": "фараон", "qid": "Q37110", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 521, "surface": "Тахарки", "lemma": "Тахарка", "qid": "Q315714", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 522, "surface": "Ушанхуру", "lemma": "Ушанхуру", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 527, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 529, "surface": "Египет", "lemma": "Египет", "qid": "Q79", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 539, "surface": "Асархаддона", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 542, "surface": "Сидон", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 555, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 562, "surface": "Сидоне", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 574, "surface": "Нововавилонского царства", "lemma": "Нововавилонское царство", "qid": "Q624887", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Абдмилькат", "index": 593, "surface": "Навуходоносора II", "lemma": "Навуходоносор II", "qid": "Q12591", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 601, "surface": "Сидона", "lemma": "Сидон", "qid": "Q163490", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Абдмилькат", "index": 603, "surface": "Адмильката", "lemma": "Адмилькат", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Абдмилькат", "index": 605, "surface": "Эшмуназор I", "lemma": "Эшмуназор I", "qid": "Q12104263", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 0, "surface": "Азиатская экспедиция", "lemma": "Азиатская экспедиция", "qid": "Q18396317", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 5, "surface": "Филиппа II Македонского", "lemma": "Филипп II Македонский", "qid": "Q130650", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 9, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q12824780", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 22, "surface": "Персией", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 27, "surface": "Коринфского конгресса", "lemma": "Коринфский конгресс", "qid": "Q18399631", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 41, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q12824780", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 48, "surface": "персами", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 65, "surface": "греки", "lemma": "греки", "qid": "Q539051", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 86, "surface": "македонского", "lemma": "македонский", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 95, "surface": "Перинфу", "lemma": "Перинф", "qid": "Q11815679", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 100, "surface": "Фракию", "lemma": "Фракия", "qid": "Q41741", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 105, "surface": "Ох", "lemma": "Ох", "qid": "Q6048491", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 114, "surface": "спартанцам", "lemma": "спартанцы", "qid": "Q369194", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 118, "surface": "Пелопоннесской войне", "lemma": "Пелопоннесская война", "qid": "Q33745", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 128, "surface": "Греции", "lemma": "Греция", "qid": "Q41", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 133, "surface": "персами", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 145, "surface": "Ксенофонт", "lemma": "Ксенофонт", "qid": "Q129772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 151, "surface": "Ясона Ферского", "lemma": "Ясон Ферский", "qid": "Q456945", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 159, "surface": "Олимпийских играх", "lemma": "Олимпийские игры", "qid": "Q5389", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 161, "surface": "Лисий", "lemma": "Лисий", "qid": "Q310164", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 163, "surface": "эллинов", "lemma": "эллины", "qid": "Q3723502", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 168, "surface": "Персию", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 174, "surface": "Исократ", "lemma": "Исократ", "qid": "Q221182", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 176, "surface": "«Панегирике»", "lemma": "Панегирик", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 179, "surface": "греков", "lemma": "греки", "qid": "Q539051", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 195, "surface": "Филиппу II", "lemma": "Филипп II", "qid": "Q130650", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 199, "surface": "Филократова мира", "lemma": "Филократов мир", "qid": "Q1456419", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 207, "surface": "Персии", "lemma": "Персия", "qid": "Q794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 216, "surface": "евнух", "lemma": "евнух", "qid": "Q179294", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 217, "surface": "Багой", "lemma": "Багой", "qid": "Q363633", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 220, "surface": "Артаксеркса III", "lemma": "Артаксеркс III", "qid": "Q192867", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 229, "surface": "Арсеса", "lemma": "Арсес", "qid": "Q260783", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 258, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 259, "surface": "Дарий III Кодоман", "lemma": "Дарий III Кодоман", "qid": "Q102865", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 262, "surface": "Филиппу", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 274, "surface": "Сатрап", "lemma": "сатрап", "qid": "Q170305", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 275, "surface": "Карии", "lemma": "Кария", "qid": "Q193214", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 276, "surface": "Пиксодар", "lemma": "Пиксодар", "qid": "Q930824", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 287, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 300, "surface": "Филиппом", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 311, "surface": "Филипп", "lemma": "Филипп", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 313, "surface": "Дельфийский оракул", "lemma": "Дельфийский оракул", "qid": "Q682558", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 320, "surface": "пифия", "lemma": "пифия", "qid": "Q220344", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 344, "surface": "персы", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 370, "surface": "Геллеспонт", "lemma": "Геллеспонт", "qid": "Q6514", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 372, "surface": "Абидос", "lemma": "Абидос", "qid": "Q336446", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 376, "surface": "македонян", "lemma": "македонянин", "qid": "Q576065", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 378, "surface": "наёмников", "lemma": "наёмник", "qid": "Q178197", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 381, "surface": "Пармениона", "lemma": "Парменион", "qid": "Q296233", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 382, "surface": "Аттала", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 384, "surface": "Аминты", "lemma": "Аминта", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 399, "surface": "Кизика", "lemma": "Кизик", "qid": "Q615449", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 401, "surface": "Эфеса", "lemma": "Эфес", "qid": "Q47611", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 405, "surface": "персов", "lemma": "перс", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 410, "surface": "Коринфскому союзу", "lemma": "Коринфский союз", "qid": "Q332337", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 413, "surface": "Тенедос", "lemma": "Тенедос", "qid": "Q211817", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 414, "surface": "Лесбос", "lemma": "Лесбос", "qid": "Q128087", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 416, "surface": "Хиос", "lemma": "Хиос", "qid": "Q160483", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 420, "surface": "персов", "lemma": "перс", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 432, "surface": "Ментор Родосский", "lemma": "Ментор Родосский", "qid": "Q553304", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 438, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q12824780", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 443, "surface": "персов", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 444, "surface": "Мемнон", "lemma": "Мемнон", "qid": "Q319378", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 457, "surface": "македонянам", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 461, "surface": "сатрапии", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 462, "surface": "Сардам", "lemma": "Сарды", "qid": "Q232615", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 467, "surface": "Мемнон", "lemma": "Мемнон", "qid": "Q319378", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 475, "surface": "Дария III", "lemma": "Дарий III", "qid": "Q102865", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 489, "surface": "Магнесии-на-Меандре", "lemma": "Магнесия-на-Меандре", "qid": "Q1432674", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 490, "surface": "Мемнон", "lemma": "Мемнон", "qid": "Q319378", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 496, "surface": "Полиэн", "lemma": "Полиэн", "qid": "Q537755", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 502, "surface": "Пармениона", "lemma": "Парменион", "qid": "Q296233", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 504, "surface": "Аттала", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 517, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 525, "surface": "македоняне", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 545, "surface": "Мемнон", "lemma": "Мемнон", "qid": "Q319378", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 552, "surface": "Мемнон", "lemma": "Мемнон", "qid": "Q319378", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 555, "surface": "Иды", "lemma": "Ида", "qid": "Q1127771", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 560, "surface": "Кизик", "lemma": "Кизик", "qid": "Q615449", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 568, "surface": "Гринею", "lemma": "Гриней", "qid": "Q969347", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 571, "surface": "Парменион", "lemma": "Парменион", "qid": "Q296233", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 573, "surface": "Мемнона", "lemma": "Мемнон", "qid": "Q319378", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 576, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 583, "surface": "Филиппа II", "lemma": "Филипп II", "qid": "Q130650", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 595, "surface": "Аттал", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 598, "surface": "Александра", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 613, "surface": "Афинами", "lemma": "Афины", "qid": "Q1524", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 615, "surface": "персами", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 628, "surface": "Геллеспонту", "lemma": "Геллеспонт", "qid": "Q6514", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 632, "surface": "Аттал", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 637, "surface": "Александра", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 639, "surface": "Аттал", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 647, "surface": "Аттал", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 653, "surface": "Александру", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 662, "surface": "Демосфена", "lemma": "Демосфен", "qid": "Q117253", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 672, "surface": "Азию", "lemma": "Азия", "qid": "Q48", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 677, "surface": "Гекатея", "lemma": "Гекатей", "qid": "Q983288", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 682, "surface": "Аттал", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 684, "surface": "Диодору Сицилийскому", "lemma": "Диодор Сицилийский", "qid": "Q171241", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 686, "surface": "Гекатею", "lemma": "Гекатей", "qid": "Q983288", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 692, "surface": "Аттал", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 694, "surface": "Македонию", "lemma": "Македония", "qid": "Q83958", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 703, "surface": "Пармениона", "lemma": "Парменион", "qid": "Q296233", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 704, "surface": "Аттал", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 721, "surface": "Аттала", "lemma": "Аттал", "qid": "Q356050", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 722, "surface": "Парменион", "lemma": "Парменион", "qid": "Q296233", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 730, "surface": "Мемнона", "lemma": "Мемнон", "qid": "Q319378", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 734, "surface": "Питаны", "lemma": "Питана", "qid": "Q752699", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 736, "surface": "Эолии", "lemma": "Эолия", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 740, "surface": "Александра", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 743, "surface": "Македонию", "lemma": "Македония", "qid": "Q83958", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 745, "surface": "Каллас", "lemma": "Каллас", "qid": "Q11910906", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 751, "surface": "македонян", "lemma": "македонянин", "qid": "Q576065", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 759, "surface": "Троаде", "lemma": "Троада", "qid": "Q2454671", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 768, "surface": "Мемнона Родосского", "lemma": "Мемнон Родосский", "qid": "Q319378", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 773, "surface": "Кизик", "lemma": "Кизик", "qid": "Q615449", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 777, "surface": "Ретейон", "lemma": "Ретейон", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 779, "surface": "Каласа", "lemma": "Калас", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 781, "surface": "Мемнона", "lemma": "Мемнон", "qid": "Q319378", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 787, "surface": "стратегем", "lemma": "стратегема", "qid": "Q957502", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 788, "surface": "Полиэна", "lemma": "Полиэн", "qid": "Q537755", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 806, "surface": "Кизика", "lemma": "Кизик", "qid": "Q615449", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 809, "surface": "Азии", "lemma": "Азия", "qid": "Q48", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 815, "surface": "македонян", "lemma": "македонянин", "qid": "Q576065", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 817, "surface": "Ретейон", "lemma": "Ретейон", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 819, "surface": "Абидос", "lemma": "Абидос", "qid": "Q336446", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 826, "surface": "Александр Македонский", "lemma": "Александр Македонский", "qid": "Q8409", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 832, "surface": "Парменион", "lemma": "Парменион", "qid": "Q296233", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 836, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q12824780", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 842, "surface": "Персы", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 853, "surface": "македонян", "lemma": "македоняне", "qid": "Q1401272", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 855, "surface": "Абидос", "lemma": "Абидос", "qid": "Q336446", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 858, "surface": "Ретий", "lemma": "Ретий", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 877, "surface": "Геллеспонт", "lemma": "Геллеспонт", "qid": "Q6514", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 884, "surface": "Александр", "lemma": "Александр", "qid": "Q8409", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Азиатская экспедиция (336—334 до н. э.)", "index": 898, "surface": "Азию", "lemma": "Азия", "qid": "Q48", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 0, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 2, "surface": "Цзи-ся", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 36, "surface": "Линьцзы", "lemma": "Линьцзы", "qid": "Q225872", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 39, "surface": "Ци", "lemma": "Ци", "qid": "Q1207032", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 57, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 72, "surface": "моистов", "lemma": "моисты", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Академия Цзися", "index": 74, "surface": "конфуцианства", "lemma": "конфуцианство", "qid": "Q9581", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 75, "surface": "даосизма", "lemma": "даосизм", "qid": "Q9598", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 76, "surface": "легизма", "lemma": "легизм", "qid": "Q238344", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 77, "surface": "мин цзя", "lemma": "мин цзя", "qid": "Q61906", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 79, "surface": "инь ян цзя", "lemma": "инь ян цзя", "qid": "Q1195540", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 82, "surface": "Мэн-цзы", "lemma": "Мэн-цзы", "qid": "Q188903", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 84, "surface": "Сюнь-цзы", "lemma": "Сюнь-цзы", "qid": "Q216072", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 85, "surface": "Тянь Пянь", "lemma": "Тянь Пянь", "qid": "Q2431072", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 88, "surface": "Хуань Юань", "lemma": "Хуань Юань", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 90, "surface": "Шэнь Дао", "lemma": "Шэнь Дао", "qid": "Q947699", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 92, "surface": "Сун Цзянь", "lemma": "Сун Цзянь", "qid": "Q9184985", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 94, "surface": "Инь Вэнь", "lemma": "Инь Вэнь", "qid": "Q16031704", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 96, "surface": "Тянь Ба", "lemma": "Тянь Ба", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Академия Цзися", "index": 99, "surface": "Эр Шо", "lemma": "Эр Шо", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 101, "surface": "Цзоу Янь", "lemma": "Цзоу Янь", "qid": "Q227022", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 104, "surface": "Цзоу Ши", "lemma": "Цзоу Ши", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Академия Цзися", "index": 108, "surface": "Сыма Цяня", "lemma": "Сыма Цянь", "qid": "Q9372", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 110, "surface": "Ши цзи", "lemma": "Ши цзи", "qid": "Q272530", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 119, "surface": "Сюань-ван", "lemma": "Сюань-ван", "qid": "Q55247", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 128, "surface": "шан-дафу", "lemma": "шан-дафу", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 131, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 139, "surface": "Гуань-цзы", "lemma": "Гуань-цзы", "qid": "Q1154573", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 147, "surface": "Янь-цзы чуньцю", "lemma": "Янь-цзы чуньцю", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 149, "surface": "Весны и осени Янь-цзы", "lemma": "Весна и осень Янь-цзы", "qid": null, "span_len": 4, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 158, "surface": "Сыма фа", "lemma": "Сыма фа", "qid": "Q1051357", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 160, "surface": "Законы Сыма", "lemma": "Законы Сыма", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 175, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 195, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 201, "surface": "Цзися", "lemma": "Цзися", "qid": "Q571744", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 204, "surface": "ванов", "lemma": "ван", "qid": "Q804943", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 205, "surface": "Ци", "lemma": "Ци", "qid": "Q1207032", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 219, "surface": "сяньшэн", "lemma": "сяньшэн", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Академия Цзися", "index": 240, "surface": "сэнсэй", "lemma": "сэнсэй", "qid": "Q678928", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 251, "surface": "Люй Бувэя", "lemma": "Люй Бувэй", "qid": "Q366120", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 255, "surface": "Люй-ши чуньцю", "lemma": "Люй-ши чуньцю", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 266, "surface": "Сюань-ван", "lemma": "Сюань-ван", "qid": "Q55247", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 285, "surface": "Цзоу Янь", "lemma": "Цзоу Янь", "qid": "Q227022", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 287, "surface": "Чуньюй Кунь", "lemma": "Чуньюй Кунь", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 289, "surface": "Тянь Пянь", "lemma": "Тянь Пянь", "qid": "Q2431072", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 291, "surface": "Цзе Юй", "lemma": "Цзе Юй", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Академия Цзися", "index": 293, "surface": "Цзе-цзы", "lemma": "Цзе-цзы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 294, "surface": "Шэнь Дао", "lemma": "Шэнь Дао", "qid": "Q947699", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 296, "surface": "Хуань Юань", "lemma": "Хуань Юань", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 302, "surface": "шандафу", "lemma": "шандафу", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 317, "surface": "школа ученых Цзися", "lemma": "школа ученых Цзися", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 338, "surface": "академии", "lemma": "академия", "qid": "Q162633", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 341, "surface": "Цзыбо", "lemma": "Цзыбо", "qid": "Q198370", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Академия Цзися", "index": 343, "surface": "Шаньдун", "lemma": "Шаньдун", "qid": "Q43407", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 361, "surface": "академии", "lemma": "академия", "qid": "Q162633", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Академия Цзися", "index": 414, "surface": "Онлайн Энциклопедия Кругосвет", "lemma": "Онлайн Энциклопедия Кругосвет", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Академия Цзися", "index": 418, "surface": "Цзи-ся", "lemma": "Цзи-ся", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Амударьинский клад", "index": 0, "surface": "Амударьи́нский клад", "lemma": "Амударьинский клад", "qid": "Q1246609", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 11, "surface": "О́кса", "lemma": "Окс", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 21, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 28, "surface": "Тахти-Сангин", "lemma": "Тахти-Сангин", "qid": "Q6554804", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 32, "surface": "Амударья", "lemma": "Амударья", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 34, "surface": "Окс", "lemma": "Окс", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 36, "surface": "Бухарском эмирате", "lemma": "Бухарский эмират", "qid": "Q746558", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 39, "surface": "Таджикистан", "lemma": "Таджикистан", "qid": "Q863", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 44, "surface": "Британском музее", "lemma": "Британский музей", "qid": "Q6373", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 50, "surface": "музее Виктории и Альберта", "lemma": "музей Виктории и Альберта", "qid": "Q213322", "span_len": 4, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 83, "surface": "Амударьи", "lemma": "Амударья", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 87, "surface": "Тахти Сангин", "lemma": "Тахти Сангин", "qid": "Q6554804", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 90, "surface": "Таджикистан", "lemma": "Таджикистан", "qid": "Q863", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 93, "surface": "Бактрия", "lemma": "Бактрия", "qid": "Q132646", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 117, "surface": "Кабула", "lemma": "Кабул", "qid": "Q5838", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 119, "surface": "Пешавар", "lemma": "Пешавар", "qid": "Q1113311", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 134, "surface": "Британской империи", "lemma": "Британская империя", "qid": "Q8680", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 137, "surface": "Афганистане", "lemma": "Афганистан", "qid": "Q889", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 139, "surface": "капитан", "lemma": "капитан", "qid": "Q19100", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 140, "surface": "Френсис Чарльз Бертон", "lemma": "Френсис Чарльз Бертон", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 166, "surface": "Равалпинди", "lemma": "Равалпинди", "qid": "Q93230", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 181, "surface": "Британской Индии", "lemma": "Британская Индия", "qid": "Q129286", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 185, "surface": "Пакистане", "lemma": "Пакистан", "qid": "Q843", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 194, "surface": "Огастес Уоллстон Френкс", "lemma": "Огастес Уоллстон Френкс", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 200, "surface": "Британскому музею", "lemma": "Британский музей", "qid": "Q6373", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 212, "surface": "Аму-Дарья", "lemma": "Аму-Дарья", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 214, "surface": "Окс", "lemma": "Окс", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 216, "surface": "Oxus", "lemma": "Oxus", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 220, "surface": "Ὄξος", "lemma": "Ὄξος", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 224, "surface": "vaxšu-", "lemma": "vaxšu-", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 232, "surface": "Лондоне", "lemma": "Лондон", "qid": "Q84", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 234, "surface": "музее Виктории и Альберта", "lemma": "музей Виктории и Альберта", "qid": "Q213322", "span_len": 4, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 242, "surface": "Британском музее", "lemma": "Британский музей", "qid": "Q6373", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 283, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 292, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 305, "surface": "звериного стиля", "lemma": "звериный стиль", "qid": "Q576717", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 310, "surface": "грифонов", "lemma": "грифон", "qid": "Q130223", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 316, "surface": "Ахеменидского Ирана", "lemma": "Ахеменидский Иран", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 330, "surface": "Персеполя", "lemma": "Персеполь", "qid": "Q129072", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 338, "surface": "Ксенофонт", "lemma": "Ксенофонт", "qid": "Q129772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 348, "surface": "персидскому двору", "lemma": "персидский двор", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 354, "surface": "Амударьинского клада", "lemma": "Амударьинский клад", "qid": "Q1246609", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 406, "surface": "Андрагора", "lemma": "Андрагор", "qid": "Q456935", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 421, "surface": "Таджикистана", "lemma": "Таджикистан", "qid": "Q863", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 422, "surface": "Эмомали Рахмон", "lemma": "Эмомали Рахмон", "qid": "Q57366", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 428, "surface": "Тахти Сангин", "lemma": "Тахти Сангин", "qid": "Q6554804", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 441, "surface": "Амударьинского клада", "lemma": "Амударьинский клад", "qid": "Q1246609", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 445, "surface": "Британского музея", "lemma": "Британский музей", "qid": "Q6373", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 460, "surface": "посол", "lemma": "посол", "qid": "Q121998", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 461, "surface": "Таджикистана", "lemma": "Таджикистан", "qid": "Q863", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 463, "surface": "Великобритании", "lemma": "Великобритания", "qid": "Q145", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 464, "surface": "Эркин Касымов", "lemma": "Эркин Касымов", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Амударьинский клад", "index": 472, "surface": "таджикское посольство", "lemma": "таджикское посольство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 478, "surface": "Британского музея", "lemma": "Британский музей", "qid": "Q6373", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 486, "surface": "Амударьинского клада", "lemma": "Амударьинский клад", "qid": "Q1246609", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Амударьинский клад", "index": 488, "surface": "таджикскому музею", "lemma": "таджикский музей", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 504, "surface": "Таджикистану", "lemma": "Таджикистан", "qid": "Q863", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 513, "surface": "Министерстве иностранных дел", "lemma": "Министерство иностранных дел", "qid": null, "span_len": 3, "resolved_by": "judge_rejected"}
+{"title": "Амударьинский клад", "index": 516, "surface": "Таджикистана", "lemma": "Таджикистан", "qid": "Q863", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 522, "surface": "британского музея", "lemma": "Британский музей", "qid": "Q6373", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 533, "surface": "национальному музею", "lemma": "национальный музей", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Амударьинский клад", "index": 543, "surface": "Душанбе", "lemma": "Душанбе", "qid": "Q9365", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 544, "surface": "Джон Симпсон", "lemma": "Джон Симпсон", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Амударьинский клад", "index": 550, "surface": "Британского музея", "lemma": "Британский музей", "qid": "Q6373", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 560, "surface": "сокровища Окса", "lemma": "сокровища Окса", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 578, "surface": "Британии", "lemma": "Британия", "qid": "Q145", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 587, "surface": "Таджикистана", "lemma": "Таджикистан", "qid": "Q863", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 596, "surface": "Британии", "lemma": "Британия", "qid": "Q145", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 601, "surface": "Окса", "lemma": "Окс", "qid": "Q8493", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Амударьинский клад", "index": 607, "surface": "сокровища Окса", "lemma": "сокровища Окса", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Амударьинский клад", "index": 614, "surface": "Британского музея", "lemma": "Британский музей", "qid": "Q6373", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 0, "surface": "Арахозия", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 2, "surface": "Harauvatiš", "lemma": "Harauvatiš", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арахозия", "index": 2, "surface": "Ἀραχωσία", "lemma": "Ἀραχωσία", "qid": "Q624638", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 4, "surface": "Арахозия", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 5, "surface": "Арахозия", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 6, "surface": "Арахоси́я", "lemma": "Арахосия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 15, "surface": "Афганистана", "lemma": "Афганистан", "qid": "Q889", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 18, "surface": "Пакистана", "lemma": "Пакистан", "qid": "Q843", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 21, "surface": "Харахвати", "lemma": "Харахвати", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арахозия", "index": 47, "surface": "Камбоджа", "lemma": "Камбоджа", "qid": "Q13553725", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 55, "surface": "Арахозию", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 57, "surface": "персы", "lemma": "персы", "qid": "Q484206", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 59, "surface": "Арахозия", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 64, "surface": "Александра Македонского", "lemma": "Александр Македонский", "qid": "Q8409", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 67, "surface": "империю Маурьев", "lemma": "империя Маурьев", "qid": "Q62943", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 71, "surface": "Греко-бактрийское царство", "lemma": "Греко-бактрийское царство", "qid": "Q488880", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 81, "surface": "Арахозию", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 84, "surface": "саков", "lemma": "саки", "qid": "Q673001", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 90, "surface": "юэчжей", "lemma": "юэчжи", "qid": "Q467985", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 92, "surface": "Средней Азии", "lemma": "Средняя Азия", "qid": "Q1211919", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 95, "surface": "Арахозии", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 100, "surface": "Дрангиане", "lemma": "Дрангиана", "qid": "Q1074810", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 107, "surface": "Сакастаном", "lemma": "Сакастан", "qid": "Q757169", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 109, "surface": "Сеистан", "lemma": "Сеистан", "qid": "Q757169", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 120, "surface": "парфянами", "lemma": "парфяне", "qid": "Q28045596", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 140, "surface": "Арахозия", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 146, "surface": "сакской", "lemma": "саки", "qid": "Q673001", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 147, "surface": "династии", "lemma": "династия", "qid": "Q164950", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 158, "surface": "Александрия Кавказская", "lemma": "Александрия Кавказская", "qid": "Q2005166", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 176, "surface": "Арахозии", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 178, "surface": "династии", "lemma": "династия", "qid": "Q164950", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 181, "surface": "Вонон", "lemma": "Вонон", "qid": "Q253888", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 182, "surface": "Спалахор", "lemma": "Спалахор", "qid": "Q2306507", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 198, "surface": "Спалагадам", "lemma": "Спалагадам", "qid": "Q7572953", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 202, "surface": "Спалахора", "lemma": "Спалахор", "qid": "Q2306507", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 204, "surface": "сакским", "lemma": "саки", "qid": "Q673001", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 207, "surface": "Спалирис", "lemma": "Спалирис", "qid": "Q1754231", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 215, "surface": "Арахозию", "lemma": "Арахозия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 217, "surface": "индо-сакский", "lemma": "индо-саки", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арахозия", "index": 219, "surface": "Азес I", "lemma": "Азес I", "qid": "Q793703", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 223, "surface": "Гандхаре", "lemma": "Гандхара", "qid": "Q213651", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арахозия", "index": 226, "surface": "арабов", "lemma": "арабы", "qid": "Q35323", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арахозия", "index": 231, "surface": "Рухадж", "lemma": "Рухадж", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арахозия", "index": 232, "surface": "Арахосия", "lemma": "Арахосия", "qid": "Q624638", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1, "surface": "империи Хань", "lemma": "империя Хань", "qid": "Q7209", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 22, "surface": "династии Хань", "lemma": "династия Хань", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 27, "surface": "простолюдины", "lemma": "простолюдин", "qid": "Q3443060", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 47, "surface": "императоре", "lemma": "император", "qid": "Q39018", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 48, "surface": "Чжао-ди", "lemma": "Чжао-ди", "qid": "Q7227", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 100, "surface": "гвардейцев", "lemma": "гвардеец", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 175, "surface": "Западной Хань", "lemma": "Западная Хань", "qid": "Q1072949", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 213, "surface": "разряды", "lemma": "разряд", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 226, "surface": "разрядом", "lemma": "разряд", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 234, "surface": "Восточной Хань", "lemma": "Восточная Хань", "qid": "Q1147037", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 243, "surface": "щитовые деньги", "lemma": "щитовые деньги", "qid": "Q131887", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 250, "surface": "провинциях", "lemma": "провинция", "qid": "Q34876", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 258, "surface": "военных колонистов", "lemma": "военный колонист", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 292, "surface": "военными колониями", "lemma": "военная колония", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 295, "surface": "сельскохозяйственными колониями", "lemma": "сельскохозяйственная колония", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 319, "surface": "гарнизонов", "lemma": "гарнизон", "qid": "Q88556", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 325, "surface": "Офицеры", "lemma": "офицер", "qid": "Q189290", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 338, "surface": "компаний", "lemma": "компания", "qid": "Q783794", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 412, "surface": "стипендий", "lemma": "стипендия", "qid": "Q188823", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 413, "surface": "офицерам", "lemma": "офицер", "qid": "Q189290", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 424, "surface": "пайках", "lemma": "паек", "qid": "Q3420088", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 454, "surface": "Twitchett", "lemma": "Twitchett", "qid": "Q722638", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 456, "surface": "Michael Lowe", "lemma": "Michael Lowe", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 460, "surface": "императора", "lemma": "император", "qid": "Q39018", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 461, "surface": "У-ди", "lemma": "У-ди", "qid": "Q7225", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 504, "surface": "У-ди", "lemma": "У-ди", "qid": "Q7225", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 518, "surface": "ханьских", "lemma": "ханьцы", "qid": "Q42740", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 534, "surface": "ханьских", "lemma": "ханьцы", "qid": "Q42740", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 539, "surface": "ханьского", "lemma": "ханьцы", "qid": "Q42740", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 607, "surface": "Наньюэ", "lemma": "Наньюэ", "qid": "Q827040", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 617, "surface": "Кореи", "lemma": "Корея", "qid": "Q18097", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 631, "surface": "Хань", "lemma": "Хань", "qid": "Q7209", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 646, "surface": "династии Хань", "lemma": "династия Хань", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 666, "surface": "лян-минь", "lemma": "лян-минь", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 685, "surface": "ханьцев", "lemma": "ханьцы", "qid": "Q42740", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 709, "surface": "ханьской", "lemma": "ханьцы", "qid": "Q42740", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 738, "surface": "Северная армия", "lemma": "Северная армия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 757, "surface": "полков", "lemma": "полк", "qid": "Q52371", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 775, "surface": "полков", "lemma": "полк", "qid": "Q52371", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 784, "surface": "полков", "lemma": "полк", "qid": "Q52371", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 786, "surface": "полковник", "lemma": "полковник", "qid": "Q104680", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 787, "surface": "полковник гарнизонной кавалерии", "lemma": "полковник гарнизонной кавалерии", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 790, "surface": "полковник отборной кавалерии", "lemma": "полковник отборной кавалерии", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 793, "surface": "полковник пехоты", "lemma": "полковник пехоты", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 795, "surface": "полковник реки Чанг", "lemma": "полковник реки Чанг", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 799, "surface": "полковник лучников", "lemma": "полковник лучников", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 801, "surface": "Капитан центра", "lemma": "капитан центра", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 805, "surface": "Северной армии", "lemma": "Северная армия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 818, "surface": "Южная армия", "lemma": "Южная армия", "qid": "Q4533919", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 849, "surface": "Северной армии", "lemma": "Северная армия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 853, "surface": "Армия западного сада", "lemma": "Армия западного сада", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 858, "surface": "Рафа де Креспиньи", "lemma": "Раф де Креспиньи", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 867, "surface": "Восточной Хань", "lemma": "Восточная Хань", "qid": "Q1147037", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 882, "surface": "Цинь", "lemma": "Цинь", "qid": "Q34756", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 885, "surface": "Хань", "lemma": "Хань", "qid": "Q7209", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 889, "surface": "генералов", "lemma": "генерал", "qid": "Q83460", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 908, "surface": "императора", "lemma": "император", "qid": "Q39018", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 911, "surface": "генералов", "lemma": "генерал", "qid": "Q83460", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 921, "surface": "генералу", "lemma": "генерал", "qid": "Q83460", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 929, "surface": "генерала", "lemma": "генерал", "qid": "Q83460", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 938, "surface": "министров", "lemma": "министр", "qid": "Q83307", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 956, "surface": "полковник", "lemma": "полковник", "qid": "Q104680", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 957, "surface": "сяовэй", "lemma": "сяовэй", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 967, "surface": "Чжао Чунго", "lemma": "Чжао Чунго", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 977, "surface": "ху", "lemma": "ху", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 981, "surface": "ху", "lemma": "ху", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 995, "surface": "ху", "lemma": "ху", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1016, "surface": "Гашун-Нура", "lemma": "Гашун-Нур", "qid": "Q28809433", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1019, "surface": "ху", "lemma": "ху", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1032, "surface": "императора", "lemma": "император", "qid": "Q39018", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1034, "surface": "военные губернаторы", "lemma": "военный губернатор", "qid": "Q1400381", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1042, "surface": "вассалов", "lemma": "вассал", "qid": "Q223266", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1045, "surface": "периода Троецарствия", "lemma": "период Троецарствия", "qid": "Q185043", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1049, "surface": "воинской повинности", "lemma": "воинская повинность", "qid": "Q580750", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1063, "surface": "ханьской системы рекрутирования", "lemma": "ханьская система рекрутирования", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1075, "surface": "династии Цзинь", "lemma": "династия Цзинь", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1078, "surface": "военного сословия", "lemma": "военное сословие", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1138, "surface": "военной касты", "lemma": "военная каста", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1178, "surface": "Западной Хань", "lemma": "Западная Хань", "qid": "Q1072949", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1192, "surface": "David Graff", "lemma": "David Graff", "qid": "Q134392390", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1201, "surface": "периода сражающихся царств", "lemma": "период сражающихся царств", "qid": "Q185063", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1208, "surface": "эпоху Хань", "lemma": "эпоха Хань", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1214, "surface": "хунну", "lemma": "хунну", "qid": "Q188836", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1244, "surface": "Хань", "lemma": "Хань", "qid": "Q7209", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1250, "surface": "династии", "lemma": "династия", "qid": "Q164950", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1258, "surface": "Китая", "lemma": "Китай", "qid": "Q29520", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1259, "surface": "Тяньшуй", "lemma": "Тяньшуй", "qid": "Q533157", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1260, "surface": "Лунси", "lemma": "Лунси", "qid": "Q1201581", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1261, "surface": "Аньдин", "lemma": "Аньдин", "qid": "Q492100", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1262, "surface": "Бэйди", "lemma": "Бэйди", "qid": "Q1207124", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1263, "surface": "Шан", "lemma": "Шан", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1265, "surface": "Сихэ", "lemma": "Сихэ", "qid": "Q1201553", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1266, "surface": "Император", "lemma": "император", "qid": "Q39018", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1267, "surface": "Вэнь-ди", "lemma": "Вэнь-ди", "qid": "Q7221", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1288, "surface": "Цзин-ди", "lemma": "Цзин-ди", "qid": "Q7224", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1320, "surface": "У-ди", "lemma": "У-ди", "qid": "Q7225", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1337, "surface": "династия", "lemma": "династия", "qid": "Q164950", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1338, "surface": "Хань", "lemma": "Хань", "qid": "Q7209", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1399, "surface": "Цзинь", "lemma": "Цзинь", "qid": "Q7352", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1405, "surface": "Ганьсу", "lemma": "Ганьсу", "qid": "Q42392", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1407, "surface": "Синьцзяне", "lemma": "Синьцзян", "qid": "Q34800", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1410, "surface": "Хань", "lemma": "Хань", "qid": "Q7209", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1446, "surface": "Цинь", "lemma": "Цинь", "qid": "Q34756", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1453, "surface": "Хань", "lemma": "Хань", "qid": "Q7209", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1463, "surface": "Дэвиду Графу", "lemma": "Дэвид Граф", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1502, "surface": "эпохи Хань", "lemma": "эпоха Хань", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1510, "surface": "«Хуайнань-цзы»", "lemma": "Хуайнань-цзы", "qid": "Q590337", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1534, "surface": "Ши цзи", "lemma": "Ши цзи", "qid": "Q272530", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1538, "surface": "Сунь Бинь", "lemma": "Сунь Бинь", "qid": "Q334090", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1541, "surface": "Пан Цзюаня", "lemma": "Пан Цзюань", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1546, "surface": "битве при Малинге", "lemma": "битва при Малинге", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1554, "surface": "«Книге Хань»", "lemma": "Книга Хань", "qid": "Q846905", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1572, "surface": "Чэнь Инь", "lemma": "Чэнь Инь", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1575, "surface": "Wuyue Chunqiu", "lemma": "Wuyue Chunqiu", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1623, "surface": "арбалет", "lemma": "арбалет", "qid": "Q181947", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1685, "surface": "Дао", "lemma": "Дао", "qid": "Q190393", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1687, "surface": "арбалет", "lemma": "арбалет", "qid": "Q181947", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1692, "surface": "Chen Yin", "lemma": "Chen Yin", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1707, "surface": "хунну", "lemma": "хунну", "qid": "Q188836", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1726, "surface": "Чао Цуо", "lemma": "Чао Цуо", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1736, "surface": "хунну", "lemma": "хунну", "qid": "Q188836", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1745, "surface": "короткого лука", "lemma": "короткий лук", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1747, "surface": "Йи", "lemma": "Йи", "qid": "Q461282", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1749, "surface": "Ди", "lemma": "Ди", "qid": "Q4160975", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1755, "surface": "nu che", "lemma": "nu che", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1775, "surface": "арбалеты", "lemma": "арбалет", "qid": "Q181947", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1791, "surface": "короткого лука", "lemma": "короткий лук", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1796, "surface": "арбалет", "lemma": "арбалет", "qid": "Q181947", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1811, "surface": "арбалет", "lemma": "арбалет", "qid": "Q181947", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1822, "surface": "арбалет", "lemma": "арбалет", "qid": "Q181947", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1823, "surface": "цзин-ню", "lemma": "цзин-ню", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1826, "surface": "аркбалисты", "lemma": "аркбалиста", "qid": "Q2859613", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Армия империи Хань", "index": 1834, "surface": "гуннов", "lemma": "гунны", "qid": "Q45813", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1856, "surface": "арбалет", "lemma": "арбалет", "qid": "Q181947", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1867, "surface": "гунны", "lemma": "гунны", "qid": "Q45813", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1874, "surface": "арбалет", "lemma": "арбалет", "qid": "Q181947", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1877, "surface": "цай гуань шоу", "lemma": "цай гуань шоу", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1896, "surface": "гуннов", "lemma": "гунны", "qid": "Q45813", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1908, "surface": "клювом", "lemma": "клюв", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1912, "surface": "гунны", "lemma": "гунны", "qid": "Q45813", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1917, "surface": "Chao Cuo", "lemma": "Chao Cuo", "qid": "Q1185798", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 1925, "surface": "многозарядные арбалеты", "lemma": "многозарядный арбалет", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1941, "surface": "Ян Сюань", "lemma": "Ян Сюань", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1948, "surface": "многозарядный арбалет", "lemma": "многозарядный арбалет", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 1958, "surface": "Линглинга", "lemma": "Линглин", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1959, "surface": "Ян Сюань", "lemma": "Ян Сюань", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1971, "surface": "Янг", "lemma": "Ян", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Армия империи Хань", "index": 1982, "surface": "автоматические арбалеты", "lemma": "автоматический арбалет", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 2022, "surface": "повторяющиеся арбалеты", "lemma": "повторяющийся арбалет", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Армия империи Хань", "index": 2065, "surface": "Ralph Sawyer", "lemma": "Ralph Sawyer", "qid": "Q7287136", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Армия империи Хань", "index": 2073, "surface": "Чжугэ Ляну", "lemma": "Чжугэ Лян", "qid": "Q198211", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 0, "surface": "Милид", "lemma": "Милид", "qid": "Q705132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 2, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 3, "surface": "Мелитена", "lemma": "Мелитена", "qid": "Q1101969", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 4, "surface": "Малатья", "lemma": "Малатья", "qid": "Q165995", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 5, "surface": "Мальдия", "lemma": "Мальдия", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 6, "surface": "Милидия", "lemma": "Милидия", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 7, "surface": "Милиде", "lemma": "Милиде", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 9, "surface": "Մելիդ", "lemma": "Մելիդ", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 12, "surface": "Малидия", "lemma": "Малидия", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 15, "surface": "Миддува", "lemma": "Миддува", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 17, "surface": "Мелидду", "lemma": "Мелидду", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 19, "surface": "Мелитеа", "lemma": "Мелитеа", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 21, "surface": "Melitene", "lemma": "Melitene", "qid": "Q1101969", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 22, "surface": "царство Хатти", "lemma": "царство Хатти", "qid": "Q4496560", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 29, "surface": "Тохма", "lemma": "Тохма", "qid": "Q3530391", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 32, "surface": "Евфрата", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 37, "surface": "Армянском нагорье", "lemma": "Армянское нагорье", "qid": "Q211263", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 40, "surface": "Табала", "lemma": "Табал", "qid": "Q727710", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 42, "surface": "царство Камману", "lemma": "царство Камману", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 44, "surface": "Комана", "lemma": "Комана", "qid": "Q868427", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 46, "surface": "Кумману", "lemma": "Кумману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 48, "surface": "Кумманни", "lemma": "Кумманни", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 52, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 60, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 70, "surface": "Тигра", "lemma": "Тигр", "qid": "Q35591", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 78, "surface": "Арслантепе", "lemma": "Арслантепе", "qid": "Q705132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 80, "surface": "Arslantepe Höyüğü", "lemma": "Arslantepe Höyüğü", "qid": "Q705132", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 89, "surface": "Малатья", "lemma": "Малатья", "qid": "Q165995", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 91, "surface": "Турции", "lemma": "Турция", "qid": "Q43", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 95, "surface": "Марсель Делапорт", "lemma": "Марсель Делапорт", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 105, "surface": "Клод Шеффер", "lemma": "Клод Шеффер", "qid": "Q5128825", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 108, "surface": "Пьеро Мериджи", "lemma": "Пьеро Мериджи", "qid": "Q3903300", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 111, "surface": "Сальваторе Пулизи", "lemma": "Сальваторе Пулизи", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 119, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 123, "surface": "армянского народа", "lemma": "армянский народ", "qid": "Q79797", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 125, "surface": "И. М. Дьяконов", "lemma": "И. М. Дьяконов", "qid": "Q447180", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 130, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 132, "surface": "Арме-Шубрия", "lemma": "Арме-Шубрия", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 141, "surface": "Мелитена", "lemma": "Мелитена", "qid": "Q1101969", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 146, "surface": "Малой Армении", "lemma": "Малая Армения", "qid": "Q1148125", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 151, "surface": "Милида", "lemma": "Милид", "qid": "Q705132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 156, "surface": "неолита", "lemma": "неолит", "qid": "Q36422", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 167, "surface": "Крита", "lemma": "Крит", "qid": "Q34374", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 176, "surface": "минойской культуры", "lemma": "минойская культура", "qid": "Q134178", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 182, "surface": "Куро-аракской культуры", "lemma": "Куро-аракская культура", "qid": "Q169349", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 191, "surface": "Арслантепе", "lemma": "Арслантепе", "qid": "Q705132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 194, "surface": "бронзового века", "lemma": "бронзовый век", "qid": "Q11761", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 203, "surface": "Maladiya", "lemma": "Maladiya", "qid": "Q705132", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 204, "surface": "Melid", "lemma": "Melid", "qid": "Q705132", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 205, "surface": "Milid", "lemma": "Milid", "qid": "Q165995", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 207, "surface": "Meliddu", "lemma": "Meliddu", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 219, "surface": "Ишува", "lemma": "Ишува", "qid": "Q1489916", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 229, "surface": "хеттов", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 232, "surface": "Хеттам", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 251, "surface": "Суппилулиумы I", "lemma": "Суппилулиума I", "qid": "Q354903", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 260, "surface": "Вашуканни", "lemma": "Вашуканни", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 263, "surface": "Митанни", "lemma": "Митанни", "qid": "Q178665", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 266, "surface": "Хеттской империи", "lemma": "Хеттская империя", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 270, "surface": "позднехетских царств", "lemma": "позднехетское царство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 280, "surface": "лувийского", "lemma": "лувийцы", "qid": "Q726807", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 282, "surface": "Камману", "lemma": "Камману", "qid": "Q6358817", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 296, "surface": "Хеттской империи", "lemma": "Хеттская империя", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 306, "surface": "Малоазийского Тавра", "lemma": "Малоазийский Тавр", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 309, "surface": "Армянском нагорье", "lemma": "Армянское нагорье", "qid": "Q211263", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 312, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 315, "surface": "Северной Сирии", "lemma": "Северная Сирия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 320, "surface": "хеттов", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 327, "surface": "Новохеттский союз государств", "lemma": "Новохеттский союз государств", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 331, "surface": "Новохеттский союз государств", "lemma": "Новохеттский союз государств", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 336, "surface": "Табал", "lemma": "Табал", "qid": "Q727710", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 337, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 338, "surface": "Куммух", "lemma": "Куммух", "qid": "Q1792017", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 339, "surface": "Коммагена", "lemma": "Коммагена", "qid": "Q332137", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 340, "surface": "Хилакку", "lemma": "Хилакку", "qid": "Q4822699", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 341, "surface": "Киликия", "lemma": "Киликия", "qid": "Q620864", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 342, "surface": "Куэ", "lemma": "Куэ", "qid": "Q823862", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 343, "surface": "Каркемиш", "lemma": "Каркемиш", "qid": "Q283680", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 344, "surface": "Гургум", "lemma": "Гургум", "qid": "Q143737", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 345, "surface": "Арпад", "lemma": "Арпад", "qid": "Q698634", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 346, "surface": "Унки", "lemma": "Унки", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 347, "surface": "Унку", "lemma": "Унку", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 348, "surface": "Паттина", "lemma": "Паттина", "qid": "Q575247", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 349, "surface": "Хаттина", "lemma": "Хаттина", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 350, "surface": "Хатарикка", "lemma": "Хатарикка", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 351, "surface": "Лухути", "lemma": "Лухути", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 352, "surface": "Гузана", "lemma": "Гузана", "qid": "Q904998", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 353, "surface": "Я’уди", "lemma": "Я’уди", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 354, "surface": "Сам’аль", "lemma": "Сам’аль", "qid": "Q1039186", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 355, "surface": "Тил Барсип", "lemma": "Тил Барсип", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 359, "surface": "данунийцев", "lemma": "данунийцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 370, "surface": "Хеттского царства", "lemma": "Хеттское царство", "qid": "Q4496560", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 382, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 387, "surface": "хеттов", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 393, "surface": "Хеттского царства", "lemma": "Хеттское царство", "qid": "Q4496560", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 396, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 400, "surface": "Хатти", "lemma": "Хатти", "qid": "Q4496560", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 402, "surface": "Великой страны хеттов", "lemma": "Великая страна хеттов", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 407, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 417, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 420, "surface": "Хатти", "lemma": "Хатти", "qid": "Q4496560", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 432, "surface": "ассирийцев", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 434, "surface": "урартов", "lemma": "урарты", "qid": "Q4476831", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 441, "surface": "Хатти", "lemma": "Хатти", "qid": "Q4496560", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 445, "surface": "Хате", "lemma": "Хате", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 452, "surface": "Минуи", "lemma": "Минуя", "qid": "Q31812444", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 454, "surface": "Аргишти I", "lemma": "Аргишти I", "qid": "Q317030", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 461, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 461, "surface": "Камману", "lemma": "Камману", "qid": "Q6358817", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 468, "surface": "Евфрата", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 473, "surface": "Фригии", "lemma": "Фригия", "qid": "Q32579", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 474, "surface": "Мушки", "lemma": "Мушки", "qid": "Q1857902", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 483, "surface": "хеттами", "lemma": "хетты", "qid": "Q5406", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 485, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 491, "surface": "Хеттской державы", "lemma": "Хеттская держава", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 500, "surface": "лувийцы", "lemma": "лувийцы", "qid": "Q726807", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 512, "surface": "Хеттской державы", "lemma": "Хеттская держава", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 523, "surface": "Мелида", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 529, "surface": "Арацани", "lemma": "Арацани", "qid": "Q913193", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 534, "surface": "мушки", "lemma": "мушки", "qid": "Q1857902", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 537, "surface": "аримы-урумейцы", "lemma": "аримы-урумейцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 539, "surface": "мушков-фригийцев", "lemma": "мушки-фригийцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 549, "surface": "Малатье", "lemma": "Малатья", "qid": "Q165995", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 552, "surface": "Новохеттских", "lemma": "Новохеттское государство", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 556, "surface": "Хамата", "lemma": "Хамат", "qid": "Q4495225", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 559, "surface": "Оронте", "lemma": "Оронт", "qid": "Q188871", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 561, "surface": "хеттская", "lemma": "хетты", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 564, "surface": "лувийский", "lemma": "лувийцы", "qid": "Q726807", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 574, "surface": "Мелида", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 585, "surface": "Евфрата", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 610, "surface": "позднехеттских", "lemma": "позднехеттское царство", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 613, "surface": "Малой Азии", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 616, "surface": "Северной Сирии", "lemma": "Северная Сирия", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 627, "surface": "Хиларундас", "lemma": "Хиларундас", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 629, "surface": "Тархунази", "lemma": "Тархунази", "qid": "Q23060282", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 632, "surface": "Туате", "lemma": "Туата", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 637, "surface": "Мелида", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 641, "surface": "Лалла", "lemma": "Лалла", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 642, "surface": "Сулумел", "lemma": "Сулумел", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 643, "surface": "Тунге", "lemma": "Тунге", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 644, "surface": "Хиларундас", "lemma": "Хиларундас", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 645, "surface": "Гунзинану", "lemma": "Гунзинану", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 646, "surface": "Тархунази", "lemma": "Тархунази", "qid": "Q23060282", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 653, "surface": "Мелиду", "lemma": "Мелиду", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 660, "surface": "верхнеевфратской", "lemma": "верхнеевфратский", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 672, "surface": "царя", "lemma": "царь", "qid": "Q44356", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 673, "surface": "Тиглатпаласара I", "lemma": "Тиглатпаласар I", "qid": "Q296295", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 685, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 688, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 692, "surface": "ассирийцы", "lemma": "ассирийцы", "qid": "Q745718", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 696, "surface": "Мелиду", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 700, "surface": "Сухму", "lemma": "Сухму", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 707, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 710, "surface": "Араме", "lemma": "Арама", "qid": "Q336087", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 723, "surface": "Евфрата", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 728, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 731, "surface": "Минуи", "lemma": "Минуа", "qid": "Q381947", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 738, "surface": "Минуи", "lemma": "Минуа", "qid": "Q381947", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 743, "surface": "Палу", "lemma": "Палу", "qid": "Q1003910", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 751, "surface": "Цупа", "lemma": "Цупа", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 754, "surface": "Сухму", "lemma": "Сухму", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 756, "surface": "Алзи", "lemma": "Алзи", "qid": "Q450736", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 760, "surface": "«Хеттской страны»", "lemma": "Хеттская страна", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 765, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 772, "surface": "Мелитеа", "lemma": "Мелитеа", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 773, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 777, "surface": "Сардури II", "lemma": "Сардури II", "qid": "Q353497", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 787, "surface": "Урартской державы", "lemma": "Урартская держава", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 793, "surface": "Евфрат", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 795, "surface": "урарты", "lemma": "урарты", "qid": "Q4476831", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 800, "surface": "Сирию", "lemma": "Сирия", "qid": "Q858", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 806, "surface": "Сардури II", "lemma": "Сардури II", "qid": "Q353497", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 810, "surface": "Хиларундасу", "lemma": "Хиларундас", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 812, "surface": "Мелида", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 819, "surface": "Тиглатпаласар III", "lemma": "Тиглатпаласар III", "qid": "Q210074", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 828, "surface": "урартов", "lemma": "урарты", "qid": "Q4476831", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 829, "surface": "Сардури II", "lemma": "Сардури II", "qid": "Q353497", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 839, "surface": "Мелида", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 840, "surface": "Сулумалем", "lemma": "Сулумаль", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 842, "surface": "Куммаха", "lemma": "Куммах", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 843, "surface": "Кушташпи", "lemma": "Кушташпи", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 845, "surface": "Арпада", "lemma": "Арпад", "qid": "Q698634", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 846, "surface": "Матиэлем", "lemma": "Матиэль", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 849, "surface": "Гургума", "lemma": "Гургум", "qid": "Q143737", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 850, "surface": "Тархуларем", "lemma": "Тархулара", "qid": "Q21034025", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 854, "surface": "Арпаде", "lemma": "Арпад", "qid": "Q698634", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 855, "surface": "Тиглатпаласар III", "lemma": "Тиглатпаласар III", "qid": "Q210074", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 860, "surface": "Камману", "lemma": "Камману", "qid": "Q6358817", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 866, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 873, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 883, "surface": "Саргон II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 897, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 903, "surface": "Саргоном II", "lemma": "Саргон II", "qid": "Q208336", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 908, "surface": "наместника", "lemma": "наместник", "qid": "Q13424814", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 919, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 924, "surface": "киммерийцах", "lemma": "киммерийцы", "qid": "Q192730", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 926, "surface": "Передней Азии", "lemma": "Передняя Азия", "qid": "Q27293", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 936, "surface": "Руса II", "lemma": "Руса II", "qid": "Q460078", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 941, "surface": "киммерийцами", "lemma": "киммерийцы", "qid": "Q192730", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 943, "surface": "Лигдамисом", "lemma": "Лигдамис", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 945, "surface": "Тугдамме", "lemma": "Тугдамме", "qid": "Q1264124", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 954, "surface": "Малую Азию", "lemma": "Малая Азия", "qid": "Q51614", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 957, "surface": "Евфрат", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 960, "surface": "Хате", "lemma": "Хате", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 961, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 962, "surface": "Мушки", "lemma": "Мушки", "qid": "Q1857902", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 963, "surface": "Фригию", "lemma": "Фригия", "qid": "Q32579", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 965, "surface": "Халиту", "lemma": "Халиту", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 967, "surface": "халибов-халдайцев", "lemma": "халибы-халдайцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 968, "surface": "Хаг’тик'", "lemma": "Хаг’тик'", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 972, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 974, "surface": "Фригия", "lemma": "Фригия", "qid": "Q32579", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 982, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 993, "surface": "Фригия", "lemma": "Фригия", "qid": "Q32579", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 994, "surface": "Хеттское царство", "lemma": "Хеттское царство", "qid": "Q4496560", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 996, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 999, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1019, "surface": "киликийцев", "lemma": "киликийцы", "qid": "Q620864", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1020, "surface": "табальцев", "lemma": "табальцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1021, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1023, "surface": "Митты", "lemma": "Митта", "qid": "Q26229549", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1025, "surface": "Мидаса", "lemma": "Мидас", "qid": "Q308398", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1038, "surface": "мушками", "lemma": "мушки", "qid": "Q1857902", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1040, "surface": "Арме-Шубрия", "lemma": "Арме-Шубрия", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1051, "surface": "Асархаддоном", "lemma": "Асархаддон", "qid": "Q193912", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1064, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1067, "surface": "Алзи", "lemma": "Алзи", "qid": "Q450736", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1069, "surface": "Евфрат", "lemma": "Евфрат", "qid": "Q34589", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1071, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1083, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1094, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1100, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1109, "surface": "Табала", "lemma": "Табал", "qid": "Q727710", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1139, "surface": "Ассирии", "lemma": "Ассирия", "qid": "Q41137", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1141, "surface": "скифов", "lemma": "скифы", "qid": "Q131802", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1145, "surface": "Вавилонии", "lemma": "Вавилония", "qid": "Q47690", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1147, "surface": "Мидии", "lemma": "Мидия", "qid": "Q20437507", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1162, "surface": "Ману", "lemma": "Мана", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1164, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1166, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1174, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1179, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1183, "surface": "Мелидского царства", "lemma": "Мелидское царство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1188, "surface": "Иезекииля", "lemma": "Иезекииль", "qid": "Q194064", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1190, "surface": "Доме (династии) Тогармы", "lemma": "Дом Тогармы", "qid": null, "span_len": 3, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1197, "surface": "лидийско-мидийской войны", "lemma": "лидийско-мидийская война", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1206, "surface": "Доме Тогармы", "lemma": "Дом Тогармы", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1208, "surface": "Иезекииль", "lemma": "Иезекииль", "qid": "Q194064", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1212, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1214, "surface": "Ксенофонт", "lemma": "Ксенофонт", "qid": "Q129772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1216, "surface": "Мовсес Хоренаци", "lemma": "Мовсес Хоренаци", "qid": "Q365695", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1221, "surface": "Армянское царство", "lemma": "Армянское царство", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1224, "surface": "Тогарма", "lemma": "Тогарма", "qid": "Q1068499", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1227, "surface": "Тегарама", "lemma": "Тегарама", "qid": "Q12400954", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1231, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1234, "surface": "Тегарама", "lemma": "Тегарама", "qid": "Q12400954", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1253, "surface": "Мелида", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1256, "surface": "Тегарамы", "lemma": "Тегарама", "qid": "Q12400954", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1256, "surface": "Тогармы", "lemma": "Тогарма", "qid": "Q1068499", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1263, "surface": "персидская империя", "lemma": "Персидская империя", "qid": "Q83311", "span_len": 2, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1266, "surface": "Ахеменидах", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1274, "surface": "сатрапий", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1276, "surface": "Ахеменидах", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1282, "surface": "XIII сатрапия", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1285, "surface": "Армения", "lemma": "Армения", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1287, "surface": "Армина", "lemma": "Армина", "qid": "Q97659014", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1291, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1292, "surface": "Мелитеа", "lemma": "Мелитеа", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1293, "surface": "вавилоняне", "lemma": "вавилоняне", "qid": "Q797930", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1296, "surface": "XIII (армянскую) сатрапию", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 3, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1299, "surface": "Мелид", "lemma": "Мелид", "qid": "Q1919319", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1300, "surface": "XIII сатрапия", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1302, "surface": "Армения", "lemma": "Армения", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1303, "surface": "Ахеменидского царства", "lemma": "Ахеменидское царство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1308, "surface": "Армянского нагорья", "lemma": "Армянское нагорье", "qid": "Q211263", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1310, "surface": "XVIII сатрапия", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1312, "surface": "Ахеменидского царства", "lemma": "Ахеменидское царство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1319, "surface": "Армянского нагорья", "lemma": "Армянское нагорье", "qid": "Q211263", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1325, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1328, "surface": "сатрапий", "lemma": "сатрапия", "qid": "Q15649504", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1339, "surface": "Ахеменидов", "lemma": "Ахемениды", "qid": "Q13527812", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1363, "surface": "Армения", "lemma": "Армения", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1366, "surface": "Бехистунская надпись", "lemma": "Бехистунская надпись", "qid": "Q180012", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1368, "surface": "Дария I", "lemma": "Дарий I", "qid": "Q44387", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1370, "surface": "Гекатей", "lemma": "Гекатей", "qid": "Q242270", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1371, "surface": "Геродот", "lemma": "Геродот", "qid": "Q26825", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1372, "surface": "Ксенофонт", "lemma": "Ксенофонт", "qid": "Q129772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1383, "surface": "вавилоняне", "lemma": "вавилоняне", "qid": "Q797930", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1385, "surface": "древние евреи", "lemma": "древние евреи", "qid": "Q570868", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1390, "surface": "Армении", "lemma": "Армения", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1392, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1393, "surface": "Арарат", "lemma": "Арарат", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1394, "surface": "Урашту", "lemma": "Урашту", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1396, "surface": "Армения", "lemma": "Армения", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1399, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1404, "surface": "Армения", "lemma": "Армения", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1431, "surface": "Ксенофонт", "lemma": "Ксенофонт", "qid": "Q129772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1436, "surface": "Киропедия", "lemma": "Киропедия", "qid": "Q1145374", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1442, "surface": "Анабасис Кира", "lemma": "Анабасис Кира", "qid": "Q73112", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1453, "surface": "Армянского царства", "lemma": "Армянское царство", "qid": null, "span_len": 2, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1457, "surface": "Мидии", "lemma": "Мидия", "qid": "Q20437507", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1461, "surface": "Ксенофонт", "lemma": "Ксенофонт", "qid": "Q129772", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1465, "surface": "Армении", "lemma": "Армения", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1485, "surface": "Армения", "lemma": "Армения", "qid": "Q208404", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1489, "surface": "Айраратское царство", "lemma": "Айраратское царство", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1491, "surface": "Урартское", "lemma": "Урартское", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1493, "surface": "армянского", "lemma": "армянский", "qid": "Q79797", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1499, "surface": "лувийцев", "lemma": "лувийцы", "qid": "Q726807", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1500, "surface": "урартов", "lemma": "урарты", "qid": "Q4476831", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1501, "surface": "хурритов", "lemma": "хурриты", "qid": "Q190394", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1502, "surface": "палайцев", "lemma": "палайцы", "qid": "Q3889345", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1503, "surface": "мушков", "lemma": "мушки", "qid": "Q1857902", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1504, "surface": "аримов-урумейцев", "lemma": "аримы-урумейцы", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1522, "surface": "Армянского нагорья", "lemma": "Армянское нагорье", "qid": "Q211263", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1524, "surface": "Мелид-Камману", "lemma": "Мелид-Камману", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1525, "surface": "Хате", "lemma": "Хате", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1526, "surface": "Великая Хатти", "lemma": "Великая Хатти", "qid": null, "span_len": 2, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1528, "surface": "Арме-Шубрия", "lemma": "Арме-Шубрия", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1529, "surface": "Урме", "lemma": "Урме", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1530, "surface": "Цупа", "lemma": "Цупа", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1531, "surface": "Ишува", "lemma": "Ишува", "qid": "Q1489916", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1532, "surface": "Исува", "lemma": "Исува", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1533, "surface": "Софена", "lemma": "Софена", "qid": "Q1303676", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1534, "surface": "Алзи", "lemma": "Алзи", "qid": "Q450736", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1535, "surface": "Мушку", "lemma": "Мушку", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1536, "surface": "Тегарама", "lemma": "Тегарама", "qid": "Q12400954", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1537, "surface": "Арматана", "lemma": "Арматана", "qid": "Q11906577", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1538, "surface": "Хайаса", "lemma": "Хайаса", "qid": "Q599590", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1539, "surface": "Табал", "lemma": "Табал", "qid": "Q727710", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1540, "surface": "Этиуни", "lemma": "Этиуни", "qid": "Q20512270", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1541, "surface": "Куммух", "lemma": "Куммух", "qid": "Q1792017", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1542, "surface": "Коммагена", "lemma": "Коммагена", "qid": "Q332137", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1543, "surface": "Кумме", "lemma": "Кумме", "qid": "Q1792004", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1544, "surface": "Хубушкиа", "lemma": "Хубушкиа", "qid": "Q1633698", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1545, "surface": "Айаис", "lemma": "Айаис", "qid": "Q56306492", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1546, "surface": "Сангибуту", "lemma": "Сангибуту", "qid": "Q11946876", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1547, "surface": "Цухма", "lemma": "Цухма", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1548, "surface": "Сухму", "lemma": "Сухму", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1549, "surface": "Пала", "lemma": "Пала", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1551, "surface": "палайцев", "lemma": "палайцы", "qid": "Q3889345", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1552, "surface": "Паххува", "lemma": "Паххува", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1553, "surface": "Пурукуззи", "lemma": "Пурукуззи", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1554, "surface": "Пурулумци", "lemma": "Пурулумци", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1555, "surface": "Наири", "lemma": "Наири", "qid": "Q560342", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1556, "surface": "Уруатру", "lemma": "Уруатру", "qid": null, "span_len": 1, "resolved_by": "no_candidates"}
+{"title": "Арслантепе (Мелид)", "index": 1557, "surface": "Урарту", "lemma": "Урарту", "qid": "Q185068", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1584, "surface": "Малой Армении", "lemma": "Малая Армения", "qid": "Q1148125", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1588, "surface": "Мелитена", "lemma": "Мелитена", "qid": "Q1101969", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1592, "surface": "Манцикерте", "lemma": "Манцикерт", "qid": "Q746811", "span_len": 1, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1598, "surface": "турками-сельджуками", "lemma": "турки-сельджуки", "qid": null, "span_len": 1, "resolved_by": "judge_rejected"}
+{"title": "Арслантепе (Мелид)", "index": 1603, "surface": "Конийский султанат", "lemma": "Конийский султанат", "qid": "Q975405", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1609, "surface": "Османской империей", "lemma": "Османская империя", "qid": "Q12560", "span_len": 2, "resolved_by": "exact_label"}
+{"title": "Арслантепе (Мелид)", "index": 1616, "surface": "геноцида", "lemma": "геноцид", "qid": "Q41397", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1617, "surface": "армян", "lemma": "армяне", "qid": "Q79797", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1620, "surface": "армян", "lemma": "армяне", "qid": "Q79797", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1623, "surface": "энеолитического", "lemma": "энеолит", "qid": "Q130253", "span_len": 1, "resolved_by": "llm_disambiguation"}
+{"title": "Арслантепе (Мелид)", "index": 1632, "surface": "Арслантепе", "lemma": "Арслантепе", "qid": "Q705132", "span_len": 1, "resolved_by": "exact_label"}
