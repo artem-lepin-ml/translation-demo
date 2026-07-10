@@ -87,6 +87,12 @@
 
 ## Отложенная зачистка (финальный шаг, отдельным коммитом ПОСЛЕ приземления deepseek-backfill)
 
+> **ВЫПОЛНЕНО 2026-07-10** (решение владельца: deepseek-backfill отменён — эксперимент
+> переделывается целиком по спеке `2026-07-10-wiki-eval-experiment-v2.md`, блокер исчез).
+> `gt_v2.jsonl` и `gt_v2.jsonl.summary.json` удалены; alias-упоминания в живых
+> tex-комментариях `docs/paper/sections/` обновлены на `gt.jsonl`; `gt_v2_sub20.jsonl`
+> не тронут.
+
 Жёсткое ограничение: `gt_v2.jsonl` держим, пока in-flight deepseek-backfill агент читает его через свой драйвер. Когда backfill приземлится (его прогон завершён, `pred.jsonl`/`meta.json` обновлены, отчёт закрыт):
 
 1. Удалить `data/eval/wiki/gt_v2.jsonl` и `data/eval/wiki/gt_v2.jsonl.summary.json` (их содержимое = каноническому `gt.jsonl`, дубликат больше не нужен; история — в git).
