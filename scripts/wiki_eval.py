@@ -1170,7 +1170,8 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
                      out_dir: str | Path | None = None,
                      skip_titles: frozenset[str] = frozenset(),
                      n_done_start: int = 0,
-                     use_sitelink: bool | None = None) -> tuple[list[dict], dict]:
+                     use_sitelink: bool | None = None,
+                     no_judge: bool = False) -> tuple[list[dict], dict]:
     config = _config_from_bits(bits, use_sitelink=use_sitelink)
     wd = WikidataClient(cache_path=wikidata_cache, network_concurrency=wikidata_workers)
     canonicalize = _canonicalize_fn(wd)
@@ -1213,9 +1214,17 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
     # same "no out_dir -> no artifact I/O" contract as Checkpointer, so
     # tests/ablate-without-persistence paths stay unaffected.
     call_logger = CallLogger(Path(out_dir)) if out_dir is not None else None
-    judge = _build_judge(guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
-                          base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
-                          max_tokens=max_tokens, tracker=tracker, call_logger=call_logger)
+    # --no-judge (NER-extraction-only mode): judge=None makes
+    # LabelFirstGrounding.ground() take its own pre-existing "judge not
+    # configured" branch -- resolved_by=judge_unavailable, no LLM call, no
+    # cost -- while exact-label matches (no ambiguity) and the free Wikidata
+    # candidate search still run exactly as before. See grounding/label_first.py
+    # `if judge is None:` branch; this flag only decides which callable
+    # (real judge vs None) is threaded in, no grounding logic changes.
+    judge = None if no_judge else _build_judge(
+        guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
+        base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
+        max_tokens=max_tokens, tracker=tracker, call_logger=call_logger)
     extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
                                     base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
                                     max_tokens=max_tokens, call_logger=call_logger)
@@ -1289,6 +1298,11 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
             "cache_hits": getattr(wd, "n_cache_hits", 0),
             "seconds": round(getattr(wd, "total_network_seconds", 0.0), 3),
         },
+        # NER-extraction-only mode marker (--no-judge): disclosed in meta.json
+        # so a run dir is self-evidencing about whether judge calls were even
+        # attempted, not just their count (which would read 0 either way if
+        # every mention happened to resolve by exact_label).
+        "no_judge": no_judge,
     }
     return pred_records, counters
 
@@ -1391,6 +1405,7 @@ def cmd_run(args) -> int:
         llm_workers=args.llm_workers, wikidata_cache=args.wikidata_cache,
         wikidata_workers=args.wikidata_workers, use_sitelink=use_sitelink,
         out_dir=out_dir, skip_titles=frozenset(skip_titles), n_done_start=len(skip_titles),
+        no_judge=getattr(args, "no_judge", False),
     )
     finished_at = datetime.now(timezone.utc)
 
@@ -1619,6 +1634,12 @@ def _build_parser() -> argparse.ArgumentParser:
                         help="resume a prior run dir: skip articles already in its "
                              "pred.partial.jsonl (by title), reuse its run_id, and seed the "
                              "budget guard from progress.jsonl's last recorded spend")
+    p_run.add_argument("--no-judge", action="store_true",
+                        help="NER-extraction-only cost mode: never build/call the disambiguation "
+                             "judge (judge=None). Exact-label matches (no ambiguity) and the free "
+                             "Wikidata candidate search still run unchanged; genuinely ambiguous "
+                             "mentions resolve to resolved_by=judge_unavailable instead of an LLM "
+                             "judge call. meta.json's no_judge field discloses this.")
     p_run.set_defaults(func=cmd_run)
 
     p_ablate = sub.add_parser("ablate", help="loop `run` over all 8 configs, sharing the judge cache")

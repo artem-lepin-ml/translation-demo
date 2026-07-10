@@ -87,6 +87,7 @@ def predict_tuples(
                 "index": index,
                 "surface": mention.surface,
                 "lemma": mention.lemma,
+                "category": mention.category,
                 "qid": qid,
                 "span_len": span_len,
                 "resolved_by": resolved_by,
