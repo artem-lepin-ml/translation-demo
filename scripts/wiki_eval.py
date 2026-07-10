@@ -82,6 +82,34 @@ MODEL_PARAMS: dict[str, dict] = {
         "temperature": 1.0, "top_p": 0.95, "top_k": 64,
         "provider_pin": "WandB", "reasoning": {"enabled": True},
     },
+    # 2026-07-10 owner-authorized addition (spec Р1/Р14 amendment,
+    # docs/superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md):
+    # gemma-3-27b-it/qwen3.6-27b are the local sr004 pair in the paper's
+    # Table C plan (sr004-local-eval-runbook.md), routed through OpenRouter
+    # here instead for a separate NER-extraction-only cost run, not a Table C
+    # substitute. Pins probed live via GET /v1/models/{id}/endpoints
+    # (cheapest provider with the best uptime), not from a HF-card vendor
+    # recommendation like the three entries above.
+    "google/gemma-3-27b-it": {
+        # Same Gemma-family vendor sampling as gemma-4-31b-it above (no
+        # separate HF-card probe done for this smaller sibling). Not a
+        # reasoning/thinking model at all -- no "reasoning" key needed or sent.
+        "temperature": 1.0, "top_p": 0.95, "top_k": 64,
+        "provider_pin": "DeepInfra",  # $0.08/$0.16 per Mtok, uptime 99.8%+ (cheapest + most reliable of 5 probed)
+    },
+    "qwen/qwen3.6-27b": {
+        "temperature": 1.0, "top_p": None, "top_k": None,
+        "provider_pin": "Io Net",  # $0.285/$2.40 per Mtok, uptime 99.97% (cheapest + most reliable of 6 probed)
+        # Hybrid-thinking model, reasons by default (docs/runbooks/
+        # sr004-local-eval-runbook.md: "hybrid thinking model that reasons by
+        # default unless a request sets it off"). The local vLLM runbook uses
+        # chat_template_kwargs.enable_thinking=false, not available through
+        # OpenRouter's normalized API; reasoning:{"enabled": false} is the
+        # only lever this transport offers, and it IS honored here (probed
+        # live 2026-07-10: reasoning_tokens=0 on a real extraction-shaped
+        # call via Io Net, unlike gemini's enabled/effort split above).
+        "reasoning": {"enabled": False},
+    },
 }
 
 
@@ -151,6 +179,18 @@ def _resolve_route(model: str | None = None, provider: str | None = None,
         order = provider_field.get("order") or []
         gate_pin = order[0] if order else None
 
+    # expect_reasoning (2026-07-10, qwen3.6-27b amendment): a "reasoning" key
+    # being present does NOT by itself mean reasoning should ignite -- a
+    # request can deliberately ask for it OFF (reasoning={"enabled": False},
+    # qwen3.6-27b's MODEL_PARAMS entry, the only lever OpenRouter's
+    # normalized API offers to suppress a hybrid-thinking model's default-on
+    # reasoning). The Р13 gate ("reasoning didn't ignite") must only fire
+    # when reasoning was actually asked for, not when it was asked to be
+    # off and correctly stayed off -- reasoning_tokens=0 in that case is the
+    # CORRECT, expected outcome, not a gate violation.
+    reasoning_field = effective_extra_body.get("reasoning")
+    expect_reasoning = bool(reasoning_field) and reasoning_field.get("enabled") is not False
+
     return {
         "model": model,
         "base_url": resolved_base_url,
@@ -160,7 +200,7 @@ def _resolve_route(model: str | None = None, provider: str | None = None,
         "max_tokens": resolved_max_tokens,
         "extra_body": effective_extra_body,
         "provider_pin": gate_pin,
-        "expect_reasoning": "reasoning" in effective_extra_body,
+        "expect_reasoning": expect_reasoning,
     }
 
 

@@ -338,6 +338,46 @@ def test_resolve_route_expect_reasoning_reflects_effective_extra_body():
     assert wiki_eval._resolve_route("some/unknown-model")["expect_reasoning"] is False
 
 
+# ── 2026-07-10 amendment: gemma-3-27b-it/qwen3.6-27b added to MODEL_PARAMS
+# (OpenRouter routing, owner-authorized per docs/superpowers/specs/
+# 2026-07-10-wiki-eval-experiment-v2.md Р1/Р14 amendment) ──────────────────
+
+def test_resolve_route_gemma_3_27b_it_model_params_defaults():
+    route = wiki_eval._resolve_route("google/gemma-3-27b-it")
+    assert route["temperature"] == 1.0
+    assert route["top_p"] == 0.95
+    assert route["extra_body"]["top_k"] == 64
+    assert route["provider_pin"] == "DeepInfra"
+    # Not a reasoning/thinking model -- no "reasoning" key sent at all.
+    assert "reasoning" not in route["extra_body"]
+    assert route["expect_reasoning"] is False
+
+
+def test_resolve_route_qwen3_6_27b_model_params_defaults():
+    route = wiki_eval._resolve_route("qwen/qwen3.6-27b")
+    assert route["temperature"] == 1.0
+    assert route["provider_pin"] == "Io Net"
+    assert route["extra_body"]["reasoning"] == {"enabled": False}
+
+
+def test_resolve_route_reasoning_explicitly_disabled_does_not_expect_ignition():
+    """qwen3.6-27b's reasoning:{"enabled": False} must NOT set
+    expect_reasoning=True -- reasoning_tokens=0 is the correct, intended
+    outcome for an explicit off-request, not a Р13 gate violation (unlike
+    deepseek/gemini/gemma-4-31b-it's reasoning-ON pins, which DO still expect
+    ignition -- see test_resolve_route_model_params_defaults_land_in_route)."""
+    route = wiki_eval._resolve_route("qwen/qwen3.6-27b")
+    assert route["expect_reasoning"] is False
+
+    # Same holds for an ad-hoc CLI --extra-body reasoning-off override on any
+    # model, not just the one MODEL_PARAMS entry that happens to use it.
+    route2 = wiki_eval._resolve_route(
+        "deepseek/deepseek-v4-flash", extra_body={"reasoning": {"enabled": False}},
+    )
+    assert route2["extra_body"]["reasoning"] == {"enabled": False}
+    assert route2["expect_reasoning"] is False
+
+
 # ── exception hierarchy (spec Р15) ──────────────────────────────────────────
 
 
@@ -420,6 +460,18 @@ def test_gate_reply_provider_none_skips_pin_gate():
     ungated."""
     reply = _reply(provider=None)
     wiki_eval._gate_reply(reply, kind="extract", model="m", pin="Novita",
+                           expect_reasoning=False, context="ctx")  # no raise
+
+
+def test_gate_reply_reasoning_explicitly_off_and_zero_tokens_passes():
+    """2026-07-10 qwen3.6-27b amendment: expect_reasoning=False (as
+    _resolve_route now correctly computes for an explicit reasoning-off
+    request, see test_resolve_route_reasoning_explicitly_disabled_does_not_
+    expect_ignition) must not raise even though reasoning_tokens == 0 --
+    that's the correct, intended outcome for a deliberate off-request, not a
+    Р13 gate violation."""
+    reply = _reply(reasoning_tokens=0)
+    wiki_eval._gate_reply(reply, kind="extract", model="qwen/qwen3.6-27b", pin="Io Net",
                            expect_reasoning=False, context="ctx")  # no raise
 
 
