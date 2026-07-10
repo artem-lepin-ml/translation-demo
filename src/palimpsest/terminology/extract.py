@@ -48,8 +48,10 @@ The classes below define the scope of the task with examples. They are
 not an exhaustive list.
 <categories>
 - person      — persons: Хаммурапи, Саргон, Кадашман-Харбе
-- place       — cities/countries/rivers/regions, incl. archaeological
-                sites and tombs: Лагаш, Евфрат, Вавилония, Арслантепе
+- place       — cities/countries/rivers/regions, incl. multiword
+                geographic names, archaeological sites and tombs: Лагаш,
+                Евфрат, Вавилония, Арслантепе, Иранское нагорье,
+                Пиренейский полуостров
 - people      — peoples/tribes/ethnic groups (often lowercase): амореи, кутии, касситы, шумеры
 - title       — titles/offices/administrative units (often lowercase): лугаль, энси, претор, ном
 - social      — social strata (lowercase): авилум, мушкенум, вардум
@@ -71,7 +73,9 @@ not an exhaustive list.
   продовольствия», «военное дело», «малая семья»). Extract only the
   established term inside, if there is one.
 - Standalone adjectives and verbs (докерамический, доземледельческий,
-  завоёванный).
+  завоёванный). This applies ONLY to an adjective on its own: an adjective
+  that is part of a multiword proper name is extracted with the whole name
+  («Иранское нагорье», «Великая Китайская стена»).
 - Standalone dates, years, numbers.
 - Principle: extract CONCRETE terms (names, titles, peoples, social strata,
   institutions, cultures), not general concepts. If it is a general word
@@ -82,16 +86,29 @@ not an exhaustive list.
 - surface is the EXACT substring from <source>, in the form and case it has
   in the text (for example «Лагаше», not «Лагаш»). Do NOT normalize, do NOT
   translate, do NOT invent.
+- Grammatical case is NEVER a reason to skip: a name in ANY case is
+  extracted («Ганнибала», «Спартой», «Лидии» are as extractable as
+  «Ганнибал», «Спарта», «Лидия»). The lemma restores the nominative.
+- Extract EVERY name in coordinated lists and comparisons: in «воевал с
+  Лидией, Карией и Ликией» all three are extracted, not just the first or
+  the most prominent one.
+- Do not skip a mention because the same entity already appeared in
+  another form: «Дарий» and «Дария» are different surfaces — output both.
 - lemma is the agreed NOMINATIVE form of the term: for a single word, the
   nominative case («Лагаше» → «Лагаш»); for a phrase, ALL words agree in
   the nominative («династии Цин» → «династия Цин», «авилумов» → «авилум»).
   If surface is already in the nominative, lemma equals surface.
-- One record per UNIQUE surface (do not duplicate repeats).
+- One record per UNIQUE surface (deduplicate only literally identical
+  surface strings; different case forms are different surfaces).
 
-## Good example
+## Good examples
 <example>
 <source>В Лагаше, одном из номов, правитель-лугаль опирался на авилумов, тогда как амореи наступали с запада.</source>
 <output>[{"surface":"Лагаше","lemma":"Лагаш"},{"surface":"номов","lemma":"ном"},{"surface":"лугаль","lemma":"лугаль"},{"surface":"авилумов","lemma":"авилум"},{"surface":"амореи","lemma":"амореи"}]</output>
+</example>
+<example>
+<source>Дарий прошёл через Иранское нагорье и подчинил Лидию, Карию и Ликию; позднее сатрапы Дария управляли Лидией из Сард.</source>
+<output>[{"surface":"Дарий","lemma":"Дарий"},{"surface":"Иранское нагорье","lemma":"Иранское нагорье"},{"surface":"Лидию","lemma":"Лидия"},{"surface":"Карию","lemma":"Кария"},{"surface":"Ликию","lemma":"Ликия"},{"surface":"сатрапы","lemma":"сатрап"},{"surface":"Дария","lemma":"Дарий"},{"surface":"Лидией","lemma":"Лидия"},{"surface":"Сард","lemma":"Сарды"}]</output>
 </example>
 
 ## Bad example (do NOT do this)

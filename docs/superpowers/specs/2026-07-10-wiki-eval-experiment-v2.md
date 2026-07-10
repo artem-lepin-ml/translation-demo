@@ -68,6 +68,8 @@ named/terms — [eval-metrics-terminology.tex](../../paper/sections/eval-metrics
 
 **SYSTEM** (неизменяемая часть; `{{source}}` в system не входит):
 
+> [AMENDED 2026-07-10, post-pilot owner decision: the NER prompt was strengthened after the 64-miss span-level review — oblique case forms are never skipped, coordinated lists extract every member, multiword geographic names are extracted whole, one new invented few-shot example. Code is the SSOT: src/palimpsest/terminology/extract.py::NER_SYSTEM_PROMPT. Pilot runs before this note used the original v2 prompt text below; comparability of future runs with the 2026-07-10 pilot is affected.]
+
 ```
 ## Role
 You are a source-criticism historian and linguist. You annotate Russian
