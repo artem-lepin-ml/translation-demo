@@ -46,7 +46,11 @@ Bring the repo to a **clean fixed state before the next expensive full runs**: v
 suffixes survive on our own artifacts (files, identifiers, schema names) **only where 2+
 versions genuinely coexist live** in the demo/pipeline; otherwise the current artifact
 goes unversioned and the retired predecessor is left to git history. Ship a durable guard
-so the recurrence (a fresh `foo_v2.py`) is caught at introduction time.
+so the recurrence (a fresh `foo_v2.py`) is caught at introduction time — a Claude-Code
+PreToolUse hook (§ C9) that covers commits made through Claude-Code sessions only, NOT
+owner-shell/CI commits — and remove fully-dead predecessor code discovered by the same audit
+(the unlabeled translation/judge scaffold), so the fixed state is clean of both stale names and
+dead lanes.
 
 ## Naming principles (the vocabulary this spec applies)
 
@@ -77,8 +81,17 @@ dead-artifact deletion, one live doc-parity bug fix, and the durable guard.
 
 1. Full `pytest` green after **every** commit (each commit is self-contained: code + tests +
    active docs together — Hard Invariant 2).
-2. The 3 wiki-eval regression anchors pass with **byte-identical** pinned numbers
-   (112, 756, 3078/808/1526/3886, 5358) — de-versioning perturbs no numeric literal `[V]`.
+2. The 3 wiki-eval regression anchors continue to pass unmodified after de-versioning. The
+   **authoritative check** is C2's identifier-token-only `git diff -U0` on the test file (shows
+   NO numeric-literal churn) plus a green full `pytest` run — de-versioning perturbs no numeric
+   literal. The pinned values below are **informational cross-reference only**, verified against
+   `tests/test_wiki_metrics_v3.py` at HEAD as of this amendment: `n_ambiguous_gold_units` = 112,
+   `n_gold_mentions_dropped_by_tier` = 764, `named` class tp/fn/fp/gold_units = 3078/807/1526/3885,
+   total `gold_units` (named+term) = 5351.
+   **Warning:** these numbers drift independently of this spec (concurrent gold-corpus commits on
+   this branch change them) — an implementing agent must NEVER edit the pinned numbers in the test
+   file to match this list, and must NEVER edit this list to "fix" an observed mismatch; the only
+   sanctioned pass criterion is the diff-shows-no-numeric-churn + suite-green check above.
 3. Live-tree grep for each retired identifier/filename returns 0 outside the allowlist:
    `aggregate_corpus_v3`, `render_html_v3`, `_v3_cell_td`, `_V3_CLASS_LABELS`,
    `test_wiki_metrics_v3`, `methodology_draft`, `selection_v2`, `titles_v2`,
@@ -86,15 +99,39 @@ dead-artifact deletion, one live doc-parity bug fix, and the durable guard.
    `palimpsest.pipeline|palimpsest.evaluation|palimpsest.config|from_model_config`.
 4. C8 repo-wide `v[0-9]` sweep: every survivor is on the § C8 allowlist; no un-listed residue.
 5. The durable guard (C9) is installed and green; never bypassed (`--no-verify` forbidden).
+6. `git diff --name-only <pre-C1 base>..HEAD -- reports/ external/ docs/reports/
+   docs/experiments/ docs/paper/snapshots/ docs/superpowers/specs/ docs/superpowers/plans/`
+   returns ONLY this spec file itself (its own verify-spec amendments are the sanctioned
+   exception) — a mechanical immutability gate over the whole branch range.
 
 ---
 
 ## The plan — atomic commits (each suite-green; code + tests + active docs together)
 
-**Immutability rule applied throughout:** dated specs/plans/tickets and everything under
-`docs/reports/`, `docs/experiments/`, `docs/paper/snapshots/`, `reports/`, `external/` are
-append-only / never edited — a fresh commit supersedes a dated spec's recommendation, it
-does not rewrite it.
+**Line-anchor drift note (read first):** every `:NNN` line anchor in this document was verified
+against HEAD at synthesis time but MAY have drifted since due to concurrent commits on this
+branch — e.g. `scripts/wiki_eval.py`'s `aggregate_corpus_v3` call site alone already drifted from
+the cited `:1545` to `:1577` (+32) by amendment time, verified against HEAD. Implementing agents
+MUST locate each edit by TOKEN MATCH (`rg` on the identifier/string quoted in the bullet), not by
+trusting the line number — treat every `:NNN` as a hint, not a coordinate.
+
+**Immutability rule — canonical exclusion set (defined ONCE here; every per-commit Verify grep
+below references it as "exclusions per § Immutability rule" instead of restating a subset):**
+`reports/`, `external/`, `docs/reports/`, `docs/experiments/`, `docs/paper/snapshots/`, dated
+`docs/superpowers/{specs,plans}/`, and `docs/handoff-*.md` session notes. These are append-only /
+never edited — a fresh commit supersedes a dated spec's recommendation, it does not rewrite it.
+
+**Branch & worktree:** commits in this plan land on the harness-designated session branch
+`claude/ner-translation-config-b0ozsc` (owner-directed session branch; supersedes the
+`feat/<topic>` convention for this session's work — deviation from CLAUDE.md § Task isolation
+explicitly noted), with serial execution on the main working tree per the Autonomy resolution
+above (no worktree fan-out).
+
+**Pytest collection baseline:** record `pytest --collect-only -q | tail -1` once before landing
+C1; every commit's Verify step compares the collected-item count against the expected delta for
+that commit (0 for pure renames; **−2 files** at C7 for the 2 deleted test files; C9's synthetic
+`foo_v2.py` verification file is created and removed within C9's own Verify step and is excluded
+from the baseline collection count).
 
 ### C1 — `fix(paper): correct wiki-eval protocol label v2→v3` · [S · Lane A, first · within-mandate]
 Pure doc-parity bug, independent of every rename.
@@ -102,7 +139,10 @@ Pure doc-parity bug, independent of every rename.
   `[V]` this file describes the identical set-based document-level formalism that
   `table-c-grounding.tex:2` ("PROTOCOL v3") and every other active doc names v3; and it IS
   the methodology-prose SSOT that `metrics.py`/`report.py` docstrings point at.
-- **Verify:** `rg -n "PROTOCOL v2" docs/paper/sections` → 0; the two active `.tex` agree.
+- **Verify:** `rg -n "PROTOCOL v2" docs/paper/sections` → 0; `rg -n "PROTOCOL v3"
+  docs/paper/sections/eval-metrics-terminology.tex docs/paper/sections/table-c-grounding.tex`
+  matches in BOTH files (concrete both-match check, replaces the vaguer "the two active .tex
+  agree").
 - **Overleaf flag (loud):** co-author text (§3.1); owner's uploaded copy may diverge — list the
   edited line in the report and courtesy-confirm with the paper co-author (non-blocking).
 
@@ -121,15 +161,20 @@ de-version ONLY the code-identifier tokens.
 - `scripts/wiki_eval.py`: `:1494` comment, `:1522`, `:1545` call sites.
 - `data/eval/wiki/cleanup/tools/replay_analysis.py`: `:115` call + `:147/:197/:202` comments;
   `enumerate_misses.py`: `:104` comment (`M.aggregate_corpus_v3` → `M.aggregate_corpus`). `[V]`
-- **Tests:** `git mv tests/test_wiki_metrics_v3.py tests/test_wiki_metrics.py`; update the
-  `aggregate_corpus_v3` call sites (12) + module/class docstrings; **KEEP** `test_protocol_key_present`
-  and its `result["protocol"] == "v3"` assertion (`:149`) UNCHANGED; keep every pinned regression
-  number byte-identical. `[V]`
+- **Tests:** `git mv tests/test_wiki_metrics_v3.py tests/test_wiki_metrics.py`; update
+  `aggregate_corpus_v3` → `aggregate_corpus` throughout — **10 call sites + 1 import + 2
+  docstring/comment mentions** (verified count `[V]`, not the earlier "(12)" estimate) + the
+  module/class docstrings; **KEEP** `test_protocol_key_present` and its
+  `result["protocol"] == "v3"` assertion (`:149`) UNCHANGED; keep every pinned regression number
+  byte-identical. `[V]`
 - `tests/test_wiki_report.py`: `render_html_v3` → `render_html` import + 5 call sites;
   `test_render_html_v3_*` → `test_render_html_*` (5 fns); **KEEP** the protocol fixture assertion
   (`:28`).
 - `tests/test_wiki_eval_runner.py`: `test_cmd_report_writes_v3_metrics_*` → drop `_v3` from the
-  function NAME; **KEEP** the `metrics["protocol"] == "v3"` assertion (`:2180`).
+  function NAME; **KEEP** the `metrics["protocol"] == "v3"` assertion (`:2180`). Note: this file
+  also carries a stray old-filename comment ("tests in test_wiki_metrics_v3.py", `~:2246`,
+  verified `[V]`) — no separate edit needed, it is caught by C2's own `test_wiki_metrics_v3` grep
+  gate below.
 - **Active docs (same commit):**
   - `docs/stages/wiki-eval.md`: `:35, :37, :66, :73, :93` (identifier tokens); **KEEP** all
     "protocol-v3"/"Protocol v3" methodology prose. (`:125` drift banner handled in C3.) `[V]`
@@ -139,11 +184,12 @@ de-version ONLY the code-identifier tokens.
     `test_wiki_metrics.py`); **KEEP** the `% PROTOCOL v3` header. `[V]`
   - **NOT in C2:** `docs/runbooks/sr004-local-eval-runbook.md` — `[V]` zero code-identifier
     hits; it carries only "protocol v3" prose (keep). (Conventions §6 over-listed it.)
-- **Verify:** full `pytest` green; the 3 regression anchors pass with unchanged numbers;
+- **Verify:** full `pytest` green; the 3 regression anchors pass with unchanged numbers (see
+  Success Criterion 2 — informational cross-reference only, NOT the pass criterion);
   `rg -n "aggregate_corpus_v3|render_html_v3|_v3_cell_td|_V3_CLASS_LABELS|test_wiki_metrics_v3"`
-  over live tree = 0 (allowlist: `docs/reports/**`, `reports/**`, dated
-  `docs/superpowers/{specs,plans}/**`); **identifier-token-only** `git diff -U0` on
-  `test_wiki_metrics.py` shows NO numeric-literal churn (R1 guard).
+  over live tree = 0 (exclusions per § Immutability rule); **identifier-token-only** `git diff -U0`
+  on `test_wiki_metrics.py` shows NO numeric-literal churn (R1 guard) — this diff check, not the
+  pinned numbers, is the authoritative regression gate.
 - **Overleaf flag:** `table-c-grounding.tex` edited.
 
 ### C3 — `refactor(evaluation): delete dead methodology_draft` · [S · Lane A, serial after C2 · within-mandate]
@@ -172,21 +218,32 @@ de-version ONLY the code-identifier tokens.
   `:17, :21, :23`), `docs/paper/sections/appendix-wiki-corpus.tex` (`:2-3` header comment),
   `docs/runbooks/sr004-local-eval-runbook.md:346` (`head -10 … titles_v2.txt`),
   `data/eval/wiki/README.md` (`:45` `titles_*.txt` → `titles.txt`, `:56`, `:57`). `[V]`
-- **Verify:** `titles.txt`=100 lines / `selection.json`=810 lines, content byte-identical to the
-  pre-`mv` files; `python scripts/export_wiki_corpus.py --help` path resolution OK; `pytest` green;
-  `rg -n "selection_v2|titles_v2"` live tree = 0.
+- **Verify:** `titles.txt`=100 lines / `selection.json`=810 lines; `sha256sum` before (on
+  `titles_v2.txt`/`selection_v2.json`) and after (on `titles.txt`/`selection.json`) match —
+  content byte-identical across the `git mv`; `python scripts/export_wiki_corpus.py --help` path
+  resolution OK; `pytest` green; `rg -n "selection_v2|titles_v2"` live tree (exclusions per §
+  Immutability rule) = 0.
 - **Overleaf flag:** `appendix-wiki-corpus.tex` edited.
 - **Atomicity:** `titles.txt` is a live pipeline input → data + code rename MUST be one commit.
 - **Do NOT touch** `data/eval/wiki/pilot_articles.json` — `[V]` it is a LIVE OUTPUT of
   `export_wiki_corpus.py:304` (documented `:17`), not a corpus-selection artifact and not dead.
 
 ### C5 — `chore(wiki-corpus): delete retired pilot/subset corpus artifacts` · [S · Lane A, serial after C4 · OWNER-GATE(gt_v2_sub20)]
+- **BEFORE deleting `gt_v2_sub20.jsonl`:** extract its 20 `"title"` fields into a new committed
+  `data/eval/wiki/titles_ablation20.txt` (`title<TAB>stratum` format — the source records carry a
+  `stratum` field `[V]`; else one title per line if a future source lacks it). The file's header
+  comment notes it was preserved from `gt_v2_sub20.jsonl` for byte-rebuild via
+  `wiki_eval.py build-gt --titles`. Same commit as the deletion below.
 - `git rm data/eval/wiki/{gt_v2_sub20.jsonl,titles_pilot20.txt,gt_pilot.jsonl}`. `[V]` all three
   on disk; grep of `scripts/`,`src/`,`tests/`,`cleanup/tools/` = 0 code readers.
 - `docs/runbooks/sr004-local-eval-runbook.md` `:343, :465`: reword the two lines that treat
-  `gt_v2_sub20.jsonl` as a usable shortcut → point at the `wiki_eval.py build-gt` fresh
-  derivation already documented in the same runbook. `[V]`
-- **Verify:** `pytest` green; `rg -n "gt_v2_sub20|titles_pilot20|gt_pilot\.jsonl"` live tree = 0.
+  `gt_v2_sub20.jsonl` as a usable shortcut. **Correction:** the runbook's documented `build-gt`
+  recipe (no `--titles` flag) derives a DIFFERENT subset than the deleted file — it is NOT a
+  faithful substitute. Point these two lines at the new `titles_ablation20.txt` +
+  `wiki_eval.py build-gt --titles titles_ablation20.txt` instead — THAT is the faithful
+  re-derivation path for the exact deleted 20-title subset. `[V]`
+- **Verify:** `pytest` green; `rg -n "gt_v2_sub20|titles_pilot20|gt_pilot\.jsonl"` live tree
+  (exclusions per § Immutability rule) = 0.
   Note: the `gt_pilot` LOCAL VAR in `replay_analysis.py`/`enumerate_misses.py` is a different
   token (in-memory slice of `gt_all`) — do NOT flag it.
 - **OWNER-GATE:** `gt_v2_sub20.jsonl` deletion contradicts the committed
@@ -205,9 +262,11 @@ de-version ONLY the code-identifier tokens.
   (`:327` def, `:448` call); **KEEP** the `"v": 1` output field (`:352`). `[V]`
   - **Do NOT touch** `:355` `"golden": {"version": "terminology_gold.jsonl"}` — `[V]` it names the
     MERGED OUTPUT, not the renamed source; no `v[0-9]` pattern, unaffected by this rename.
-- **Verify:** `python scripts/merge_goldens.py` produces byte-identical `data/seed/terminology_gold.jsonl`
-  (99 lines); `eval_grounding.py` import/help OK; `pytest` green;
-  `rg -n "terminology_gold_v1|_metrics_v1"` live tree = 0.
+- **Verify:** `sha256sum` before (`terminology_gold_v1.jsonl`) and after (`terminology_gold_manual.jsonl`)
+  match — content byte-identical across the `git mv`; `python scripts/merge_goldens.py` produces
+  byte-identical `data/seed/terminology_gold.jsonl` (99 lines); `eval_grounding.py` import/help OK;
+  `pytest` green; `rg -n "terminology_gold_v1|_metrics_v1"` live tree (exclusions per §
+  Immutability rule) = 0.
 - **OWNER-GATE (low stakes):** confirm the target name `terminology_gold_manual.jsonl` (both draft
   lenses recommend `_manual`).
 - Disjoint file set from Lane A → parallel lane.
@@ -229,22 +288,27 @@ COMPLETE, so this atomic set is suite-green.
 - **`README.md:53`** — update `configs/  YAML: pipeline.yaml, models.yaml` to reflect that
   `configs/` now holds only `bouquet_judges.yaml`. `[V]` **DOC-PARITY EDIT BOTH DRAFTS MISSED.**
 - **Verify:** full `pytest` green **minus** the 2 deleted test files (expect a collected-count DROP,
-  not failures); `python -c "import palimpsest.webapp.app"` smoke; a webapp evaluate smoke; `rg -n
+  not failures); `python -c "import palimpsest.webapp.app"` smoke; `uv run pytest tests/ -k
+  "webapp" -q` (implementing agent confirms the actual test-selection expression collects >0 items
+  and reports the count — no live-server curl required for this repo-only commit); `rg -n
   "palimpsest\.pipeline|palimpsest\.evaluation|palimpsest\.config|from_model_config"` live tree
-  (excl `external/`, `docs/reports/`, dated specs) = 0.
+  (exclusions per § Immutability rule) = 0.
 - **OWNER-GATE:** (1) module-level deletion that *looks* load-bearing — confirm "reference scaffold
   to keep, or dead?" (argued: dead). (2) `[V]` `docs/stages/translation-eval.md`'s
   `configs/models.yaml` references are for **Danil's sr004 clone** of `external/gse-translation`
   (its own config loader — the doc links `from_model_config` to
   `external/gse-translation/src/palimpsest/llm/client.py`), NOT the repo file the dead scaffold
-  reads. Owner-confirm this reading so the LIVE runbook needs no edit; if wrong, a
-  `translation-eval.md` doc-parity edit is also required in this commit.
+  reads (two independent reviewers already re-verified this sr004-clone reading as correct).
+  Implementing agent verifies during C7 (per Autonomy resolution): if translation-eval.md's
+  models.yaml references turn out to be the repo file rather than the sr004 external clone, add
+  the runbook parity edit to this same commit — no owner step.
 - Serial after C6; the ONE commit that edits the live LLM client — flag loudly.
 
-### C8 — `chore: v[0-9] residue sweep + allowlist` · (gate, not a code commit) · [S · after both lanes merge]
-`rg -n "v[0-9]"` over the live tree, EXCLUDING `reports/`, `external/`, `docs/reports/`,
-`docs/experiments/`, `docs/paper/snapshots/`, and dated `docs/superpowers/{specs,plans}/`. Every
-remaining hit must be on the allowlist below, else it is residue to fix before declaring clean.
+### C8 — `chore: v[0-9] residue sweep + allowlist` · (HUMAN-TRIAGED gate, not pure pass/fail; not a code commit) · [S · after both lanes merge]
+`rg -n "v[0-9]"` over the live tree, exclusions per § Immutability rule. Every remaining hit must
+be on the allowlist below, else it is residue flagged for HUMAN TRIAGE before declaring clean —
+this gate is judgment-based, not automated pass/fail: a hit that is neither an obvious allowlist
+match nor obvious residue is surfaced to the owner rather than silently resolved either way.
 
 **Unified allowlist of legitimate survivors (must NOT be flagged) — merge of both drafts:**
 1. `CHRONO_P31_VERSION = "chrono_p31_v1"` (wiki_gt.py) + the surviving `gt.jsonl` records (100
@@ -255,15 +319,17 @@ remaining hit must be on the allowlist below, else it is residue to fix before d
    the "Protocol v3" docstring naming — methodology self-description (J-PROTO, RESOLVED KEEP).
 4. "protocol v3"/"PROTOCOL v3" methodology PROSE: wiki-eval.md, paper-state.md,
    table-c-grounding.tex, eval-metrics-terminology.tex (post-C1), sr004 runbook.
-5. External API strings: `openrouter.ai/api/v1`, `localhost:8001/v1`, `sk-or-v1-…`,
-   the `${OPENROUTER_BASE_URL}`/`base_url: …/api/v1` literal — third-party contract.
+5. External API strings: `openrouter.ai/api/v1`, `sk-or-v1-…`, the
+   `${OPENROUTER_BASE_URL}`/`base_url: …/api/v1` literal — third-party contract (the
+   `localhost:8001/v1` literal moved to the pattern-based item 24 below).
 6. `USER_AGENT="palimpsest-llm/1.0"`, `__version__="0.1.0"`, frontend `package.json "0.0.0"`,
    `.mcp.json @latest` — packaging/UA slots.
 7. `rev-4`/`rev-5` contract revisions (webapp.md, README, known_issues.md, demo-contracts) — coexist live in prod DB.
 8. `v1_core3` vendored prompt dir + `external/…/prompts/03_scoring/{v1,v2,universal,_legacy}` +
    `external/…/configs/scoring/*-v1-*.yaml`/`*-v2-*.yaml` — 5 coexisting variants; `external/` read-only.
-9. `bouquet_judges.yaml` dotted model names (`gpt-5.5`, `claude-opus-4.8`, `gemini-3.1-*`,
-   `qwen3.6-27b`, `deepseek-v4-flash`, …) — multiple judges run simultaneously (Table A).
+9. Dotted/hyphenated third-party model names anywhere in the live tree (`gpt-5.5`,
+   `claude-opus-4.8`, `gemini-3.1-*`, `qwen3.6-27b`, `deepseek-v4-flash`, …) — multiple judges run
+   simultaneously (Table A).
 10. `wiki_eval.py --config` ids (`111`/`001`/`000`) — 3-bit ablation flags.
 11. Tier keys `R-T0/R-T1/R-T2`; cleanup `wave1`/`wave2-4`/`wave5-7`/`wave8-10`/`replacements` +
     `overrides_wave{1,2}.json`/`overrides_replacements.json` — disjoint batches read together.
@@ -280,6 +346,15 @@ remaining hit must be on the allowlist below, else it is residue to fix before d
     filename (no `vN`; listed to prevent a false edit).
 20. `data/eval/wiki/pilot_articles.json` — LIVE output of `export_wiki_corpus.py` (verified live).
 21. `G6`/`G1-G5`, `P1/P2/P3` strategy codenames; `C1/C5`, `S1-S6` aspect-ids — not the `vN` pattern.
+22. SVG path-data `v<digit>` commands (e.g. `v12`, `v-4`) inside `frontend/src` component
+    markup — SVG path syntax, not a version suffix.
+23. Opaque test-fixture strings, e.g. `tests/test_revision_history.py` `"v2"`/`"v3"` placeholder
+    payloads — fixture data values, not identifiers to de-version.
+24. `localhost:\d+/v1` as a PATTERN (replaces the single-port `localhost:8001/v1` literal
+    previously in item 5) — third-party API contract, the port varies by environment.
+25. Prose citations of the external v1/v2 scoring-prompt lineage at
+    `src/palimpsest/webapp/seed.py:27` and `src/palimpsest/webapp/judge.py:17` — external-prompt
+    provenance, same class as items 3-4/8.
 
 ### C9 — `chore: durable de-versioning guard (convention + allowlist + advisory hook)` · [S · after C8 · OWNER-GATE(blocking flip)]
 The durable guard the owner asked for (§ finding-unknowns W6→next map).
@@ -288,28 +363,30 @@ The durable guard the owner asked for (§ finding-unknowns W6→next map).
    dotted model names, external-API `/vN`, `rev-N` contract revisions and serialized schema tags
    are exempt. Allowlist: `.claude/allowlist-versioned.txt`."* Single source of truth.
 2. **`.claude/allowlist-versioned.txt`** — new file seeded from the C8 allowlist above.
-3. **Scoped staged-diff grep in the existing `.claude/hooks/` chain (advisory first):** operate on
-   the STAGED DIFF only; match only (a) newly-added file paths matching `_v[0-9]`/`V[0-9]` under
-   owned dirs (`src/`, `scripts/`, `data/`, `frontend/src/`, `configs/`); (b) newly-added definition
-   lines `^(def|class|[A-Z0-9_]+ *=).*_v[0-9]` in those dirs. Skip prose, dotted decimals (`\d\.\d`),
-   `api/v1`, `rev-`, `wave-`, and anything on the allowlist. Reuse the existing hook infra; do NOT
-   add a new CI system.
+3. **Claude-Code PreToolUse hook (advisory first):** `.claude/hooks/no-new-version-suffix.py`,
+   wired via a Bash matcher entry in `.claude/settings.json` that intercepts `git commit` tool
+   calls. Operates on the STAGED DIFF only; match only (a) newly-added file paths matching
+   `_v[0-9]`/`V[0-9]` under owned dirs (`src/`, `scripts/`, `data/`, `frontend/src/`, `configs/`);
+   (b) newly-added definition lines `^(def|class|[A-Z0-9_]+ *=).*_v[0-9]` in those dirs. Skip
+   prose, dotted decimals (`\d\.\d`), `api/v1`, `rev-`, `wave-`, and anything on the allowlist.
+   Reuse the existing `.claude/hooks/` infra; do NOT add a new CI system.
+   **Scope caveat:** a PreToolUse hook fires only inside Claude-Code sessions — this covers
+   commits made through Claude-Code sessions ONLY, NOT owner-shell or CI commits. Repo-wide git
+   pre-commit coverage is a possible future step, owner's call — out of scope here.
+- **Verify:** stage a synthetic `src/palimpsest/foo_v2.py` → hook warns; stage a file containing
+  the allowlisted token `chrono_p31_v1` → silent (no warning); unstage/remove the synthetic file;
+  full `pytest` green.
 - **OWNER-GATE:** run advisory (warn-only) for ~1 week to tune the allowlist from real diffs, THEN
-  the owner approves the flip to blocking. Never `--no-verify` around it (Hard Invariant 1).
+  the owner approves the flip to blocking. The hook must never be disabled/bypassed; Hard
+  Invariant 1 applies to whatever hook chain exists.
 
 ---
 
-## Execution order + two-lane parallelization (nproc=4 → Workflow cap = min(16, 4−2) = 2)
+## Execution order
 
-**(superseded by the Autonomy resolution: serial A→B on the main tree)**
-
-```
-Lane A (serial, own worktree):  C1 → C2 → C3 → C4 → C5
-Lane B (serial, own worktree):  C6 → C7
-   run Lane A and Lane B as the TWO concurrent background worktrees (matches the cap;
-   do NOT fan wider — a 3rd lane would just serialize behind the cap)
-after both merge to feat/de-versioning:  C8 (sweep gate) → C9 (durable guard)
-```
+Execution is **serial A→B on the main working tree**, per the Autonomy resolution above (§
+Autonomy resolution, "Execution mode amendment") — no worktree fan-out, no parallel lanes:
+`C1 → C2 → C3 → C4 → C5` then `C6 → C7`, then the closing gate/guard `C8 → C9`.
 
 `[V]` **Lane file sets are disjoint** — Lane A: metrics.py, report.py, wiki_eval.py, the two
 cleanup tools, the three wiki test files, wiki-eval.md, table-c-grounding.tex,
@@ -389,8 +466,10 @@ are retracted.
 | R7 | `gt_v2_sub20` resurrection trap (C5) | anyone reviving from history | deletion removes the footgun; runbook reworded | `git revert`/checkout if a real need appears |
 | R8 | shared-doc conflict across lanes | wiki-eval.md, sr004 runbook | lanes disjoint + Lane A serial on these docs | standard rebase, confined to Lane A |
 | R9 | `external/gse-translation` false alarm | none | external has its OWN `palimpsest.config`; `external/` is immutable | avoided by construction |
-| R10 | `configs/*.yaml` doc-parity (C7) — **new** | README.md + sr004 runbook | `README.md:53` edited same commit; owner-confirm translation-eval.md's models.yaml is the external sr004 clone | if it's the repo file, add a translation-eval.md edit to C7 |
-| R11 | renaming `aggregate_corpus_*` touches the live Table C harness — **new** | paper runs may be pending | do C2 in the gap BETWEEN full runs (mandate's "clean fixed state before expensive runs"); confirm no run mid-flight | defer C2 until the in-flight run lands |
+| R10 | `configs/*.yaml` doc-parity (C7) | README.md + sr004 runbook | `README.md:53` edited same commit; implementing agent verifies translation-eval.md's models.yaml is the external sr004 clone during C7 (resolved, no owner step — § C7 OWNER-GATE bullet 2) | if it's the repo file, add a translation-eval.md edit to C7 |
+| R11 | renaming `aggregate_corpus_*` touches the live Table C harness | paper runs may be pending | do C2 in the gap BETWEEN full runs (mandate's "clean fixed state before expensive runs"); resolved per the Autonomy resolution — NER extraction may run concurrently, C2 lands before any scoring run | defer C2 until the in-flight run lands |
+| R12 | `terminology_gold_v1.jsonl → terminology_gold_manual.jsonl` rename (C6) | gold-source readers | `sha256sum` before/after equality on the renamed file (C6 Verify) | `git mv` back + 2-line revert |
+| R13 | C9 advisory hook: excess false positives during the ~1 week trial | developer friction, alert fatigue | observed false-positive rate against real diffs during the advisory trial week | remove the `.claude/settings.json` matcher entry + delete `.claude/hooks/no-new-version-suffix.py` |
 
 **Top-3 (raw):** R1 (perturbing pinned numbers), R2 (scaffold delete hits the live LLM client),
 R4 (`.tex` collides with the owner's Overleaf — flag line-by-line, never silent).
@@ -419,14 +498,27 @@ R4 (`.tex` collides with the owner's Overleaf — flag line-by-line, never silen
 
 ---
 
-## Open questions (for the owner)
+## Open questions
 
-- **J-SUB20 / J-SCAF / J-GOLD name / J-A11 / J-V1C3 / J-DOCX / J-SEED** — the OWNER-GATE rows above.
-- **`configs/models.yaml` provenance (R10):** confirm `docs/stages/translation-eval.md`'s
-  `configs/models.yaml` references are the sr004 external-clone file (not the repo file), so C7
-  needs no runbook edit.
-- **Table C run timing (R11):** confirm no expensive full run is mid-flight when C2 lands; if one is,
-  sequence C2 into the gap after it.
-- **`.tex` co-author confirm (C1):** 30-second courtesy check that `eval-metrics-terminology.tex:15`
-  "v2" is a stale label, not a distinct "paper protocol v2" numbering (formalism match is unambiguous).
-- **`pages/` cache + guard blocking flip** — owner-optional / owner-timed, per the rows above.
+**Resolved & executing (FYI in the final owner report, non-blocking):** the Autonomy resolution
+(2026-07-10, top of this doc) already resolved these OWNER-GATE items for immediate execution —
+each is FYI'd to the owner in the final report rather than blocking on a reply.
+- **J-SUB20** — `gt_v2_sub20.jsonl` deletion (C5); courtesy heads-up only.
+- **J-SCAF** — scaffold deletion (C7), including the `client.py` dead-import strip and the
+  `README.md:53` parity edit.
+- **J-GOLD** — target name `terminology_gold_manual.jsonl` (C6).
+- **J-A11** — `audit_prompt_v11.md` KEPT (provenance artifact); owner may de-number later.
+- **R10** — `configs/models.yaml` provenance: implementing agent verifies during C7 (per Autonomy
+  resolution) rather than waiting on an owner confirm — see the C7 OWNER-GATE bullet 2.
+- **R11** — Table C run timing: resolved per the Autonomy resolution above (NER extraction may run
+  concurrently; C2 lands before any scoring run is invoked).
+- **`.tex` co-author confirm (C1)** — courtesy-confirm with the paper co-author happens alongside
+  landing C1 that "v2" is a stale label, not a distinct paper numbering; non-blocking, flagged in
+  the final report (R4).
+
+**Genuinely open (no action in this spec):**
+- **J-V1C3** — `v1_core3` vendored dir name; `VENDORED.md` boundary-breach escalation.
+- **J-DOCX** — `report-ru-v3.md`/`-v4.docx` external numbering reconciliation.
+- **J-SEED** — `seed_prompt_variant="v2"` rename (deferred to a future forced reseed).
+- **`pages/` cache hygiene** (`data/eval/wiki/pages/`) — owner-optional follow-on, out of scope.
+- **C9 blocking flip** — advisory→blocking hook flip stays with the owner (J-GUARD), owner-timed.
