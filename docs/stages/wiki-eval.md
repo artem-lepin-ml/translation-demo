@@ -111,6 +111,12 @@ python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl \
 - **Resilience retries (2026-07-05, qwen-run incident).** `_build_extract_fn`/`_build_judge` retry at `RESILIENT_ATTEMPTS=6`/`RESILIENT_BACKOFF=(1,3,9,20,40,60)` via `_complete_with_slot`, which holds the `llm_semaphore` slot only during each network attempt, releasing it during backoff sleep. If a call is still TRANSIENT-failing after that: extraction tolerates the paragraph as zero mentions (counted via `FailureTracker.record_failed_paragraph`); the judge closure lets the exception propagate into `LabelFirstGrounding.ground()`'s `judge_unavailable` catch-all (counted via `FailureTracker.record_failed_judge_call`). A `FatalGroundingJudgeError` (Р15 halt marker) is checked BEFORE the transient/deterministic split and is never tolerated this way — see Per-call gates above.
 - **Per-article checkpointing + `--resume` (2026-07-06, container-restart incident).** `run`'s output dir is created at the START of the invocation; `Checkpointer` appends each completed article's records to `pred.partial.jsonl` and a progress line to `progress.jsonl` the instant that article's worker finishes. `run --resume <run_dir>` reuses that dir/`run_id`, skips already-done titles (never re-billed), seeds a fresh `BudgetGuard` from `progress.jsonl`'s last recorded spend, and merges old+new records replaying `gt.jsonl`'s article order.
 
+## Analysis tools
+
+Offline, no-LLM-call `data/eval/wiki/cleanup/tools/` scripts for ad hoc analysis outside the `wiki_eval.py` CLI (gold-cleanup campaign tools: [data/eval/wiki/README.md](../../data/eval/wiki/README.md)):
+
+- [`search_miss_analysis.py`](../../data/eval/wiki/cleanup/tools/search_miss_analysis.py) — classifies each effective-gold entity's outcome (`not_extracted`/`no_candidates`/`retrieval_miss`/`candidates_hit`) from a run's per-mention `candidates` field, reusing `aggregate_corpus`'s tier-filter/gold-unit-grouping protocol.
+
 ## Status
 
 Modules + CLI implemented; unit tests green. Corpus selection committed (100 titles, 10 sections, 5 manually replaced 2026-07-10 — see Corpus above); canonical `gt.jsonl` = 100 articles / 7 658 GT tuples.
