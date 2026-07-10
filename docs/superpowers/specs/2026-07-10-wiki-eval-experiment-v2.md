@@ -43,12 +43,13 @@ named/terms — [eval-metrics-terminology.tex](../../paper/sections/eval-metrics
 
 | # | Решение |
 |---|---|
-| Р1 | Переделываем **2 модели: gemini-3.1-flash-lite и deepseek-v4-flash**. GPT-5.4 пока НЕ переделываем — его строка в Table C остаётся `---`. |
+| Р1 | Облачные прогоны: **2 модели — gemini-3.1-flash-lite и deepseek-v4-flash**. **GPT-5.4 исключён из эксперимента полностью** (решение владельца 2026-07-10): не гоним и не покажем — строка удаляется из Table C. Локальная тройка — по обновлённому runbook (Р12). |
 | Р2 | **Оба прогона через стандартный OpenRouter** (`https://openrouter.ai/api/v1`), ключ владельца из env; НЕ через `OPENROUTER_BASE_URL`-гейтвей. Ключ после сессии ротируется. |
-| Р3 | Параметры генерации: `max_tokens=20000` (обе роли), `temperature=0.7`, если модель её принимает (проверить живой пробой; при отказе — дефолт модели, с записью в meta). |
+| Р3 | Параметры генерации: `max_tokens=20000` (обе роли), `temperature=0.7` — **вопрос закрыт живой проверкой 2026-07-10** (см. § 4.6): обе модели заявляют `temperature` в `supported_parameters` OpenRouter и honоруют её поведенчески; HF-карточка DeepSeek-V4-Flash рекомендует 1.0/1.0 — берём 0.7 осознанно ниже, консистентно с Hyperparameters-секцией статьи. Для deepseek обязателен провайдер-пин и явное отключение reasoning с проверкой `reasoning_tokens == 0` (проба поймала провайдеров с reasoning-по-умолчанию и пустым content при малом капе). |
 | Р4 | Контекст судьи = **полное предложение** с упоминанием. `CONTEXT_PAD` удаляется из кода и документации полностью. |
 | Р5 | NER-промпт переводится на английский (примеры остаются русскими), неизменяемая часть уходит в system prompt. Домен: «ancient history» без перечня глав. Задача: извлекать все имена собственные и термины. |
-| Р6 | Категории — **примеры, а не закрытый список**; добавляются `deity`, `work`, `religion`; описание `place` расширяется археологическими памятниками. Харнес больше не обнуляет категории вне списка. |
+| Р6 | Категорий в СХЕМЕ ВЫВОДА больше нет (решение владельца 2026-07-10: детерминированно категория нигде не используется — только косметический бейдж в демо; следствие для демо принято). Схема вывода: `{surface, lemma}`. Блок категорий в промпте остаётся как **определение объёма задачи** («What to extract (examples)»), с добавленными `deity`, `work`, `religion` и расширенным `place`. |
+| Р12 | **Runbook локальных прогонов** ([sr004-local-eval-runbook.md](../../runbooks/sr004-local-eval-runbook.md)) обновляется этой же спекой: новый EN-промпт с system/user-разбивкой, схема `{surface, lemma}`, `temperature=0.7` / `max_tokens=20000` (vLLM-эквиваленты), контекст-предложение, v3-скоринг команды, снос `--p3`. Локальная тройка гонится по тем же параметрам, что облачная пара — иначе строки таблицы несравнимы. |
 | Р7 | У судьи Role + контракт вывода переезжают в system prompt; в user — только данные (surface, lemma, полное предложение, кандидаты). |
 | Р8 | Пер-вызовная наблюдаемость обязательна: `finish_reason`, prompt/completion/reasoning tokens, фактический served provider, эффективный `extra_body`, стоимость — в run-артефакты. |
 | Р9 | Label-credit precision (`P_label`/P3/`label_exists`) выброшена из статьи и удаляется из кода. Метрики статьи: сетовые `R_doc`/`P_doc` со сплитом named/terms (протокол v3). |
@@ -75,9 +76,9 @@ capitalization. Russian writes entire classes of important terms in
 LOWERCASE (peoples, titles, social strata). Extract them as carefully as
 capitalized names. This is the main goal of the annotation.
 
-## Categories (examples)
-These categories are examples, not an exhaustive list. Use the closest
-one, or a short lowercase label of your own if none fits.
+## What to extract (examples)
+The classes below define the scope of the task with examples. They are
+not an exhaustive list.
 <categories>
 - person      — persons: Хаммурапи, Саргон, Кадашман-Харбе
 - place       — cities/countries/rivers/regions, incl. archaeological
@@ -123,19 +124,19 @@ one, or a short lowercase label of your own if none fits.
 ## Good example
 <example>
 <source>В Лагаше, одном из номов, правитель-лугаль опирался на авилумов, тогда как амореи наступали с запада.</source>
-<output>[{"surface":"Лагаше","lemma":"Лагаш","category":"place"},{"surface":"номов","lemma":"ном","category":"title"},{"surface":"лугаль","lemma":"лугаль","category":"title"},{"surface":"авилумов","lemma":"авилум","category":"social"},{"surface":"амореи","lemma":"амореи","category":"people"}]</output>
+<output>[{"surface":"Лагаше","lemma":"Лагаш"},{"surface":"номов","lemma":"ном"},{"surface":"лугаль","lemma":"лугаль"},{"surface":"авилумов","lemma":"авилум"},{"surface":"амореи","lemma":"амореи"}]</output>
 </example>
 
 ## Bad example (do NOT do this)
 <bad_example>
 <source>В Лагаше правитель опирался на воинов.</source>
-<bad_output>[{"surface":"правитель","lemma":"правитель","category":"title"},{"surface":"воинов","lemma":"воин","category":"people"},{"surface":"Lagash","lemma":"Lagash","category":"place"}]</bad_output>
+<bad_output>[{"surface":"правитель","lemma":"правитель"},{"surface":"воинов","lemma":"воин"},{"surface":"Lagash","lemma":"Lagash"}]</bad_output>
 <why_bad>«правитель» and «воинов» are ordinary words, not terms. «Lagash» is a translation, while surface must be the Russian substring «Лагаше».</why_bad>
 </bad_example>
 
 ## Output format
-A JSON array of {surface, lemma, category} objects only. No explanations
-and no markdown fences.
+A JSON array of {surface, lemma} objects only. No explanations and no
+markdown fences.
 ```
 
 **USER:** `<source>\n{{source}}\n</source>` — и ничего больше.
@@ -213,9 +214,12 @@ Reask-система сохраняется как корректирующая 
    сокращения и упоминание в первом/последнем предложении абзаца.
 
 ### 4.4 Категории (Р6)
-10. `validate_surfaces` сохраняет категорию как есть (trim + lower), без
-    обнуления вне `CATEGORIES`; `CATEGORIES` остаётся как документированный
-    список примеров, не фильтр.
+10. Поле `category` удаляется из схемы вывода и парсинга (`parse_surfaces`
+    ждёт `{surface, lemma}`; category-ветка `validate_surfaces` и константа
+    `CATEGORIES` удаляются из eval-пути). Поле `TermMention.category`
+    остаётся для legacy demo-сида, в новых извлечениях оно `None` —
+    следствие: категория-бейдж в TermPopover/Glossary пустеет для новых
+    извлечений (принято владельцем, Р6).
 
 ### 4.5 Метрики v3 в продакшн (Р9)
 11. Новый агрегатор в `evaluation/metrics.py` (или `metrics_v3.py`):
@@ -233,10 +237,35 @@ Reask-система сохраняется как корректирующая 
     `docs/experiments/.../drafts/` в `data/eval/wiki/` (данные фильтра —
     рядом с gold).
 
+### 4.6 Резолюция вопроса temperature (проверено живьём 2026-07-10)
+
+- OpenRouter `/models`: обе модели заявляют `temperature` в
+  `supported_parameters`; `max_completion_tokens` = 65536 (наш 20000
+  влезает).
+- Поведенческая проба (5 вызовов на модель, один промпт):
+  gemini-3.1-flash-lite через Google AI Studio — при T=0.7 ответы
+  варьируются, при T=0 два вызова побайтно идентичны → температура
+  применяется; deepseek-v4-flash на route `auto` — ответы меняются, но
+  вперемешку с провайдер-вариативностью (GMICloud/Novita/Venice/Alibaba),
+  причём **Venice и Alibaba вернули `finish_reason=length` с пустым
+  content** (reasoning-по-умолчанию съел малый кап пробы) — живое
+  подтверждение и reasoning-трапа, и необходимости пина.
+- HF-карточка [deepseek-ai/DeepSeek-V4-Flash](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash):
+  «For local deployment, we recommend setting the sampling parameters to
+  temperature = 1.0, top_p = 1.0» (единая рекомендация для всех режимов).
+  0.7 — осознанно консервативнее вендорской рекомендации и совпадает с
+  Hyperparameters-секцией статьи.
+- Итог: **temperature=0.7 обеим моделям**; deepseek — пин провайдера
+  (выбор на пилоте из стабильных: GMICloud/Novita показали чистый stop)
+  через `provider: {order: [...], allow_fallbacks: false}` + `reasoning`
+  выключен явно, гейт `reasoning_tokens == 0` на каждом вызове.
+
 ## 5. План прогона
 
-1. **Пробы (до пилота, копеечные):** temperature-проба обеих моделей;
-   схема провайдер-пина на OR; smoke 3 реальных вызова на роль.
+1. **Пробы (до пилота, копеечные):** temperature-проба обеих моделей —
+   ВЫПОЛНЕНА (§ 4.6); схема провайдер-пина на OR — проверить
+   `provider: {order, allow_fallbacks}` одним вызовом; smoke 3 реальных
+   вызова на роль.
 2. **Пилот: 10 статей, gemini.** Гейты: `finish_reason=length` = 0 после
    ретраев; `n_extraction_parse_failures` < 1% абзацев; экстраполяция
    стоимости на 2×100 статей ≤ $10 (иначе стоп и доклад).
@@ -275,9 +304,13 @@ Reask-система сохраняется как корректирующая 
   предсказания» не задет; `pred.jsonl` всех прогонов остаются.)
 - **UPDATE доки:** `docs/stages/wiki-eval.md` (переписать под v3 + новые
   промпты/параметры), `docs/paper/paper-state.md` (сейчас дрейфует — v2
-  нарратив при v3 tex), `docs/runbooks/sr004-local-eval-runbook.md`
-  (убрать `--p3`, новые параметры для локальной тройки),
-  `docs/known_issues.md` (резолюции + новая запись про finish_reason).
+  нарратив при v3 tex), `docs/known_issues.md` (резолюции + новая запись
+  про finish_reason).
+- **UPDATE runbook (Р12):** `docs/runbooks/sr004-local-eval-runbook.md` —
+  полная ревизия Table C части: команды с новым промптом (system/user),
+  схемой `{surface, lemma}`, `temperature=0.7`/`max_tokens=20000` в
+  vLLM-эквивалентах, контекст-предложением и v3-скорингом; `--p3` и
+  P_label-шаги удаляются; пилот-гейт (10 статей) тот же, что у облачных.
 - **ARCHIVE-BANNER:** `docs/experiments/2026-07-05-model-comparison/drafts/`
   прозовые файлы («paper-section-en-final.md» и др.) получают баннер
   «superseded by docs/paper/sections/ (protocol v3)».
@@ -287,15 +320,18 @@ Reask-система сохраняется как корректирующая 
 
 - Appendix-фигуры обоих промптов в template-виде (стиль `\begin{prompt}`
   как у translation-промпта; NER-промпт содержит worked example внутри).
-- Table C: заполнение строк Gemini/DeepSeek новыми числами v2-прогонов;
-  строка GPT-5.4 остаётся `---` (Р1).
+- Table C: **5 строк** (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B,
+  Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash); строка GPT-5.4 удаляется
+  (Р1); облачная пара заполняется числами v2-прогонов, локальная тройка —
+  после sr004.
 - §5.1 findings переписываются от новых чисел (сплит named vs terms —
   главный финдинг; разложение recall на покрытие извлечения × точность
   grounding — кандидат второго, пересчитать на новых данных).
 
 ## 9. Вне области действия
 
-- Прогон GPT-5.4 (Р1, решение владельца «пока не делай»).
+- GPT-5.4: исключён из эксперимента полностью (Р1) — ни прогона, ни строки
+  в таблице.
 - Локальная тройка (Qwen3-4B / Gemma-3-27B / Qwen3.6-27B) — на sr004 по
   обновлённому раннбуку, вне этой спеки.
 - Table A/B (BOUQUET-судьи, refinement) — не затрагиваются.

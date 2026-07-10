@@ -12,11 +12,9 @@
 % of the table for paper-clean look:
 %   gemini named R [.797-.822] P [.652-.678]; term R [.382-.431] P [.442-.496]
 %   deepseek named R [.694-.722] P [.666-.694]; term R [.357-.406] P [.471-.528]
-% DeepSeek row = PRE-BACKFILL values (108 lost paragraphs are being
-% backfilled via OpenRouter as of 2026-07-10 ~06:20Z); refresh both cells
-% from the post-backfill recompute before submission.
-% GPT-5.4 row pending: 100/100 completion in flight, then the same
-% set-based split recompute.
+% GPT-5.4 removed entirely (owner decision 2026-07-10: excluded from the
+% experiment, no run and no row). Cloud rows await the experiment-v2 redo
+% (spec docs/superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md).
 \begin{table}[t]
 \centering
 \small
@@ -32,11 +30,11 @@ Model & $R_{\mathrm{doc}}$ & $P_{\mathrm{doc}}$ & $R_{\mathrm{doc}}$ & $P_{\math
 Qwen3-4B-Instruct     & --- & --- & --- & --- \\
 Gemma-3-27B-it        & --- & --- & --- & --- \\
 Qwen3.6-27B           & --- & --- & --- & --- \\
+% TODO(experiment v2, spec 2026-07-10-wiki-eval-experiment-v2.md): both cloud
+% rows below are PRE-REDO values (Russian prompt, 4k truncation, +-40-char
+% judge context) and will be REPLACED by the v2-run numbers before submission.
 Gemini-3.1-Flash-Lite & 0.810 & 0.665 & 0.406 & 0.469 \\
-% TODO(backfill in flight): refresh from post-backfill set-based recompute.
 DeepSeek-V4-Flash     & 0.708 & 0.680 & 0.381 & 0.499 \\
-% TODO(100/100 completion in flight): fill from set-based recompute.
-GPT-5.4               & --- & --- & --- & --- \\
 \bottomrule
 \end{tabular}
 \caption{Terminology recognition and Wikidata grounding on the 100 articles
