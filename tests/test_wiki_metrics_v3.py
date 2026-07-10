@@ -11,7 +11,11 @@ from pathlib import Path
 
 import pytest
 
-from palimpsest.terminology.evaluation.metrics import aggregate_corpus_v3
+from palimpsest.terminology.evaluation.metrics import (
+    UNDERPOWERED_THRESHOLD,
+    _cell,
+    aggregate_corpus_v3,
+)
 
 REPO = Path(__file__).resolve().parents[1]
 GT_PATH = REPO / "data/eval/wiki/gt.jsonl"
@@ -143,6 +147,28 @@ def test_cell_shape_has_wilson_ci_keys():
 def test_protocol_key_present():
     result = aggregate_corpus_v3([], tier_assignment={})
     assert result["protocol"] == "v3"
+
+
+# ── _cell: shared Wilson-CI primitive, retained from the retired            #
+# mention-level aggregator (moved here from test_wiki_metrics.py, which was #
+# deleted along with the mention-level protocol it tested, spec §7).        #
+
+
+def test_cell_underpowered_below_threshold():
+    cell = _cell(5, UNDERPOWERED_THRESHOLD - 1)
+    assert cell["underpowered"] is True
+
+
+def test_cell_not_underpowered_at_threshold():
+    cell = _cell(5, UNDERPOWERED_THRESHOLD)
+    assert cell["underpowered"] is False
+
+
+def test_cell_zero_total_is_uninformative_not_a_crash():
+    cell = _cell(0, 0)
+    assert cell["total"] == 0
+    assert cell["matched"] == 0
+    assert cell["value"] is None
 
 
 # ---------------------------------------------------------------------------

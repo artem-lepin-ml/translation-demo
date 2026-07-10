@@ -1,14 +1,14 @@
 """Dark-theme HTML report + EN methodology draft for wiki-eval (W5).
 
-``render_html`` turns a ``metrics.aggregate``-shaped dict into an HTML
-fragment (project report palette, Tokyo Night dark, inline CSS only) showing
-recall (3 modes), precision (P1/P2 unsliced, P3 only inside the
-``resolved_by`` slice per spec Sec.4, plus the "P3\\exact" headline cell when
-``metrics["precision"]`` carries a ``"p3_ex"`` key — see
-``evaluation.metrics.aggregate_corpus``'s ``label_exists`` parameter), and
-the stratum/resolved_by/type slice tables with raw n + Wilson CI; cells
-below the underpowered threshold (``metrics.UNDERPOWERED_THRESHOLD``, n<30)
-are greyed and flagged.
+``render_html_v3`` turns a ``metrics.aggregate_corpus_v3``-shaped dict into
+an HTML fragment (project report palette, Tokyo Night dark, inline CSS
+only) showing document-level R_doc/P_doc per class (named/term) with raw
+counts + Wilson CI; cells below the underpowered threshold
+(``metrics.UNDERPOWERED_THRESHOLD``, n<30) are greyed and flagged. Protocol
+v3 is the only protocol rendered here (wiki-eval experiment v2, spec
+2026-07-10-wiki-eval-experiment-v2.md Р9/§7) — the mention-level recall/
+precision/slice renderer this module used to carry was retired along with
+``evaluation.metrics``'s mention-level aggregator.
 
 ``methodology_draft`` returns the EN paper-draft paragraph verbatim, per the
 project's "preserve chat formulations" convention. Canonical copy also in
@@ -17,14 +17,6 @@ docs/stages/wiki-eval.md § Methodology; keep byte-identical.
 from __future__ import annotations
 
 import html as _html
-
-MODE_LABELS = {"m1": "M1 strict", "m2": "M2 span-overlap", "m3": "M3 document"}
-PRECISION_LABELS = {
-    "p1": "P1 base",
-    "p2": "P2 unique-word",
-    "p3": "P3 label-justified",
-    "p3_ex": "P3 label-justified (excl. exact-label path)",
-}
 
 
 def _fmt_value(cell: dict) -> str:
@@ -41,60 +33,6 @@ def _fmt_ci(cell: dict) -> str:
 
 def _cell_class(cell: dict) -> str:
     return "cell underpowered" if cell.get("underpowered") else "cell"
-
-def _cell_td(cell: dict) -> str:
-    flag = ' <span class="flag">underpowered n&lt;30</span>' if cell.get("underpowered") else ""
-    return (
-        f'<td class="{_cell_class(cell)}">'
-        f"{_fmt_value(cell)}"
-        f'<div class="n">n={cell["total"]} matched={cell["matched"]} ci={_fmt_ci(cell)}{flag}</div>'
-        f"</td>"
-    )
-
-
-def _recall_table(recall: dict, *, title: str) -> str:
-    rows = "".join(
-        f"<tr><td>{MODE_LABELS.get(mode, mode)}</td>{_cell_td(recall[mode])}</tr>"
-        for mode in ("m1", "m2", "m3")
-        if mode in recall
-    )
-    return (
-        f"<h3>{_html.escape(title)}</h3>"
-        '<table class="metrics"><thead><tr><th>mode</th><th>recall</th></tr></thead>'
-        f"<tbody>{rows}</tbody></table>"
-    )
-
-
-def _precision_table(precision: dict, *, title: str) -> str:
-    rows = "".join(
-        f"<tr><td>{PRECISION_LABELS.get(variant, variant)}</td>{_cell_td(precision[variant])}</tr>"
-        for variant in ("p1", "p2", "p3", "p3_ex")
-        if variant in precision
-    )
-    return (
-        f"<h3>{_html.escape(title)}</h3>"
-        '<table class="metrics"><thead><tr><th>variant</th><th>precision</th></tr></thead>'
-        f"<tbody>{rows}</tbody></table>"
-    )
-
-
-def _slice_section(axis: str, axis_slices: dict) -> str:
-    parts = [f'<h2>Slice: {_html.escape(axis)}</h2>']
-    for value, slice_result in sorted(axis_slices.items()):
-        parts.append(f'<div class="slice-block">')
-        parts.append(f"<h3>{_html.escape(axis)} = {_html.escape(str(value))}</h3>")
-        parts.append(_recall_table(slice_result.get("recall", {}), title="Recall"))
-        precision = slice_result.get("precision", {})
-        if precision:
-            note = ""
-            if axis == "resolved_by":
-                note = (
-                    '<p class="note">P3 is reported only inside this resolved_by slice '
-                    "(tautological on exact_label by construction, spec Sec.4).</p>"
-                )
-            parts.append(note + _precision_table(precision, title="Precision"))
-        parts.append("</div>")
-    return "".join(parts)
 
 
 _CSS = """
@@ -119,51 +57,6 @@ _CSS = """
 .wiki-eval-report .slice-block{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0}
 .wiki-eval-report .note{color:var(--mut);font-size:12.5px;margin:4px 0}
 """
-
-
-def render_html(metrics: dict, meta: dict) -> str:
-    """Render the wiki-eval metrics report as a self-contained HTML fragment.
-
-    ``metrics`` is shaped like ``evaluation.metrics.aggregate``'s output:
-    ``{"recall": {...}, "precision": {...}, "slices": {"stratum": ..., "resolved_by": ..., "type": ...}}``.
-    ``meta`` carries run identity (``run_id``, ``config``, article/tuple counts).
-    Never raises on an empty (n=0) or underpowered (n<30) cell — both render
-    as ``n/a`` / a greyed, flagged cell rather than crashing.
-    """
-    parts = [f"<style>{_CSS}</style>", '<div class="wiki-eval-report">']
-    parts.append("<h1>Wiki-eval report</h1>")
-    parts.append(
-        '<div class="meta">'
-        f'config <code>{_html.escape(str(meta.get("config", "?")))}</code> · '
-        f'run_id <code>{_html.escape(str(meta.get("run_id", "?")))}</code> · '
-        f'{_html.escape(str(meta.get("n_articles", "?")))} articles · '
-        f'{_html.escape(str(meta.get("n_gt_tuples", "?")))} GT tuples · '
-        f'generated {_html.escape(str(meta.get("generated_at", "?")))}'
-        "</div>"
-    )
-
-    parts.append("<h2>Overall</h2>")
-    parts.append(_recall_table(metrics.get("recall", {}), title="Recall (primary metric)"))
-    precision = metrics.get("precision", {})
-    precision_title = "Precision (P1/P2, unsliced)"
-    precision_note = ""
-    if "p3_ex" in precision:
-        precision_title = "Precision (P1/P2 unsliced; P3\\exact headline)"
-        precision_note = (
-            '<p class="note">P3\\exact = label-justified precision over every prediction '
-            "EXCEPT those resolved via exact_label (that path is tautologically justified "
-            "by construction, spec Sec.4); the denominator excludes exact-label predictions, "
-            "so this headline is not tautological.</p>"
-        )
-    parts.append(precision_note + _precision_table(precision, title=precision_title))
-
-    slices = metrics.get("slices", {})
-    for axis in ("stratum", "resolved_by", "type"):
-        if axis in slices:
-            parts.append(_slice_section(axis, slices[axis]))
-
-    parts.append("</div>")
-    return "".join(parts)
 
 
 _V3_CLASS_LABELS = {"named": "Named entities", "term": "Terms (common-noun)"}
