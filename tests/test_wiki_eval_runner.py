@@ -347,7 +347,10 @@ def test_resolve_route_gemma_3_27b_it_model_params_defaults():
     assert route["temperature"] == 1.0
     assert route["top_p"] == 0.95
     assert route["extra_body"]["top_k"] == 64
-    assert route["provider_pin"] == "DeepInfra"
+    # Parasail, not DeepInfra: DeepInfra's max_completion_tokens (16384) is
+    # below DEFAULT_MAX_TOKENS (20000) -- 404 "no endpoints found" with
+    # allow_fallbacks=false, live-confirmed 2026-07-10.
+    assert route["provider_pin"] == "Parasail"
     # Not a reasoning/thinking model -- no "reasoning" key sent at all.
     assert "reasoning" not in route["extra_body"]
     assert route["expect_reasoning"] is False

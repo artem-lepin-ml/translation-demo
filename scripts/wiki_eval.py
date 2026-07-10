@@ -95,7 +95,15 @@ MODEL_PARAMS: dict[str, dict] = {
         # separate HF-card probe done for this smaller sibling). Not a
         # reasoning/thinking model at all -- no "reasoning" key needed or sent.
         "temperature": 1.0, "top_p": 0.95, "top_k": 64,
-        "provider_pin": "DeepInfra",  # $0.08/$0.16 per Mtok, uptime 99.8%+ (cheapest + most reliable of 5 probed)
+        # Parasail, not the cheaper/higher-uptime DeepInfra: DeepInfra's
+        # max_completion_tokens=16384 < DEFAULT_MAX_TOKENS=20000 (spec Р3,
+        # every model/role), so with allow_fallbacks=false (Р14) OpenRouter
+        # returns 404 "No endpoints found" -- same disqualification pattern
+        # as Venice for gemma-4-31b-it (spec Р14). Parasail is the cheapest
+        # of the remaining 20000-token-capable options with solid uptime
+        # (Nebius/Phala also qualify on tokens but have <70% uptime_last_30m,
+        # disqualified on reliability instead) -- live-probed 2026-07-10.
+        "provider_pin": "Parasail",
     },
     "qwen/qwen3.6-27b": {
         "temperature": 1.0, "top_p": None, "top_k": None,
