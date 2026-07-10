@@ -1,0 +1,149 @@
+# Report — DeepSeek-V4-Flash wiki-eval 108-paragraph backfill (interim: route gate blocked)
+
+## Scope
+
+Backfill the 108 paragraphs (4.1% of the corpus) the `deepseek-v4-flash` wiki-eval
+grounding run lost to transient API failures, setting-identical to the original run,
+append-only into the run's own `pred.jsonl`; then recompute R_doc^term (T2 tier,
+n=7174), T0-tier R_doc/R_span/R_strict/P_mention/P_type/P_label (sitelink-clean) and
+update `docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json`.
+Branch `claude/ner-translation-config-b0ozsc`, worktree
+`/home/user/translation-demo`.
+
+**Status at time of writing: BLOCKED on the mandatory route-health gate.** Per the
+mission's explicit protocol, the paid backfill run must not start until 3 consecutive
+real grounding-shaped calls to `deepseek/deepseek-v4-flash @ provider-9` succeed. The
+first probe (3/3) failed with Cloudflare `502 Bad Gateway` from `api.closerouter.dev`
+(`origin_bad_gateway`, `retryable: true`) at 05:31–05:32 UTC 2026-07-10 — consistent
+with the mission's warning that this route was flapping hard on 2026-07-09/10. A
+15-minute-interval retry loop (budget: 90 minutes total) is running in the background;
+this report will be updated and the backfill executed once it passes, or the route will
+be reported down if the 90-minute budget is exhausted with no pass. **No LLM spend has
+occurred yet** (the 3 failed gate probes all errored before any billable completion was
+returned — CloseRouter's 502 is an origin/gateway failure, not a served-and-billed
+response).
+
+## Files changed
+
+**None in the repository yet.** All work so far is state-discovery (read-only) plus
+scratch tooling under
+`/tmp/claude-0/-home-user-translation-demo/d94abddc-f105-576c-b81a-a51a1ca3f0ff/scratchpad/`
+(not part of the repo, per the scratchpad convention):
+
+- `route_probe.py` — 3-payload route-health probe (real `DEFAULT_NER_PROMPT` + real
+  failed-paragraph text, default `max_tokens=4096`, no retry wrapping — a raw pass/fail
+  read, deliberately not softened by `_build_extract_fn`'s resilient retry so the gate
+  reflects true route health).
+- `route_gate_loop.sh` / `route_gate_loop.log` / `route_gate_status.txt` — the
+  15-min/90-min retry loop (currently running as background task `bvxgem3p1`).
+- `term_tier_recall.py` — dry-validated (zero live Wikidata calls, fully cache-warm)
+  driver that combines `scripts/sitelink_contamination.py`'s sitelink-clean prediction
+  replay with `docs/experiments/2026-07-05-model-comparison/drafts/tier_assignment.json`'s
+  QID→tier map to produce R_doc on the T2/R_term tier. Reproduced the paper's cited
+  deepseek anchor **exactly**: 4716/7174 = 0.657374 (R_term tier) and 4849/7959 =
+  0.609247 (T0 tier), both with zero network calls against the already-warm candidate
+  cache — this is the validation that the "after" computation will be correct once real
+  data is appended.
+- `backfill_deepseek_paragraphs.py` — the backfill driver itself, written and
+  syntax/logic-checked (target-loading unit-checked: 47 articles / 108 paragraphs,
+  matches `meta.json` exactly; every target paragraph index reconstructs cleanly and
+  non-empty from `data/eval/wiki/pages/*.html` via `tokenize.flatten`). **Not yet
+  executed against the live route** — blocked by the gate.
+
+Nothing under `reports/terminology/wiki-eval/`, `docs/experiments/`, or
+`docs/paper/` has been touched.
+
+## Decisions & rationale
+
+- **Route-health gate enforced literally, before any spend.** The mission was explicit
+  that the deepseek CloseRouter route was flapping and gave a precise, bounded protocol
+  (3 real payloads, 15-min retry, 90-min cap, then stop and report). The first gate
+  check reproduced the exact failure mode the mission warned about (502 from
+  Cloudflare's edge in front of `api.closerouter.dev`, not a model-side error) —
+  treating this as a real, not spurious, signal rather than retrying immediately or
+  substituting a different model/provider (explicitly forbidden by the mission).
+- **Used `deepseek/deepseek-v4-flash` + full `DEFAULT_NER_PROMPT` + a real failed
+  paragraph's text for the probe**, not a single-token ping, per the mission's explicit
+  "grounding-shaped payloads" requirement — this is the same call shape
+  (`_build_extract_fn`'s extractor closure) the actual backfill will make.
+- **Identified `data/eval/wiki/gt_v2.jsonl` (not the CLI's `--gt` default,
+  `data/eval/wiki/gt.jsonl`) as the correct GT file for this run — a real, currently
+  undocumented landmine.** `data/eval/wiki/gt.jsonl` has drifted since the deepseek run:
+  it now holds only 20 articles / 7209 tuples (repurposed for something else after
+  2026-07-05), while the deepseek run's own `meta.json`/`metrics.json` record
+  `n_articles=100`/`n_gt_tuples=7959`. Verified by recomputing `metrics.aggregate_corpus`
+  against `gt_v2.jsonl` + the run's existing `pred.jsonl`: reproduces the committed
+  `metrics.json`'s recall m1/m2/m3 **exactly** (4053/7959, 4167/7959, 4890/7959, byte-
+  identical including CI). `gt.jsonl`'s 20 overlapping titles have byte-identical
+  `gt_tuples` to `gt_v2.jsonl`'s, confirming `gt_v2.jsonl` is a superset/successor, not a
+  divergent fork — safe to treat as authoritative. **Flagging this now** so the eventual
+  `scripts/wiki_eval.py report --gt ...` re-run (planned for after the backfill) uses
+  `--gt data/eval/wiki/gt_v2.jsonl` explicitly, not the silently-wrong default.
+- **Backfill design: reuse `scripts/wiki_eval.py`'s own building blocks
+  (`_build_extract_fn`, `_build_judge`, `_canonicalize_fn`, `_config_from_bits`,
+  `BudgetGuard`, `_CountingSemaphore`, `FailureTracker`, `WIKIDATA_CACHE`) plus
+  `predict.predict_tuples`, rather than reimplementing extraction/grounding.** The only
+  new logic is a per-article "targeted extract" wrapper: `predict_tuples` is called with
+  the article's FULL paragraph list (so its running `base_offset` → global token-index
+  math is byte-identical to what the original run would have produced), but the
+  extractor closure only makes a real LLM call for paragraphs whose position is in the
+  target set for that article — every other paragraph returns `[]` with zero LLM calls
+  and contributes zero new records (its mentions already exist in `pred.jsonl` from the
+  original run). This guarantees no duplicate records and correct global token indices
+  by construction, verified against `predict_tuples`'s own documented invariant
+  (paragraphs joined by `"\n"` must equal `article_text`).
+- **Config bits stay `"111"` with `use_sitelink` left at its bit-derived default
+  (`True`)** — i.e. the backfill does **not** pass `--no-sitelink`. Confirmed via
+  `_config_from_bits`/`GroundingConfig` that `"111"` → `use_fallbacks=True` →
+  `use_cirrus=True, use_sitelink=True`, matching the original run (the `--no-sitelink`
+  CLI flag was added in a later commit, `2a54fd3`, purely additive default `None`). The
+  paper's clean numbers come from the separate sitelink-clean REPLAY
+  (`scripts/sitelink_contamination.py`) over these pred rows, not from a different
+  generation-time setting — so setting-identical means matching the *original*
+  (sitelink-included) generation config, exactly as the mission specifies.
+- **Confirmed no drift in extraction/grounding code since the run** that would make a
+  backfill non-setting-identical: `git log --since <run start>` on
+  `src/palimpsest/terminology/extract.py`, `grounding/`, `base.py` shows zero commits;
+  `scripts/wiki_eval.py` gained only the additive `--no-sitelink` flag and an unrelated
+  local-vLLM runbook doc, neither of which is exercised by this backfill's call path.
+- **Failure tolerance in the backfill mirrors the original run's semantics exactly**:
+  a paragraph still transient-failing after `_build_extract_fn`'s 6-attempt/60s-backoff
+  retry is caught (not allowed to crash the whole article/run), recorded, and treated as
+  zero new mentions — same as the original `_parallel_extract_fn`/`FailureTracker`
+  contract — so any paragraph that still can't be backfilled will be reported honestly,
+  not silently dropped or masked.
+- **Reporting now, before completion, because the Stop-hook reporting protocol requires
+  a report to exist and the gate is a genuine, protocol-mandated blocking wait** (up to
+  90 minutes), not a short delay — writing the interim state now rather than leaving no
+  record. This report will be **updated in place** (not superseded by a second file)
+  once the gate resolves and the backfill either completes or is reported down.
+
+## Open questions
+
+- Will the gate pass within the 90-minute budget? Unknown as of this writing (first
+  attempt at 05:31 UTC failed; loop retries at ~05:47, 06:02, 06:17, 06:32, 06:47, 07:02
+  UTC, i.e. up to 90 min after the *loop's* start).
+- Should `data/eval/wiki/gt.jsonl`'s drift (20/100 articles) be fixed/restored as a
+  follow-up? Out of scope for this task (which only touches the deepseek run + its
+  downstream metrics), but worth a `docs/known_issues.md` entry — flagged here, not
+  actioned, since the mission scoped this task narrowly and told me not to touch
+  `docs/paper/`.
+
+## NOT done
+
+- **The actual backfill run has not executed.** Zero new pred rows have been generated
+  or appended; `pred.jsonl`/`meta.json` for the deepseek run are untouched.
+- **No metrics recomputation has been committed anywhere** — the `term_tier_recall.py`
+  dry validation above ran only against the pre-backfill `pred.jsonl` (to prove the
+  method), not a post-backfill one.
+- `docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json` is
+  unmodified.
+- The `.wikidata_cache.label_exists.*deepseek*.jsonl` cache is unmodified.
+- No commit, no push. `git status` is clean (no repo-tracked files touched).
+- Cost so far: **$0** (3 failed gate probes returned Cloudflare 502s before any model
+  billing occurred; CloseRouter/OpenAI-compatible errors of this shape are not billed).
+
+This report will be updated with final before/after numbers, exact counts, CIs, cost,
+and any still-failed paragraphs once the route gate resolves (pass → execute the
+backfill; 90-minute exhaustion → report the route down per the mission's explicit
+instruction not to spin longer or silently substitute another model).
