@@ -307,3 +307,27 @@ terminal exactly as before; the fix is safe by construction rather than by conve
 `tests/test_llm_transient.py` (transient: `MalformedProviderResponseError`, `APIResponseValidationError`;
 still-terminal regression pin: bare `json.JSONDecodeError`; transport-wrapping: a fake `chat.completions.create`
 that raises `json.JSONDecodeError` makes `LLMClient.complete` raise `MalformedProviderResponseError`).
+
+### `data/seed/terminology_gold.jsonl` not reproducible from `merge_goldens.py`
+
+Discovered 2026-07-10 during the de-versioning cleanup Lane B verify (C6): a fresh
+`python scripts/merge_goldens.py` run yields only **16 rows**, not the **99 rows** committed
+at `data/seed/terminology_gold.jsonl`. Root cause: [merge_goldens.py](../scripts/merge_goldens.py)'s
+own docstring claims the three gold sources sit "over the same 16-paragraph pilot corpus", but
+[data/seed/seed_paragraphs.jsonl](../data/seed/seed_paragraphs.jsonl) — the seed corpus the merge
+keys rows against via `paragraph_id` lookup — has only **15 paragraphs**. The drift predates every
+2026-07-10 change (this repo's own de-versioning work never touched `merge_goldens.py`'s logic,
+only a filename/comment/`_metrics_v1`→`_metrics` rename in C6); `git log` shows the seed corpus and
+the docstring's paragraph count already disagreed at the initial import (`2493ec4`), so this is not
+a regression introduced by any recent commit.
+
+**Impact.** The committed 99-row `terminology_gold.jsonl` cannot be regenerated from its own
+documented build recipe — anyone who reruns `merge_goldens.py` expecting to reproduce or refresh
+the committed file gets a 16-row file instead, silently losing 83 rows.
+
+**Mitigation.** None applied. Fixing the corpus/docstring mismatch is a data-regeneration task, out
+of scope for the de-versioning cleanup that found it (naming/identifier cleanup only, no data
+regeneration). Needs an owner decision: reconcile the docstring to 15 paragraphs (if 16 was always
+wrong), or investigate whether a 16th paragraph existed and was dropped from
+`seed_paragraphs.jsonl` at some point (if the committed 99-row gold is the one that's actually
+correct and the corpus is missing data).
