@@ -1,95 +1,48 @@
-% Table C: Terminology extraction + Wikidata grounding (Wikipedia corpus).
-% MAIN table (R_doc^term + P_label only) plus a full-grid table in the appendix.
-% Canonical row order fixed by owner 2026-07-09.
-% 2026-07-10 (owner): paper-clean form. All daggers/footnotes removed from the
-% tables (run disclosures live in the repo reports, not the paper). CIs removed
-% from the MAIN table (kept in the appendix grid). GPT-5.4 cells set to ---
-% until the run completes 100/100 (backfill of the one missing article is
-% running; will be refilled from metrics.100of100.json).
-% Aggregation note (owner question 2026-07-10): all values are POOLED
-% (micro) counts over the whole corpus, never per-article averages --
-% see src/palimpsest/terminology/evaluation/metrics.py aggregate_corpus:
-% "counts are summed across articles and Wilson CI is computed ONCE at the
-% end from the accumulated counts -- never averaged per-article".
-% Provenance of filled cells: sitelink-clean, R_term tier (n=7174), replay in
-% docs/experiments/2026-07-05-model-comparison/drafts/sitelink_replay/,
-% verified against docs/reports/python-pro-ner-wikidata-table-c-extraction.md
-% (gemini 5269/7174 = 0.7345; deepseek 4716/7174 = 0.6574). P_label counts in
-% docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json
-% (gemini 5340/10068, deepseek 4409/8248).
-% Known-but-undisclosed-in-paper (owner decision 2026-07-10): the deepseek run
-% lost 108 paragraphs (4.1%) to transient API failures (declared in
-% docs/experiments/2026-07-05-model-comparison/FINDINGS.md); GPT-5.4 stands in
-% for gpt-5.5 (sustained provider rate limits, owner-approved fallback).
+% Table C: Terminology recognition + Wikidata grounding (WikiHist corpus).
+% PROTOCOL v3 (owner, 2026-07-10): set-based document-level metrics
+% (supervisor's ICD formalism, see eval-metrics-terminology.tex), split into
+% named entities vs common-noun terms by anchor capitalization. No daggers,
+% no footnotes, no label-credit corrections. Unit = unique (article, QID),
+% sitelink-clean, generic-lexical-class filter applied.
+% Column counts: named n=4032, terms n=1530 (total 5562; 114 mixed-case
+% units, 2%, classified as named).
+% Numbers provenance: scratchpad/set_based_split.py (main-thread run
+% 2026-07-10) over committed pred.jsonl runs + gt_v2.jsonl + tier filter;
+% CIs available from the same script (Wilson 95%, pooled counts), kept out
+% of the table for paper-clean look:
+%   gemini named R [.797-.822] P [.652-.678]; term R [.382-.431] P [.442-.496]
+%   deepseek named R [.694-.722] P [.666-.694]; term R [.357-.406] P [.471-.528]
+% DeepSeek row = PRE-BACKFILL values (108 lost paragraphs are being
+% backfilled via OpenRouter as of 2026-07-10 ~06:20Z); refresh both cells
+% from the post-backfill recompute before submission.
+% GPT-5.4 row pending: 100/100 completion in flight, then the same
+% set-based split recompute.
 \begin{table}[t]
 \centering
 \small
-\begin{tabular}{@{}lcc@{}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
-Model & $R_{\mathrm{doc}}^{\mathrm{term}}\ \uparrow$ & $P_{\mathrm{label}}\ \uparrow$ \\
+ & \multicolumn{2}{c}{Named entities} & \multicolumn{2}{c}{Terms} \\
+ & \multicolumn{2}{c}{\scriptsize $n{=}4032$} & \multicolumn{2}{c}{\scriptsize $n{=}1530$} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Model & $R_{\mathrm{doc}}$ & $P_{\mathrm{doc}}$ & $R_{\mathrm{doc}}$ & $P_{\mathrm{doc}}$ \\
 \midrule
-% TODO(sr004 vLLM runbook, owner-side): Qwen3-4B-Instruct grounding replay pending.
-Qwen3-4B-Instruct      & --- & --- \\
-% TODO(sr004 vLLM runbook, owner-side): Gemma-3-27B-it grounding replay pending.
-Gemma-3-27B-it         & --- & --- \\
-% TODO(sr004 vLLM runbook, owner-side): Qwen3.6-27B grounding replay pending.
-Qwen3.6-27B            & --- & --- \\
-Gemini-3.1-Flash-Lite  & 0.735 & 0.530 \\
-DeepSeek-V4-Flash      & 0.657 & 0.535 \\
-% TODO(backfill in flight): refill both cells from metrics.100of100.json once
-% the missing article completes (99/100 values were 0.583 / 0.536).
-GPT-5.4                & --- & --- \\
+% TODO(sr004 vLLM runbook, owner-side): local grounding replays pending.
+Qwen3-4B-Instruct     & --- & --- & --- & --- \\
+Gemma-3-27B-it        & --- & --- & --- & --- \\
+Qwen3.6-27B           & --- & --- & --- & --- \\
+Gemini-3.1-Flash-Lite & 0.810 & 0.665 & 0.406 & 0.469 \\
+% TODO(backfill in flight): refresh from post-backfill set-based recompute.
+DeepSeek-V4-Flash     & 0.708 & 0.680 & 0.381 & 0.499 \\
+% TODO(100/100 completion in flight): fill from set-based recompute.
+GPT-5.4               & --- & --- & --- & --- \\
 \bottomrule
 \end{tabular}
 \caption{Terminology recognition and Wikidata grounding on the 100 articles
-of \datasetWikipediaName{}. Metric definitions are given in
-Section~\ref{sec:eval-metrics} and the full metric grid with confidence
-intervals in Appendix~\ref{app:grounding-full}.}
+of \datasetWikipediaName{}, reported separately for named entities and
+common-noun terms ($n$ is the number of unique document-level gold
+entities per class). Metric definitions and the classification rule are
+given in Section~\ref{sec:eval-metrics}.}
 \label{tab:grounding-results}
 \end{table}
-
-% Appendix: full 6-metric grid (sitelink-clean, R_all/T0 tier, n=7959).
-% Numbers preserved from the pre-2026-07-09 main-paper table, not recomputed.
-% 2026-07-10: daggers/footnotes removed (owner decision, see header comment);
-% GPT-5.4 row set to --- pending the 100/100 recompute.
-\begin{table*}[t]
-\centering
-\small
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{@{}lcccccc@{}}
-\toprule
- & \multicolumn{3}{c}{Recall $\uparrow$} & \multicolumn{3}{c}{Precision (lower bound) $\uparrow$} \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}
-Model & $R_{\mathrm{doc}}$ & $R_{\mathrm{span}}$ & $R_{\mathrm{strict}}$
-      & $P_{\mathrm{mention}}$ & $P_{\mathrm{type}}$ & $P_{\mathrm{label}}$ \\
-\midrule
-\multicolumn{7}{@{}l}{\textit{Local models (vLLM)}} \\
-Qwen3-4B-Instruct      & --- & --- & --- & --- & --- & --- \\
-Gemma-3-27B-it         & --- & --- & --- & --- & --- & --- \\
-Qwen3.6-27B            & --- & --- & --- & --- & --- & --- \\
-\addlinespace
-\multicolumn{7}{@{}l}{\textit{Cloud models (API)}} \\
-Gemini-3.1-Flash-Lite  & 0.684 {\scriptsize[.674--.694]} & 0.622 & 0.602 & 0.300 & 0.452 & 0.530 \\
-DeepSeek-V4-Flash      & 0.609 {\scriptsize[.599--.620]} & 0.519 & 0.504 & 0.305 & 0.460 & 0.535 \\
-% TODO(backfill in flight): refill from metrics.100of100.json.
-GPT-5.4                & --- & --- & --- & --- & --- & --- \\
-\bottomrule
-\end{tabular}
-\caption{Full metric grid for Table~\ref{tab:grounding-results} on the same
-100 articles of \datasetWikipediaName{}, with the title-sitelink fallback
-disabled. Recall here is computed on the unfiltered reference of all 7959
-human-linked mentions (3868 unique entities) rather than the
-terminology-filtered tier of the main table. $R_{\mathrm{doc}}$ and
-$P_{\mathrm{label}}$ are defined in Section~\ref{sec:eval-metrics}.
-$R_{\mathrm{span}}$ additionally requires overlapping token spans, and
-$R_{\mathrm{strict}}$ an exact match of position, surface, and entity. Under
-the incomplete annotation all precision figures are conservative lower
-bounds: $P_{\mathrm{mention}}$ scores every prediction, and
-$P_{\mathrm{type}}$ deduplicates repeated (surface, entity) pairs.
-$P_{\mathrm{label}}$ does not depend on the reference tier, so the main
-table reports the same values. The main table selects the most permissive
-recall rung ($R_{\mathrm{doc}}$) and the strictest precision rung
-($P_{\mathrm{label}}$). All values are pooled counts over the whole corpus.
-Wilson 95\% confidence intervals are given for $R_{\mathrm{doc}}$.}
-\label{app:grounding-full}
-\end{table*}

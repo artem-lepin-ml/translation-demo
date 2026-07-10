@@ -1,57 +1,85 @@
 % Section 4.2 Evaluation Metrics, \paragraph{Terminology Recognition} block.
 % Replaces the "\paragraph{Terminology Recognition} TODO: Artem" placeholder.
 %
-% INTEGRATION (required): \subsection{Evaluation Metrics} must get
-% \label{sec:eval-metrics} — the §3.1 \datasetWikipediaName{} dataset paragraph
-% references Section~\ref{sec:eval-metrics} twice, and both Table C captions
-% (tab:grounding-results, app:grounding-full) point here for definitions.
+% INTEGRATION (required):
+% 1. \subsection{Evaluation Metrics} must get \label{sec:eval-metrics} --
+%    the §3.1 \datasetWikipediaName{} subsection references it twice, and the
+%    Table C caption points here for definitions.
+% 2. The \datasetWikipediaName{} dataset subsubsection needs
+%    \label{sec:wikihist-dataset} (referenced below).
+% 3. Terminology harmonization with §3.1: that subsection currently says
+%    "page-level terminology recognition"; this paragraph says "document
+%    level". Suggest changing §3.1's "page-level" to "document-level"
+%    (one word) -- owner/co-author call, since §3.1 is co-author text.
 %
-% Provenance: definitions match the evaluation harness and the Table C runs.
-% R_term tier 7174/7959 — docs/reports/python-pro-ner-wikidata-table-c-extraction.md
-% and docs/experiments/2026-07-05-model-comparison/drafts/recall-tiers-analysis.md.
-% P_label = P3\exact (exact-label path excluded) — docs/reports/
-% python-pro-p-label-gpt54-grounding-run.md. Sitelink-off rationale —
-% docs/reports/python-pro-sitelink-clean-replay.md. CIs: eval_harness.wilson_ci.
+% PROTOCOL v2 (owner + supervisor, 2026-07-10): set-based document-level
+% metrics in the supervisor's ICD-coding formalism. Both lists deduplicated
+% to unique QID sets per article, micro-averaged TP/FP/FN over the corpus.
+% NO label-credit corrections (P_label machinery dropped from the paper by
+% owner decision). Entity/term split principle: capitalization of the gold
+% anchor surface (proper name vs common noun) -- the harness's existing rule
+% (sitelink_contamination._type_of_for_article, spec Sec.4). A
+% Wikidata-property alternative (has-P31 = instance-level item) was probed
+% 2026-07-10 and REJECTED empirically: 98% of capitalized gold QIDs carry
+% P31, but so do 77% of lowercase ones (concept items like "mummy" often
+% have P31), so P31 presence does not separate the classes
+% (scratchpad/p31_sample_probe.py, 150+150 stratified sample, seed 42).
+% Gold unit = unique (article, QID); counts: 5562 total = 4032 named + 1530
+% terms (sitelink-clean, generic-lexical-class filter applied; 114
+% mixed-case units, 2%, classified as named). Numbers provenance:
+% scratchpad/set_based_split.py over committed pred.jsonl runs, gold
+% data/eval/wiki/gt_v2.jsonl, tier filter drafts/tier_assignment.json;
+% mention-level anchors reproduced bit-identically before the switch
+% (deepseek 4716/7174 = 0.6574).
 
 % ===== VARIANT 1 (main) =====
 \paragraph{Terminology Recognition}
-We evaluate terminology recognition and normalization at the page level, the
-granularity the editor-hyperlink gold of \datasetWikipediaName{} supports.
-Each candidate model serves as both the extractor and the disambiguation
-judge inside an otherwise fixed deterministic pipeline.
-$R_{\mathrm{doc}}^{\mathrm{term}}$ is document-level recall: a gold mention
-counts as recovered if its entity is predicted anywhere in the same article.
-We compute recall on the terminology-filtered reference tier of 7174 of the
-7959 human-linked mentions, which drops structural noise and generic lexical
-classes a terminology task should not reward (languages and scripts, taxa,
-materials, units). $P_{\mathrm{label}}$ is a conservative lower bound on
-precision. Because editors link an entity only at its first mention, the
-annotation is incomplete, so a prediction absent from the reference is
-additionally credited when its surface form exists as a Wikidata label.
-Predictions resolved by the deterministic exact-label match are excluded
-from this credit to avoid self-confirmation, keeping the value a lower
-bound. The title-sitelink fallback of the grounding pipeline is disabled
-during evaluation because it reuses the mechanism the gold annotation is
-built from. We report Wilson 95\% confidence intervals in brackets.
+We evaluate terminology recognition and normalization at the document
+level, the granularity the hyperlink annotation of \datasetWikipediaName{}
+supports (Section~\ref{sec:wikihist-dataset}). For an article $d$, the
+editor links yield the gold entity list $L_t = (e^t_1, \dots, e^t_m)$
+through their deterministic mapping to Wikidata identifiers. The pipeline
+under evaluation produces the predicted list $L_p = (e^p_1, \dots, e^p_n)$,
+with each candidate model serving as both the extractor and the
+disambiguation judge inside an otherwise fixed deterministic pipeline.
+Both lists may mention the same entity repeatedly (i.e., $e_i = e_j$ for
+$i \neq j$), and duplicate mentions would be counted multiple times and
+bias entity-level aggregation, so we deduplicate both lists into unique
+entity sets $S_p$ and $S_t$. A deterministic filter removes gold entities
+from generic lexical classes that a terminology task should not reward
+(languages and scripts, taxa, materials, units). Micro-averaged metrics
+are calculated from True Positives ($TP$), False Positives ($FP$), and
+False Negatives ($FN$) accumulated over all articles: $TP = S_p \cap S_t$,
+$FP = S_p \setminus S_t$, $FN = S_t \setminus S_p$. Document-level recall
+is $R_{\mathrm{doc}} = |TP| / (|TP| + |FN|)$ and document-level precision
+is $P_{\mathrm{doc}} = |TP| / (|TP| + |FP|)$. Because the annotation is
+sparse (Section~\ref{sec:wikihist-dataset}), a predicted entity absent
+from $S_t$ is not necessarily wrong, so precision is a conservative lower
+bound. We report each metric separately for named entities and for
+common-noun terms, classifying every gold entity by the capitalization of
+its anchor surface: a capitalized anchor marks a proper name, a lowercase
+anchor marks common-noun terminology.
 
-% ===== VARIANT 2 (annotation-defects framing) =====
+% ===== VARIANT 2 (annotation-first framing, more creative) =====
 % \paragraph{Terminology Recognition}
-% The editor-hyperlink gold of \datasetWikipediaName{} is precise but has two
-% defects, and each metric compensates for one. Scoring is page-level, the
-% granularity the annotation supports. The reference includes links a
-% terminology task should not reward, so document-level recall
-% $R_{\mathrm{doc}}^{\mathrm{term}}$, under which a gold mention is recovered
-% if its entity is predicted anywhere in the same article, is computed on a
-% terminology-filtered tier of 7174 of the 7959 human-linked mentions,
-% dropping structural noise and generic lexical classes (languages and
-% scripts, taxa, materials, units). The reference also misses repeated
-% mentions, since editors link an entity only at its first occurrence, so
-% $P_{\mathrm{label}}$ additionally credits a prediction absent from the
-% reference when its surface form exists as a Wikidata label. Predictions
-% resolved by the deterministic exact-label match receive no such credit,
-% which avoids self-confirmation and keeps $P_{\mathrm{label}}$ a
-% conservative lower bound on precision. Each candidate model serves as both
-% the extractor and the disambiguation judge inside an otherwise fixed
-% deterministic pipeline, with the title-sitelink fallback disabled during
-% evaluation because it reuses the mechanism the gold annotation is built
-% from. We report Wilson 95\% confidence intervals in brackets.
+% The hyperlink annotation of \datasetWikipediaName{} supports evaluation
+% at the document level (Section~\ref{sec:wikihist-dataset}), and our
+% protocol follows the annotation. For an article $d$, the editor links
+% map deterministically to Wikidata identifiers and yield the gold entity
+% list $L_t$. The pipeline under evaluation, with each candidate model
+% acting as both the extractor and the disambiguation judge in an
+% otherwise fixed deterministic pipeline, produces the predicted list
+% $L_p$. Repeated mentions of one entity would be counted multiple times
+% and bias entity-level aggregation, so both lists are deduplicated into
+% unique entity sets $S_p$ and $S_t$, and a deterministic filter removes
+% gold entities from generic lexical classes a terminology task should
+% not reward (languages and scripts, taxa, materials, units).
+% Micro-averaged metrics follow from $TP = S_p \cap S_t$,
+% $FP = S_p \setminus S_t$, and $FN = S_t \setminus S_p$ accumulated over
+% all articles, with $R_{\mathrm{doc}} = |TP| / (|TP| + |FN|)$ and
+% $P_{\mathrm{doc}} = |TP| / (|TP| + |FP|)$. The annotation is sparse, so
+% a predicted entity absent from $S_t$ is not necessarily wrong and
+% precision reads as a conservative lower bound. Named entities and
+% common-noun terms are scored separately, with every gold entity
+% classified by the capitalization of its anchor surface: capitalized
+% anchors are proper names, lowercase anchors are common-noun terminology.
