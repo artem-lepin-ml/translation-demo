@@ -58,6 +58,22 @@ class GroundingConfig:
     match_aliases: bool = True
     search_limit: int = 7
     enrich_top: int = 5
+    # Candidate-search widening tiers (wiki-eval experiment, 2026-07-10):
+    # cumulative, gated entirely inside candidates.py::generate_candidates.
+    #   "baseline"    -- today's search (rungs 1-4), unchanged.
+    #   "alt-names"   -- baseline PLUS: when baseline finds 0 candidates,
+    #                    derive alt surface forms from parenthesized
+    #                    alternates in the mention's sentence context
+    #                    (e.g. «Унку (Unqi)» -> "Unqi") and re-run the same
+    #                    prefix search. Zero LLM calls.
+    #   "label-guess" -- alt-names PLUS: if still 0 candidates, ONE LLM call
+    #                    (the injected ``label_guesser``) guesses the exact
+    #                    Wikidata label, re-searched the same way.
+    # Not part of the 3-bit ablation id (search_mode is CLI-only, see
+    # scripts/wiki_eval.py's --search-mode) -- kept here rather than as a
+    # separate parameter threaded through every call site because it's an
+    # ablation-style toggle just like the other fields on this frozen config.
+    search_mode: Literal["baseline", "alt-names", "label-guess"] = "baseline"
 
     def __init__(
         self,
@@ -68,6 +84,7 @@ class GroundingConfig:
         search_limit: int = 7,
         enrich_top: int = 5,
         use_fallbacks: bool | None = None,
+        search_mode: Literal["baseline", "alt-names", "label-guess"] = "baseline",
     ) -> None:
         # dataclass(frozen=True) only auto-generates __init__ when the class
         # doesn't already define one, so this hand-written constructor is the
@@ -83,6 +100,7 @@ class GroundingConfig:
         object.__setattr__(self, "match_aliases", match_aliases)
         object.__setattr__(self, "search_limit", search_limit)
         object.__setattr__(self, "enrich_top", enrich_top)
+        object.__setattr__(self, "search_mode", search_mode)
 
     @property
     def use_fallbacks(self) -> bool:

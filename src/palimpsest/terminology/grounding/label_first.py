@@ -73,9 +73,18 @@ def _format_judge_prompt(mention: TermMention, candidates: list[dict]) -> str:
 class LabelFirstGrounding:
     name = "label_first"
 
-    def __init__(self, client: WikidataClient, config: GroundingConfig | None = None) -> None:
+    def __init__(self, client: WikidataClient, config: GroundingConfig | None = None, *,
+                 label_guesser: Judge | None = None) -> None:
         self.wd = client
         self.config = config or GroundingConfig()
+        # Only consulted by generate_candidates when config.search_mode ==
+        # "label-guess" (wiki-eval experiment, 2026-07-10) -- a DIFFERENT
+        # callable than the disambiguation ``judge`` passed per-call to
+        # ground() below, since it needs its own system prompt
+        # (candidates.DEFAULT_LABEL_GUESS_SYSTEM_PROMPT), even though both
+        # are typically built from the same run's judge-configured LLM route
+        # (see scripts/wiki_eval.py's _build_label_guesser).
+        self.label_guesser = label_guesser
 
     def ground(
         self,
@@ -90,7 +99,7 @@ class LabelFirstGrounding:
         config = self.config
 
         try:
-            gen = generate_candidates(self.wd, mention, config)
+            gen = generate_candidates(self.wd, mention, config, label_guesser=self.label_guesser)
         except RuntimeError as exc:
             return self._result(
                 "red", None, [], t0, calls0,
