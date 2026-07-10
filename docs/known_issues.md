@@ -224,3 +224,42 @@ all live docs and script defaults now name only `gt.jsonl`. A coverage guard was
 fails loudly (naming the mismatch count and both paths) instead of silently under-scoring, closing the
 recurrence path. `gt_v2.jsonl` remains on disk as a byte-identical duplicate only until the in-flight deepseek
 backfill's driver (which still reads it) lands — deferred deletion, not part of this fix.
+
+### RESOLVED 2026-07-10: malformed provider response body killed a wiki-eval run
+
+**Symptom.** During the 2026-07-10 wiki-eval deepseek mini-pilot (Phase 3a, run dir
+`reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--Novita/111/2026-07-10T08-38-16Z`), an extraction
+call on article 3 crashed the entire process with a raw `json.decoder.JSONDecodeError: Expecting value: line
+169 column 1 (char 924)`, raised from httpx's `response.json()` inside the `openai` SDK — i.e. OpenRouter/Novita
+returned an HTTP response body that was not valid JSON for a chat-completions call. `pred.jsonl`/`meta.json`
+were never written (only `calls.jsonl`/`pred.partial.jsonl`/`progress.jsonl` survive); full incident writeup in
+[docs/reports/wiki-eval-v2-pilot-2026-07-10.md](reports/wiki-eval-v2-pilot-2026-07-10.md) ("Phase 3a").
+
+**Root cause.** `palimpsest.llm.client.is_transient_error` had no category for a malformed transport-layer
+response body — it matched none of the recognized transient exceptions (`TimeoutError`/`APITimeoutError`/
+`APIConnectionError`/`RateLimitError`/`InternalServerError`/`APIStatusError` with `status>=500`) — so it was
+classified deterministic and **not retried at all**, killing the run on the very first occurrence. Every call
+that DID complete around it was clean (0/90 `finish_reason=="length"`, 100% `reasoning_tokens>0`, 100% served
+by the pinned provider on the captured calls) — this was an infra/transport reliability blip, not a
+prompt/parameter/pin defect.
+
+**Fix.** A safety analysis (before implementing) found that a naive "treat every `json.JSONDecodeError` as
+transient" widening would have silently made content-level parse failures retryable too — specifically webapp
+`judge_one`'s `_parse_json(result.content)` (`src/palimpsest/webapp/judge.py`), which parses the MODEL's own
+reply text and runs entirely inside `_judge_live`'s `is_transient_error`-gated retry loop
+(`src/palimpsest/webapp/app.py`). Retrying a genuinely malformed judge answer would contradict the documented
+policy that malformed judge output is terminal (`judge_unavailable`, no retry —
+[label_first.py](../src/palimpsest/terminology/grounding/label_first.py)).
+
+Resolved instead by disambiguating at the transport boundary: `LLMClient.complete()`
+([client.py](../src/palimpsest/llm/client.py)) now wraps ONLY its own transport call
+(`self._client.chat.completions.create(**kwargs)`) — `except json.JSONDecodeError as exc: raise
+MalformedProviderResponseError(str(exc)) from exc`. `is_transient_error` classifies
+`MalformedProviderResponseError` and `openai.APIResponseValidationError` as transient. Because the wrapping
+happens only around the transport call and `complete()` already returns before any caller parses
+`result.content`, a bare `json.JSONDecodeError` — as raised by `judge_one`'s content parse, or by
+`scripts/wiki_eval.py`'s own extraction/judge content parsers — never reaches this classifier and stays
+terminal exactly as before; the fix is safe by construction rather than by convention. Covered by
+`tests/test_llm_transient.py` (transient: `MalformedProviderResponseError`, `APIResponseValidationError`;
+still-terminal regression pin: bare `json.JSONDecodeError`; transport-wrapping: a fake `chat.completions.create`
+that raises `json.JSONDecodeError` makes `LLMClient.complete` raise `MalformedProviderResponseError`).

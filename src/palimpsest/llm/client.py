@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import time
 from dataclasses import dataclass
@@ -81,6 +82,14 @@ def _extract_usage(resp) -> Usage:
                  float(cost) if cost is not None else None)
 
 
+class MalformedProviderResponseError(RuntimeError):
+    """The provider returned an HTTP body that is not valid JSON for a
+    chat-completions response (observed live on OpenRouter/Novita,
+    2026-07-10 wiki-eval v2 pilot). Raised only from LLMClient.complete's
+    transport call, so it can never be confused with a content-level
+    parse failure of the model's reply text."""
+
+
 def is_transient_error(exc: BaseException) -> bool:
     """A provider error worth retrying: timeout / connection drop / 429 / 5xx.
 
@@ -88,6 +97,17 @@ def is_transient_error(exc: BaseException) -> bool:
     transient — a retry would just burn another paid call and fail the same
     way. ``asyncio.CancelledError`` is never treated as transient: it must
     always propagate to cancel the task, never be swallowed into a retry.
+    A malformed/non-JSON HTTP response body from a provider IS treated as
+    transient (``MalformedProviderResponseError`` / ``openai.
+    APIResponseValidationError``) — it is a server-side glitch worth
+    retrying, not a deterministic client error, as observed live on
+    OpenRouter/Novita (2026-07-10 wiki-eval v2 pilot report). Content-level
+    JSON parse failures of the model's own reply text never reach this
+    classifier: ``LLMClient.complete`` wraps ``json.JSONDecodeError`` into
+    ``MalformedProviderResponseError`` ONLY around its transport call
+    (``chat.completions.create``), so a caller-side parse of ``result.
+    content`` (e.g. webapp ``judge_one``'s ``_parse_json``) raises a plain
+    ``json.JSONDecodeError`` that this function still classifies as False.
 
     Single source of truth for this classification (by design all LLM/
     openai access goes through this module); callers outside `palimpsest.llm`
@@ -97,7 +117,9 @@ def is_transient_error(exc: BaseException) -> bool:
         return False
     if isinstance(exc, (asyncio.TimeoutError, TimeoutError,
                         openai.APITimeoutError, openai.APIConnectionError,
-                        openai.RateLimitError, openai.InternalServerError)):
+                        openai.RateLimitError, openai.InternalServerError,
+                        MalformedProviderResponseError,
+                        openai.APIResponseValidationError)):
         return True
     status = getattr(exc, "status_code", None)
     return isinstance(exc, openai.APIStatusError) and isinstance(status, int) and status >= 500
@@ -127,7 +149,15 @@ class LLMClient:
             kwargs["seed"] = self.config.seed
         if self.config.extra_body:
             kwargs["extra_body"] = self.config.extra_body
-        resp = self._client.chat.completions.create(**kwargs)
+        try:
+            resp = self._client.chat.completions.create(**kwargs)
+        except json.JSONDecodeError as exc:
+            # Non-JSON HTTP body from the provider (transport layer, e.g.
+            # httpx's response.json() inside the openai SDK) — never a
+            # content-level parse of the model's reply text, since that
+            # parsing happens in caller code on `result.content` after this
+            # method has already returned. See MalformedProviderResponseError.
+            raise MalformedProviderResponseError(str(exc)) from exc
         choice = resp.choices[0]
         content = choice.message.content or ""
         # OpenRouter surfaces the served provider as a top-level "provider"
@@ -143,11 +173,12 @@ class LLMClient:
                           backoff: tuple[float, ...] = (1.0, 3.0, 9.0)) -> LLMResult:
         """`complete()` with bounded retries on transient errors only.
 
-        Retries 429/5xx/timeout/connection failures (`is_transient_error`) up to
-        `attempts` times, sleeping `backoff[i]` between tries; deterministic
-        errors (400/401/malformed JSON) propagate on the first hit — a retry
-        would only burn another paid call and fail the same way. Owner directive
-        for CloseRouter's ~90% per-route success: 3 attempts, 1s/3s/9s backoff.
+        Retries 429/5xx/timeout/connection/malformed-response-body failures
+        (`is_transient_error`) up to `attempts` times, sleeping `backoff[i]`
+        between tries; deterministic errors (400/401) propagate on the first
+        hit — a retry would only burn another paid call and fail the same
+        way. Owner directive for CloseRouter's ~90% per-route success: 3
+        attempts, 1s/3s/9s backoff.
         """
         for i in range(attempts):
             try:
