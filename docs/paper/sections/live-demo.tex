@@ -3,6 +3,24 @@
 % 3-1-wikipedia-dataset.tex). The Interactive Use Cases subsubsection that follows
 % covers the two workflows, so both variants describe interface anatomy and
 % implementation only. All facts repo-verified 2026-07-10.
+%
+% Integration: add this BibTeX entry to custom.bib for \cite{tiptap} (InkSight-style
+% GitHub-repository reference, cf. their EasyOCR entry):
+%
+% @misc{tiptap,
+%   author       = {{Tiptap}},
+%   title        = {Tiptap: the headless rich text editor framework},
+%   year         = {2025},
+%   howpublished = {\url{https://github.com/ueberdosis/tiptap}},
+%   note         = {GitHub repository}
+% }
+%
+% Stack facts verified in code 2026-07-10: React 19 + TypeScript (frontend/package.json),
+% custom TipTap extension = frontend/src/demo/variant-a/review-extension.ts
+% (@tiptap/core Extension + ProseMirror Decoration.inline stacked underlines),
+% FastAPI over single-file SQLite (src/palimpsest/webapp/app.py, db.py),
+% OpenAI-compatible client with per-model base_url (src/palimpsest/llm/client.py,
+% openai SDK), single Docker container via uvicorn (Dockerfile).
 
 % ===== VARIANT 1 (main) =====
 \paragraph{Functionality.}
@@ -21,18 +39,19 @@ paragraphs by score or issue count, and the Settings tab lets users create
 and edit judge criteria (name, prompt, judge model, weight, color).
 
 \paragraph{Implementation.}
-We build the frontend as a React application on the TipTap editor
-framework\footnote{\href{https://tiptap.dev}{tiptap.dev}}. A custom extension
-draws judge findings as stacked span-level underlines and marks term spans in
-place, so all analysis stays anchored to the text. The backend is a FastAPI
-service with a SQLite store that runs translation and first-pass scoring as
-background jobs. All LLM calls pass through a single OpenAI-compatible
-client, which makes the system model agnostic: any hosted gateway, such as
-OpenRouter, or a local vLLM server can act as the model backend. Judge scores
-and issues are stored append-only, so re-evaluation appends revisions and
-never overwrites earlier predictions. The system deploys as a single Docker
-container with one command, and criteria defined in the interface apply
-without redeployment.
+We build the frontend as a React and TypeScript application. Its editor
+builds on the open-source TipTap framework~\cite{tiptap}, which we extend
+with a custom decoration layer that draws judge findings as stacked
+span-level underlines and marks term spans in place, so all analysis stays
+anchored to the text. The backend is a FastAPI service over a single-file
+SQLite store and runs translation and first-pass scoring as background jobs.
+All LLM calls pass through one OpenAI-compatible client with per-model
+endpoint configuration, which makes the system model agnostic: any hosted
+gateway, such as OpenRouter, or a local vLLM server can act as the model
+backend. Judge scores and issues are stored append-only, so re-evaluation
+appends revisions and never overwrites earlier predictions. The system
+deploys as a single Docker container with one command, and criteria defined
+in the interface apply without redeployment.
 
 % ===== VARIANT 2 (text-first framing) =====
 % \paragraph{Functionality.}
@@ -53,13 +72,15 @@ without redeployment.
 % \paragraph{Implementation.}
 % \systemname{} is model agnostic by construction. Every LLM call, whether
 % from the translator, a judge, or the terminology pipeline, goes through one
-% OpenAI-compatible client, so any hosted gateway or a local vLLM server can
-% serve the models, and criteria created in the interface apply without
-% redeployment. The server is a FastAPI application over SQLite that executes
-% translation and first-pass scoring as background jobs. Its evaluation store
-% is append-only: re-evaluation appends new score revisions and never
-% overwrites earlier predictions. The client is a React application whose
-% editor builds on TipTap\footnote{\href{https://tiptap.dev}{tiptap.dev}},
-% extended with a custom decoration layer that stacks criterion-colored
-% underlines and term marks over the Translation text. The full system ships
-% as one Docker container and starts with a single command.
+% OpenAI-compatible client with per-model endpoint configuration, so any
+% hosted gateway, such as OpenRouter, or a local vLLM server can serve the
+% models, and criteria created in the interface apply without redeployment.
+% The server is a FastAPI application over a single-file SQLite store that
+% executes translation and first-pass scoring as background jobs. Its
+% evaluation store is append-only: re-evaluation appends new score revisions
+% and never overwrites earlier predictions. The client is a React and
+% TypeScript application whose editor builds on the open-source TipTap
+% framework~\cite{tiptap}, extended with a custom decoration layer that
+% stacks criterion-colored underlines and term marks over the Translation
+% text. The full system ships as one Docker container and starts with a
+% single command.
