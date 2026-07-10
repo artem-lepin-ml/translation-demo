@@ -1,28 +1,28 @@
 {
   "generated_by": "data/eval/wiki/cleanup/tools/compute_dataset_stats.py",
   "gt_rev": "f4c3d00",
-  "tier_rev": "3998 QIDs (0d89242)",
-  "exclusions_rev": "13553f8",
+  "tier_rev": "3998 QIDs (1e218ef)",
+  "exclusions_rev": "a220cb3",
   "cascade": {
     "mentions": {
       "raw": 7658,
       "t2": 6894,
-      "final": 6587
+      "final": 6573
     },
     "entities": {
       "raw": 5879,
       "t2": 5351,
-      "final": 5073
+      "final": 5061
     },
     "qids": {
       "raw": 3638,
       "t2": 3332,
-      "final": 3103
+      "final": 3091
     }
   },
   "overlap_excl_already_t2dropped": 443,
   "final_split": {
-    "named": 3825,
-    "term": 1248
+    "named": 3814,
+    "term": 1247
   }
 }

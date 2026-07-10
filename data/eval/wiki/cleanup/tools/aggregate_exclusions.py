@@ -27,6 +27,19 @@
 # DRAFT/pending-approval wording to an APPROVED note -- this script is the
 # note's single source of truth, so a rerun (e.g. after a future gt.jsonl
 # change) regenerates the same approved wording, not a reverted draft one.
+#
+# Updated 2026-07-10 (same day, later still): two post-approval owner rulings
+# (see overrides_owner_rulings.json) -- (1) uniform ancient-language
+# tag-position removal supersedes the single wave-1 restore of
+# "древнеперсидск" (010 n=169), which goes back into live exclusions;
+# (2) modern-political anchors kept with KEEP-bias in 072/073 are excluded.
+# Ruling (1) is a ``reverse_restores`` entry resolved against the PRE-fix gold
+# like any other wave1 override (same ``n`` numbering, flows through the
+# normal step-4 reconciliation). Ruling (2) is an ``add_removals`` entry
+# resolved directly against CURRENT gt.jsonl identity (072/073 are untouched
+# by both the IPA parser fix and the corpus swap, so no prefix-gold
+# indirection is needed -- unlike every other override/wave file). Both get
+# provenance "owner-ruling".
 """Aggregate the wave1-10 LLM gold-cleanup flags into the approved anchor
 exclusions file.
 
@@ -72,6 +85,11 @@ Hard-error conditions (the script refuses to guess):
     (article, n) pair that is not (respectively: is already) flagged
   * a replacement-audit flag whose identity collides with an existing
     (wave-based) exclusion
+  * an overrides_owner_rulings.json ``reverse_restores`` entry not found in
+    the restored list, an anchor mismatch, or an (article, n) already flagged
+  * an overrides_owner_rulings.json ``add_removals`` identity not found in
+    current gt.jsonl for the given article, or colliding with an existing
+    exclusion for the same title
 
 Run:
   cd /home/user/translation-demo && PYTHONPATH=src python3 \\
@@ -96,6 +114,7 @@ GT_PATH = ROOT / "data/eval/wiki/gt.jsonl"
 MANIFEST_PATH = CLEANUP_DIR / "manifest.json"
 OVERRIDES_WAVE1_PATH = CLEANUP_DIR / "overrides_wave1.json"
 OVERRIDES_WAVE2_PATH = CLEANUP_DIR / "overrides_wave2.json"
+OVERRIDES_OWNER_RULINGS_PATH = CLEANUP_DIR / "overrides_owner_rulings.json"
 REPLACEMENTS_PATH = CLEANUP_DIR / "replacements_2026-07-10.json"
 REMOVALS_REPLACEMENTS_DIR = CLEANUP_DIR / "removals-replacements"
 MANIFEST_REPLACEMENTS_PATH = REMOVALS_REPLACEMENTS_DIR / "manifest_replacements.json"
@@ -161,13 +180,9 @@ SWEEP_REGEXES: list[tuple[str, re.Pattern[str]]] = [
 ]
 
 OPEN_QUESTIONS_EXTRA: list[dict[str, str]] = [
-    {
-        "question": (
-            "modern political institutions kept with KEEP-bias in 072 (Согдиана) / "
-            "073 (Сокровища Сеусо) — e.g. anchors referencing Орбан / ЕС / Soviet-era "
-            "oblasts if present; owner to rule"
-        )
-    },
+    # the 072/073 modern-political-institutions question was resolved by the
+    # owner ruling 2026-07-10 (see overrides_owner_rulings.json) -- removed
+    # from open_questions accordingly.
     {
         "question": (
             "089 «золото» removed as generic material while электрум/лазурит kept as "
@@ -213,6 +228,7 @@ def main() -> None:
     current_records = load_jsonl(GT_PATH)
     overrides_wave1 = json.loads(OVERRIDES_WAVE1_PATH.read_text(encoding="utf-8"))
     overrides_wave2 = json.loads(OVERRIDES_WAVE2_PATH.read_text(encoding="utf-8"))
+    owner_rulings = json.loads(OVERRIDES_OWNER_RULINGS_PATH.read_text(encoding="utf-8"))
     replacements = json.loads(REPLACEMENTS_PATH.read_text(encoding="utf-8"))
     manifest_replacements = json.loads(MANIFEST_REPLACEMENTS_PATH.read_text(encoding="utf-8"))["articles"]
     overrides_replacements = json.loads(OVERRIDES_REPLACEMENTS_PATH.read_text(encoding="utf-8"))
@@ -393,6 +409,42 @@ def main() -> None:
             flags[key] = {"identity": (idx, surf, qid, slen), "reason": a["reason"], "provenance": provenance}
             override_add_counts[provenance] += 1
 
+    # ── step 3c: owner rulings — reverse specific wave1 restores (see
+    # overrides_owner_rulings.json). Resolved against PRE-fix gold exactly
+    # like a wave1 override (same ``n`` numbering); the anchor goes back into
+    # `flags` so it flows through the normal step-4 reconciliation like any
+    # other flag, ending up live with provenance "owner-ruling" ──
+    owner_ruling_reverse_count = 0
+    for r in owner_rulings.get("reverse_restores", []):
+        i, n = int(r["article"]), int(r["n"])
+        key = (i, n)
+        if key in flags:
+            raise SystemExit(
+                f"HARD ERROR: owner_rulings.reverse_restores article={r['article']} n={n} is "
+                f"already in the flagged set -- nothing to reverse"
+            )
+        identity = resolve(i, n)
+        idx, surf, qid, slen = identity
+        if r.get("anchor") is not None and r["anchor"] != surf:
+            raise SystemExit(
+                f"HARD ERROR: owner_rulings.reverse_restores article={r['article']} n={n} anchor "
+                f"mismatch: ruling says {r['anchor']!r}, resolved anchor_text={surf!r}"
+            )
+        match_idx = next(
+            (ridx for ridx, rest in enumerate(restored)
+             if rest["article_no"] == art3(i) and rest["token_index"] == idx
+             and rest["anchor_text"] == surf and rest["qid"] == qid and rest["span_len"] == slen),
+            None,
+        )
+        if match_idx is None:
+            raise SystemExit(
+                f"HARD ERROR: owner_rulings.reverse_restores article={r['article']} n={n} not "
+                f"found in the restored list -- nothing to reverse"
+            )
+        del restored[match_idx]
+        flags[key] = {"identity": identity, "reason": r["reason"], "provenance": "owner-ruling"}
+        owner_ruling_reverse_count += 1
+
     # ── step 6a: cross-wave adds (article 004 "исторический источник", article
     # 094 "пиньинь" -- see CROSS_WAVE_RULES) ──
     cross_wave_add_count = 0
@@ -572,6 +624,37 @@ def main() -> None:
         title_identities.add(identity)
         replacement_audit_add_count += 1
 
+    # ── owner rulings: add_removals resolved directly against CURRENT gold
+    # (see overrides_owner_rulings.json) -- 072/073 are untouched by both the
+    # IPA parser fix and the corpus swap, so no prefix-gold indirection is
+    # needed, unlike every wave/override file above ──
+    owner_ruling_add_count = 0
+    for a in owner_rulings.get("add_removals", []):
+        i = int(a["article"])
+        art = art3(i)
+        title = titles[i - 1]
+        rec = current_by_title[title]
+        identity = (a["token_index"], a["anchor_text"], a["qid"], a["span_len"])
+        if identity not in {tuple(t) for t in rec["gt_tuples"]}:
+            raise SystemExit(
+                f"HARD ERROR: owner_rulings.add_removals article={art} identity {identity} "
+                f"not found in current gt.jsonl gt_tuples for title {title!r}"
+            )
+        title_identities = existing_identities_by_title.setdefault(title, set())
+        if identity in title_identities:
+            raise SystemExit(
+                f"HARD ERROR: owner_rulings.add_removals article={art} identity {identity} "
+                f"collides with an existing exclusion for title {title!r}"
+            )
+        exclusions.append({
+            "article_no": art, "title": title, "article_qid": rec["qid"],
+            "token_index": a["token_index"], "span_len": a["span_len"],
+            "anchor_text": a["anchor_text"], "qid": a["qid"],
+            "reason": a["reason"], "provenance": "owner-ruling",
+        })
+        title_identities.add(identity)
+        owner_ruling_add_count += 1
+
     exclusions.sort(key=lambda e: (e["article_no"], e["token_index"]))
     dropped.sort(key=lambda e: (e["article_no"], e["token_index"]))
     restored.sort(key=lambda e: (e["article_no"], e["token_index"]))
@@ -646,6 +729,7 @@ def main() -> None:
         "override_add": sum(override_add_counts.values()),
         "cross_wave_add": cross_wave_add_count,
         "replacement_audit_add": replacement_audit_add_count,
+        "owner_ruling_add": owner_ruling_reverse_count + owner_ruling_add_count,
         "sweep_candidates": len(sweep_candidates),
         "open_questions": len(open_questions),
     }
@@ -672,6 +756,8 @@ def main() -> None:
     print(f"cross-wave adds: {cross_wave_add_count}")
     print(f"replacement-audit adds: {replacement_audit_add_count} "
           f"(restored: {sum(1 for r in restored if r.get('provenance') == 'replacement-audit-override')})")
+    print(f"owner-ruling adds: {owner_ruling_reverse_count + owner_ruling_add_count} "
+          f"(reversed restores={owner_ruling_reverse_count}, add_removals={owner_ruling_add_count})")
     print(f"\nlive exclusions total: {len(exclusions)}")
     print(f"dropped_by_parser_fix total: {len(dropped)}")
     dropped_by_article = Counter(e["article_no"] for e in dropped)

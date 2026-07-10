@@ -2,15 +2,16 @@
  "note": "APPROVED by owner 2026-07-10. Semantic anchor exclusions from the gold-cleanup campaign; applied at scoring time (gt.jsonl stays raw). Anchor identity is (token_index, anchor_text, qid, span_len) against gt.jsonl @ f4c3d00.",
  "generated_by": "data/eval/wiki/cleanup/tools/aggregate_exclusions.py",
  "counts": {
-  "live_exclusions": 750,
+  "live_exclusions": 764,
   "dropped_by_parser_fix": 56,
   "moot_article_replaced": 130,
-  "restored": 3,
+  "restored": 2,
   "override_add": 12,
   "cross_wave_add": 2,
   "replacement_audit_add": 37,
+  "owner_ruling_add": 14,
   "sweep_candidates": 0,
-  "open_questions": 3
+  "open_questions": 2
  },
  "exclusions": [
   {
@@ -474,6 +475,17 @@
    "qid": "Q35518",
    "reason": "language template tag",
    "provenance": "wave"
+  },
+  {
+   "article_no": "010",
+   "title": "Арслантепе (Мелид)",
+   "article_qid": "Q705132",
+   "token_index": 1286,
+   "span_len": 1,
+   "anchor_text": "древнеперсидск",
+   "qid": "Q1471822",
+   "reason": "owner ruling 2026-07-10: uniform tag-position removal supersedes the earlier restore",
+   "provenance": "owner-ruling"
   },
   {
    "article_no": "010",
@@ -5283,6 +5295,83 @@
    "provenance": "wave"
   },
   {
+   "article_no": "072",
+   "title": "Согдиана",
+   "article_qid": "Q486244",
+   "token_index": 1533,
+   "span_len": 2,
+   "anchor_text": "Ленинабадская область",
+   "qid": "Q241582",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "072",
+   "title": "Согдиана",
+   "article_qid": "Q486244",
+   "token_index": 1541,
+   "span_len": 2,
+   "anchor_text": "Таджикской ССР",
+   "qid": "Q199711",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet republic (SSR)",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "072",
+   "title": "Согдиана",
+   "article_qid": "Q486244",
+   "token_index": 1545,
+   "span_len": 1,
+   "anchor_text": "Сталинабадской",
+   "qid": "Q4439196",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "072",
+   "title": "Согдиана",
+   "article_qid": "Q486244",
+   "token_index": 1546,
+   "span_len": 1,
+   "anchor_text": "Кулябской",
+   "qid": "Q1999787",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "072",
+   "title": "Согдиана",
+   "article_qid": "Q486244",
+   "token_index": 1548,
+   "span_len": 1,
+   "anchor_text": "Гармской",
+   "qid": "Q4133843",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "072",
+   "title": "Согдиана",
+   "article_qid": "Q486244",
+   "token_index": 1552,
+   "span_len": 4,
+   "anchor_text": "Президиума Верховного Совета СССР",
+   "qid": "Q1643162",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet governing institution",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "072",
+   "title": "Согдиана",
+   "article_qid": "Q486244",
+   "token_index": 1571,
+   "span_len": 2,
+   "anchor_text": "Ура-Тюбинская область",
+   "qid": "Q4476477",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit",
+   "provenance": "owner-ruling"
+  },
+  {
    "article_no": "073",
    "title": "Сокровища Сеусо",
    "article_qid": "Q831539",
@@ -5319,6 +5408,39 @@
    "article_no": "073",
    "title": "Сокровища Сеусо",
    "article_qid": "Q831539",
+   "token_index": 105,
+   "span_len": 1,
+   "anchor_text": "Венгрии",
+   "qid": "Q28",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- state government asserting ownership claim",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "073",
+   "title": "Сокровища Сеусо",
+   "article_qid": "Q831539",
+   "token_index": 106,
+   "span_len": 1,
+   "anchor_text": "Югославии",
+   "qid": "Q36704",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- state government asserting ownership claim",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "073",
+   "title": "Сокровища Сеусо",
+   "article_qid": "Q831539",
+   "token_index": 108,
+   "span_len": 1,
+   "anchor_text": "Ливана",
+   "qid": "Q822",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- state government asserting ownership claim",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "073",
+   "title": "Сокровища Сеусо",
+   "article_qid": "Q831539",
    "token_index": 111,
    "span_len": 2,
    "anchor_text": "праве собственности",
@@ -5336,6 +5458,28 @@
    "qid": "Q892447",
    "reason": "modern auction house company",
    "provenance": "wave"
+  },
+  {
+   "article_no": "073",
+   "title": "Сокровища Сеусо",
+   "article_qid": "Q831539",
+   "token_index": 640,
+   "span_len": 2,
+   "anchor_text": "Палате лордов",
+   "qid": "Q11007",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- UK legislative institution deliberating the case",
+   "provenance": "owner-ruling"
+  },
+  {
+   "article_no": "073",
+   "title": "Сокровища Сеусо",
+   "article_qid": "Q831539",
+   "token_index": 658,
+   "span_len": 2,
+   "anchor_text": "Европейский Союз",
+   "qid": "Q458",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- supranational political union",
+   "provenance": "owner-ruling"
   },
   {
    "article_no": "073",
@@ -5369,6 +5513,17 @@
    "qid": "Q892447",
    "reason": "modern auction house company",
    "provenance": "wave"
+  },
+  {
+   "article_no": "073",
+   "title": "Сокровища Сеусо",
+   "article_qid": "Q831539",
+   "token_index": 801,
+   "span_len": 2,
+   "anchor_text": "Виктор Орбан",
+   "qid": "Q57641",
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- named modern politician",
+   "provenance": "owner-ruling"
   },
   {
    "article_no": "074",
@@ -10446,16 +10601,6 @@
  ],
  "restored": [
   {
-   "article_no": "010",
-   "title": "Арслантепе (Мелид)",
-   "article_qid": "Q705132",
-   "token_index": 1286,
-   "span_len": 1,
-   "anchor_text": "древнеперсидск",
-   "qid": "Q1471822",
-   "reason": "owner ruling: Old Persian is an anchor (gold-noise review)"
-  },
-  {
    "article_no": "R05",
    "title": "Триумф",
    "article_qid": "Q657438",
@@ -10482,9 +10627,6 @@
  "open_questions": [
   {
    "question": "ancient-language abbreviated tags in 010 (хетт., аккад., урарт., ассир., арм., хеттск., ассирийск.): agents removed as template tags, but owner kept древнеперсидск.; final bucket decided at owner review"
-  },
-  {
-   "question": "modern political institutions kept with KEEP-bias in 072 (Согдиана) / 073 (Сокровища Сеусо) — e.g. anchors referencing Орбан / ЕС / Soviet-era oblasts if present; owner to rule"
   },
   {
    "question": "089 «золото» removed as generic material while электрум/лазурит kept as specialized — confirm the generic-vs-specialized material line"

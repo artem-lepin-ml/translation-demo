@@ -134,3 +134,59 @@ with the live gold for this pilot.
    exclusions — verified directly (each excluded tier-0 anchor was its unit's only anchor, and no
    unit's named/term class changed). This kept the "after" analysis simple; it is not guaranteed
    to hold on other article subsets.
+
+## Addendum (owner rulings 2026-07-10)
+
+Two post-approval owner rulings landed on top of the 750-entry `anchor_exclusions.json` used
+above (now 764 entries; see `data/eval/wiki/cleanup/overrides_owner_rulings.json` and
+`data/eval/wiki/cleanup/tools/aggregate_exclusions.py`): (1) the wave-1 restore of
+"древнеперсидск" (article 010, Арслантепе (Мелид)) is reversed — abbreviated language tags in
+tag position are now excluded uniformly regardless of the language being ancient; (2) 13 new
+exclusions for modern-political anchors previously kept with KEEP-bias in articles 072 (Согдиана)
+and 073 (Сокровища Сеусо).
+
+**Only ruling (1) touches this pilot.** Neither 072 nor 073 is one of the pilot's 10 articles, so
+the numbers below move exclusively because of the single reversed restore in article 010 — the
+same script (`span_ner_before_after.py`), same pred.jsonl, rerun against the updated
+`anchor_exclusions.json`.
+
+### Recall — after-cleanup, before vs after the ruling
+
+| class | after (pre-ruling) | after (post-ruling) | Δ recall |
+|---|---:|---:|---:|
+| named | 400/419 — 95.47% | 400/419 — **95.47%** | 0.0pp |
+| term | 57/84 — 67.86% | 57/83 — **68.67%** | +0.81pp |
+| **overall** | 457/503 — 90.85% | 457/502 — **91.04%** | +0.19pp |
+
+The term/overall denominator drops by exactly 1 (the reversed "древнеперсидск" restore is a
+tier-0, term-class, singleton-anchor gold unit); `hit` is unchanged (the pilot's gemini
+predictions never matched this unit either before or after), so recall rises slightly on both a
+smaller and unaffected-`hit` denominator.
+
+### Precision — unaffected
+
+| class | after (pre-ruling) | after (post-ruling) | Δ |
+|---|---:|---:|---:|
+| named | 390/928 — 42.03% | 390/928 — **42.03%** | 0.0pp |
+| term | 65/275 — 23.64% | 65/275 — **23.64%** | 0.0pp |
+| **overall** | 455/1203 — 37.82% | 455/1203 — **37.82%** | 0.0pp |
+| dedup | 364/690 — 52.75% | 364/690 — **52.75%** | 0.0pp |
+
+Precision's denominator is pred-side (1203 mentions) and the one removed gold unit was not the
+sole gold anchor overlapping any pred mention, so every precision cell is byte-identical to the
+pre-ruling "after" state.
+
+### Excluded-anchor count — article 010 only
+
+| title | gt_tuples before → after | exclusions matched | of which tier-0 |
+|---|---:|---:|---:|
+| Арслантепе (Мелид) — pre-ruling | 239 → 224 | 15 | 6 |
+| Арслантепе (Мелид) — post-ruling | 239 → **223** | **16** | **7** |
+
+All other 9 pilot articles are untouched by both rulings (verified: `n_exclusion_entries_matched`
+and `n_tier0_anchors_removed` unchanged for KV35YL, XXVII династия, XXX династия, Абдмилькат,
+Азиатская экспедиция (336—334 до н. э.), Академия Цзися, Амударьинский клад, Арахозия, Армия
+империи Хань).
+
+Raw script output: `/tmp/claude-0/-home-user-translation-demo/d94abddc-f105-576c-b81a-a51a1ca3f0ff/scratchpad/span_ner_before_after/output.json`
+(scratch path, not committed — regenerate by rerunning `span_ner_before_after.py`, deterministic).
