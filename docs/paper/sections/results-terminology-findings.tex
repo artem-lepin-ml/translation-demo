@@ -1,0 +1,58 @@
+% Section 5.1 findings for Table~\ref{tab:grounding-results} (terminology
+% extraction + Wikidata grounding). Two variants, variant 1 active.
+% Numbers verified 2026-07-10 against
+% docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json
+% (P_label: Gemini 5340/10068 = 0.530, DeepSeek 4409/8248 = 0.535),
+% docs/reports/ml-engineer-grounding-run-gpt54.md (R_doc R_term tier
+% 4183/7174 = 0.583, 99/100 articles, missing article "Jaffa" = 347 gold
+% mentions in the unfiltered corpus, P_label addendum 3773/7037 = 0.536) and
+% docs/paper/sections/table-c-grounding.tex (R_doc 0.735 / 0.657, all CIs).
+% Missing-article bound: Jaffa's tier-filtered mention count is not
+% separately derived in the reports, so the text states an upper bound only
+% (at most 347 of 7174, i.e. at most +0.048 recall, 0.583 + 0.048 = 0.631,
+% below DeepSeek's 0.657).
+
+% ===== VARIANT 1 (main) =====
+
+\paragraph{Recall separates the models, precision does not.}
+Across the filled rows of Table~\ref{tab:grounding-results}, document-level
+recall spans 0.583 to 0.735 with non-overlapping confidence intervals,
+whereas label-verified precision stays between 0.530 and 0.536 and every
+interval overlaps. Each row changes only the model acting as extractor and
+disambiguation judge, and the Wikidata grounding stage is deterministic and
+shared. Recall therefore reflects the coverage the model contributes, and
+the precision lower bound behaves as a property of the pipeline rather than
+of the model. The three pending open-weight rows will show whether this
+pattern holds beyond cloud models.
+
+\paragraph{Recall does not track general model capability.}
+GPT-5.4, the strongest generalist in the lineup, records the lowest recall
+in Table~\ref{tab:grounding-results} at 0.583, trailing DeepSeek-V4-Flash by
+0.074 and Gemini-3.1-Flash-Lite by 0.152. Its figure is a strict lower bound
+over 99 of 100 articles, but the missing article accounts for at most 347 of
+the 7174 gold mentions, so even perfect recovery there would add at most
+0.048 and leave the ordering intact. A cautious reading is that extraction
+in this pipeline rewards exhaustive enumeration of candidate surfaces rather
+than reasoning depth. We do not draw a stronger conclusion from three rows.
+
+% ===== VARIANT 2 (alternative framing) =====
+
+% \paragraph{The model under test moves recall only.}
+% Table~\ref{tab:grounding-results} shows document-level recall ranging from
+% 0.583 to 0.735 across the three filled rows, while label-verified precision
+% varies by less than 0.01, from 0.530 to 0.536, with overlapping confidence
+% intervals. Because the Wikidata grounding stage is deterministic and
+% identical across rows, the model choice governs how much terminology enters
+% the pipeline, and the precision floor is set by the pipeline itself. Whether
+% open-weight models fit the same pattern is left to the three pending rows.
+
+% \paragraph{General capability does not predict extraction coverage.}
+% The lowest recall in Table~\ref{tab:grounding-results} belongs to GPT-5.4,
+% the strongest generalist in the lineup, at 0.583 against 0.657 for
+% DeepSeek-V4-Flash and 0.735 for Gemini-3.1-Flash-Lite. The GPT-5.4 run
+% covers 99 of 100 articles and its figure is a strict lower bound, yet the
+% missing article holds at most 347 of the 7174 gold mentions, so a perfect
+% score there raises recall by at most 0.048 and does not change the ranking.
+% We attribute this tentatively to the task itself, which rewards exhaustive
+% surface enumeration over reasoning depth, and leave a firmer account to the
+% completed table.

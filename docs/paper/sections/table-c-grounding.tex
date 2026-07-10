@@ -1,0 +1,49 @@
+% Table C: Terminology recognition + Wikidata grounding (WikiHist corpus).
+% PROTOCOL v3 (owner, 2026-07-10): set-based document-level metrics
+% (supervisor's ICD formalism, see eval-metrics-terminology.tex), split into
+% named entities vs common-noun terms by anchor capitalization. No daggers,
+% no footnotes, no label-credit corrections. Unit = unique (article, QID),
+% sitelink-clean, generic-lexical-class filter applied.
+% Column counts: named n=4032, terms n=1530 (total 5562; 114 mixed-case
+% units, 2%, classified as named).
+% Numbers provenance: scratchpad/set_based_split.py (main-thread run
+% 2026-07-10) over committed pred.jsonl runs + gt.jsonl (canonical) + tier filter;
+% CIs available from the same script (Wilson 95%, pooled counts), kept out
+% of the table for paper-clean look:
+%   gemini named R [.797-.822] P [.652-.678]; term R [.382-.431] P [.442-.496]
+%   deepseek named R [.694-.722] P [.666-.694]; term R [.357-.406] P [.471-.528]
+% GPT-5.4 removed entirely (owner decision 2026-07-10: excluded from the
+% experiment, no run and no row). Cloud rows await the experiment-v2 redo
+% (spec docs/superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md).
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+ & \multicolumn{2}{c}{Named entities} & \multicolumn{2}{c}{Terms} \\
+ & \multicolumn{2}{c}{\scriptsize $n{=}4032$} & \multicolumn{2}{c}{\scriptsize $n{=}1530$} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Model & $R_{\mathrm{doc}}$ & $P_{\mathrm{doc}}$ & $R_{\mathrm{doc}}$ & $P_{\mathrm{doc}}$ \\
+\midrule
+% TODO(sr004 vLLM runbook, owner-side): local grounding replays pending.
+Qwen3-4B-Instruct     & --- & --- & --- & --- \\
+Gemma-3-27B-it        & --- & --- & --- & --- \\
+Qwen3.6-27B           & --- & --- & --- & --- \\
+% TODO(experiment v2, spec 2026-07-10-wiki-eval-experiment-v2.md): cloud rows
+% below with numbers are PRE-REDO values (Russian prompt, 4k truncation,
+% +-40-char judge context) and will be REPLACED by the v2-run numbers before
+% submission. Gemma-4-31B-it added by owner 2026-07-10 (open-weights, served
+% via OpenRouter@WandB), no pre-redo run exists.
+Gemma-4-31B-it        & --- & --- & --- & --- \\
+Gemini-3.1-Flash-Lite & 0.810 & 0.665 & 0.406 & 0.469 \\
+DeepSeek-V4-Flash     & 0.708 & 0.680 & 0.381 & 0.499 \\
+\bottomrule
+\end{tabular}
+\caption{Terminology recognition and Wikidata grounding on the 100 articles
+of \datasetWikipediaName{}, reported separately for named entities and
+common-noun terms ($n$ is the number of unique document-level gold
+entities per class). Metric definitions and the classification rule are
+given in Section~\ref{sec:eval-metrics}.}
+\label{tab:grounding-results}
+\end{table}

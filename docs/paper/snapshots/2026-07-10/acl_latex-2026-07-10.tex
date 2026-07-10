@@ -1,0 +1,1234 @@
+\documentclass[11pt]{article}
+
+% Change "review" to "final" to generate the final (sometimes called camera-ready) version.
+% Change to "preprint" to generate a non-anonymous version with page numbers.
+\usepackage[final]{acl}
+\usepackage{booktabs}
+\usepackage{tcolorbox}
+% \usepackage[english]{babel}  % Основной язык — английский
+% \babelprovide[import, main]{russian}  % Подключаем русский как дополнительный
+\usepackage[T2A,T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% \usepackage[english, russian]{babel}
+
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{makecell}
+% \usepackage{polyglossia}
+% \setmainlanguage{english}
+% \setotherlanguage{russian}
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+% \usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+% \usepackage[utf8]{inputenc}
+
+% \usepackage[utf8]{inputenc}
+% \usepackage[T2A]{fontenc}
+
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% This is also not strictly necessary, and may be commented out.
+% However, it will improve the aesthetics of text in
+% the typewriter font.
+\usepackage{inconsolata}
+
+\lstnewenvironment{prompt}[1][]{
+  \lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{gray!5},
+    frame=single,
+    framesep=3mm,
+    rulecolor=\color{blue!30},
+    breaklines=true,
+    %postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    #1
+  }
+}{}
+
+
+
+%Including images in your LaTeX document requires adding
+%additional package(s)
+\usepackage{graphicx}
+\newcommand{\systemname}{SystemName}
+\newcommand{\datasetWikipediaName}{WikiHist}
+\newcommand{\datasetEncyclopediaName}{RuWH}
+\newcommand{\moduleTranslation}{Translation}
+\newcommand{\moduleTerminology}{Terminology Extraction}
+\newcommand{\moduleEvaluation}{LLM-as-a-judge Evaluation}
+
+% If the title and author information does not fit in the area allocated, uncomment the following
+%
+%\setlength\titlebox{<dim>}
+%
+% and set <dim> to something 5cm or larger.
+
+
+\title{Beyond Literal Equivalence: An Interpretable System for Terminology-Aware Machine Translation in Historical Texts}
+% \title{Span-Level Interpretability in Historical Machine Translation: A Confidence-Based Terminology Normalization Tool}
+
+% Author information can be set in various styles:
+% For several authors from the same institution:
+% \author{Author 1 \and ... \and Author n \\
+%         Address line \\ ... \\ Address line}
+% if the names do not fit well on one line use
+%         Author 1 \\ {\bf Author 2} \\ ... \\ {\bf Author n} \\
+% For authors from different institutions:
+% \author{Author 1 \\ Address line \\  ... \\ Address line
+%         \And  ... \And
+%         Author n \\ Address line \\ ... \\ Address line}
+% To start a separate ``row'' of authors use \AND, as in
+% \author{Author 1 \\ Address line \\  ... \\ Address line
+%         \AND
+%         Author 2 \\ Address line \\ ... \\ Address line \And
+%         Author 3 \\ Address line \\ ... \\ Address line}
+
+\author{ 
+    ~\textbf{Artem Lepin\textsuperscript{1,TODO}\thanks{These authors contributed equally to this work.}},
+    ~\textbf{Danil Kostromin\textsuperscript{1,TODO}$^*$},
+    ~\textbf{Andrey Sakhovskiy\textsuperscript{1,4}},\\
+    ~\textbf{Semen Budenny\textsuperscript{1,5}}
+    \\
+    \textsuperscript{1}Sber AI
+    \textsuperscript{2}TODO
+    \textsuperscript{3}TODO
+    \textsuperscript{4}Skoltech
+    \textsuperscript{5}AIRI
+    \\ 
+    % \small{
+    % \textbf{Correspondence:} \href{mailto:andrey.sakhovskiy@gmail.com} #\email{andrey.sakhovskiy@gmail.com}}
+}
+
+% \author{First Author \\
+%   Affiliation / Address line 1 \\
+%   Affiliation / Address line 2 \\
+%   Affiliation / Address line 3 \\
+%   \texttt{email@domain} \\\And
+%   Second Author \\
+%   Affiliation / Address line 1 \\
+%   Affiliation / Address line 2 \\
+%   Affiliation / Address line 3 \\
+%   \texttt{email@domain} \\}
+
+%\author{
+%  \textbf{First Author\textsuperscript{1}},
+%  \textbf{Second Author\textsuperscript{1,2}},
+%  \textbf{Third T. Author\textsuperscript{1}},
+%  \textbf{Fourth Author\textsuperscript{1}},
+%\\
+%  \textbf{Fifth Author\textsuperscript{1,2}},
+%  \textbf{Sixth Author\textsuperscript{1}},
+%  \textbf{Seventh Author\textsuperscript{1}},
+%  \textbf{Eighth Author \textsuperscript{1,2,3,4}},
+%\\
+%  \textbf{Ninth Author\textsuperscript{1}},
+%  \textbf{Tenth Author\textsuperscript{1}},
+%  \textbf{Eleventh E. Author\textsuperscript{1,2,3,4,5}},
+%  \textbf{Twelfth Author\textsuperscript{1}},
+%\\
+%  \textbf{Thirteenth Author\textsuperscript{3}},
+%  \textbf{Fourteenth F. Author\textsuperscript{2,4}},
+%  \textbf{Fifteenth Author\textsuperscript{1}},
+%  \textbf{Sixteenth Author\textsuperscript{1}},
+%\\
+%  \textbf{Seventeenth S. Author\textsuperscript{4,5}},
+%  \textbf{Eighteenth Author\textsuperscript{3,4}},
+%  \textbf{Nineteenth N. Author\textsuperscript{2,5}},
+%  \textbf{Twentieth Author\textsuperscript{1}}
+%\\
+%\\
+%  \textsuperscript{1}Affiliation 1,
+%  \textsuperscript{2}Affiliation 2,
+%  \textsuperscript{3}Affiliation 3,
+%  \textsuperscript{4}Affiliation 4,
+%  \textsuperscript{5}Affiliation 5
+%\\
+%  \small{
+%    \textbf{Correspondence:} \href{mailto:email@domain}{email@domain}
+%  }
+%}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Todo: Andrey
+\end{abstract}
+
+% {\color{purple}
+\section{Introduction}
+
+% \paragraph{Background and Motivation.}
+Recent success of Large Language Models (LLMs) have significantly advanced Machine Translation (MT)~\cite{kocmi-etal-2024-findings,semenov-etal-2025-findings,feng-etal-2025-tear,DBLP:conf/iclr/WangZLWMZZ25,tan-etal-2026-llm}. However, without explicit grounding, LLMs remain prone to hallucinations and struggle with entity names~\cite{conia-etal-2024-towards}, complex idiomatic expressions~\cite{liu-etal-2023-crossing,kim-etal-2025-memorization,liu-etal-2026-evaluating} and domain-specific terms~\cite{oncevay-etal-2025-translating}.
+
+
+% \paragraph{The Evaluation and Analysis Gap.}
+To assess MT quality, recent research has increasingly adopted the LLM-as-a-judge approach~\cite{kocmi-federmann-2023-large,kim-2025-rubric,bavaresco-etal-2025-llms,feng-etal-2025-mad,DBLP:journals/corr/abs-2510-20780}. Additionally, iterative refinement using feedback from an LLM judge was shown to improve translation quality~\cite{raunak-etal-2023-leveraging,wang-etal-2024-taste,feng-etal-2025-tear}.
+Despite these advancements, researchers and practitioners lack convenient, interactive tools for in-depth MT error analysis with flexible definition of LLM criteria. Existing evaluation platforms typically rely on rigid, predefined metrics and do not allow users to specify custom, domain-specific evaluation criteria (e.g., evaluating a text specifically for ``anachronistic framing'' or ``ideological neutrality''). Furthermore, they rarely integrate specialized terminology retrieval and normalization pipelines directly into the analysis workflow. This limits the interpretability of the evaluation, as users cannot easily trace whether a translation error stems from a terminology mismatch, a factual hallucination, or a stylistic flaw.
+
+In terminology-rich and culturally nuanced fields, such as history, factual distortions are especially detrimental \citep{conia2024enhancing, zhao2020knowledge}.
+Historical texts present unique challenges: non-matching surface forms in the source language may collapse into identical translations in the target language (e.g., distinct Chinese dynasties such as Qin and Qing mapping to a single Russian term), and region-specific historiographical constructs often lack direct cross-cultural equivalents. Long-standing research direction explores entity- and terminology-aware MT, and retrieval from external sources, to improve cross-cultural adaptation~\cite{zhao-etal-2020-knowledge,DBLP:conf/ijcai/ZhaoZZZ20,DBLP:conf/aaai/ConiaLLM024}. 
+
+
+% {\color{red}
+% To systematically address MT quality, the community has increasingly adopted LLM-as-a-judge paradigms. Recent top-tier research validates this shift; for instance, \citet{guerreiro2024tacl} demonstrated the efficacy of LLMs in fine-grained translation evaluation, and \citet{vamvas2024acl} showed that LLM-based metrics significantly outperform traditional reference-based metrics in capturing semantic fidelity. Furthermore, \citet{hou2024automqm} and \citet{jiao2024gemba} proved that LLM judges can reliably generate fine-grained error spans that correlate highly with human judgments.
+% }
+
+
+To bridge this gap, we propose \systemname, an interactive web-based tool for the interpretable analysis of MT quality in terminology-rich domain. To allow flexible evaluation, the tool implements a flexible LLM-as-a-judge evaluation framework with arbitrary verbal criteria and refinement suggestions. For terminology analysis, \systemname{} implement a built-in terminology and normalization module. For improved interpretability, the tool has a Grammarly-like\footnote{\href{https://grammarly.com}{grammarly.com}} web interface with translation refinement suggestions highlighted as span level and with the reliability categories for translated terms.
+In summary, this demonstration paper contributes:
+\begin{itemize}
+    \item We propose \systemname{}, an interactive, easily deployable web tool for terminology-aware MT analysis, featuring a novel confidence-based terminology highlighting mechanism that visualizes the resolution of cross-lingual ambiguities via Wikipedia normalization.
+    \item A flexible LLM-as-a-judge evaluation framework that allows users to define, prototype, and apply custom, domain-specific assessment criteria, moving beyond rigid predefined metrics.
+    \item An integrated pipeline that combines translation refinement, entity-aware terminology normalization, and multi-criteria error analysis, providing a comprehensive, interpretable environment for MT researchers and domain experts.
+\end{itemize}
+
+% ----
+
+% Are Large Reasoning Models Good Translation
+% Evaluators? Analysis and Performance Boost~\cite{DBLP:journals/corr/abs-2510-20780}
+
+% ------
+
+% A Paradigm Shift in Machine Translation: Boosting Translation Performance of Large Language Models~\cite{DBLP:conf/iclr/Xu0SA24}
+
+
+
+
+% ------
+
+% RUBRIC-MQM : Span-Level LLM-as-judge in Machine Translation For High-End Models~\cite{kim-2025-rubric}
+
+
+
+% ------
+
+% GEMBA: Judging Machine Translation Quality with Large Language Models~\cite{kocmi-federmann-2023-large}
+
+
+% ------
+
+% M-MAD: Multidimensional Multi-Agent Debate for Advanced Machine Translation Evaluation~\cite{feng-etal-2025-mad}
+
+
+% ------
+
+% LLMs instead of Human Judges? A Large Scale Empirical Study across 20 NLP Evaluation Tasks~\cite{bavaresco-etal-2025-llms}
+
+
+
+% ------
+
+% DRT: Deep Reasoning Translation via Long Chain-of-Thought~\cite{wang-etal-2025-drt}
+
+
+% ------
+
+% ReMedy: Learning Machine Translation Evaluation from Human Preferences with Reward Modeling~\cite{tan-monz-2025-remedy}
+
+
+
+% ------
+
+
+% The Devil Is in the Errors: Leveraging Large Language Models for Fine-grained Machine Translation Evaluation~\cite{fernandes-etal-2023-devil}
+
+% -----
+
+
+
+
+% BOUQuET~\cite{andrews-etal-2025-bouquet}
+
+% ---
+
+% WikiMatrix: Mining 135M Parallel Sentences
+% in 1620 Language Pairs from Wikipedia~\cite{schwenk-etal-2021-wikimatrix}
+
+% ----
+
+% % CCMatrix: Mining Billions of High-Quality Parallel Sentences on the Web~\cite{schwenk-etal-2021-ccmatrix}
+
+% ---
+
+% Enhancing Machine Translation Experiences with Multilingual Knowledge Graphs~\cite{DBLP:conf/aaai/ConiaLLM024}
+
+% ----
+
+% Knowledge Graph Enhanced Neural Machine Translation via Multi-task Learning on Sub-entity Granularity~\cite{zhao-etal-2020-knowledge}
+
+% ---
+
+% Knowledge Graphs Enhanced Neural Machine Translation~\cite{DBLP:conf/ijcai/ZhaoZZZ20}
+
+
+% ---
+
+% Findings of the WMT25 General Machine Translation Shared Task: Time to Stop Evaluating on Easy Test Sets~\cite{kocmi-etal-2025-findings}
+
+% ---
+
+% SemEval-2025 Task 2: Entity-Aware Machine Translation~\cite{conia-etal-2025-semeval}
+
+% ----
+
+% Findings of the WMT24 General Machine Translation Shared Task: The LLM Era Is Here but MT Is Not Solved Yet~\cite{kocmi-etal-2024-findings}
+
+% ---------
+
+
+% Findings of the WMT25 Shared Task on Automated Translation Evaluation Systems: Linguistic Diversity is Challenging and References Still Help~\cite{lavie-etal-2025-findings}
+
+% ----------
+
+% DelTA: An Online Document-Level Translation Agent Based on Multi-Level Memory~\cite{DBLP:conf/iclr/WangZLWMZZ25}
+
+% ---------------
+
+% TEaR: Improving LLM-based Machine Translation with Systematic Self-Refinement~\cite{feng-etal-2025-tear}
+
+% ---------------
+
+% Extending Automatic Machine Translation Evaluation to Book-Length Documents~\cite{wang-etal-2025-extending}
+
+% ---------------
+
+% Findings of the WMT25 Terminology Translation Task: Terminology is Useful Especially for Good MTs~\cite{semenov-etal-2025-findings}
+
+
+
+
+
+
+% ---------------
+
+% Towards Cross-Cultural Machine Translation with Retrieval-Augmented Generation from Multilingual Knowledge Graphs~\cite{conia-etal-2024-towards}
+
+% ---------
+
+
+% What Does LLM Refinement Actually Improve?
+% A Systematic Study on Document-Level Literary Translation~\cite{tan-etal-2026-llm}
+
+% -----
+
+% Evaluating the Impact of Verbal Multiword Expressions on Machine
+% Translation~\cite{liu-etal-2026-evaluating} - Multiword idiomatic expressions.
+
+% % ---------------
+
+
+% TODO: Incentivizing Parametric Knowledge via Reinforcement Learning with
+% Verifiable Rewards for Cross-Cultural Entity Translation~\cite{zhou-etal-2026-incentivizing}
+
+
+
+\section{System}
+As shown in Figure~\ref{fig:teaser}, \systemname{} has three key modules: (i) \textbf{\moduleTranslation}; (ii) \textbf{\moduleTerminology}; (iii) \textbf{\moduleEvaluation}. All components are integrated into a live web demo that is easily deployable for new languages and with different backbone models.
+
+
+\subsection{\moduleTranslation}
+\paragraph{Domain-Specific Translation}
+We generate initial translations using an LLM guided by a specialized prompt. This prompt requires strict preservation of dates, proper names, and historical relations to ensure factual fidelity. It also prioritizes conceptual equivalence over literal translation to avoid syntactic calques from the Russian source. Additionally, the prompt enforces disciplinary standards, including established scholarly terminology, Library of Congress transliteration, BCE/CE dating, and the exclusion of anachronistic framing (full prompt in Appendix~\ref{appx:translation}). To ensure scholarly objectivity, the model was prohibited from introducing anachronistic framing or modern ideological connotations absent from the source text.
+
+\paragraph{Translation Refinement}
+To refine the output, the system uses a multi-criteria evaluation and correction pipeline. First, three separate LLM judges assess the draft translation for Accuracy, Fluency, and Style. Each judge identifies problematic segments and generates structured feedback containing the source fragment, error explanation, and suggested correction. A dedicated refiner LLM then processes the source text, the draft, and the aggregated feedback. This refiner applies the suggested corrections in a single pass, integrating modifications without overlap or contradiction to produce the final translation.
+
+\subsection{\moduleTerminology}
+
+% \paragraph{Domain-Specific Translation}
+% The translation was generated by a large language model (LLM) following an enhanced prompting strategy designed to minimize typical machine translation errors and resolve nuanced, domain-specific borderline cases. The prompt imposed several rigorous constraints, foremost among them strict factual fidelity: all dates, proper names, and asserted relations were to be preserved without any addition, omission, or transposition. To produce natural academic English, the model was instructed to avoid syntactic calques from the Russian source, prioritizing conceptual equivalence over word‑for‑word rendering and allowing sentence‑level restructuring. The prompt also specified key disciplinary requirements: the mandatory use of established scholarly terminology, adherence to the Library of Congress transliteration system, and the exclusive use of BCE/CE chronology. To maintain scholarly objectivity, the model was prohibited from introducing anachronistic framing or modern ideological connotations absent from the source text. The full prompt can be found in Appx.~\ref{appx:translation}
+% \paragraph{Translation Refinement}
+% The subsequent pipeline stage focuses on translation refinement, preceded by a multi-criteria evaluation process. This evaluation employs an LLM-as-a-judge approach, where separate LLMs assess the translation against three criteria: Accuracy, Fluency, and Style. Each judge receives the source text and its translation to identify problematic segments. For every detected issue, the judge generates a structured output that contains the source fragment, the problematic translation fragment, an error explanation, and a suggested correction. Following evaluation, a dedicated LLM performs refinement. This refiner receives the original source text, the draft translation, and aggregated issues from all three judges. It analyzes detected errors and applies suggested corrections in a single pass, ensuring that modifications are integrated without overlap or contradiction to produce the final refined translation.
+% \subsection{\moduleTerminology}
+
+% \paragraph{Terminology Recognition and Normalization} TODO: Artem
+
+% \paragraph{Terminology Disambiguation} TODO: Artem
+
+% \paragraph{Terminology Ambiguity Categories} TODO: Artem
+
+
+\paragraph{Terminology Recognition and Normalization.}
+Historical texts require strict preservation of proper names and domain-specific concepts. We extract terminology using a large language model at the paragraph level. The model identifies surface forms corresponding to persons, locations, institutions, and cultural constructs. For each extracted term, the system queries the Wikidata API to retrieve candidate entity identifiers. This search operation grounds the surface form to a unique knowledge graph node. Once linked, the pipeline retrieves the target-language alias or label from the entity's record. This alternative name becomes the normalized translation. Using explicit knowledge graph labels replaces neural generation for proper nouns, reducing factual hallucination. The normalized terms are fed directly into the translation refinement module.
+
+\paragraph{Terminology Disambiguation.}
+Surface-level label matching frequently returns multiple plausible Wikidata candidates, particularly for polysemous historical terms. To resolve such cases, we prompt a second LLM with four inputs: the recognized surface form, the surrounding paragraph context, the list of candidate QIDs, and the natural-language description associated with each candidate. The model is instructed to select the single QID whose description best aligns with the contextual usage, or to abstain when no candidate is defensible. The output is a structured JSON object containing the chosen QID, a confidence score, and a short justification. This design keeps the reasoning traceable and allows downstream modules to treat low-confidence decisions as uncertain rather than silently propagating errors.
+
+\paragraph{Terminology Ambiguity Categories.}
+Based on the disambiguation outcome, every recognized term is assigned to one of three resolution states. \textbf{Unambiguous} matches are surface forms that map to a single Wikidata candidate with high label overlap and require no further reasoning. \textbf{Context-resolved ambiguities} are cases where multiple candidates are returned and the LLM selects one on the basis of paragraph-level evidence; these are surfaced to the user together with the model's justification. \textbf{Unresolved terms} are expressions for which no Wikidata candidate is retrieved, or for which the disambiguation model abstains; the system preserves the source form and flags the span as ungrounded. In the live interface, the three categories are rendered with distinct visual cues so that domain experts can audit the translation at the level of individual terminology decisions.
+
+% {\color{blue}
+% \subsection{\moduleEvaluation}
+
+% We evaluate translation quality using an LLM-as-a-judge framework. Independent LLMs assess the translation against the source text using domain-specific prompts. Each judge applies a predefined rubric to assign a score from 1 to 10, reflecting error severity and frequency. We isolate three dimensions to prevent error conflation:
+
+% \begin{itemize}
+%     \item \textbf{Accuracy.} This metric measures semantic fidelity against the source text. It verifies the exact preservation of facts, dates, numbers, and proper nouns. The evaluation covers five sub-metrics: factual integrity, proper noun preservation, completeness, semantic fidelity, and terminological accuracy. The judge outputs a 1--10 score and a structured error list containing the source fragment, flawed translation, explanation, and correction.
+    
+%     \item \textbf{Fluency.} This metric assesses the grammatical correctness and naturalness of the target text. The judge uses the source text strictly as a structural reference, avoiding penalties for dense or list-like structures inherent to the original. It evaluates five sub-metrics: grammar, naturalness, flow and cohesion, register and tone, and the absence of machine translation artifacts. The judge assigns a 1--10 score reflecting the readability of an originally authored piece.
+    
+%     \item \textbf{Style.} This metric evaluates the preservation of authorial voice, tone, and register, operating independently of factual accuracy or grammar. It focuses on five sub-metrics: register preservation, authorial voice, tone consistency, rhetorical devices, and stylistic neutralization. The judge assigns a 1--10 score indicating stylistic equivalence. For identified discrepancies, the model outputs the source fragment, flawed translation, explanation of the lost quality, and suggested improvement.
+% \end{itemize}
+% }
+
+% {\color{purple}
+\subsection{\moduleEvaluation}\label{sec:llm_metrics}
+We evaluate translation quality via an LLM-as-a-judge approach that decomposes assessment into three independent dimensions: Accuracy, Fluency, and Style. By isolating these criteria, we prevent error conflation. Each dimension employs a dedicated prompt and rubric, instructing the model to assign a 1--10 score based on error severity and frequency. Additionally, the judges output structured error reports containing the source fragment, problematic translation, error explanation, and suggested correction.
+
+\paragraph{Accuracy} This criterion measures semantic fidelity and completeness, treating the source text as ground truth. The judge evaluates factual integrity, proper noun preservation, and terminological accuracy, strictly penalizing omissions, additions, or semantic distortions.
+
+\paragraph{Fluency} This criterion assesses the target text's grammatical correctness and naturalness, focusing on the absence of machine translation artifacts and unnatural phrasing. To ensure fair evaluation, the judge uses the source text as a structural reference, avoiding penalties for dense or list-like formatting inherent to the original.
+
+\paragraph{Style} Evaluated independently of factual or grammatical correctness, this criterion measures the preservation of the authorial voice, tone, and register. It focuses on rhetorical consistency, penalizing both the stylistic flattening and over-stylization of the source text.
+% }
+
+% \subsection{\moduleEvaluation}
+% To systematically evaluate translation quality, we employed an LLM-as-a-judge approach, using separate LLMs configured with domain-specific prompts for each evaluation criterion. Each judge operates independently, analyzing the translation alongside the original source text to identify problematic segments. The evaluation relies on a predefined rubric embedded in each prompt, which guides the model in assigning a score from 1 to 10 based on the severity and frequency of the error. This method is structured around three fundamental dimensions of translation quality: Accuracy, Fluency, and Style. The separation of these criteria allows for a detailed assessment, where each aspect is analyzed using specialized assessment instructions without conflating distinct error types.
+% \paragraph{Accuracy}
+% This criterion evaluates how fully and faithfully the English translation conveys the meaning of the source text, treating the source as the ground truth. The model assesses whether all facts, dates, numerical data, and proper nouns are preserved exactly as stated, without omissions, additions, or distortions. The assessment is based on five metrics: factual integrity, proper nouns, completeness, semantic fidelity, and terminological accuracy. Using the predefined rubric, the judge assigns a score from 1 to 10, where 10 indicates perfect accuracy and 1 signifies a largely inaccurate translation. Alongside the score, the model generates a structured list of identified issues, detailing the source fragment, the problematic translation, an error explanation, and a suggested correction.
+% \paragraph{Fluency}
+% This criterion evaluates how naturally and correctly the translation reads as a standalone text in the target language. The judge focuses on the absence of grammatical errors, unnatural phrasing, and machine translation artifacts. Crucially, the model uses the source text as a structural reference; it does not penalize the translation for dense or list-like passages if such structures are inherent to the source. The evaluation covers five metrics: grammar, naturalness, flow and cohesion, register and tone, and the absence of machine translation artifacts. The judge assigns a score from 1 to 10, where 10 represents a text that reads as naturally as an originally authored piece (given source constraints), and 1 indicates unreadable text.
+% \paragraph{Style}
+% This criterion evaluates how faithfully the translation preserves the authorial voice, tone, and register, ensuring the English text matches the stylistic character of the original. The model operates independently of factual accuracy or grammatical correctness, focusing exclusively on five metrics: register preservation, authorial voice, tone consistency, rhetorical devices, and stylistic neutralization (avoiding the flattening or over-stylization of the source). The judge assigns a score from 1 to 10, where 10 signifies exact stylistic equivalence to the source, and 1 indicates no stylistic correspondence. For any identified discrepancies, the model outputs the source fragment, the problematic translation, an explanation of the lost stylistic quality, and a suggested improvement.
+
+
+\subsection{Live Demo} TODO: Artem: 1. Functionality, 2. Implementation (cite original framework)
+
+
+\subsubsection{Interactive Use Cases}
+The demonstration interface supports two primary workflows for analyzing and generating domain-specific translations.
+
+\paragraph{Flexible LLM-based Evaluation.}
+Users upload a source text and a candidate translation to receive a detailed quality report. The interface allows users to define or modify LLM-as-a-judge criteria (e.g., factual accuracy, stylistic neutrality) dynamically. The system evaluates the translation against these custom rubrics and outputs a span-level visualization of detected errors. Concurrently, the terminology module extracts domain-specific terms and highlights normalization failures.
+
+\paragraph{End-to-End Translation with Terminology Uncertainty.}
+Users provide a source text alongside custom evaluation criteria. The system executes the translation pipeline, generating an initial draft and refining it to satisfy the specified constraints. The final output presents the refined text with confidence-based terminology highlighting. Terms are visually categorized into three resolution states: (i) \textbf{unambiguous} matches grounded directly in Wikidata, (ii) \textbf{ambiguities} resolved via context-aware LLM reasoning, and (iii) \textbf{unresolved terms} absent from the knowledge base, for which no translation guarantees are provided.
+
+% \paragraph{TODO: USE CASES. TO BE IMPROVED.} To bridge this gap, we present an interactive web-based demonstration tool designed for the interpretable analysis of MT quality, showcased through the challenging historical domain. Our system integrates a flexible LLM-as-a-judge evaluation framework with a built-in terminology retrieval and normalization module. Unlike static evaluation scripts, our demo provides a dynamic interface for MT researchers to prototype evaluation prompts, debug terminology bottlenecks, and visually analyze translation shifts. The demo offers two primary interactive modes:
+% \begin{enumerate}
+%     \item \textit{End-to-End Translation and Analysis}: Users can input a source historical text to generate a domain-optimized translation. The system simultaneously extracts and normalizes terminology against Wikipedia, resolving cross-lingual ambiguities using context-aware LLM reasoning. The interface highlights terminology based on resolution confidence, visually categorizing terms into unambiguous matches, ambiguities resolved via LLM context, and unresolved terms.
+%     \item \textit{Custom Evaluation of Existing Translations}: Users can provide both a source text and a candidate translation to receive a detailed error summary. Crucially, users can dynamically select, modify, or define LLM-as-a-judge criteria (e.g., factual accuracy, stylistic neutrality, terminological consistency) to tailor the evaluation to their specific research needs. The system then outputs a structured error summary alongside the confidence-based terminology highlighting.
+% \end{enumerate}
+
+
+
+\section{Evaluation Setup}
+
+\subsection{Evaluation Data}
+
+
+% {\color{blue}
+% \subsubsection{TODO:dataset name}
+
+% \paragraph{Data Source} To address the lack of domain-specific evaluation resources for terminology-rich historical texts, we construct a custom corpus of 100 articles from the Russian Wikipedia.\footnote{\url{https://ru.wikipedia.org}} We sample ten articles from each of ten thematic sections: Sumer and Mesopotamia, Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia, Achaemenid Iran, Ancient India, Ancient China, Ancient Greece, and Ancient Rome. We select these specific domains because they represent the foundational, geographically and culturally distinct cradles of civilization and major ancient empires. This selection provides a diverse, cross-cultural testbed that maximizes terminological variance and cross-lingual ambiguity. We draw candidates from the corresponding category subtrees using a fixed random seed. A deterministic filter restricts the earliest associated Wikidata date to before 500~CE, ensuring reproducible selection without manual curation (Appendix~\ref{app:wiki-corpus}).
+
+% \paragraph{Terminology Annotation} For entity annotation, we extract all internal hyperlinks within these articles that point to other Wikipedia pages. We treat the titles of these linked pages as the target terminology entities. Each link target resolves deterministically to a unique Wikidata entity identifier (QID)~\citep{vrandecic2014wikidata}, providing precise human-annotated ground truth for entity linking without additional labeling cost. However, Wikipedia editorial conventions typically restrict entity linking to the first mention of a concept~\citep{damuel2023}. Consequently, spans for repeated entities remain unannotated. Because of this structural limitation, we restrict our evaluation to page-level terminology recognition and normalization, rather than exhaustive span-level entity extraction. Our evaluation protocol explicitly accounts for this annotation sparsity (Section~\ref{sec:eval-metrics}). Finally, we utilize these articles as source texts to assess the factual fidelity of machine translation outputs.
+
+% To address the lack of domain-specific evaluation resources for terminology-rich historical texts in Russian, we collect a custom corpus of 100 articles from the Russian edition of Wikipedia\footnote{\url{https://ru.wikipedia.org}} to evaluate terminology extraction, entity grounding, and reference-free translation quality. We sample ten articles from each of ten thematic sections: Sumer and Mesopotamia, Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia, Achaemenid Iran, Ancient India, Ancient China, Ancient Greece, and Ancient Rome. We select candidates from the corresponding category subtrees using a fixed random seed. A deterministic filter restricts the earliest associated Wikidata date to before 500~CE, ensuring reproducible selection without manual curation (Appendix~\ref{app:wiki-corpus}). To provide ground truth for terminology and entity linking, we extract the internal hyperlinks placed by Wikipedia editors. Each link target resolves deterministically to a unique Wikidata entity identifier (QID)~\citep{vrandecic2014wikidata}. These in-text links serve as precise human annotations without additional labeling cost. This annotation is inherently incomplete because editorial conventions restrict entity linking to the first mention~\citep{damuel2023}. Our evaluation protocol explicitly accounts for this sparsity (Section~\ref{sec:eval-metrics}). Finally, we utilize these articles as source texts to assess the factual fidelity of machine translation outputs.
+
+
+% \paragraph{Custom Historical Corpus.}
+% To address the lack of domain-specific evaluation resources, we construct a custom corpus of 100 Russian Wikipedia articles on ancient history.\footnote{\url{https://ru.wikipedia.org}} We sample ten articles from each of ten thematic sections, including Sumer and Mesopotamia, Ancient Egypt, and Ancient China. We select candidates from the corresponding category subtrees using a fixed random seed and apply a deterministic filter restricting the earliest associated Wikidata date to before 500~CE, ensuring reproducibility without manual curation (Appendix~\ref{app:wiki-corpus}).
+% We design this dataset specifically to benchmark terminology extraction, entity grounding, and reference-free translation quality in a terminology-rich domain. The internal hyperlinks placed by Wikipedia editors serve as human-annotated gold standards. Each link target resolves deterministically to a unique Wikidata entity identifier (QID)~\citep{vrandecic2014wikidata}. While this annotation is precise, it is incomplete because editorial conventions typically restrict entity linking to the first mention~\citep{damuel2023}; our evaluation protocol explicitly accounts for this sparsity (Section~\ref{sec:eval-metrics}). Finally, we utilize these articles as source texts to assess the factual fidelity of machine translation and refinement outputs.
+
+% }
+
+\subsubsection{\datasetWikipediaName Dataset}
+
+Standard machine translation benchmarks lack the terminological density and cross-lingual ambiguity characteristic of historical texts (TODO). Evaluating terminology extraction, entity grounding, and reference-free translation quality in this domain therefore requires specialized resources.
+\paragraph{Data Source}
+We construct a custom corpus of 100 articles from the Russian Wikipedia.\footnote{\url{https://ru.wikipedia.org}} We sample ten articles from each of ten thematic sections: Sumer and Mesopotamia, Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia, Achaemenid Iran, Ancient India, Ancient China, Ancient Greece, and Ancient Rome. We select these specific domains because they represent foundational, geographically and culturally distinct cradles of civilization. This selection provides a diverse testbed that maximizes terminological variance. We draw candidates from the corresponding category subtrees using a fixed random seed. A deterministic filter restricts the earliest associated Wikidata date to before 500~CE, ensuring reproducible selection without manual curation (Appendix~\ref{app:wiki-corpus}).
+\paragraph{Terminology Annotation}
+For entity annotation, we extract all internal hyperlinks within these articles that point to other Wikipedia pages. We treat the titles of these linked pages as the target terminology entities. Each link target resolves deterministically to a unique Wikidata entity identifier (QID)~\citep{vrandecic2014wikidata}, providing precise human-annotated ground truth for entity linking without additional labeling cost. However, Wikipedia editorial conventions typically restrict entity linking to the first mention of a concept~\citep{damuel2023}. Consequently, spans for repeated entities remain unannotated. Because of this structural limitation, we restrict our evaluation to page-level terminology recognition and normalization rather than exhaustive span-level entity extraction. Our evaluation protocol explicitly accounts for this annotation sparsity (Section~\ref{sec:eval-metrics}). Finally, we utilize these articles as source texts to assess the factual fidelity of machine translation outputs.
+
+
+% \textit{Wikipedia} is a corpus of 100 Wikipedia articles on ancient history
+% that we assemble for terminology-oriented evaluation. The articles are drawn
+% from the Russian edition\footnote{\url{https://ru.wikipedia.org}} across ten
+% thematic sections (Sumer and Mesopotamia, Ancient Egypt, Assyria, the Hittite
+% Kingdom, Phoenicia, Achaemenid Iran, Ancient India, Ancient China, Ancient
+% Greece, and Ancient Rome), ten per section. Within each section, candidates
+% from the corresponding category subtree are shuffled with a fixed seed and
+% admitted through a deterministic gate that bounds the earliest associated
+% Wikidata date to before 500~CE, so the selection is reproducible and involves
+% no manual curation (Appendix~\ref{app:wiki-corpus}). We use this corpus
+% primarily to evaluate terminology extraction and Wikidata grounding. The
+% hyperlinks that editors place in article bodies act as human annotation: each
+% link target resolves deterministically to a Wikidata
+% item~\citep{vrandecic2014wikidata}, so every in-text link yields a gold
+% mention grounded to a QID at no additional labeling cost. This annotation is
+% precise but incomplete, since editorial convention is to link an entity only
+% at its first mention~\citep{damuel2023}, and our evaluation protocol accounts
+% for this (Section~\ref{sec:eval-metrics}). The same articles also serve as
+% source texts for the reference-free evaluation of translation and refinement
+% quality.
+
+% Альтернатива, которая менее соотствует нашей структуре
+% Evaluating terminology extraction and Wikidata grounding requires gold
+% mentions that are both located in text and resolved to entities, an annotation
+% that is expensive to produce from scratch. Wikipedia already contains it.
+% Editors link salient terms in article bodies by hand, and each link target
+% maps deterministically to a Wikidata item, so a linked article is a text with
+% human-annotated, entity-grounded terminology. Our \textit{Wikipedia} corpus
+% exploits this resource. It comprises 100 articles on ancient history from the
+% Russian edition, ten from each of ten thematic sections (Sumer and
+% Mesopotamia, Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia,
+% Achaemenid Iran, Ancient India, Ancient China, Ancient Greece, and Ancient
+% Rome). The selection is deterministic: candidates from each section's category
+% subtree are shuffled with a fixed seed and pass a gate that bounds the
+% article's period to before 500~CE, with no manual curation involved
+% (Appendix~\ref{app:wiki-corpus}). The annotation these links provide is
+% precise but incomplete, as editors typically link an entity only at its first
+% mention~\citep{damuel2023}, which our evaluation protocol takes into account
+% (Section~\ref{sec:eval-metrics}). The same articles additionally serve as
+% source texts for the reference-free evaluation of translation and refinement
+% quality.
+
+% TODO: Artem: Wikipedia Dataset:
+
+% 1. Artem: Data collection: We sample pages from Wikipedia's ?TODO:historical? category
+
+% 2. Artem: Data statistics: i. \# topics (Wikipedia pages), ii. \# words, iii. \# paragraphs, iv. Avg. paragraph length
+
+% 3. Add necessary references
+
+\emph{BOUQuET}~\cite{andrews-etal-2025-bouquet} is a benchmark for machine translation quality evaluation, with texts manually created by linguists across eight source languages and translated into English. For this study, we use the Russian-to-English subset. The dataset covers eight domains: instructional tutorials, dialogues, narration, social media posts and comments, general web content, reflective pieces, and miscellaneous texts. The test split contains 198 paragraphs (854 sentences, 9,279 words), with an average paragraph length of 47 words.
+
+% \emph{BOUQuET}~\cite{andrews-etal-2025-bouquet} is a multi-way parallel, multi-centric, and multi-register benchmark designed for machine translation quality evaluation. The underlying texts were manually crafted from scratch by linguists in eight diverse source languages and subsequently translated into English and over 260 other language and script combinations. For the purposes of this study, we exclusively utilize the Russian-to-English subset. The dataset covers eight distinct domains: instructional tutorials, dialogues, narration, social media posts, social media comments, general web content, reflective pieces, and miscellaneous texts. The public release comprises development and test splits. In terms of data statistics, the test split contains 198 paragraphs comprising 854 unique sentences, totaling 9279 words, with an average paragraph length of 47 words.
+
+% \paragraph{BOUQuET Benchmark.} 
+% To assess generalization across diverse domains, we employ BOUQuET~\cite{andrews-etal-2025-bouquet}, a multi-way parallel benchmark for MT quality evaluation. It comprises manually crafted texts across eight domains (e.g., tutorials, dialogues, and social media). We utilize its test split, containing 198 paragraphs (854 sentences, 9,279 words), to evaluate the system on general-domain, multi-register texts.
+
+
+
+\paragraph{Russian Historical Encyclopedia.}
+Standard machine translation benchmarks lack the terminological density and strict factual constraints characteristic of academic historiography (TODO). To evaluate terminology-aware translation and entity grounding in this high-stakes domain, we construct a custom corpus from the first volume of the \emph{World History} encyclopedia (\citet{chubarjan2019worldhistory1}, further referred to as \emph{RuWH}), published by the Institute of World History of the Russian Academy of Sciences. This volume (\emph{The Ancient World}) presents extreme challenges for neural machine translation. The source texts exhibit a high entity-to-token ratio, complex cross-lingual terminology mapping, and rigid requirements for factual fidelity, where semantic distortions or anachronistic framing are strictly penalized. For this study, we extract six chapters focusing on i. \emph{Mesopotamia}, ii. \emph{Ancient China}; iii. \emph{Classical Greece}; iv. \emph{Man, Spiritual and Material Culture in the World of Poleis}, v. \emph{Conquests and Empire of Alexander the Great}, vi. \emph{Roman Law}. We select these specific sections to maximize thematic variance and test the system's ability to handle diverse geographical cradles of antiquity and their associated specialized lexicons.
+% The resulting corpus comprises [PLACEHOLDER: total number] paragraphs ([PLACEHOLDER: total sentences], [PLACEHOLDER: total words]), with an average paragraph length of [PLACEHOLDER] words. The texts contain [PLACEHOLDER: number] distinct historical entities, toponyms, and archaeological concepts. This high terminological density provides a rigorous, reference-free testbed for evaluating entity-aware terminology normalization, cross-lingual ambiguity resolution, and LLM-based translation refinement.
+
+%  (pp. 70–100)
+%  (pp. 157–175)
+% Classical Greece (pp. 449–479)
+%  (pp. 489–513)
+% (В оригинале энциклопедии: "The Man, spiritual and material Culture in the World of Polises". Исправлено на академически корректное "Poleis" и убран артикль "The" перед Man, так как речь о человечестве/индивиде в целом).
+%  (pp. 514–530)
+% (В оригинале энциклопедии: "Conquests of Alexander the Great and his Power". Слово "держава" в контексте эллинизма переводится исключительно как "Empire", а не как "Power").
+%  (pp. 705–722)
+
+% Не дублируем таблицу
+% Russian Historical Encyclopedia statistics: i. 6 topics (glavi), ii. 50231 words, iii. 542 paragraphs, iv. average paragraph length of 93 words.
+
+
+
+\paragraph{Data Statistics} Data statistics for the three corpora are summarized in
+Table~\ref{tab:data_statistics}. 
+
+
+
+\begin{table}[t!]
+\setlength{\tabcolsep}{2.25pt}
+\centering
+% \resizebox{\columnwidth}{!}{
+\begin{tabular}{l|c|c|c}
+
+\toprule
+\textbf{}  & \textbf{BOUQuET}  & \textbf{\datasetWikipediaName} & \textbf{\datasetEncyclopediaName} \\
+
+\midrule
+\# topics  & 8 domains & 10 &  6     \\
+\# words  & 9{,}279 & 160{,}836 &  50{,}231     \\
+\# paragraphs  & 198 & 2{,}553 &  542     \\
+Avg par.length  & 47 & 63 &  93     \\
+
+\bottomrule
+\end{tabular}
+% }
+% \caption{OCR data statistics in terms of line count.}
+\caption{Evaluation Data Statistics.}\label{tab:data_statistics}
+% \vspace{-0.5cm}
+\end{table}
+
+\begin{table*}[t!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3cm} p{3.75cm} p{4.5cm} c c c}
+\toprule
+\textbf{Source Text} & \textbf{Draft (Before)} & \textbf{Refined (After)} & \multicolumn{3}{c}{\textbf{Metrics (Before $\rightarrow$ After)}} \\
+\cmidrule(lr){4-6}
+& & & \textit{Acc} & \textit{Flu} & \textit{Sty} \\
+\midrule
+
+Конец XXIII в. до н.э. & Late 3rd millennium BCE. & End of the 23rd century BCE. &
+6 $\rightarrow$ 9 & 8 $\rightarrow$ 8 & 7 $\rightarrow$ 7 \\
+
+\midrule
+
+Ханейское царство &
+the Khanir kingdom & 
+the Hana kingdom & 
+5 $\rightarrow$ 10 & 7 $\rightarrow$ 8 & 7 $\rightarrow$ 8 \\
+
+\midrule
+
+Самсудитане (1625–1595 г. до н.э.) &
+Samsu-iluna (1625–1595 BCE) &
+Samsu-ditana (1625–1595 BCE) & 
+5 $\rightarrow$ 10 & 7 $\rightarrow$ 8 & 7 $\rightarrow$ 8 \\
+
+\midrule
+
+Титул «царя Приморья» &
+Title of “king of the Primordial Lands” & 
+Title of “king of the Sealand” &
+5 $\rightarrow$ 10 & 7 $\rightarrow$ 8 & 7 $\rightarrow$ 8 \\
+
+\midrule
+
+некоего Уруинимгину &
+a certain Ur-Nanshe & 
+a certain Urukagina &
+5 $\rightarrow$ 10 & 7 $\rightarrow$ 8 & 7 $\rightarrow$ 8 \\
+
+\bottomrule
+\end{tabular}
+\caption{Examples of translation refinement where accuracy was improved. \textit{Acc}, \textit{Flu}, and \textit{Sty} denote the LLM-as-a-judge scores (1--10) for Accuracy, Fluency, and Style, respectively. Arrows indicate the score transition from Before to After refinement.}
+\label{tab:refinement_examples}
+\end{table*}
+
+
+\subsection{Evaluation Metrics}
+
+\paragraph{Terminology Recognition} TODO: Artem
+
+
+\paragraph{Translation Quality} To evaluate translation quality, we employ two approaches: (i) LLM-as-a-judge evaluation for \textit{Accuracy}, \textit{Fluency}, and \textit{Style} (Sec.~\ref{sec:llm_metrics}); (ii) two standard neural metrics: \textit{CometKiwi}~\cite{DBLP:conf/emnlp/ChimotoB22} and \textit{MetricX}~\cite{DBLP:conf/wmt/JuraskaDFF24}. We adopt these automatic metrics as they are widely adopted in WMT shared tasks and demonstrate strong correlation with human judgments~\cite{andrews-etal-2025-bouquet,kocmi-etal-2025-findings}.
+
+% \paragraph{LLM-as-a-Judge Criteria.} 
+% We evaluate translation quality using an LLM-as-a-judge framework that decomposes assessment into three independent dimensions: \textit{Accuracy} (semantic fidelity and proper noun preservation), \textit{Fluency} (grammatical correctness and natural phrasing), and \textit{Style} (preservation of authorial voice and register). Each dimension employs a dedicated rubric to assign a 1--10 score and generate structured, span-level error reports. The prompts for these evaluations are detailed in Appendix~\ref{app:prompts}.
+
+% \paragraph{Automatic Metrics.} 
+% To quantitatively compare initial drafts and LLM-refined outputs, we employ two neural metrics: CometKiwi~\cite{DBLP:conf/emnlp/ChimotoB22}, a reference-free metric assessing quality using only the source and hypothesis, and MetricX~\cite{DBLP:conf/wmt/JuraskaDFF24}, a hybrid metric that incorporates reference translations.
+
+
+
+
+% \subsection{Evaluation metrics}
+
+% \paragraph{LLM-as-a-judge Criteria} TODO: Danil: bring the description for three LLM-as-a-judge criteria.
+
+% TODO: Danil: Add prompts to the Appendix (end of the document):
+
+% 1. Danil: Add prompt to appendix
+
+% 2. Danil: Refer to prompt here in the main text: "the prompts for LLM-as-a-judge evaluation are presented in Appx.~\ref{appx:appendix_name}"
+
+% \paragraph{Automatic Metrics}
+% To automatically evaluate translation quality, we employ two neural LLM-based metrics: CometKiwi (\texttt{Unbabel/wmt23-cometkiwi-da-xl}, range 0--1, ↑ better)~\cite{DBLP:conf/emnlp/ChimotoB22} and MetricX (\texttt{google/metricx-24-hybrid-xl-v2p6}, range 0--25, ↓ better)~\cite{DBLP:conf/wmt/JuraskaDFF24}. CometKiwi is a reference-free metric that assesses translation quality using only the source text and hypothesis. In contrast, MetricX is a hybrid metric that incorporates the source text, reference translation, and hypothesis to compute an error score. Both metrics are applied to quantitatively compare the initial drafts and final LLM-refined outputs.
+
+\subsection{Hyperparameter Details}
+% For translation, evaluation, and refinement, all LLM inferences were executed at the paragraph level using the vLLM engine. The generation parameters for the translator, evaluator, and refiner models were as follows: \texttt{temperature} = 0.7, \texttt{max\_new\_tokens} = 20000.
+For translation, evaluation, and refinement, all LLM inferences were executed at the paragraph level using the vLLM engine with the following hyperparameters: \texttt{temperature} = 0.7, \texttt{max\_new\_tokens} = 20000.
+% TODO: Danil: vllm, temperature, etc, paragraph-level translation
+
+% TODO
+
+% TODO
+
+\section{Results}
+
+\subsection{Terminology Recognition}
+
+% Тут пока нейрослоп, нужно будет поправить
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Model & $R_{\mathrm{doc}}^{\mathrm{term}}\ \uparrow$ & $P_{\mathrm{label}}\ \uparrow$ \\
+\midrule
+\multicolumn{3}{@{}l}{} \\
+Qwen3-4B-Instruct     & XX & XX \\
+Gemma-3-27B-it        & XX & XX \\
+Qwen3.6-27B           & XX & XX \\
+Gemini-3.1-Flash-Lite & 0.735 {\scriptsize[.724--.745]} & \textit{pending} \\
+DeepSeek-V4-Flash$^{\dagger}$ & 0.657 {\scriptsize[.646--.668]} & \textit{pending} \\
+GPT-5.5               & XX & XX \\
+\bottomrule
+\end{tabular}
+\caption{Terminology extraction and Wikidata grounding on the Wikipedia corpus
+(100 articles). $R_{\mathrm{doc}}^{\mathrm{term}}$ is document-level recall on
+the terminology-filtered reference. A gold mention counts as recovered if its
+entity is predicted anywhere in the same article. The filtered reference
+excludes structural noise and generic lexical classes that a terminology task
+should not reward, such as languages and scripts, taxa, materials, and units,
+leaving 7174 of 7959 human-linked mentions. $P_{\mathrm{label}}$ is
+label-verified precision. Because editors link an entity only at its first
+mention, the annotation is incomplete, and a prediction absent from the
+reference is additionally credited when its surface exists as a Wikidata
+label. The deterministic exact-label path is excluded from this reading, and
+the value remains a conservative lower bound. The title-sitelink fallback is
+disabled. Wilson 95\% confidence intervals are given in brackets.
+$^{\dagger}$4.1\% of paragraphs were lost to transient API failures during
+this run.}
+\label{tab:grounding-results}
+\end{table}
+
+1. TODO: Artem: add terminology table here
+
+2. TODO: Artem: add some findings from the experiments.
+
+\paragraph{TODO: Finding 1:} As seen from Table~\ref{tab:table_name}, ....
+
+\paragraph{TODO: Finding 2:} As seen from Table~\ref{tab:table_name}, ....
+
+\paragraph{TODO: Finding 3:} As seen from Table~\ref{tab:table_name}, ....
+
+
+\subsection{LLM-as-a-judge}
+
+1. TODO: Danil: add table with 3+2 metrics here 
+
+2. TODO: Danil: add table with 3x2x2 table with correlation coefficients here 
+
+\subsection{Refiment Improve}
+
+% 1. TODO: Нужно сюда перенести таблицу с улучшением метрик после refiment. У нас тогда логично получается: 3 контрибьюшена и 3 evaluation его: Терминология, LLM-as-a-judge, улучшение от refiment. Файндинг будет в духе: воу, рефаймент улучшает качество. Без такого разделения, у нас слишком много изменяемых переменных в рефаймент-таблице Данила: базовая LLM, LLM для рефаймента, LLM для judge.
+
+
+\begin{table*}[t!]
+\centering
+% Раскомментируем resizebox и меняем на \textwidth, так как 16 столбцов не поместятся в \columnwidth
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc|ccccc| ccccc}
+
+\toprule
+& \multicolumn{5}{c}{\textbf{BOUQuET}} & \multicolumn{5}{c}{\textbf{\datasetWikipediaName}} & \multicolumn{5}{c}{\textbf{\datasetEncyclopediaName}} \\
+\cmidrule(lr){2-6} \cmidrule(lr){7-11} \cmidrule(lr){12-16}
+
+\textbf{Model} & \textbf{Acc} & \textbf{Flu} & \textbf{Sty} & \textbf{MetX} & \textbf{COMET} & \textbf{Acc} & \textbf{Flu} & \textbf{Sty} & \textbf{MetX} & \textbf{COMET} & \textbf{Acc} & \textbf{Flu} & \textbf{Sty} & \textbf{MetX} & \textbf{COMET} \\
+
+\midrule
+Translate Gemma         & 9.7 & 9.58 & 9.53 & 3.55 & 0.73 & 9.47 & 9.57 & 8.95 & 4.43 & 0.66 & 9.30 & 9.33 & 8.77 & 4.29 & 0.61 \\
+Translate Gemma Refined & 9.91 & 9.76 & 9.67 & 3.58 & 0.73 & 9.80 & 9.65 & 9.12 & 4.48 & 0.66 & 9.76 & 9.30 & 9.00 & 4.35 & 0.61 \\
+Qwen3.6-27B             & 9.84 & 9.92 & 9.7 & 3.79 & 0.72 & 9.46 & 9.87 & 8.80 & 4.67 & 0.63 & 9.18 & 9.82 & 8.59 & 4.72 & 0.58 \\
+Qwen3.6-27B Refined     & 9.91 & 9.93 & 9.76 & 3.77 & 0.72  & 9.82 & 9.64 & 9.12 & 4.66 & 0.64 & 9.57 & 9.45 & 8.92 & 4.62 & 0.60 \\
+
+\bottomrule
+\end{tabular}%
+}
+\caption{Evaluation results across different datasets. \textbf{LLM Judges}: Accuracy (Acc), Fluency (Flu), Style (Sty). TODO: MetX, COMET .}
+\label{tab:evaluation_results}
+\end{table*}
+
+
+\begin{table*}[t!]
+\centering
+% \resizebox{\columnwidth}{!}{
+% Убрал вертикальные линии (|) из {l|c|c|c}, так как booktabs (toprule/midrule) 
+% предполагает использование только горизонтальных разделителей для лучшего вида.
+\begin{tabular}{l cc cc cc}
+
+\toprule
+& \multicolumn{2}{c}{\textbf{\datasetEncyclopediaName}} & \multicolumn{2}{c}{\textbf{BOUQuET}} & \multicolumn{2}{c}{\textbf{\datasetWikipediaName}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+\textbf{LLM} & \textbf{Comet} & \textbf{MetX}& \textbf{Comet} & \textbf{MetX} & \textbf{Comet} & \textbf{MetX} \\
+
+\midrule
+........ & & & & & & \\
+\,\,\,\, Accuracy & XX & XX & XX & XX & XX & XX \\
+\,\,\,\, Fluency  & XX & XX & XX & XX & XX & XX \\
+\,\,\,\, Stylistic  & XX & XX & XX & XX & XX & XX \\
+\midrule
+Qwen3.6-27B & & & & & & \\
+\,\,\,\, Accuracy & XX & XX & XX & XX & XX & XX \\
+\,\,\,\, Fluency  & XX & XX & XX & XX & XX & XX \\
+\,\,\,\, Stylistic  & XX & XX & XX & XX & XX & XX \\
+\midrule
+Qwen3.6-27B Refined & & & & & & \\
+\,\,\,\, Accuracy & XX & XX & XX & XX & XX & XX \\
+\,\,\,\, Fluency  & XX & XX & XX & XX & XX & XX \\
+\,\,\,\, Stylistic  & XX & XX & XX & XX & XX & XX \\
+
+\bottomrule
+\end{tabular}
+\caption{Spearman Correlation between LLM and Automatic Evaluations.}
+\label{tab:spearman_correlation}
+% }
+\end{table*}
+
+3. TODO: Danil: add some findings from the experiments.
+
+\paragraph{TODO: Finding 1:} As seen from Table~\ref{tab:table_name}, ....
+
+\paragraph{TODO: Finding 2:} As seen from Table~\ref{tab:table_name}, ....
+
+\paragraph{TODO: Finding 3:} As seen from Table~\ref{tab:table_name}, ....
+
+
+
+\section{Conclusion}
+TODO
+
+% \newpage
+% \\
+% \section{Introduction}
+
+% We use Attention~\cite{DBLP:conf/nips/VaswaniSPUJGKP17}
+
+
+% These instructions are for authors submitting papers to *ACL conferences using \LaTeX. They are not self-contained. All authors must follow the general instructions for *ACL proceedings,\footnote{\url{http://acl-org.github.io/ACLPUB/formatting.html}} and this document contains additional instructions for the \LaTeX{} style files.
+
+% The templates include the \LaTeX{} source of this document (\texttt{acl\_latex.tex}),
+% the \LaTeX{} style file used to format it (\texttt{acl.sty}),
+% an ACL bibliography style (\texttt{acl\_natbib.bst}),
+% an example bibliography (\texttt{custom.bib}),
+% and the bibliography for the ACL Anthology (\texttt{anthology.bib}).
+
+% \section{Engines}
+
+% To produce a PDF file, pdf\LaTeX{} is strongly recommended (over original \LaTeX{} plus dvips+ps2pdf or dvipdf).
+% The style file \texttt{acl.sty} can also be used with
+% lua\LaTeX{} and
+% Xe\LaTeX{}, which are especially suitable for text in non-Latin scripts.
+% The file \texttt{acl\_lualatex.tex} in this repository provides
+% an example of how to use \texttt{acl.sty} with either
+% lua\LaTeX{} or
+% Xe\LaTeX{}.
+
+
+% \section{Related Work}
+
+
+% TODO
+
+% TODO
+
+% \section{TODO System}
+% \subsection{Translating System}
+
+% \paragraph{TODO}
+
+
+
+% \section{Preamble}
+
+% The first line of the file must be
+% \begin{quote}
+% \begin{verbatim}
+% \documentclass[11pt]{article}
+% \end{verbatim}
+% \end{quote}
+
+% To load the style file in the review version:
+% \begin{quote}
+% \begin{verbatim}
+% \usepackage[review]{acl}
+% \end{verbatim}
+% \end{quote}
+% For the final version, omit the \verb|review| option:
+% \begin{quote}
+% \begin{verbatim}
+% \usepackage{acl}
+% \end{verbatim}
+% \end{quote}
+
+% To use Times Roman, put the following in the preamble:
+% \begin{quote}
+% \begin{verbatim}
+% \usepackage{times}
+% \end{verbatim}
+% \end{quote}
+% (Alternatives like txfonts or newtx are also acceptable.)
+
+% Please see the \LaTeX{} source of this document for comments on other packages that may be useful.
+
+% Set the title and author using \verb|\title| and \verb|\author|. Within the author list, format multiple authors using \verb|\and| and \verb|\And| and \verb|\AND|; please see the \LaTeX{} source for examples.
+
+% By default, the box containing the title and author names is set to the minimum of 5 cm. If you need more space, include the following in the preamble:
+% \begin{quote}
+% \begin{verbatim}
+% \setlength\titlebox{<dim>}
+% \end{verbatim}
+% \end{quote}
+% where \verb|<dim>| is replaced with a length. Do not set this length smaller than 5 cm.
+
+% \section{Document Body}
+
+% \subsection{Footnotes}
+
+% Footnotes are inserted with the \verb|\footnote| command.\footnote{This is a footnote.}
+
+% \subsection{Tables and figures}
+
+% See Table~\ref{tab:accents} for an example of a table and its caption.
+% \textbf{Do not override the default caption sizes.}
+
+% \begin{table}
+%   \centering
+%   \begin{tabular}{lc}
+%     \hline
+%     \textbf{Command} & \textbf{Output} \\
+%     \hline
+%     \verb|{\"a}|     & {\"a}           \\
+%     \verb|{\^e}|     & {\^e}           \\
+%     \verb|{\`i}|     & {\`i}           \\
+%     \verb|{\.I}|     & {\.I}           \\
+%     \verb|{\o}|      & {\o}            \\
+%     \verb|{\'u}|     & {\'u}           \\
+%     \verb|{\aa}|     & {\aa}           \\\hline
+%   \end{tabular}
+%   \begin{tabular}{lc}
+%     \hline
+%     \textbf{Command} & \textbf{Output} \\
+%     \hline
+%     \verb|{\c c}|    & {\c c}          \\
+%     \verb|{\u g}|    & {\u g}          \\
+%     \verb|{\l}|      & {\l}            \\
+%     \verb|{\~n}|     & {\~n}           \\
+%     \verb|{\H o}|    & {\H o}          \\
+%     \verb|{\v r}|    & {\v r}          \\
+%     \verb|{\ss}|     & {\ss}           \\
+%     \hline
+%   \end{tabular}
+%   \caption{Example commands for accented characters, to be used in, \emph{e.g.}, Bib\TeX{} entries.}
+%   \label{tab:accents}
+% \end{table}
+
+% As much as possible, fonts in figures should conform
+% to the document fonts. See Figure~\ref{fig:experiments} for an example of a figure and its caption.
+
+% Using the \verb|graphicx| package graphics files can be included within figure
+% environment at an appropriate point within the text.
+% The \verb|graphicx| package supports various optional arguments to control the
+% appearance of the figure.
+% You must include it explicitly in the \LaTeX{} preamble (after the
+% \verb|\documentclass| declaration and before \verb|\begin{document}|) using
+% \verb|\usepackage{graphicx}|.
+
+% \begin{figure}[t]
+%   \includegraphics[width=\columnwidth]{example-image-golden}
+%   \caption{A figure with a caption that runs for more than one line.
+%     Example image is usually available through the \texttt{mwe} package
+%     without even mentioning it in the preamble.}
+%   \label{fig:experiments}
+% \end{figure}
+
+% \begin{figure*}[t]
+%   \includegraphics[width=0.48\linewidth]{example-image-a} \hfill
+%   \includegraphics[width=0.48\linewidth]{example-image-b}
+%   \caption {A minimal working example to demonstrate how to place
+%     two images side-by-side.}
+% \end{figure*}
+
+% \subsection{Hyperlinks}
+
+% Users of older versions of \LaTeX{} may encounter the following error during compilation:
+% \begin{quote}
+% \verb|\pdfendlink| ended up in different nesting level than \verb|\pdfstartlink|.
+% \end{quote}
+% This happens when pdf\LaTeX{} is used and a citation splits across a page boundary. The best way to fix this is to upgrade \LaTeX{} to 2018-12-01 or later.
+
+% \subsection{Citations}
+
+% \begin{table*}
+%   \centering
+%   \begin{tabular}{lll}
+%     \hline
+%     \textbf{Output}           & \textbf{natbib command} & \textbf{ACL only command} \\
+%     \hline
+%     \citep{Gusfield:97}       & \verb|\citep|           &                           \\
+%     \citealp{Gusfield:97}     & \verb|\citealp|         &                           \\
+%     \citet{Gusfield:97}       & \verb|\citet|           &                           \\
+%     \citeyearpar{Gusfield:97} & \verb|\citeyearpar|     &                           \\
+%     \citeposs{Gusfield:97}    &                         & \verb|\citeposs|          \\
+%     \hline
+%   \end{tabular}
+%   \caption{\label{citation-guide}
+%     Citation commands supported by the style file.
+%     The style is based on the natbib package and supports all natbib citation commands.
+%     It also supports commands defined in previous ACL style files for compatibility.
+%   }
+% \end{table*}
+
+% Table~\ref{citation-guide} shows the syntax supported by the style files.
+% We encourage you to use the natbib styles.
+% You can use the command \verb|\citet| (cite in text) to get ``author (year)'' citations, like this citation to a paper by \citet{Gusfield:97}.
+% You can use the command \verb|\citep| (cite in parentheses) to get ``(author, year)'' citations \citep{Gusfield:97}.
+% You can use the command \verb|\citealp| (alternative cite without parentheses) to get ``author, year'' citations, which is useful for using citations within parentheses (e.g. \citealp{Gusfield:97}).
+
+% A possessive citation can be made with the command \verb|\citeposs|.
+% This is not a standard natbib command, so it is generally not compatible
+% with other style files.
+
+% \subsection{References}
+
+% \nocite{Ando2005,andrew2007scalable,rasooli-tetrault-2015}
+
+% The \LaTeX{} and Bib\TeX{} style files provided roughly follow the American Psychological Association format.
+% If your own bib file is named \texttt{custom.bib}, then placing the following before any appendices in your \LaTeX{} file will generate the references section for you:
+% \begin{quote}
+% \begin{verbatim}
+% \bibliography{custom}
+% \end{verbatim}
+% \end{quote}
+
+% You can obtain the complete ACL Anthology as a Bib\TeX{} file from \url{https://aclweb.org/anthology/anthology.bib.gz}.
+% To include both the Anthology and your own .bib file, use the following instead of the above.
+% \begin{quote}
+% \begin{verbatim}
+% \bibliography{anthology,custom}
+% \end{verbatim}
+% \end{quote}
+
+% Please see Section~\ref{sec:bibtex} for information on preparing Bib\TeX{} files.
+
+% \subsection{Equations}
+
+% An example equation is shown below:
+% \begin{equation}
+%   \label{eq:example}
+%   A = \pi r^2
+% \end{equation}
+
+% Labels for equation numbers, sections, subsections, figures and tables
+% are all defined with the \verb|\label{label}| command and cross references
+% to them are made with the \verb|\ref{label}| command.
+
+% This an example cross-reference to Equation~\ref{eq:example}.
+
+% \subsection{Appendices}
+
+% Use \verb|\appendix| before any appendix section to switch the section numbering over to letters. See Appendix~\ref{sec:appendix} for an example.
+
+% \section{Bib\TeX{} Files}
+% \label{sec:bibtex}
+
+% Unicode cannot be used in Bib\TeX{} entries, and some ways of typing special characters can disrupt Bib\TeX's alphabetization. The recommended way of typing special characters is shown in Table~\ref{tab:accents}.
+
+% Please ensure that Bib\TeX{} records contain DOIs or URLs when possible, and for all the ACL materials that you reference.
+% Use the \verb|doi| field for DOIs and the \verb|url| field for URLs.
+% If a Bib\TeX{} entry has a URL or DOI field, the paper title in the references section will appear as a hyperlink to the paper, using the hyperref \LaTeX{} package.
+
+% \section*{Limitations}
+
+% This document does not cover the content requirements for ACL or any
+% other specific venue.  Check the author instructions for
+% information on
+% maximum page lengths, the required ``Limitations'' section,
+% and so on.
+
+% \section*{Acknowledgments}
+
+% This document has been adapted
+% by Steven Bethard, Ryan Cotterell and Rui Yan
+% from the instructions for earlier ACL and NAACL proceedings, including those for
+% ACL 2019 by Douwe Kiela and Ivan Vuli\'{c},
+% NAACL 2019 by Stephanie Lukin and Alla Roskovskaya,
+% ACL 2018 by Shay Cohen, Kevin Gimpel, and Wei Lu,
+% NAACL 2018 by Margaret Mitchell and Stephanie Lukin,
+% Bib\TeX{} suggestions for (NA)ACL 2017/2018 from Jason Eisner,
+% ACL 2017 by Dan Gildea and Min-Yen Kan,
+% NAACL 2017 by Margaret Mitchell,
+% ACL 2012 by Maggie Li and Michael White,
+% ACL 2010 by Jing-Shin Chang and Philipp Koehn,
+% ACL 2008 by Johanna D. Moore, Simone Teufel, James Allan, and Sadaoki Furui,
+% ACL 2005 by Hwee Tou Ng and Kemal Oflazer,
+% ACL 2002 by Eugene Charniak and Dekang Lin,
+% and earlier ACL and EACL formats written by several people, including
+% John Chen, Henry S. Thompson and Donald Walker.
+% Additional elements were taken from the formatting instructions of the \emph{International Joint Conference on Artificial Intelligence} and the \emph{Conference on Computer Vision and Pattern Recognition}.
+
+% Bibliography entries for the entire Anthology, followed by custom entries
+%\bibliography{custom,anthology-overleaf-1,anthology-overleaf-2}
+
+% Custom bibliography entries only
+\bibliography{custom}
+
+\appendix
+
+\section{Example Appendix}
+\label{sec:appendix}
+
+This is an appendix.
+
+
+\begin{figure*}[ht!]
+
+\begin{prompt}
+% \footnotesize
+"# Stage 2 — Academic English Draft
+
+## Role and context
+
+You are an expert academic translator specializing in historical, archaeological, and historiographical literature, working in the tradition of *Encyclopedia Britannica* and *Cambridge Ancient History*. Your task is to translate passages of a Russian-language historical encyclopedia into scholarly English that meets international academic standards.\n
+
+## Mandate
+
+- **Factual fidelity.** Preserve every fact in each paragraph: dates, numbers, proper names, asserted relations, and modalities. Do not add facts, omit facts, or move facts across paragraphs.
+- **Sentence restructuring.** You may split one Russian sentence into several English ones, or combine several into one, whenever that produces clearer or more natural English. Sentence-level merging and splitting *inside* a paragraph is expected and encouraged.
+- **No calques.** Do not transpose Russian sentence structure. Build each English sentence from the facts it contains, as if writing the same material originally in English.
+- **Conceptual equivalence over literal translation.** Prioritize meaning over word-for-word rendering; never use a literal equivalent that misrepresents historical reality.
+- **Human scholarly prose.** The output must read as prose a specialist human scholar would write — not as a translation, and not as machine-generated text.
+
+## 1. Terminological and historiographical equivalence
+
+- Identify all domain-specific terms, named entities, institutions, and culture-bound concepts. Never translate them literally if the direct equivalent misrepresents historical reality.
+- Apply the established English academic equivalent used in peer-reviewed literature (e.g., archaeology, ancient Near Eastern studies, historiography).
+- When no direct equivalent exists, use a descriptive translation with minimal contextual clarification on first mention only — e.g., *nomos-based administrative units (early Sumerian territorial divisions)* — then use the standardized form thereafter.
+- Maintain strict terminological consistency throughout the entire output. Once you choose an English rendering for a Russian term or proper noun, use that rendering without variation.
+- When Russian historiography employs region-specific conceptual frameworks (e.g., *формационный подход*, *этнокультурная общность*, *локальная традиция*), translate them into their recognized English academic counterparts or render them neutrally with brief contextualization.
+
+## 2. Proper nouns and transliteration
+
+- Follow standard academic transliteration conventions — Library of Congress for Russian, or the field-specific norm for archaeological and ancient terms — for all non-Latin names.
+- On first occurrence, introduce a transliterated term with a brief English explanation, then use the standardized English form or accepted short form thereafter.
+- Retain widely recognized English exonyms unchanged: *Mesopotamia*, *Uruk*, *Jemdet Nasr*, *Indus Valley*, etc.
+
+## 3. Chronology and dating conventions
+
+- Standardize all dates to **BCE/CE** format unless the source explicitly requires BC/AD for stylistic consistency.
+- Format periods consistently: *4th millennium BCE*, *mid-3rd century BCE*, *Late Bronze Age*.
+- If non-Gregorian or culture-specific dating systems appear in the source, clarify them without altering the source's chronological claims.
+
+## 4. Cultural and conceptual adaptation
+
+- Avoid anachronistic framing or projecting modern categories onto ancient phenomena.
+- Do not introduce modern ideological or political connotations absent from the source.
+- Preserve the authoritative, reference-style tone characteristic of major academic encyclopedias.
+
+## 5. Style canon
+
+- Prefer the **active voice**; use the passive where it is standard in historical writing (*was dated*, *has been excavated*, *is attested in*) or where it genuinely serves clarity.
+- Nominalisations in moderation — do not stack them.
+- Prefer formal English connectives (`thus`, `accordingly`, `by contrast`, `conversely`) over literal renderings of Russian connectives.
+- **One modal marker per claim.** Do not hedge-stack. A single modal (`may`, `appears to`, `suggests`) suffices; do not combine two hedges on the same claim.
+- Preserve the assertion-vs-hypothesis balance of the source: if the Russian states a fact, state it as fact; if it advances a hypothesis, render it as hypothesis.
+- Avoid translating Russian idioms literally. If a Russian idiom has no English equivalent, paraphrase the underlying claim.
+- Eliminate redundancy and ambiguous pronoun references without altering factual content.
+
+## 6. Prose register and fluency
+
+The goal is idiomatic scholarly English — the register of a peer-reviewed historical monograph or a major reference encyclopaedia. Apply these rules concretely:
+
+- **Vary sentence rhythm.** Mix short declarative sentences with longer, more complex ones. No two consecutive sentences should follow the same syntactic template.
+- **Use precise disciplinary vocabulary.** Reach for the established term in archaeology, economic history, or political history as appropriate. Avoid generic academic filler such as *it is worth noting that* or *it can be seen that*.
+- **Cut throat-clearing phrases entirely.** Remove *it should be noted*, *it is important to emphasize*, *as mentioned above*, and all similar formulae.
+- **Do not repeat connectives.** Each connective (`however`, `therefore`, `moreover`, etc.) should appear at most once per paragraph.
+- **Shape each paragraph as a coherent unit.** It must have a clear logical arc — an opening claim, development, and close — not a sequence of loosely joined translated sentences.
+
+## 7. Constraints
+
+- Do not invent facts, dates, interpretations, or citations absent from the source.
+- Do not simplify scholarly complexity; preserve nuance while improving clarity and flow.
+- Preserve original formatting, headings, cross-references, and citation structure where present.
+
+## Worked examples
+
+**Example 1** — Russian connective
+
+`из всего этого следует`
+- BAD: *from all this, it would appear to follow*
+- GOOD: *this suggests that*
+
+**Example 2** — Relative clause restructuring
+
+`с расселением пришельцев X территория сменилась культурой Y`
+- BAD: *with whose arrival / with the arrival of which the territory was replaced by culture Y*
+- GOOD: *the arrival of X replaced the earlier culture with culture Y*
+
+**Example 3** — Russian idiom
+
+`они вынуждены были идти в кабалу`
+- BAD: *condemn themselves to bondage* (literal; not idiomatic English)
+- GOOD: *fell into debt-servitude* (or a similarly natural paraphrase)
+
+The point of these examples is the *shape* of the transformation — rebuild the English sentence from the facts it contains; do not drag Russian syntax across. Apply the same principle to any construction not listed here.
+
+## Input format
+
+The user message contains the Russian text to translate.
+
+## Output format
+
+Return only the English translation of the user's Russian text.
+
+No preamble, no commentary, no markdown code fences, no copy of the context."
+\end{prompt}
+
+\caption{Domain-Specific Translation System Prompt}\label{appx:translation}
+\end{figure*}
+
+\section{LLM prompts}\label{appx:prompts}
+
+\onecolumn
+
+\textbf{LLM system prompt for facts extraction. }
+
+\begin{figure}[ht!]
+
+\begin{tcolorbox}[colback=gray!3, colframe=gray!50,fontupper=\itshape]
+
+You are an \textbf{expert fact extraction} and \textbf{verification assistant}. 
+
+\vspace{2ex}
+
+
+Please read the following text carefully and break it down into distinct, independent facts. For each fact, disambiguate it to ensure clarity and precision (e.g., replace ambiguous prepositions). 
+
+\vspace{2ex}
+
+
+Each fact should be written on its own line. 
+Each line must start with a hyphen and space ('- '). 
+Do not include any additional explanation or formatting - just the list of facts if there are any.
+
+\end{tcolorbox}
+\end{figure}
+
+
+\textbf{LLM system prompt for facts verification. }
+
+\begin{figure}[ht!]
+
+\begin{tcolorbox}[colback=gray!3, colframe=gray!50,fontupper=\itshape]
+
+You are an \textbf{expert fact extraction} and \textbf{verification assistant}. 
+
+\vspace{2ex}
+
+
+You are given an atomic fact and a list of textual passages. Your task is to determine whether the atomic fact is \textbf{True} or \textbf{False}  based solely on the information in the passages.
+
+\vspace{2ex}
+
+
+\textbf{Instructions:}
+
+\begin{enumerate}
+
+    \item Check if any of the passages directly support the atomic fact.
+    \item Output \textbf{'True'} if at least one passage supports the fact even if another passage contradicts the fact.
+    \item Output \textbf{'False'} if no passage  supports the fact.
+    \item Do not include any additional information and explanations, you must only answer \textbf{'True'} or \textbf{'False'}.
+\end{enumerate}
+
+
+\end{tcolorbox}
+\end{figure}
+
+\end{document}

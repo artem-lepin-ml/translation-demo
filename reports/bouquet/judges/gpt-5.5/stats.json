@@ -1,0 +1,243 @@
+{
+  "judge_slug": "gpt-5.5",
+  "generated_at": "2026-07-09T06:06:42.020076+00:00",
+  "n_paragraphs_total": 198,
+  "systems": {
+    "qwen-27b-bouquet": {
+      "accuracy": {
+        "n": 198,
+        "mean": 9.1919,
+        "tie_rate_9_10": 0.8586,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.0325,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": 0.0836,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.151,
+            "n": 198
+          }
+        }
+      },
+      "fluency": {
+        "n": 198,
+        "mean": 9.5909,
+        "tie_rate_9_10": 0.9444,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1194,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0192,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.0924,
+            "n": 198
+          }
+        }
+      },
+      "style": {
+        "n": 198,
+        "mean": 8.2879,
+        "tie_rate_9_10": 0.3283,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1679,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0054,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.3232,
+            "n": 198
+          }
+        }
+      }
+    },
+    "qwen-27b-bouquet-refined": {
+      "accuracy": {
+        "n": 198,
+        "mean": 9.2778,
+        "tie_rate_9_10": 0.8939,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.0553,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0055,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.1971,
+            "n": 198
+          }
+        }
+      },
+      "fluency": {
+        "n": 198,
+        "mean": 9.5657,
+        "tie_rate_9_10": 0.9747,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.089,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": 0.0881,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.0922,
+            "n": 198
+          }
+        }
+      },
+      "style": {
+        "n": 198,
+        "mean": 8.3081,
+        "tie_rate_9_10": 0.3434,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.2025,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.004,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.315,
+            "n": 198
+          }
+        }
+      }
+    },
+    "translate-gemma-bouquet": {
+      "accuracy": {
+        "n": 198,
+        "mean": 9.1768,
+        "tie_rate_9_10": 0.8535,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.2452,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0556,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2491,
+            "n": 198
+          }
+        }
+      },
+      "fluency": {
+        "n": 198,
+        "mean": 9.1818,
+        "tie_rate_9_10": 0.8283,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1569,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": 0.0293,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.1836,
+            "n": 198
+          }
+        }
+      },
+      "style": {
+        "n": 198,
+        "mean": 8.3788,
+        "tie_rate_9_10": 0.4091,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1897,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0193,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2655,
+            "n": 198
+          }
+        }
+      }
+    },
+    "translate-gemma-bouquet-refined": {
+      "accuracy": {
+        "n": 198,
+        "mean": 9.3232,
+        "tie_rate_9_10": 0.904,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1805,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0438,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2056,
+            "n": 198
+          }
+        }
+      },
+      "fluency": {
+        "n": 197,
+        "mean": 9.2792,
+        "tie_rate_9_10": 0.8629,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1348,
+            "n": 197
+          },
+          "metricx_qe": {
+            "rho": -0.0213,
+            "n": 197
+          },
+          "comet": {
+            "rho": 0.1637,
+            "n": 197
+          }
+        }
+      },
+      "style": {
+        "n": 198,
+        "mean": 8.4798,
+        "tie_rate_9_10": 0.4747,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.2291,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.1005,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.3093,
+            "n": 198
+          }
+        }
+      }
+    }
+  }
+}
