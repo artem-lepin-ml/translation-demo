@@ -13,37 +13,48 @@ judge=None, judge raising, or malformed judge output (missing/invalid ``qid``
 key) on escalation all collapse to yellow/judge_unavailable -- terminal, no
 retry (retries are the caller's job, see webapp's ``_judge_live``). A QID
 outside the candidate set is a contract violation, not a top-1 fallback (the
-old G3 anti-pattern) -- also yellow/judge_unavailable.
+old G3 anti-pattern) -- also yellow/judge_unavailable. EXCEPTION:
+``FatalGroundingJudgeError`` (halt markers such as token-limit overflow or
+per-call gate violations) is re-raised out of ``ground()`` instead of
+collapsing to judge_unavailable -- it must stop the run, not be tolerated
+(wiki-eval experiment v2, spec 2026-07-10 Р15).
 """
 from __future__ import annotations
 
 import time
 
-from ..base import GroundingConfig, GroundingResult, Judge, TermMention, WikidataRef
+from ..base import FatalGroundingJudgeError, GroundingConfig, GroundingResult, Judge, TermMention, WikidataRef
 from ..wikidata import WikidataClient
 from .candidates import generate_candidates
 from .match import exact_match, norm
 
-DEFAULT_GROUNDING_JUDGE_PROMPT = """## Role
+DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT = """## Role
 You are a Wikidata disambiguation judge for a Russian-to-English historical
-translation pipeline. Given a Russian term, its lemma, the sentence it occurs
-in, and a numbered list of Wikidata candidates, decide which candidate (if
-any) the term refers to.
+translation pipeline. Given a Russian term, its lemma, the sentence it
+occurs in, and a numbered list of Wikidata candidates, decide which
+candidate (if any) the term refers to.
 
-## Input
-Surface form: {surface}
+## Output
+Return strict JSON only, no other text:
+{"qid": "Q..." or null, "reason": "<one sentence>"}
+
+Use null when no candidate genuinely fits the context.
+"""
+
+DEFAULT_GROUNDING_JUDGE_USER_TEMPLATE = """Surface form: {surface}
 Lemma: {lemma}
 Sentence context: {context}
 
 Candidates:
 {candidates}
-
-## Output
-Return strict JSON only, no other text:
-{{"qid": "Q..." or null, "reason": "<one sentence>"}}
-
-Use null when no candidate genuinely fits the context.
 """
+
+# Combined system+user string, kept ONLY because the webapp DB stores a single
+# prompt-template string per config row (migrate.py/seed.py seed
+# grounding_config.prompt from this) -- regenerating that demo seed to split
+# system/user in the DB is explicitly out of scope here (spec 2026-07-10 §9).
+# Live judge calls use the two constants above directly, not this string.
+DEFAULT_GROUNDING_JUDGE_PROMPT = DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT + "\n\n" + DEFAULT_GROUNDING_JUDGE_USER_TEMPLATE
 
 
 def _format_judge_prompt(mention: TermMention, candidates: list[dict]) -> str:
@@ -51,7 +62,7 @@ def _format_judge_prompt(mention: TermMention, candidates: list[dict]) -> str:
         f"{i}. {c['qid']}: {c.get('label_ru') or c.get('label_en') or c['qid']} — {c.get('description', '')}"
         for i, c in enumerate(candidates, 1)
     )
-    return DEFAULT_GROUNDING_JUDGE_PROMPT.format(
+    return DEFAULT_GROUNDING_JUDGE_USER_TEMPLATE.format(
         surface=mention.surface,
         lemma=mention.lemma or mention.surface,
         context=mention.context,
@@ -161,7 +172,12 @@ class LabelFirstGrounding:
         j0 = time.perf_counter()
         try:
             response = judge(prompt)
-        except Exception as exc:  # noqa: BLE001 -- any judge failure is terminal here, not retried
+        except FatalGroundingJudgeError:
+            # A halt marker (token-limit overflow, per-call gate violations) must
+            # propagate out of ground() and stop the run -- it is NOT a tolerable
+            # degradation to judge_unavailable (wiki-eval experiment v2, Р15).
+            raise
+        except Exception as exc:  # noqa: BLE001 -- any other judge failure is terminal here, not retried
             decision = {"resolved_by": "judge_unavailable", "chosen_qid": None,
                         "judge_trace": {"error": str(exc),
                                         "latency_ms": round((time.perf_counter() - j0) * 1000, 1)}}

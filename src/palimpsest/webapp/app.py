@@ -22,6 +22,7 @@ from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from ..llm.client import LLMClient, LLMConfig, is_transient_error
+from ..terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
 from ..terminology.verdict import _norm
 from . import budget, db, export, precompute, translate
 from .aggregate import compute_aggregate
@@ -1154,6 +1155,10 @@ async def _grounding_judge_live(conn, prompt: str, endpoint: str = "grounding"):
     max_tokens=512/temperature=0 per the grounding_config row, reasoning param
     omitted per-model via the existing model_matrix/ModelParams mechanism.
 
+    ``prompt`` is the USER-only content (Role + output contract now live in
+    ``DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT``, sent as the system message below
+    -- spec 2026-07-10-wiki-eval-experiment-v2.md Р7).
+
     # TODO(wired when live re-grounding endpoint exists) — no caller in the
     # webapp yet (spec scopes the Settings surface only: table + 2 endpoints +
     # card + this wrapper; see 2026-07-03-grounding-label-first-design.md §4).
@@ -1174,7 +1179,7 @@ async def _grounding_judge_live(conn, prompt: str, endpoint: str = "grounding"):
     while True:
         try:
             res = await asyncio.wait_for(
-                asyncio.to_thread(client.complete, "", prompt), EVAL_TIMEOUT)
+                asyncio.to_thread(client.complete, DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT, prompt), EVAL_TIMEOUT)
             break
         except Exception as exc:
             if is_transient_error(exc) and attempt < EVAL_RETRIES:

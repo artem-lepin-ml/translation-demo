@@ -5,10 +5,12 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from palimpsest.terminology import pipeline
-from palimpsest.terminology.base import GroundingResult, PairResult, TermMention, WikidataRef
+from palimpsest.terminology.base import FatalGroundingJudgeError, GroundingResult, PairResult, TermMention, WikidataRef
 from palimpsest.terminology.eval_harness import wilson_ci
 from palimpsest.terminology.extract import deterministic_extract, mentions_from_surfaces
 from palimpsest.terminology.verdict import pair_from_forms
@@ -88,47 +90,84 @@ def test_deterministic_extract_finds_proper_nouns():
     assert any("Вавилон" in m.surface for m in ms)
 
 
-def test_categories_and_prompt_present():
-    from palimpsest.terminology.extract import CATEGORIES, DEFAULT_NER_PROMPT
-    assert {"people", "title", "social"} <= CATEGORIES
-    assert "{{source}}" in DEFAULT_NER_PROMPT
-    assert "<categories>" in DEFAULT_NER_PROMPT and "bad_example" in DEFAULT_NER_PROMPT
+def test_ner_system_prompt_covers_full_category_scope():
+    from palimpsest.terminology.extract import NER_SYSTEM_PROMPT
+    assert "<categories>" in NER_SYSTEM_PROMPT
+    assert "What to extract (examples)" in NER_SYSTEM_PROMPT
+    for cat in ("deity", "work", "religion"):
+        assert cat in NER_SYSTEM_PROMPT
 
 
-def test_parse_surfaces_tolerates_fence_and_bad_category():
+def test_ner_user_wraps_source():
+    from palimpsest.terminology.extract import ner_user
+    assert ner_user("В Лагаше правил лугаль.") == "<source>\nВ Лагаше правил лугаль.\n</source>"
+
+
+def test_parse_surfaces_tolerates_fence():
     from palimpsest.terminology.extract import parse_surfaces
-    raw = '```json\n[{"surface":"Лагаше","category":"place"},{"surface":"x","category":"nonsense"}]\n```'
+    raw = '```json\n[{"surface":"Лагаше","lemma":"Лагаш"},{"surface":"x","lemma":"x"}]\n```'
     out = parse_surfaces(raw)
-    assert out[0] == {"surface": "Лагаше", "lemma": "Лагаше", "category": "place"}
-    assert out[1]["category"] is None            # unknown category -> None
-    assert parse_surfaces("not json") == []
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш"}, {"surface": "x", "lemma": "x"}]
+
+
+def test_parse_surfaces_ignores_trailing_commentary_with_brackets():
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = ('[{"surface":"Лагаше","lemma":"Лагаш"}]\n'
+           'Note: this also mentions [Вавилон] as a location.')
+    out = parse_surfaces(raw)
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш"}]
 
 
 def test_parse_surfaces_includes_lemma():
     from palimpsest.terminology.extract import parse_surfaces
-    raw = '[{"surface":"династии Цин","lemma":"династия Цин","category":"dynasty"}]'
+    raw = '[{"surface":"династии Цин","lemma":"династия Цин"}]'
     out = parse_surfaces(raw)
-    assert out == [{"surface": "династии Цин", "lemma": "династия Цин", "category": "dynasty"}]
+    assert out == [{"surface": "династии Цин", "lemma": "династия Цин"}]
 
 
 def test_parse_surfaces_lemma_sanity_falls_back_to_surface():
     from palimpsest.terminology.extract import parse_surfaces
     raw = json.dumps([
-        {"surface": "Лагаше", "lemma": "", "category": "place"},
-        {"surface": "Вавилон", "lemma": "x" * 81, "category": "place"},
-        {"surface": "Ниппур", "lemma": "Ниппур\nс переносом", "category": "place"},
+        {"surface": "Лагаше", "lemma": ""},
+        {"surface": "Вавилон", "lemma": "x" * 81},
+        {"surface": "Ниппур", "lemma": "Ниппур\nс переносом"},
     ], ensure_ascii=False)
     out = parse_surfaces(raw)
     assert [o["lemma"] for o in out] == ["Лагаше", "Вавилон", "Ниппур"]  # sanity fails -> lemma=surface
 
 
+def test_parse_surfaces_empty_array_is_honest_not_a_failure():
+    from palimpsest.terminology.extract import parse_surfaces
+    assert parse_surfaces("[]") == []
+    assert parse_surfaces("```json\n[]\n```") == []
+
+
+def test_parse_surfaces_raises_on_not_json():
+    from palimpsest.terminology.extract import ExtractionParseError, parse_surfaces
+    with pytest.raises(ExtractionParseError):
+        parse_surfaces("not json")
+
+
+def test_parse_surfaces_raises_on_single_json_object():
+    from palimpsest.terminology.extract import ExtractionParseError, parse_surfaces
+    with pytest.raises(ExtractionParseError):
+        parse_surfaces('{"surface":"Лагаше","lemma":"Лагаш"}')
+
+
+def test_parse_surfaces_raises_on_truncated_array():
+    from palimpsest.terminology.extract import ExtractionParseError, parse_surfaces
+    with pytest.raises(ExtractionParseError):
+        parse_surfaces('[{"surface":"Лагаше","lemma":"Лагаш"}')
+
+
 def test_validate_surfaces_drops_not_in_source_and_dedups():
     from palimpsest.terminology.extract import validate_surfaces
     src = "В Лагаше правил лугаль. Лагаше славился."
-    surfaces = [{"surface":"Лагаше","category":"place"},{"surface":"Лагаше","category":"place"},
-                {"surface":"Lagash","category":"place"},{"surface":"","category":None}]
+    surfaces = [{"surface": "Лагаше", "lemma": "Лагаш"}, {"surface": "Лагаше", "lemma": "Лагаш"},
+                {"surface": "Lagash", "lemma": "Lagash"}, {"surface": "", "lemma": None}]
     valid, dropped = validate_surfaces(src, surfaces)
     assert [v["surface"] for v in valid] == ["Лагаше"]   # deduped, only substring
+    assert valid == [{"surface": "Лагаше", "lemma": "Лагаш"}]  # {surface, lemma} schema, no category
     assert dropped == 1                                   # "Lagash" not in source
 
 
@@ -731,6 +770,22 @@ def test_label_first_judge_raises_resolves_judge_unavailable_called_once_not_ret
     assert result.trace["resolved_by"] == "judge_unavailable"
     assert result.grounded is None
     assert len(calls) == 1  # terminal failure -- the strategy itself never retries
+
+
+def test_label_first_judge_fatal_error_propagates_out_of_ground():
+    # FatalGroundingJudgeError (halt marker: token-limit overflow, per-call gate
+    # violation) must halt the run, NOT collapse to judge_unavailable like a
+    # plain RuntimeError does (wiki-eval experiment v2, spec 2026-07-10 Р15).
+    wd = _FakeWD(search={"Тутмос": [{"id": "Q1"}, {"id": "Q2"}]},
+                 entities={"Q1": _entity("Q1", "Thutmose I", "Тутмос"),
+                           "Q2": _entity("Q2", "Thutmose II", "Тутмос")})
+
+    def fatal_judge(prompt):
+        raise FatalGroundingJudgeError("token-limit overflow")
+
+    strategy = LabelFirstGrounding(wd)
+    with pytest.raises(FatalGroundingJudgeError):
+        strategy.ground(TermMention(surface="Тутмос", lemma="Тутмос"), judge=fatal_judge)
 
 
 def test_label_first_judge_qid_not_in_candidates_is_judge_unavailable_never_top1():
