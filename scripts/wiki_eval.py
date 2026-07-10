@@ -22,6 +22,7 @@ import dataclasses
 import itertools
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -32,10 +33,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from palimpsest.terminology.base import FatalGroundingJudgeError, GroundingConfig
+from palimpsest.terminology.base import FatalGroundingJudgeError, GroundingConfig, TermMention
 from palimpsest.terminology.evaluation import metrics as M
 from palimpsest.terminology.evaluation import predict, report, wiki_gt
-from palimpsest.terminology.evaluation.tokenize import flatten
+from palimpsest.terminology.evaluation.tokenize import char_to_token_index, flatten
 from palimpsest.terminology.extract import (
     NER_SYSTEM_PROMPT,
     ExtractionParseError,
@@ -43,8 +44,10 @@ from palimpsest.terminology.extract import (
     mentions_from_surfaces,
     ner_user,
     parse_surfaces,
+    sentence_context,
 )
 from palimpsest.terminology.grounding import LabelFirstGrounding
+from palimpsest.terminology.grounding.candidates import DEFAULT_LABEL_GUESS_SYSTEM_PROMPT
 from palimpsest.terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
 from palimpsest.terminology.wikidata import DEFAULT_NETWORK_CONCURRENCY, WikidataClient
 
@@ -300,7 +303,8 @@ def _load_dotenv(path: Path = ENV_FILE) -> None:
             os.environ[key] = value
 
 
-def _config_from_bits(bits: str, *, use_sitelink: bool | None = None) -> GroundingConfig:
+def _config_from_bits(bits: str, *, use_sitelink: bool | None = None,
+                       search_mode: str = "baseline") -> GroundingConfig:
     """Build a GroundingConfig from the 3-bit ablation id.
 
     ``use_sitelink`` overrides the bit-derived value when given (not ``None``)
@@ -311,9 +315,13 @@ def _config_from_bits(bits: str, *, use_sitelink: bool | None = None) -> Groundi
     the 3-bit id has no room for a 4th independent toggle, so this keyword
     lets ``run``'s ``--no-sitelink`` flag force the rung off without changing
     the bit-string format ablate/tests already depend on.
+
+    ``search_mode`` (2026-07-10, --search-mode): likewise CLI-only, not part
+    of the 3-bit id -- passed straight through to ``GroundingConfig``.
     """
     use_lemma, use_fallbacks, match_aliases = (c == "1" for c in bits)
-    config = GroundingConfig(use_lemma=use_lemma, use_fallbacks=use_fallbacks, match_aliases=match_aliases)
+    config = GroundingConfig(use_lemma=use_lemma, use_fallbacks=use_fallbacks,
+                              match_aliases=match_aliases, search_mode=search_mode)
     if use_sitelink is not None and use_sitelink != config.use_sitelink:
         config = dataclasses.replace(config, use_sitelink=use_sitelink)
     return config
@@ -353,7 +361,7 @@ class BudgetGuard:
 
     @property
     def n_calls(self) -> int:
-        return self.calls_by_kind["extract"] + self.calls_by_kind["judge"]
+        return sum(self.calls_by_kind.values())
 
     def can_reserve(self, est: float, *, kind: str = "judge") -> bool:
         with self._lock:
@@ -370,8 +378,16 @@ class BudgetGuard:
     def reserve(self, est: float, *, kind: str = "judge") -> None:
         with self._lock:
             self.spent += est
-            self.spent_by_kind[kind] += est
-            self.calls_by_kind[kind] += 1
+            # .get()-based lazy-init (not a plain [kind] +=): __init__ only
+            # pre-seeds "extract"/"judge" -- a THIRD kind ("label_guess",
+            # search_mode="label-guess") must not require every existing
+            # caller/test to know about it up front, and must never appear
+            # in spent_by_kind/calls_by_kind for a run that never uses it
+            # (baseline-mode wire-identical constraint extends to meta.json
+            # shape: a run with no label_guess calls keeps the pre-existing
+            # 2-key dict, see test_guard_spend_and_call_split_tracked_per_kind).
+            self.spent_by_kind[kind] = self.spent_by_kind.get(kind, 0.0) + est
+            self.calls_by_kind[kind] = self.calls_by_kind.get(kind, 0) + 1
 
     def settle(self, est: float, actual: float | None, *, kind: str = "judge") -> None:
         if actual is None:
@@ -379,7 +395,7 @@ class BudgetGuard:
         with self._lock:
             delta = actual - est
             self.spent += delta
-            self.spent_by_kind[kind] += delta
+            self.spent_by_kind[kind] = self.spent_by_kind.get(kind, 0.0) + delta
 
 
 class _CountingSemaphore:
@@ -666,24 +682,48 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
     ))
 
     def extractor(source: str) -> list[dict]:
-        if not guard.can_reserve(EST_COST_PER_EXTRACT_CALL, kind="extract"):
-            raise BudgetExhaustedError(guard.stopped_reason)
-        guard.reserve(EST_COST_PER_EXTRACT_CALL, kind="extract")
-        t0 = time.perf_counter()
-        reply = _complete_with_slot(
-            client, system=NER_SYSTEM_PROMPT, user=ner_user(source),
-            semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
-        )
-        if call_logger is not None:
-            call_logger.log(reply, kind="extract", model=route["model"],
-                             latency_ms=(time.perf_counter() - t0) * 1000)
-        _gate_reply(reply, kind="extract", model=route["model"], pin=route["provider_pin"],
-                    expect_reasoning=route["expect_reasoning"], context="extraction call")
-        actual_cost = reply.usage.cost_usd
-        if actual_cost is None and reply.usage.prompt_tokens:
-            actual_cost = (reply.usage.prompt_tokens * PRICE_IN
-                           + reply.usage.completion_tokens * PRICE_OUT)
-        guard.settle(EST_COST_PER_EXTRACT_CALL, actual_cost, kind="extract")
+        def _attempt():
+            if not guard.can_reserve(EST_COST_PER_EXTRACT_CALL, kind="extract"):
+                raise BudgetExhaustedError(guard.stopped_reason)
+            guard.reserve(EST_COST_PER_EXTRACT_CALL, kind="extract")
+            t0 = time.perf_counter()
+            reply = _complete_with_slot(
+                client, system=NER_SYSTEM_PROMPT, user=ner_user(source),
+                semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
+            )
+            if call_logger is not None:
+                call_logger.log(reply, kind="extract", model=route["model"],
+                                 latency_ms=(time.perf_counter() - t0) * 1000)
+            _gate_reply(reply, kind="extract", model=route["model"], pin=route["provider_pin"],
+                        expect_reasoning=route["expect_reasoning"], context="extraction call")
+            actual_cost = reply.usage.cost_usd
+            if actual_cost is None and reply.usage.prompt_tokens:
+                actual_cost = (reply.usage.prompt_tokens * PRICE_IN
+                               + reply.usage.completion_tokens * PRICE_OUT)
+            guard.settle(EST_COST_PER_EXTRACT_CALL, actual_cost, kind="extract")
+            return reply
+
+        try:
+            reply = _attempt()
+        except CallGateError as exc:
+            # One-retry tolerance for reasoning-ignition misses only (2026-07-10
+            # patch, --no-judge cost run): observed as a genuine one-off
+            # provider quirk on BOTH gemini-3.1-flash-lite and deepseek-v4-flash
+            # under real load (not a single-model fluke), always followed by
+            # normal reasoning-positive calls on the very next attempt -- see
+            # docs/stages/wiki-eval.md for the two real occurrences that
+            # motivated this. A SECOND consecutive miss on the same paragraph
+            # still halts loudly exactly as before (Р13/Р15 intent preserved:
+            # a PERSISTENT failure to reason is still fatal, only a one-off
+            # blip is absorbed). The served-by pin-mismatch gate (Р14) is
+            # NEVER retried here -- only the specific "did not ignite
+            # reasoning" message is caught. Never silent: printed to stderr
+            # either way.
+            if "did not ignite reasoning" not in str(exc):
+                raise
+            print(f"wiki_eval: reasoning-ignition miss, retrying once ({exc})", file=sys.stderr)
+            reply = _attempt()  # a second CallGateError here propagates uncaught, as designed
+
         return parse_surfaces(reply.content)
 
     def extract_fn(paragraph: str):
@@ -943,6 +983,75 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
     return judge
 
 
+def _build_label_guesser(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
+                          model: str | None = None, provider: str | None = None,
+                          extra_body: dict | None = None, base_url: str | None = None,
+                          temperature: float | None = None, top_p: float | None = None,
+                          top_k: int | None = None, max_tokens: int | None = None,
+                          call_logger: "CallLogger | None" = None):
+    """One-shot label-guess call for ``search_mode="label-guess"``
+    (candidates.py's widening tier, 2026-07-10): shares the SAME resolved
+    route (model/provider/sampling) as the run's disambiguation judge --
+    "the run's judge LLM client" per spec -- but is its OWN small LLMClient
+    rather than reusing ``_build_judge``'s closure, since that closure
+    hardcodes ``JUDGE_SYSTEM_PROMPT`` (a different role/output contract than
+    the label-guess prompt) and its own ``kind="judge"``/``"judge_reask"``
+    tagging. Tagged ``kind="label_guess"`` for its own meta.json spend/call
+    split (BudgetGuard's lazy per-kind dicts, see its ``reserve``/``settle``).
+
+    Returns ``None`` when the API key is unset, same fallback contract as
+    ``_build_judge`` -- ``generate_candidates`` treats a ``None``
+    ``label_guesser`` as "skip this tier", it is the CALLER's job
+    (``cmd_run``'s CLI guard) to fail fast up front when
+    ``search_mode == "label-guess"`` is combined with ``--no-judge``.
+
+    Unlike ``_build_judge`` there is no corrective re-ask on malformed JSON
+    (spec: "make ONE LLM call") -- a bad/unparseable reply degrades to "no
+    guess" one level up in ``candidates._guess_labels``, not retried here.
+    """
+    from palimpsest.llm.client import LLMClient, LLMConfig
+
+    _load_dotenv()
+    route = _resolve_route(model, provider, extra_body, base_url, temperature, top_p, top_k, max_tokens)
+    api_key = os.environ.get(route["api_key_env"])
+    if not api_key:
+        return None
+
+    client = LLMClient(LLMConfig(
+        model=route["model"], base_url=route["base_url"], api_key=api_key,
+        temperature=route["temperature"], top_p=route["top_p"], max_tokens=route["max_tokens"],
+        extra_body=route["extra_body"], timeout=120.0,
+    ))
+
+    def guess(prompt: str) -> dict:
+        if not guard.can_reserve(EST_COST_PER_JUDGE_CALL, kind="label_guess"):
+            raise BudgetExhaustedError(guard.stopped_reason)
+        guard.reserve(EST_COST_PER_JUDGE_CALL, kind="label_guess")
+        t0 = time.perf_counter()
+        result = _complete_with_slot(
+            client, system=DEFAULT_LABEL_GUESS_SYSTEM_PROMPT, user=prompt,
+            semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
+        )
+        if call_logger is not None:
+            call_logger.log(result, kind="label_guess", model=route["model"],
+                             latency_ms=(time.perf_counter() - t0) * 1000)
+        _gate_reply(result, kind="label_guess", model=route["model"], pin=route["provider_pin"],
+                    expect_reasoning=route["expect_reasoning"], context="label_guess call")
+        actual_cost = result.usage.cost_usd
+        if actual_cost is None and result.usage.prompt_tokens:
+            actual_cost = (result.usage.prompt_tokens * PRICE_IN
+                           + result.usage.completion_tokens * PRICE_OUT)
+        guard.settle(EST_COST_PER_JUDGE_CALL, actual_cost, kind="label_guess")
+        text = result.content.strip()
+        if text.startswith("```"):
+            text = text.strip("`")
+            if text.startswith("json"):
+                text = text[4:]
+        return json.loads(text)
+
+    return guess
+
+
 def _canonicalize_fn(wd: WikidataClient):
     """QID -> canonical QID via the same redirect path GT used (E-D18):
     wbgetentities on a redirect returns the target under `entity["id"]`.
@@ -1004,8 +1113,95 @@ def _p31_of_fn(wd: WikidataClient):
 # ── gt.jsonl I/O ──────────────────────────────────────────────────────────────
 
 
-def _load_gt(path: Path) -> list[dict]:
+def _read_jsonl(path: Path) -> list[dict]:
+    """One JSON object per non-blank line -- the shared shape of gt.jsonl,
+    pred.jsonl and pred.partial.jsonl alike."""
     return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
+
+
+def _load_gt(path: Path) -> list[dict]:
+    return _read_jsonl(path)
+
+
+def _assert_reuse_extraction_coverage(gt_records: list[dict], source_records: list[dict], reuse_dir: Path) -> None:
+    """``--reuse-extraction`` guard (Deliverable 2): every article this run
+    intends to process (the full ``--gt`` corpus) must already have
+    extraction output in the source run's pred.jsonl, or grounding would
+    silently run over an incomplete mention set for that article. Missing
+    titles fail fast, named -- same "loud, not silent" philosophy as
+    ``_assert_pred_gt_coverage`` below, just the opposite direction (every GT
+    title must be COVERED by the source, not the other way around)."""
+    gt_titles = {rec["title"] for rec in gt_records}
+    source_titles = {r["title"] for r in source_records}
+    missing = sorted(gt_titles - source_titles)
+    if missing:
+        raise SystemExit(
+            f"wiki_eval: --reuse-extraction {reuse_dir} is missing {len(missing)} requested "
+            f"article(s) -- extraction output isn't available for them, cannot reuse.\n"
+            f"  missing titles: {missing}"
+        )
+
+
+def _reconstruct_mentions_for_article(
+    article_text: str, records: list[dict],
+) -> tuple[list[tuple[TermMention, int]], int]:
+    """Rebuild ``(TermMention, index)`` pairs for one article from a PRIOR
+    run's pred.jsonl records (``--reuse-extraction``, Deliverable 2):
+    surface/lemma/category/index are already on disk (predict.py's records
+    schema) -- char_start/char_end/context are re-derived by scanning
+    ``article_text`` for the literal ``surface`` occurrence whose
+    ``char_to_token_index`` matches the recorded ``index``, the exact
+    inverse of how the ORIGINAL run computed that index (same pinned E-D6
+    tokenizer on both sides), so it round-trips exactly for any mention
+    whose source HTML hasn't drifted since. ``context`` is reconstructed via
+    ``extract.sentence_context`` over the WHOLE article text rather than the
+    original single paragraph (the paragraph boundary isn't recoverable from
+    pred.jsonl alone) -- a reasonable approximation since paragraphs already
+    end in sentence-terminating punctuation, but not byte-identical to a
+    fresh extraction run's context (known limitation, see
+    docs/stages/wiki-eval.md).
+
+    ``index`` is REUSED verbatim from the record, never recomputed here --
+    it is the original run's own authoritative answer, and recomputing it
+    from a possibly-unmatched char_start (e.g. ``char_to_token_index(text,
+    -1)``) would silently produce a wrong index instead.
+
+    Returns ``(mentions_with_index, n_unmatched)``. An unmatched record
+    (source HTML drifted, or a genuinely duplicate (surface, index) pair)
+    still yields a ``TermMention`` (surface/lemma/category preserved,
+    context="", char_start=char_end=-1) paired with its recorded index,
+    rather than silently dropping the mention from re-grounding -- candidate
+    search only needs surface/lemma to still work; only the alt-names/
+    label-guess widening tiers and judge context quality degrade for that
+    one mention. ``n_unmatched`` is counted for meta.json disclosure
+    (``n_reuse_extraction_unmatched``).
+    """
+    taken: set[int] = set()  # char_start positions already claimed this article
+    out: list[tuple[TermMention, int]] = []
+    n_unmatched = 0
+    for rec in records:
+        surface = rec["surface"]
+        index = rec["index"]
+        lemma = rec.get("lemma") or surface
+        category = rec.get("category")
+        span = None
+        for m in re.finditer(re.escape(surface), article_text):
+            if m.start() in taken:
+                continue
+            if char_to_token_index(article_text, m.start()) == index:
+                span = (m.start(), m.end())
+                break
+        if span is None:
+            n_unmatched += 1
+            mention = TermMention(surface=surface, context="", lemma=lemma,
+                                   char_start=-1, char_end=-1, lang="ru", category=category)
+        else:
+            start, end = span
+            taken.add(start)
+            mention = TermMention(surface=surface, context=sentence_context(article_text, start, end),
+                                   lemma=lemma, char_start=start, char_end=end, lang="ru", category=category)
+        out.append((mention, index))
+    return out, n_unmatched
 
 
 def _assert_pred_gt_coverage(gt_records: list[dict], pred_records: list[dict], gt_path: Path, pred_source: object) -> None:
@@ -1137,7 +1333,8 @@ def _process_articles_parallel(
     articles: list[tuple[str, list[str], str]], *, article_workers: int,
     extract_fn, judge, canonicalize, wd: WikidataClient, config: GroundingConfig,
     guard: BudgetGuard | None, tracker: FailureTracker | None = None,
-    checkpoint: Checkpointer | None = None,
+    checkpoint: Checkpointer | None = None, label_guesser=None,
+    reuse_mentions_by_title: dict[str, list[tuple[TermMention, int]]] | None = None,
 ) -> tuple[list[dict], int]:
     """Article-level parallelism (ticket 002b): process every ``(title,
     paragraphs, article_text)`` triple in ``articles`` CONCURRENTLY, up to
@@ -1169,6 +1366,17 @@ def _process_articles_parallel(
     article's records are ready, so on-disk progress reflects REAL completion
     order, not ``pool.map``'s submission-order yield. ``None`` (default)
     keeps every pre-existing caller/test of this function unchanged.
+
+    ``label_guesser`` (2026-07-10, search_mode="label-guess"): passed
+    straight through to each per-article ``LabelFirstGrounding`` instance,
+    same sharing rationale as ``extract_fn``/``judge`` above.
+
+    ``reuse_mentions_by_title`` (2026-07-10, ``--reuse-extraction``,
+    Deliverable 2): when given, ``process_one`` skips the paragraph-chunked
+    extraction phase entirely (``extract_fn`` is never called for that
+    article) and grounds ``reuse_mentions_by_title[title]`` directly via
+    ``predict.predict_tuples_from_mentions`` -- ``None`` (default) keeps
+    every pre-existing caller/test on the normal extraction path unchanged.
     """
 
     def process_one(item: tuple[str, list[str], str]) -> tuple[list[dict], int]:
@@ -1180,24 +1388,33 @@ def _process_articles_parallel(
         if guard is not None and guard.stopped_reason is not None:
             return [], 0
 
-        grounder = LabelFirstGrounding(wd, config)
+        grounder = LabelFirstGrounding(wd, config, label_guesser=label_guesser)
 
         def ground_fn(mention, *, judge=judge, scope_id=None, judge_cache=None):
             return grounder.ground(mention, judge=judge, scope_id=scope_id, judge_cache=judge_cache)
 
         judge_cache: dict = {}
-        # Phase 1 (parallel, capped at DEFAULT_MAX_CONCURRENCY per article):
-        # extract every paragraph's mentions concurrently. Phase 2 (grounding +
-        # judge, inside predict_tuples) is untouched and stays sequential
-        # WITHIN one article -- it's the across-article overlap that's new.
-        # title/tracker (qwen-run resilience patch): _parallel_extract_fn needs
-        # both to record which article/paragraph a tolerated transient failure
-        # came from -- see its docstring.
-        paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs, title=title, tracker=tracker)
-        result = predict.predict_tuples(
-            article_text, paragraphs, paragraph_extract_fn, ground_fn,
-            judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
-        )
+        if reuse_mentions_by_title is not None:
+            # --reuse-extraction: mentions were already extracted by a prior
+            # run (Deliverable 2) -- ground them directly, no extraction call.
+            mentions_with_index = reuse_mentions_by_title.get(title, [])
+            result = predict.predict_tuples_from_mentions(
+                mentions_with_index, ground_fn,
+                judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
+            )
+        else:
+            # Phase 1 (parallel, capped at DEFAULT_MAX_CONCURRENCY per article):
+            # extract every paragraph's mentions concurrently. Phase 2 (grounding +
+            # judge, inside predict_tuples) is untouched and stays sequential
+            # WITHIN one article -- it's the across-article overlap that's new.
+            # title/tracker (qwen-run resilience patch): _parallel_extract_fn needs
+            # both to record which article/paragraph a tolerated transient failure
+            # came from -- see its docstring.
+            paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs, title=title, tracker=tracker)
+            result = predict.predict_tuples(
+                article_text, paragraphs, paragraph_extract_fn, ground_fn,
+                judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
+            )
         records = [{"title": title, **r} for r in result["records"]]
         if checkpoint is not None:
             checkpoint.record(title, records)
@@ -1225,8 +1442,17 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
                      skip_titles: frozenset[str] = frozenset(),
                      n_done_start: int = 0,
                      use_sitelink: bool | None = None,
-                     no_judge: bool = False) -> tuple[list[dict], dict]:
-    config = _config_from_bits(bits, use_sitelink=use_sitelink)
+                     no_judge: bool = False,
+                     search_mode: str = "baseline",
+                     reuse_source_records_by_title: dict[str, list[dict]] | None = None,
+                     ) -> tuple[list[dict], dict]:
+    if search_mode == "label-guess" and no_judge:
+        # Defense in depth: cmd_run's CLI guard already rejects this
+        # combination before any work starts (spec: "fail fast at CLI
+        # arg-parse time") -- this second check protects direct callers of
+        # _run_one_config (tests, future scripts) that bypass cmd_run.
+        raise ValueError("search_mode='label-guess' requires a judge -- no_judge=True was also given")
+    config = _config_from_bits(bits, use_sitelink=use_sitelink, search_mode=search_mode)
     wd = WikidataClient(cache_path=wikidata_cache, network_concurrency=wikidata_workers)
     canonicalize = _canonicalize_fn(wd)
 
@@ -1279,9 +1505,28 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
         base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
         max_tokens=max_tokens, tracker=tracker, call_logger=call_logger)
-    extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
-                                    base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
-                                    max_tokens=max_tokens, call_logger=call_logger)
+    # label_guesser (search_mode="label-guess" only): the widening tier's
+    # one-shot call, built from the SAME route as the judge above. Never
+    # built otherwise -- generate_candidates only ever consults it when
+    # config.search_mode == "label-guess" anyway, but skipping the build
+    # entirely for the other two modes avoids an unused LLMClient/API-key
+    # check.
+    label_guesser = None
+    if config.search_mode == "label-guess":
+        label_guesser = _build_label_guesser(
+            guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
+            base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
+            max_tokens=max_tokens, call_logger=call_logger)
+    # --reuse-extraction (Deliverable 2): skip building the extraction
+    # closure entirely -- no extraction LLM calls are ever made, so
+    # guard.spent_by_kind["extract"] stays exactly 0 by construction (never
+    # reserved against), which is exactly what meta.json's spend.extract
+    # must show for a reuse run.
+    extract_fn = None
+    if reuse_source_records_by_title is None:
+        extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
+                                        base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
+                                        max_tokens=max_tokens, call_logger=call_logger)
 
     # Checkpointer (container-restart resilience patch): built only when the
     # caller (cmd_run) hands us a run dir -- ``n_done_start``/``skip_titles``
@@ -1296,6 +1541,13 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         )
 
     articles: list[tuple[str, list[str], str]] = []
+    # --reuse-extraction: reconstructed (mention, index) pairs per article,
+    # built alongside `articles` below (needs the SAME re-derived
+    # article_text) -- only populated when reuse_source_records_by_title is
+    # given, left as {} (and therefore ignored, see _process_articles_parallel's
+    # `reuse_mentions_by_title=None` contract) otherwise.
+    reuse_mentions_by_title: dict[str, list[tuple[TermMention, int]]] = {}
+    n_reuse_unmatched_total = 0
     for rec in gt_records:
         title = rec["title"]
         if title in skip_titles:  # --resume: already checkpointed in a prior invocation
@@ -1307,11 +1559,17 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         article_text = flatten(html)
         paragraphs = article_text.split("\n")
         articles.append((title, paragraphs, article_text))
+        if reuse_source_records_by_title is not None:
+            source_recs = reuse_source_records_by_title.get(title, [])
+            mentions_with_index, n_unmatched = _reconstruct_mentions_for_article(article_text, source_recs)
+            reuse_mentions_by_title[title] = mentions_with_index
+            n_reuse_unmatched_total += n_unmatched
 
     pred_records, n_paragraphs_total = _process_articles_parallel(
         articles, article_workers=article_workers, extract_fn=extract_fn, judge=judge,
         canonicalize=canonicalize, wd=wd, config=config, guard=guard, tracker=tracker,
-        checkpoint=checkpoint,
+        checkpoint=checkpoint, label_guesser=label_guesser,
+        reuse_mentions_by_title=reuse_mentions_by_title if reuse_source_records_by_title is not None else None,
     )
 
     counters = {
@@ -1357,7 +1615,18 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         # attempted, not just their count (which would read 0 either way if
         # every mention happened to resolve by exact_label).
         "no_judge": no_judge,
+        # --search-mode (2026-07-10): disclosed in meta.json like "no_judge"
+        # above, same top-level-key convention (spec: "recorded in meta.json
+        # (like no_judge)").
+        "search_mode": config.search_mode,
     }
+    if reuse_source_records_by_title is not None:
+        # --reuse-extraction accounting (Deliverable 2): how many of the
+        # reused mentions couldn't be re-matched to a char span in the
+        # re-fetched HTML (see _reconstruct_mentions_for_article) -- loud,
+        # not silent, same "counted, never hidden" philosophy as
+        # FailureTracker's other counters above.
+        counters["n_reuse_extraction_unmatched"] = n_reuse_unmatched_total
     return pred_records, counters
 
 
@@ -1370,10 +1639,45 @@ def _parse_extra_body(raw: str | None) -> dict | None:
 
 
 def cmd_run(args) -> int:
+    search_mode = getattr(args, "search_mode", "baseline")
+    # --search-mode label-guess needs a judge to make its one-shot guess call
+    # (spec: "label-guess only makes sense in judge-enabled runs") --
+    # --no-judge explicitly disables the judge, so the combination is
+    # rejected up front, before any I/O or network work starts ("fail fast
+    # at CLI arg-parse time").
+    if search_mode == "label-guess" and getattr(args, "no_judge", False):
+        raise SystemExit(
+            "wiki_eval: --search-mode label-guess requires a judge (it makes one LLM "
+            "label-guess call via the run's judge client) -- --no-judge was also given; "
+            "drop --no-judge or use --search-mode baseline/alt-names instead."
+        )
+
     gt_records = _load_gt(Path(args.gt))
     guard = BudgetGuard(args.max_usd, max_judge_calls=args.max_judge_calls)
     use_sitelink = False if getattr(args, "no_sitelink", False) else None
     extra_body = _parse_extra_body(getattr(args, "extra_body", None))
+
+    # --reuse-extraction (Deliverable 2): read a PRIOR run's completed
+    # pred.jsonl and validate it covers every article this invocation
+    # intends to process -- fail fast, before any real (paid) work, rather
+    # than discovering a coverage gap mid-run. Never touches the source
+    # dir (predictions are append-only, Hard Invariant) -- read-only here.
+    reuse_dir = getattr(args, "reuse_extraction", None)
+    reuse_source_records_by_title: dict[str, list[dict]] | None = None
+    if reuse_dir:
+        reuse_path = Path(reuse_dir)
+        reuse_pred_path = reuse_path / "pred.jsonl"
+        if not reuse_pred_path.exists():
+            raise SystemExit(
+                f"wiki_eval: --reuse-extraction {reuse_dir} has no pred.jsonl -- the source "
+                "run must be complete (a still-in-flight pred.partial.jsonl-only run isn't "
+                "supported; let it finish, or point at a different completed run dir)"
+            )
+        source_records = _read_jsonl(reuse_pred_path)
+        _assert_reuse_extraction_coverage(gt_records, source_records, reuse_path)
+        reuse_source_records_by_title = defaultdict(list)
+        for r in source_records:
+            reuse_source_records_by_title[r["title"]].append(r)
 
     if args.dry_run:
         _, counters = _run_one_config(args.config, gt_records, args.cache, dry_run=True, guard=None,
@@ -1444,6 +1748,15 @@ def cmd_run(args) -> int:
     started_at = datetime.now(timezone.utc)
     if run_id is None:
         run_id = started_at.strftime("%Y-%m-%dT%H-%M-%SZ")
+        # Mode discoverable from the run-dir name too, not just meta.json --
+        # ONLY for the two non-default modes (spec: "if you can also encode
+        # it in the timestamp-level dir name WITHOUT breaking any existing
+        # glob/parsing ... do so"; checked: nothing strptime's/globs run_id
+        # as a rigid fixed-width timestamp, see docs/stages/wiki-eval.md).
+        # baseline's run_id stays EXACTLY the bare timestamp -- part of the
+        # hard "wire-identical to today" constraint.
+        if search_mode != "baseline":
+            run_id = f"{run_id}_{search_mode}"
         out_dir = OUT_ROOT / slug / args.config / run_id
     # Created at START, not at the end (checkpoint patch): _process_articles_
     # parallel needs somewhere to append pred.partial.jsonl/progress.jsonl as
@@ -1460,6 +1773,8 @@ def cmd_run(args) -> int:
         wikidata_workers=args.wikidata_workers, use_sitelink=use_sitelink,
         out_dir=out_dir, skip_titles=frozenset(skip_titles), n_done_start=len(skip_titles),
         no_judge=getattr(args, "no_judge", False),
+        search_mode=search_mode,
+        reuse_source_records_by_title=reuse_source_records_by_title,
     )
     finished_at = datetime.now(timezone.utc)
 
@@ -1495,10 +1810,16 @@ def cmd_run(args) -> int:
             "total": guard.spent,
             "extract": guard.spent_by_kind["extract"],
             "judge": guard.spent_by_kind["judge"],
+            # Always present (like extract/judge) regardless of search_mode --
+            # 0.0 for baseline/alt-names runs, since BudgetGuard only ever
+            # reserves this kind from _build_label_guesser's "guess" closure,
+            # never called outside search_mode="label-guess".
+            "label_guess": guard.spent_by_kind.get("label_guess", 0.0),
         },
         "calls": {
             "extract": guard.calls_by_kind["extract"],
             "judge": guard.calls_by_kind["judge"],
+            "label_guess": guard.calls_by_kind.get("label_guess", 0),
         },
         "max_usd": args.max_usd,
         "max_judge_calls": args.max_judge_calls,
@@ -1526,6 +1847,11 @@ def cmd_run(args) -> int:
     }
     if resumed_from_n_articles is not None:
         meta["resumed_from_n_articles"] = resumed_from_n_articles
+    if reuse_dir:
+        # Deliverable 2: disclose the reuse source so a run dir is
+        # self-evidencing about where its mentions came from -- mirrors
+        # "no_judge"/"resumed_from_n_articles"'s "loud, not silent" pattern.
+        meta["reuse_extraction_from"] = str(reuse_dir)
     # Self-consistency fix (finding 3): counters["n_pred_mentions"] from
     # _run_one_config only counts THIS invocation's newly-produced records --
     # on a --resume run that undercounts the merged total. pred_records above
@@ -1694,6 +2020,22 @@ def _build_parser() -> argparse.ArgumentParser:
                              "Wikidata candidate search still run unchanged; genuinely ambiguous "
                              "mentions resolve to resolved_by=judge_unavailable instead of an LLM "
                              "judge call. meta.json's no_judge field discloses this.")
+    p_run.add_argument("--search-mode", choices=("baseline", "alt-names", "label-guess"), default="baseline",
+                        help="candidate-search widening tiers (2026-07-10 experiment), cumulative: "
+                             "baseline (today's search, default) -> alt-names (+ parenthesized-alternate "
+                             "re-search when baseline finds 0 candidates, zero LLM calls) -> label-guess "
+                             "(+ one LLM label-guess call when still 0, via the run's judge client -- "
+                             "requires a judge, incompatible with --no-judge). meta.json's search_mode "
+                             "field discloses this; each candidate in pred.jsonl carries a matching "
+                             "source field in non-baseline modes.")
+    p_run.add_argument("--reuse-extraction", default=None, metavar="RUN_DIR",
+                        help="skip the extraction LLM entirely and reuse a PRIOR completed run's "
+                             "pred.jsonl for surface/lemma/category per article (candidate search + "
+                             "judge still run fresh, per --search-mode); writes a NEW run dir, never "
+                             "touches RUN_DIR (predictions are append-only). RUN_DIR must cover every "
+                             "article in --gt or this fails fast listing what's missing. meta.json's "
+                             "reuse_extraction_from field discloses the source, and spend.extract "
+                             "reads 0 (no extraction calls were made).")
     p_run.set_defaults(func=cmd_run)
 
     p_ablate = sub.add_parser("ablate", help="loop `run` over all 8 configs, sharing the judge cache")

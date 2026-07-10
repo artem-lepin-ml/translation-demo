@@ -16,6 +16,7 @@ file.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import threading
 from pathlib import Path
@@ -1576,6 +1577,103 @@ def test_build_extract_fn_uses_resilient_attempts_and_backoff(monkeypatch):
     assert sleeps == list(wiki_eval.RESILIENT_BACKOFF[:5])
 
 
+# ── extraction-call reasoning-ignition one-retry tolerance (2026-07-10
+# --no-judge cost run patch): a single reasoning_tokens=0 miss, observed for
+# real on BOTH gemini-3.1-flash-lite and deepseek-v4-flash under load, is
+# absorbed by ONE fresh retry; a SECOND consecutive miss still halts loudly
+# (Р13/Р15 intent unchanged). Scoped to the "did not ignite reasoning"
+# message only -- the served-by pin-mismatch gate (Р14) is never retried. ──
+
+
+class _VaryingReasoningFakeLLMClient:
+    """FakeLLMClient whose successive .complete() calls return DIFFERENT
+    reasoning_tokens values (unlike _fake_llm_client_factory, which hardcodes
+    reasoning_tokens=5 on every reply) -- needed to simulate a reasoning miss
+    on attempt N followed by normal reasoning on attempt N+1."""
+
+    def __init__(self, reasoning_tokens_sequence: list[int], content: str = "[]"):
+        self._sequence = list(reasoning_tokens_sequence)
+        self._content = content
+        self.calls: list[dict] = []
+
+    def build(self):
+        calls = self.calls
+        sequence = self._sequence
+        content = self._content
+
+        class FakeLLMClient:
+            def __init__(self, config):
+                self.config = config
+
+            def complete(self, system, user):
+                from palimpsest.llm.client import LLMResult, Usage
+                calls.append({"system": system, "user": user})
+                rt = sequence[len(calls) - 1] if len(calls) <= len(sequence) else sequence[-1]
+                return LLMResult(content=content, usage=Usage(10, 5, rt, 0.0001))
+
+        return FakeLLMClient
+
+
+def test_extractor_retries_once_on_reasoning_ignition_miss_then_succeeds(monkeypatch):
+    fake = _VaryingReasoningFakeLLMClient([0, 5])  # miss, then ignites
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", fake.build())
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=1000.0)
+    llm_semaphore = wiki_eval._CountingSemaphore(4)
+    extract_fn = wiki_eval._build_extract_fn(guard, llm_semaphore)  # DEFAULT_MODEL: expect_reasoning=True
+
+    result = extract_fn("some paragraph")  # must NOT raise -- recovers on the retry
+
+    assert result == []  # content "[]" parses to zero mentions, but no exception
+    assert len(fake.calls) == 2  # exactly one retry, not the 6-attempt resilient loop
+    assert guard.calls_by_kind["extract"] == 2  # both real attempts billed
+
+
+def test_extractor_reraises_on_second_consecutive_reasoning_ignition_miss(monkeypatch):
+    fake = _VaryingReasoningFakeLLMClient([0, 0])  # misses twice in a row
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", fake.build())
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=1000.0)
+    llm_semaphore = wiki_eval._CountingSemaphore(4)
+    extract_fn = wiki_eval._build_extract_fn(guard, llm_semaphore)
+
+    with pytest.raises(wiki_eval.CallGateError, match="did not ignite reasoning"):
+        extract_fn("some paragraph")
+
+    assert len(fake.calls) == 2  # exactly the original + one retry, no unbounded loop
+
+
+def test_extractor_pin_mismatch_gate_never_retried(monkeypatch):
+    """A served-by pin mismatch (Р14) is a DIFFERENT CallGateError message --
+    must halt on the FIRST occurrence, never retried like the reasoning gate."""
+    from palimpsest.llm.client import LLMResult, Usage
+
+    calls: list[dict] = []
+
+    class FakeLLMClient:
+        def __init__(self, config):
+            self.config = config
+
+        def complete(self, system, user):
+            calls.append({"system": system, "user": user})
+            return LLMResult(content="[]", usage=Usage(10, 5, 5, 0.0001), provider="SomeOtherProvider")
+
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=1000.0)
+    llm_semaphore = wiki_eval._CountingSemaphore(4)
+    # DEFAULT_MODEL's provider pin ("Google AI Studio") won't match "SomeOtherProvider".
+    extract_fn = wiki_eval._build_extract_fn(guard, llm_semaphore)
+
+    with pytest.raises(wiki_eval.CallGateError, match="was served by"):
+        extract_fn("some paragraph")
+
+    assert len(calls) == 1  # never retried
+
+
 # ── budget exhaustion is loud (findings 2/10) ───────────────────────────────
 #
 # A pre-call reservation ceiling hit mid-run used to raise a bare
@@ -2109,6 +2207,506 @@ def test_cli_run_resume_flag_default_and_value():
 
     args2 = wiki_eval._build_parser().parse_args(["run", "--resume", "/tmp/some-run-dir"])
     assert args2.resume == "/tmp/some-run-dir"
+
+
+# ── --search-mode (2026-07-10 experiment): CLI + BudgetGuard label_guess kind
+
+def test_cli_run_search_mode_default_and_choices():
+    args = wiki_eval._build_parser().parse_args(["run"])
+    assert args.search_mode == "baseline"
+
+    args2 = wiki_eval._build_parser().parse_args(["run", "--search-mode", "alt-names"])
+    assert args2.search_mode == "alt-names"
+
+    args3 = wiki_eval._build_parser().parse_args(["run", "--search-mode", "label-guess"])
+    assert args3.search_mode == "label-guess"
+
+    with pytest.raises(SystemExit):
+        wiki_eval._build_parser().parse_args(["run", "--search-mode", "not-a-real-mode"])
+
+
+def test_cli_run_reuse_extraction_default_and_value():
+    args = wiki_eval._build_parser().parse_args(["run"])
+    assert args.reuse_extraction is None
+
+    args2 = wiki_eval._build_parser().parse_args(["run", "--reuse-extraction", "/tmp/some-source-run"])
+    assert args2.reuse_extraction == "/tmp/some-source-run"
+
+
+def test_guard_label_guess_kind_lazy_and_does_not_pollute_existing_kinds():
+    """A THIRD BudgetGuard kind ("label_guess") must not need __init__ to
+    know about it up front -- reserve()/settle() lazily add it on first use,
+    and a run that never uses it keeps the pre-existing 2-key dict shape
+    (regression guard for test_guard_spend_and_call_split_tracked_per_kind
+    above, which asserts strict dict equality with only extract/judge)."""
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    guard.reserve(0.02, kind="extract")
+    guard.reserve(0.03, kind="judge")
+    assert guard.calls_by_kind == {"extract": 1, "judge": 1}  # label_guess key absent until used
+
+    guard.reserve(0.01, kind="label_guess")
+    assert guard.calls_by_kind == {"extract": 1, "judge": 1, "label_guess": 1}
+    assert guard.spent_by_kind["label_guess"] == pytest.approx(0.01)
+    assert guard.n_calls == 3
+
+    guard.settle(0.01, 0.004, kind="label_guess")
+    assert guard.spent_by_kind["label_guess"] == pytest.approx(0.004)
+
+
+def test_guard_label_guess_calls_do_not_count_against_max_judge_calls():
+    # can_reserve's ceiling check only ever fires for kind == "judge" -- a
+    # guard already AT the judge ceiling still allows a label_guess
+    # reservation (checked directly, not via a real can_reserve("judge")
+    # call first, since that would set the guard's GLOBAL stopped_reason and
+    # block every subsequent kind too -- a separate, correct behavior not
+    # under test here).
+    guard = wiki_eval.BudgetGuard(max_usd=10.0, max_judge_calls=1)
+    guard.calls_by_kind["judge"] = 1  # simulate already at the judge ceiling
+    assert guard.can_reserve(0.01, kind="label_guess")
+    assert guard.stopped_reason is None
+
+
+# ── _build_label_guesser (2026-07-10, search_mode="label-guess") ───────────
+
+
+def _reply_json(content: str, *, reasoning_tokens: int = 5, provider: str | None = None):
+    from palimpsest.llm.client import LLMResult, Usage
+
+    return LLMResult(content=content, provider=provider,
+                      usage=Usage(prompt_tokens=10, completion_tokens=5,
+                                  reasoning_tokens=reasoning_tokens, cost_usd=0.0002))
+
+
+def test_build_label_guesser_returns_none_without_api_key(monkeypatch):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    sem = wiki_eval._CountingSemaphore(4)
+    assert wiki_eval._build_label_guesser(guard, sem) is None
+
+
+def test_build_label_guesser_uses_label_guess_system_prompt_and_tags_kind(monkeypatch):
+    captured = {}
+
+    class FakeLLMClient:
+        def __init__(self, config):
+            pass
+
+        def complete(self, system, user):
+            captured["system"] = system
+            captured["user"] = user
+            return _reply_json('{"label_ru": "Тест", "label_en": "Test"}')
+
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    sem = wiki_eval._CountingSemaphore(4)
+    guesser = wiki_eval._build_label_guesser(guard, sem)
+    assert guesser is not None
+
+    result = guesser("Surface form: X")
+
+    assert captured["system"] == wiki_eval.DEFAULT_LABEL_GUESS_SYSTEM_PROMPT
+    assert result == {"label_ru": "Тест", "label_en": "Test"}
+    assert guard.calls_by_kind["label_guess"] == 1
+    assert guard.calls_by_kind.get("extract", 0) == 0
+    assert guard.calls_by_kind.get("judge", 0) == 0
+    assert guard.spent_by_kind["label_guess"] == pytest.approx(0.0002)
+
+
+def test_build_label_guesser_strips_markdown_fence(monkeypatch):
+    class FakeLLMClient:
+        def __init__(self, config):
+            pass
+
+        def complete(self, system, user):
+            return _reply_json('```json\n{"label_ru": "Тест", "label_en": null}\n```')
+
+    monkeypatch.setattr("palimpsest.llm.client.LLMClient", FakeLLMClient)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key-not-a-secret")
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    sem = wiki_eval._CountingSemaphore(4)
+    guesser = wiki_eval._build_label_guesser(guard, sem)
+    result = guesser("Surface form: X")
+    assert result == {"label_ru": "Тест", "label_en": None}
+
+
+# ── search_mode="label-guess" requires a judge: fail-fast guard ────────────
+
+
+def test_run_one_config_label_guess_without_judge_raises_value_error(tmp_path):
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    with pytest.raises(ValueError, match="label-guess"):
+        wiki_eval._run_one_config(
+            "111", [], str(tmp_path), dry_run=False, guard=guard,
+            search_mode="label-guess", no_judge=True,
+        )
+
+
+def test_cmd_run_search_mode_label_guess_and_no_judge_fails_fast_before_any_io(tmp_path):
+    """The CLI-level guard fires before --gt is even read (a nonexistent
+    path proves no file I/O happened first) -- "fail fast at CLI arg-parse
+    time" per spec."""
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(tmp_path / "does-not-exist.jsonl"),
+        "--search-mode", "label-guess", "--no-judge",
+    ])
+    with pytest.raises(SystemExit) as exc_info:
+        wiki_eval.cmd_run(args)
+    msg = str(exc_info.value)
+    assert "label-guess" in msg
+    assert "no-judge" in msg
+
+
+def test_cmd_run_search_mode_label_guess_without_no_judge_does_not_raise_the_guard(monkeypatch, tmp_path):
+    """search_mode=label-guess alone (no --no-judge) must sail past the
+    guard -- only the label-guess + no-judge COMBINATION is rejected."""
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        assert kw["search_mode"] == "label-guess"
+        return [{"title": "Article A", "index": 0, "qid": "Q1"}], _fake_counters()
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+    monkeypatch.setattr(wiki_eval, "OUT_ROOT", tmp_path / "out")
+
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(gt_path), "--search-mode", "label-guess", "--max-usd", "5",
+    ])
+    rc = wiki_eval.cmd_run(args)
+    assert rc == 0
+
+
+# ── search_mode threaded into meta.json + run-dir naming ───────────────────
+
+
+def test_cmd_run_search_mode_recorded_in_meta_json(monkeypatch, tmp_path):
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        counters = _fake_counters()
+        counters["search_mode"] = kw["search_mode"]
+        return [{"title": "Article A", "index": 0, "qid": "Q1"}], counters
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+    monkeypatch.setattr(wiki_eval, "OUT_ROOT", tmp_path / "out")
+
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(gt_path), "--search-mode", "alt-names", "--max-usd", "5",
+    ])
+    rc = wiki_eval.cmd_run(args)
+    assert rc == 0
+
+    out_dir = list((tmp_path / "out").glob("*/*/*"))[0]
+    meta = json.loads((out_dir / "meta.json").read_text(encoding="utf-8"))
+    assert meta["search_mode"] == "alt-names"
+
+
+def test_cmd_run_run_id_gets_mode_suffix_for_non_baseline_search_mode(monkeypatch, tmp_path):
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        return [], _fake_counters()
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+    monkeypatch.setattr(wiki_eval, "OUT_ROOT", tmp_path / "out")
+
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(gt_path), "--search-mode", "alt-names", "--max-usd", "5",
+    ])
+    rc = wiki_eval.cmd_run(args)
+    assert rc == 0
+
+    out_dirs = list((tmp_path / "out").glob("*/*/*"))
+    assert len(out_dirs) == 1
+    assert out_dirs[0].name.endswith("_alt-names")
+
+
+def test_cmd_run_run_id_unchanged_for_baseline_search_mode(monkeypatch, tmp_path):
+    """Hard regression constraint: baseline's run_id stays the bare ISO
+    timestamp, byte-for-byte identical to the pre-search-mode format."""
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        return [], _fake_counters()
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+    monkeypatch.setattr(wiki_eval, "OUT_ROOT", tmp_path / "out")
+
+    args = wiki_eval._build_parser().parse_args(["run", "--gt", str(gt_path), "--max-usd", "5"])
+    rc = wiki_eval.cmd_run(args)
+    assert rc == 0
+
+    out_dirs = list((tmp_path / "out").glob("*/*/*"))
+    assert len(out_dirs) == 1
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z", out_dirs[0].name)
+
+
+def test_run_one_config_builds_label_guesser_only_in_label_guess_mode(monkeypatch, tmp_path):
+    captured: dict = {}
+
+    def fake_build_label_guesser(guard, sem, **kw):
+        captured["built"] = True
+        return lambda p: {}
+
+    monkeypatch.setattr(wiki_eval, "_build_label_guesser", fake_build_label_guesser)
+    monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
+    monkeypatch.setattr(wiki_eval, "_build_extract_fn", lambda guard, sem, **kw: (lambda p: []))
+    monkeypatch.setattr(wiki_eval, "_process_articles_parallel", lambda articles, **kw: ([], 0))
+    monkeypatch.setattr(
+        wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object(),
+    )
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    wiki_eval._run_one_config("111", [], str(tmp_path), dry_run=False, guard=guard)  # default baseline
+    assert "built" not in captured
+
+    guard2 = wiki_eval.BudgetGuard(max_usd=10.0)
+    wiki_eval._run_one_config(
+        "111", [], str(tmp_path), dry_run=False, guard=guard2, search_mode="label-guess",
+    )
+    assert captured.get("built") is True
+
+
+def test_process_articles_parallel_threads_label_guesser_into_grounder(monkeypatch, tmp_path):
+    """LabelFirstGrounding is constructed fresh per article inside
+    _process_articles_parallel -- label_guesser must reach that constructor
+    call, not just be accepted and dropped."""
+    captured: dict = {}
+    sentinel = object()
+
+    class FakeGrounder:
+        def __init__(self, wd, config, *, label_guesser=None):
+            captured["label_guesser"] = label_guesser
+
+        def ground(self, mention, *, judge=None, scope_id=None, judge_cache=None):
+            raise AssertionError("not exercised in this test")
+
+    monkeypatch.setattr(wiki_eval, "LabelFirstGrounding", FakeGrounder)
+    monkeypatch.setattr(
+        wiki_eval.predict, "predict_tuples",
+        lambda *a, **k: {"tuples": [], "records": []},
+    )
+
+    wiki_eval._process_articles_parallel(
+        [("Article A", ["p1"], "p1")], article_workers=1, extract_fn=lambda p: [], judge=None,
+        canonicalize=lambda q: q, wd=None, config=wiki_eval._config_from_bits("111"),
+        guard=None, label_guesser=sentinel,
+    )
+    assert captured["label_guesser"] is sentinel
+
+
+# ── --reuse-extraction (Deliverable 2, 2026-07-10) ──────────────────────────
+
+
+def test_reconstruct_mentions_for_article_matches_by_token_index():
+    article_text = "Первый абзац.\nВторой абзац содержит Рим и историю."
+    start = article_text.index("Рим")
+    index = wiki_eval.char_to_token_index(article_text, start)
+    records = [{"surface": "Рим", "lemma": "Рим", "category": "place", "index": index}]
+
+    mentions_with_index, n_unmatched = wiki_eval._reconstruct_mentions_for_article(article_text, records)
+
+    assert n_unmatched == 0
+    assert len(mentions_with_index) == 1
+    mention, idx = mentions_with_index[0]
+    assert mention.surface == "Рим"
+    assert mention.lemma == "Рим"
+    assert mention.category == "place"
+    assert mention.char_start == start
+    assert mention.char_end == start + len("Рим")
+    assert idx == index
+    assert "Рим" in mention.context
+
+
+def test_reconstruct_mentions_for_article_unmatched_falls_back_gracefully():
+    """A surface that no longer appears in the (possibly re-fetched) article
+    text degrades to a mention with empty context/char offsets instead of
+    being dropped -- the record's own index is still reused verbatim."""
+    article_text = "Некий текст без искомого слова."
+    records = [{"surface": "Отсутствует", "lemma": "Отсутствует", "category": "person", "index": 5}]
+
+    mentions_with_index, n_unmatched = wiki_eval._reconstruct_mentions_for_article(article_text, records)
+
+    assert n_unmatched == 1
+    assert len(mentions_with_index) == 1
+    mention, idx = mentions_with_index[0]
+    assert mention.surface == "Отсутствует"
+    assert mention.char_start == -1
+    assert mention.char_end == -1
+    assert mention.context == ""
+    assert idx == 5  # the ORIGINAL recorded index, never recomputed from -1
+
+
+def test_reconstruct_mentions_for_article_distinguishes_duplicate_surfaces_by_index():
+    """Two mentions of the SAME surface at different positions must not
+    collide -- each is matched by its own recorded index, and a matched
+    char_start is never reused for a later record (``taken``)."""
+    article_text = "Рим был велик. Позже Рим пал."
+    first_start = article_text.index("Рим")
+    second_start = article_text.index("Рим", first_start + 1)
+    first_index = wiki_eval.char_to_token_index(article_text, first_start)
+    second_index = wiki_eval.char_to_token_index(article_text, second_start)
+    assert first_index != second_index
+
+    records = [
+        {"surface": "Рим", "lemma": "Рим", "category": "place", "index": second_index},
+        {"surface": "Рим", "lemma": "Рим", "category": "place", "index": first_index},
+    ]
+    mentions_with_index, n_unmatched = wiki_eval._reconstruct_mentions_for_article(article_text, records)
+
+    assert n_unmatched == 0
+    (m0, i0), (m1, i1) = mentions_with_index
+    assert i0 == second_index and m0.char_start == second_start
+    assert i1 == first_index and m1.char_start == first_start
+
+
+def test_assert_reuse_extraction_coverage_raises_on_missing_titles():
+    gt_records = [{"title": "Article A"}, {"title": "Article B"}]
+    source_records = [{"title": "Article A"}]
+    with pytest.raises(SystemExit) as exc_info:
+        wiki_eval._assert_reuse_extraction_coverage(gt_records, source_records, Path("/some/source/dir"))
+    msg = str(exc_info.value)
+    assert "Article B" in msg
+    assert "1" in msg  # count of missing articles
+
+
+def test_assert_reuse_extraction_coverage_passes_when_fully_covered():
+    gt_records = [{"title": "Article A"}, {"title": "Article B"}]
+    source_records = [{"title": "Article A"}, {"title": "Article B"}, {"title": "Article C"}]
+    wiki_eval._assert_reuse_extraction_coverage(gt_records, source_records, Path("/some/source/dir"))  # no raise
+
+
+def test_cmd_run_reuse_extraction_missing_pred_jsonl_fails_fast(tmp_path):
+    """A source dir with only pred.partial.jsonl (still in-flight, or an
+    interrupted run) is rejected -- --reuse-extraction only supports a
+    COMPLETE prior run."""
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    reuse_dir = tmp_path / "incomplete_run"
+    reuse_dir.mkdir()
+    (reuse_dir / "pred.partial.jsonl").write_text(
+        json.dumps({"title": "Article A", "index": 0}) + "\n", encoding="utf-8",
+    )
+
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(gt_path), "--reuse-extraction", str(reuse_dir),
+    ])
+    with pytest.raises(SystemExit) as exc_info:
+        wiki_eval.cmd_run(args)
+    assert "pred.jsonl" in str(exc_info.value)
+
+
+def test_cmd_run_reuse_extraction_missing_articles_fails_fast(tmp_path):
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A", "Article B"])
+
+    reuse_dir = tmp_path / "source_run"
+    reuse_dir.mkdir()
+    (reuse_dir / "pred.jsonl").write_text(json.dumps({
+        "title": "Article A", "index": 0, "surface": "X", "lemma": "X", "category": None,
+        "qid": None, "span_len": 1, "resolved_by": "no_candidates",
+        "search_source": "none", "candidates": [],
+    }) + "\n", encoding="utf-8")
+
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(gt_path), "--reuse-extraction", str(reuse_dir),
+    ])
+    with pytest.raises(SystemExit) as exc_info:
+        wiki_eval.cmd_run(args)
+    assert "Article B" in str(exc_info.value)
+
+
+def test_cmd_run_reuse_extraction_threads_source_records_and_shows_zero_extract_spend(monkeypatch, tmp_path):
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    reuse_dir = tmp_path / "source_run"
+    reuse_dir.mkdir()
+    source_rec = {
+        "title": "Article A", "index": 0, "surface": "X", "lemma": "X", "category": "place",
+        "qid": "Q1", "span_len": 1, "resolved_by": "exact_label",
+        "search_source": "wbsearchentities", "candidates": [],
+    }
+    (reuse_dir / "pred.jsonl").write_text(json.dumps(source_rec) + "\n", encoding="utf-8")
+
+    captured: dict = {}
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        captured["reuse_source_records_by_title"] = dict(kw.get("reuse_source_records_by_title") or {})
+        guard.reserve(0.01, kind="judge")  # simulate real judge spend, but NO extract spend
+        return [{"title": "Article A", "index": 0, "qid": "Q1"}], _fake_counters()
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+    monkeypatch.setattr(wiki_eval, "OUT_ROOT", tmp_path / "out")
+
+    args = wiki_eval._build_parser().parse_args([
+        "run", "--gt", str(gt_path), "--reuse-extraction", str(reuse_dir), "--max-usd", "5",
+    ])
+    rc = wiki_eval.cmd_run(args)
+    assert rc == 0
+
+    assert captured["reuse_source_records_by_title"] == {"Article A": [source_rec]}
+
+    out_dirs = list((tmp_path / "out").glob("*/*/*"))
+    assert len(out_dirs) == 1
+    meta = json.loads((out_dirs[0] / "meta.json").read_text(encoding="utf-8"))
+    assert meta["reuse_extraction_from"] == str(reuse_dir)
+    assert meta["spend"]["extract"] == 0.0
+    assert meta["spend"]["judge"] == pytest.approx(0.01)
+
+
+def test_cmd_run_without_reuse_extraction_omits_meta_field(monkeypatch, tmp_path):
+    gt_path = tmp_path / "gt.jsonl"
+    _write_gt_jsonl(gt_path, ["Article A"])
+
+    def fake_run_one_config(config, gt_records, cache, *, dry_run, guard, **kw):
+        assert kw.get("reuse_source_records_by_title") is None
+        return [{"title": "Article A", "index": 0, "qid": "Q1"}], _fake_counters()
+
+    monkeypatch.setattr(wiki_eval, "_run_one_config", fake_run_one_config)
+    monkeypatch.setattr(wiki_eval, "OUT_ROOT", tmp_path / "out")
+
+    args = wiki_eval._build_parser().parse_args(["run", "--gt", str(gt_path), "--max-usd", "5"])
+    rc = wiki_eval.cmd_run(args)
+    assert rc == 0
+
+    out_dir = list((tmp_path / "out").glob("*/*/*"))[0]
+    meta = json.loads((out_dir / "meta.json").read_text(encoding="utf-8"))
+    assert "reuse_extraction_from" not in meta
+
+
+def test_run_one_config_reuse_extraction_skips_building_extract_fn(monkeypatch, tmp_path):
+    """No extraction closure is ever built when reusing extraction -- the
+    strongest guarantee that zero extraction LLM calls can happen (not just
+    that the guard shows 0 by coincidence)."""
+    captured: dict = {"extract_fn_built": False}
+
+    def fake_build_extract_fn(guard, sem, **kw):
+        captured["extract_fn_built"] = True
+        return lambda p: []
+
+    monkeypatch.setattr(wiki_eval, "_build_extract_fn", fake_build_extract_fn)
+    monkeypatch.setattr(wiki_eval, "_build_judge", lambda guard, sem, **kw: None)
+    monkeypatch.setattr(wiki_eval, "_process_articles_parallel", lambda articles, **kw: ([], 0))
+    monkeypatch.setattr(
+        wiki_eval, "WikidataClient", lambda cache_path=None, network_concurrency=3: object(),
+    )
+    monkeypatch.setattr(wiki_eval, "_canonicalize_fn", lambda wd: (lambda q: q))
+
+    guard = wiki_eval.BudgetGuard(max_usd=10.0)
+    wiki_eval._run_one_config(
+        "111", [], str(tmp_path), dry_run=False, guard=guard,
+        reuse_source_records_by_title={},
+    )
+    assert captured["extract_fn_built"] is False
 
 
 # ── Wikidata usage counters surfaced in meta.json ───────────────────────────
