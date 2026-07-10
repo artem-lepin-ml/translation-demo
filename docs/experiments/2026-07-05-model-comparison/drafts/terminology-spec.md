@@ -1,3 +1,6 @@
+> ⚠️ **SUPERSEDED** by [docs/paper/sections/](../../../paper/sections/) (protocol v3, 2026-07-10). Binds
+> terminology for the retired M1/M2/M3/P1/P2/P3 mention-level protocol only — kept for historical reference.
+
 # Terminology spec (approved by orchestrator, 2026-07-06)
 
 Binding for ALL documents (RU report, EN paper section, tables, tex, artifact).

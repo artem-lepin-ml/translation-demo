@@ -22,7 +22,7 @@ The [terminology module](stages/terminology.md) is real (extract → ground → 
 - **Difficulty macro-F1 is low (~0.56) and misleading.** It is a macro over green/yellow/red on a golden that is 83% green with only 9 yellow, so the rare-class F1 dominates. The meaningful grounding number is **QID accuracy on groundable terms (G3 0.78)**, not difficulty-F1.
 - **Ancient-vs-modern sense.** The judge sometimes grounds an ancient place to its modern-city QID (Тадмор → Tadmur Q938457, the modern town, not ancient Palmyra Q5788). Flagged 🟡 in the UI, so honest, but the primary QID can be the wrong era. Context-era scoring is future work.
 - **Extraction (E1) is now implemented and measured, not a stub.** LLM-NER via an injected `Extractor` (`anthropic/claude-haiku-4.5` via OpenRouter, temperature 0 — winner of the 2026-07-02 7-model tournament; ⚠️ the tournament's HTML report was never committed to any branch in this repo, see [terminology stage doc](stages/terminology.md) for the surviving evidence), with a gazetteer-backed deterministic fallback — see [terminology stage doc](stages/terminology.md). Recall and precision are measured **by case** against the unified non-circular gold: lowercase recall **0.906**, all-case recall **0.909**, precision **0.437** (`reports/terminology/extraction_metrics.json`). The residual gap to 100% is dominated by (a) **inflection-form mismatch** — the gold sometimes annotates a different case/inflected form of a surface than what the extractor returns, so an exact-substring match misses a semantically-correct hit, and (b) the gold annotating some **borderline common nouns** that the precision-first default prompt intentionally skips (e.g. "царь"/king-in-general sense) to keep precision from collapsing further.
-- **Homonym mislinks on lowercase terms — resolved in the demo by G3 + a homonym audit.** Richer lowercase recall sent more lowercase surfaces to grounding, and G1 (`api_first`) had resolved some to unrelated modern places (`номов` → "Nome Census Area, Alaska" Q503023; `марту` → a modern place). The 2026-07-02 demo rebuild grounds every new lemma through **G3 (llm-judge) with an opus homonym/generic-noun audit**: `ном` now → the Egyptian nome (Q223706), `архэ` correctly stays red (its only candidate was the Presocratic-philosophy homonym, not the Athenian empire), and generic nouns (`царя`, `титулов`, `полисов`, `сенаторов`) fall to red rather than mislinking. Residual: a handful of real entities Wikidata's search did not return stay 🟡/🔴 with `qid=null` (беотийцы, марту/амурру) — honest, not silently wrong. Over-capture noise (`царя` extracted despite the prompt rule) is tunable via `DEFAULT_NER_PROMPT`, not a code fix, and is what keeps the demo red-rate near the SC7 ceiling (0.346 < 0.35).
+- **Homonym mislinks on lowercase terms — resolved in the demo by G3 + a homonym audit.** Richer lowercase recall sent more lowercase surfaces to grounding, and G1 (`api_first`) had resolved some to unrelated modern places (`номов` → "Nome Census Area, Alaska" Q503023; `марту` → a modern place). The 2026-07-02 demo rebuild grounds every new lemma through **G3 (llm-judge) with an opus homonym/generic-noun audit**: `ном` now → the Egyptian nome (Q223706), `архэ` correctly stays red (its only candidate was the Presocratic-philosophy homonym, not the Athenian empire), and generic nouns (`царя`, `титулов`, `полисов`, `сенаторов`) fall to red rather than mislinking. Residual: a handful of real entities Wikidata's search did not return stay 🟡/🔴 with `qid=null` (беотийцы, марту/амурру) — honest, not silently wrong. Over-capture noise (`царя` extracted despite the prompt rule) is tunable via `NER_SYSTEM_PROMPT` (2026-07-10: renamed from `DEFAULT_NER_PROMPT`, split system/user — see [terminology.md](stages/terminology.md)), not a code fix, and is what keeps the demo red-rate near the SC7 ceiling (0.346 < 0.35).
 - **Pairing span can over-capture.** P1's fuzzy locate occasionally grabs a slightly wider EN span (`Заиорданье` → `Transjordan. Driven`). Cosmetic; verdict still correct.
 - **NerConfig / extract endpoint contract — RESOLVED 2026-07-02.** Кросс-сверка после мержей `feat/terminology-extract` и `feat/model-registry` в `dev-demo` выполнена: эндпоинтов `POST /api/paragraphs/{id}/extract` и `GET/PUT /api/ner-config` в живом API **нет и не планируется для демо** — термины загружаются в БД офлайн (`scripts/load_terms.py` / `scripts/term_pipeline.py`), веб-приложение читает готовую таблицу `term`. `NerConfig{modelName, prompt, params}` остаётся контрактом уровня скриптов (см. [terminology stage doc](stages/terminology.md)); если живой re-extract понадобится, потребуется новая спека с budget-guard'ом.
 
@@ -159,6 +159,49 @@ $0.0049 estimated (0.07/0.14 $ per Mtok in/out), well under the $0.50 validation
 Job-control detach (`nohup`/`disown`) is not the same as session detach. Two independent recovery pollers for the judge-run tracked in [python-pro-judge-run-deepseek.md](reports/python-pro-judge-run-deepseek.md) and [python-pro-judge-run-gemini-flash-lite.md](reports/python-pro-judge-run-gemini-flash-lite.md) were reaped silently — one at ~04:17Z, one at ~05:41Z — with 0-byte stdout logs and no traceback, meaning something external killed the process group, not a crash inside the script. `nohup` only blocks `SIGHUP` and `disown` only removes the job from the shell's job table; neither moves the process to a new session, so when the invoking cloud-session shell's session is torn down, the process still goes with it. Durable pattern: `setsid nohup <cmd> < /dev/null > <fresh-log> 2>&1 &`, then verify with `ps -o pid,ppid,pgid,sid` that the process is a session leader reparented to init (`PPID=1`, `PID=SID=PGID`). Also give each relaunch attempt a **fresh** log file, so liveness is checkable by the log's mtime rather than by re-reading a stale file, and don't rely on harness task-completion notifications for OS-detached processes — self-verify liveness (process alive + log mtime advancing) periodically instead.
 
 **Amendment (2026-07-09):** `setsid` only protects against tool-call/shell session teardown. It does NOT survive a cloud-container recycle. On 2026-07-09 the whole firecracker microVM was reclaimed and rebooted at 09:13:49Z after an inactivity window; the entire process table was wiped, taking down two independent `setsid`-detached session-leader pollers (PIDs 6778 and 26112, both `PPID=1`) with it, while the disk/scratchpad survived intact. Evidence in [debugger-poller-silence-diagnosis.md](reports/debugger-poller-silence-diagnosis.md): `uptime -s` and `/proc/uptime` (~191s uptime), `PID 1 = /process_api --firecracker-init`, no OOM traces, and all scratchpad files' last writes clustered 08:51:27–46Z, just before the recycle. Conclusion: no local daemon is immortal in a cloud session. Long-running work must be (a) resume-safe on disk — append-only, keyed rows, not in-memory state — and (b) driven by externally re-armed checks (scheduled wake-ups, agent check-ins), never by a background process assumed to keep running unattended.
+
+### RESOLVED 2026-07-10: wiki-eval silent 4k/512-token truncation + ±40-char judge context
+Diagnosed by [debugger-wiki-eval-llm-truncation-audit.md](reports/debugger-wiki-eval-llm-truncation-audit.md)
+and [code-reviewer-wiki-eval-harness.md](reports/code-reviewer-wiki-eval-harness.md), fixed by the wiki-eval
+experiment-v2 rework (spec [2026-07-10-wiki-eval-experiment-v2.md](superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md)):
+
+- **Silent truncation.** Extraction calls ran at a hardcoded `max_tokens=4096` ([client.py](../src/palimpsest/llm/client.py)
+  default) and the judge at `max_tokens=512` ([wiki_eval.py](../scripts/wiki_eval.py), pre-rework); `finish_reason`
+  was never read anywhere, so a truncated extraction reply silently became `[]` via `parse_surfaces` — a quiet
+  recall loss, not a visible error. Fixed (`7e7ddfd`): `max_tokens=20000` for both roles
+  (`DEFAULT_MAX_TOKENS`), and every call is gated (`_gate_reply`) on `finish_reason == "length"` (or empty
+  content with `reasoning_tokens > 0`) — this is now a hard `LengthOverflowError`, never tolerated (spec Р15).
+- **`parse_surfaces` silently returning `[]` on malformed replies is fixed** (`421c99d`): it now raises
+  `ExtractionParseError` on a genuinely unparseable reply, distinct from an honest empty `[]`; the runner
+  (`7e7ddfd`) catches and counts it per-paragraph (`n_extraction_parse_failures`/`parse_failed_paragraphs` in
+  `meta.json`, pilot gate <1% of paragraphs) instead of a downstream metrics artifact silently under-counting.
+- **±40-char judge context.** The judge saw a fixed `CONTEXT_PAD=40` character window around the mention
+  (e.g. «…Малатья, Мальдия, Милидия, М»), not the sentence. Fixed (`421c99d`): `extract.sentence_context()`
+  returns the full sentence(s) overlapping the mention span, via a deterministic stdlib splitter with
+  RU-abbreviation/initials guards; `CONTEXT_PAD` is removed from code entirely. See
+  [wiki-eval.md](stages/wiki-eval.md) "Prompts".
+
+### `finish_reason=length` is now a hard error, not tolerated (spec Р15, 2026-07-10)
+A deliberate policy reversal from the earlier "length → retry as transient" stance: any wiki-eval extractor
+or judge call that comes back `finish_reason=="length"` (or empty content with `reasoning_tokens>0`, i.e. the
+model spent its whole budget reasoning) now raises `LengthOverflowError`
+([wiki_eval.py](../scripts/wiki_eval.py) `_gate_reply`) and **halts the run** with full diagnostics (model,
+role, article/paragraph, usage) rather than being silently retried or degraded. Rationale: a length overflow
+under the old policy corrupted the affected slice's numbers invisibly (see the RESOLVED entry above); a loud
+halt means the operator raises the cap and `--resume`s from the intact checkpoint instead of shipping a
+silently-truncated run. Not a bug — an explicit, owner-locked tradeoff (spec Р15): expect wiki-eval runs to
+stop mid-flight on a genuine overflow, and treat that as a signal to inspect `calls.jsonl`, not as a crash to
+route around.
+
+### `gpt-5.4` leftover-resume completed a run after the model was already excluded (2026-07-10)
+A stray `wiki_eval.py run --resume` process (launched before the owner's exclusion decision, spec
+2026-07-10-wiki-eval-experiment-v2.md Р1) kept running unattended and finished the run's last article ("Яффа",
+100/100, $6.05 total) after `gpt-5.4` had already been dropped from the v2 experiment scope (no run, no Table C
+row). Per the invariant that predictions are never deleted, the merged `pred.jsonl`/`meta.json` were committed
+as-is and archived (commit `275f8c7`) rather than discarded; the model stays excluded from Table C and from
+the v2 experiment. Lesson: a background `--resume` loop started under an old scope must be killed, not just
+ignored, once the scope changes — nothing currently guards against a stray resume process outliving an
+owner's exclusion decision.
 
 ### RESOLVED 2026-07-10: `data/eval/wiki/gt.jsonl` silently drifted to 20/100 articles; `gt_v2.jsonl` was the real reference
 Caught during the deepseek backfill pre-flight (see

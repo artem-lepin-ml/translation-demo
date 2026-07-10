@@ -56,35 +56,39 @@ instance of the same model — same `base_url`, same `--model` id, zero conflict
                                         # (.claude/rules/invariants.md) — it's a placeholder here, but
                                         # keep the habit for when OPENROUTER_API_KEY is a real cloud key
                                         # in the same shell session.
-   export OPENROUTER_BASE_URL=http://localhost:8000/v1   # both runners read this env var directly and
-                                        # it fully overrides their cloud default — confirmed by reading
-                                        # both runners' route-resolution code, see "Why no base-URL patch
-                                        # was needed" below. Repoint this at whichever model's server is
+   export OPENROUTER_BASE_URL=http://localhost:8000/v1   # bouquet_judge_rerun.py (Table A) still reads
+                                        # this env var directly. Repoint it at whichever model's server is
                                         # currently up (this runbook reuses port 8000 for all 3 models,
                                         # sequential bring-up — see next section).
    ```
+   **⚠️ 2026-07-10 supersession (spec [2026-07-10-wiki-eval-experiment-v2.md](../superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md)
+   Р2/Р12):** `wiki_eval.py` (Table C) no longer reads `OPENROUTER_BASE_URL` or the CloseRouter
+   `WIKI_EVAL_PROVIDER`/`CLOSEROUTER_MODEL`/`CLOSEROUTER_PROVIDER` env vars at all — it always goes through
+   one standard-OpenRouter-shaped route resolver, and a local server is selected with the explicit
+   **`--base-url http://127.0.0.1:8000/v1`** CLI flag on `run`/`ablate` instead of an env var. `OPENROUTER_API_KEY`
+   is still required (any non-empty placeholder, same as above) because `_resolve_route` always reads the
+   key from that env var name regardless of `--base-url`. See the rewritten Table C section below — the env
+   var still applies to Table A's `bouquet_judge_rerun.py` unchanged.
+
    Both scripts run from the repo root; `wiki_eval.py` needs `PYTHONPATH=src` (or run via `uv run`, which
    picks up `pyproject.toml`'s own path config) — same convention as every other invocation in this repo.
 
-## Why no patch was needed for localhost *routing* (verified by reading the code)
+## Why no patch was needed for localhost *routing* (verified by reading the code; Table C part superseded 2026-07-10)
 
 The task brief asked to check whether either runner can point at a local OpenAI-compatible server at all
 without a patch. Verified, not assumed:
 
-- **`scripts/bouquet_judge_rerun.py`**: `cmd_run` reads `base_url = os.environ.get("OPENROUTER_BASE_URL",
-  DEFAULT_BASE_URL)` unconditionally — `OPENROUTER_BASE_URL` already fully overrides the CloseRouter
-  default. No patch needed.
-- **`scripts/wiki_eval.py`**: `_resolve_route`'s `closerouter` branch (the default `WIKI_EVAL_PROVIDER`) reads
-  `base = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")` — same story, already
-  fully overridable. `--model`/`--provider` CLI flags override `CLOSEROUTER_MODEL`/`CLOSEROUTER_PROVIDER` for
-  the model id; `--provider auto` (already an existing, tested flag — `test_resolve_route_auto_provider_omits_provider_key`
-  in `tests/test_wiki_eval_runner.py`) omits the OpenRouter-specific `{"provider": ...}` field a raw vLLM
-  server wouldn't understand.
-
-Both confirmed live in this session (`uv run python3 -c "..."` against the actual module, not just read —
-see the "Code patches" section for the exact transcript) with
-`OPENROUTER_BASE_URL=http://localhost:8000/v1` + `--model Qwen/Qwen3-4B-Instruct-2507 --provider auto`:
-`_resolve_route` returns `extract_base_url`/`judge_base_url` = the localhost URL, exactly as expected.
+- **`scripts/bouquet_judge_rerun.py`** (Table A, unchanged): `cmd_run` reads `base_url =
+  os.environ.get("OPENROUTER_BASE_URL", DEFAULT_BASE_URL)` unconditionally — `OPENROUTER_BASE_URL` already
+  fully overrides the CloseRouter default. No patch needed.
+- **`scripts/wiki_eval.py`** (Table C, ⚠️ superseded description — see the 2026-07-10 note above): at the
+  time this runbook was first written, `_resolve_route`'s `closerouter` branch read `OPENROUTER_BASE_URL`
+  from the environment. That whole CloseRouter-gateway/env-var branching is now retired (spec Р2): the
+  current `_resolve_route(model, provider, extra_body, base_url, temperature, top_p, top_k, max_tokens)`
+  resolves the base URL from an explicit `--base-url` CLI argument (falling back to the standard
+  `https://openrouter.ai/api/v1` when omitted), never from an env var. `--provider auto` still disables
+  provider pinning and the served-by gate, same as before — verified via `_resolve_route`'s own docstring
+  and `tests/test_wiki_eval_runner.py`.
 
 ## Code patches — the *real* gap found: no way to force `thinking OFF` on a local server
 
@@ -116,9 +120,13 @@ this before this patch:
    `extra_body: {chat_template_kwargs: {enable_thinking: false}}`.
 2. **`scripts/wiki_eval.py`**: added an `extra_body: dict | None` parameter to `_resolve_route`,
    `_build_extract_fn`, `_build_judge`, `_run_one_config`, and a new `--extra-body <JSON string>` CLI flag on
-   both `run` and `ablate`. When passed, it **replaces** the provider-pin default entirely (same value for
-   both extract and judge roles) — `_parse_extra_body()` does the `json.loads`, failing loud on malformed
-   JSON rather than silently ignoring it.
+   both `run` and `ablate` — `_parse_extra_body()` does the `json.loads`, failing loud on malformed JSON
+   rather than silently ignoring it. **⚠️ 2026-07-10 semantics change (spec Р3/§4.1 finding 4):** at the time
+   this patch was written, a passed `--extra-body` **replaced** the provider-pin default entirely; the
+   2026-07-10 rework changed this to a **per-key merge** over the computed defaults (provider pin, reasoning
+   shape, `top_k`, `usage.include`) so an unrelated override key no longer silently drops the pin — see
+   [wiki-eval.md](../stages/wiki-eval.md) "Design decisions". The `chat_template_kwargs.enable_thinking`
+   example below is unaffected either way (it doesn't collide with any default key).
 
 **Verified, live, in this session** (no GPU needed — this is pure request-payload logic):
 ```
@@ -155,12 +163,16 @@ that runbook's own precedent of running a 27B model (TranslateGemma) on a single
 `--gpu-memory-utilization 0.90`. Re-check against `nvidia-smi` on sr004 before the Ф0 probe; if the cards are
 40GB, `Gemma-3-27B-it` and `Qwen3.6-27B` will need `--tensor-parallel-size 2` instead of the TP=1/TP=2 below.
 
-**`--max-model-len 16384`** for all three (this runbook's own choice, not copied from translation-eval.md,
-which sized for a *translation* role with much larger `max_tokens`): both runners' completions top out at
-8192 tokens (`bouquet_judge_rerun.py`'s judge `max_tokens`) or far less (`wiki_eval.py`'s extractor default
-4096, judge 512) — 16384 gives headroom for prompt + completion + safety margin without over-provisioning KV
-cache for a role that never needs 32K+ context. Verify against `--help` on the installed vLLM build and adjust
-if it complains (ASSUMPTION, not exercised on real hardware).
+**`--max-model-len`: raise past 16384 for Table C (⚠️ 2026-07-10 revision, OPEN — not yet re-verified on
+hardware).** This runbook originally sized `--max-model-len 16384` for both tables under the old caps
+(`bouquet_judge_rerun.py`'s judge `max_tokens=8192`; `wiki_eval.py`'s old extractor default 4096 / judge 512).
+Table C's caps changed (spec Р3): `wiki_eval.py --max-tokens` is now **20000 for both roles** (matching the
+cloud runs, so local rows are comparable) — 16384 no longer has headroom for prompt + a 20000-token
+completion and would truncate every call. **Table A is unaffected** (`bouquet_judge_rerun.py`'s judge cap
+stays 8192; 16384 remains correct there). For Table C bring-up, size `--max-model-len` to (prompt tokens,
+generously ≤2000 for a paragraph-length NER/judge call) + 20000 + safety margin — e.g. **24576 or 32768**;
+confirm against `--help`/actual VRAM on the installed vLLM build before running (this specific number is an
+**OPEN item for the owner/operator to confirm on real hardware**, not a verified value).
 
 ### 1. Qwen3-4B-Instruct-2507 (non-thinking by construction — no `chat_template_kwargs` needed)
 
@@ -279,19 +291,76 @@ at `--concurrency 8`, local single-A100 generation without network round-trip �
 judge; measure the pilot's wall-clock (printed to stderr) and extrapolate linearly before committing to the
 full run if time is tight.
 
-## Table C — grounding runs (sitelink OFF)
+## Table C — grounding runs (sitelink OFF, protocol v3)
 
-**Pilot gate** — the established 20-article sub-corpus (`data/eval/wiki/gt_v2_sub20.jsonl`, confirmed a
-proper subset of the 100-article `gt.jsonl` by title):
+**⚠️ Fully revised 2026-07-10** for the wiki-eval experiment-v2 rework (spec
+[2026-07-10-wiki-eval-experiment-v2.md](../superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md) Р12) —
+new prompt split, new schema, new transport flags, new scoring. Everything below supersedes this section's
+earlier (pre-2026-07-10) commands.
+
+**What changed vs. the pre-rework version of this runbook, all automatic (same code path the cloud runs use,
+nothing local-specific to configure):**
+- **Prompts**: `extract.NER_SYSTEM_PROMPT` (system) + `extract.ner_user(source)` (user) replace the old
+  single-string prompt; judge Role+contract now live in `grounding/label_first.py`'s
+  `DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT` (system) with data-only user. No local-runbook action needed — this
+  is the same code the cloud runs exercise. See [wiki-eval.md](../stages/wiki-eval.md) "Prompts".
+- **Schema**: extractor output is `{surface, lemma}` — no `category` field.
+- **Context**: judge sees the full sentence (`extract.sentence_context`), not a fixed character window.
+- **Transport**: `wiki_eval.py` no longer reads `OPENROUTER_BASE_URL`/`WIKI_EVAL_PROVIDER` env vars for Table
+  C — point it at the local server with the CLI flag **`--base-url http://127.0.0.1:8000/v1`** (localhost
+  loopback IP, not `localhost`, avoids any local DNS-resolution surprises — either works against vLLM's
+  default bind, but `127.0.0.1` is the more robust habit). `OPENROUTER_API_KEY` still must be set to any
+  non-empty string (vLLM ignores its value) — same as the "Env vars" section above.
+- **Sampling — vendor-per-model, NOT a uniform `temperature=0.7`.** The owner's 2026-07-10 decision ("отходим
+  от единой 0.7 везде", recorded in the spec's Р3 correction note) supersedes this runbook's original
+  `temperature=0.7` row for the local trio too — the cloud rows already moved to per-model vendor-recommended
+  sampling (spec Р3), and the local trio must match that principle for the two runs to be comparable. Pass
+  each model's own vendor-card sampling via `--temperature`/`--top-p`/`--top-k` (all three flags exist on
+  `wiki_eval.py run`/`ablate`); do **not** default them all to 0.7.
+
+  **OPEN — exact per-model values not filled here, confirm before running:**
+
+  | model | temperature | top_p | top_k | source |
+  |---|---|---|---|---|
+  | `Qwen/Qwen3-4B-Instruct-2507` | *(per HF card — confirm before the run)* | *(per HF card)* | *(per HF card)* | Qwen3-4B-Instruct-2507 model card |
+  | `google/gemma-3-27b-it` | *(per HF card — confirm before the run)* | *(per HF card)* | *(per HF card)* | Gemma-3-27B-it model card |
+  | `Qwen/Qwen3.6-27B` | *(per HF card — confirm before the run)* | *(per HF card)* | *(per HF card)* | Qwen3.6-27B model card |
+
+  This table is deliberately left unfilled rather than guessed — read each model's own HF card (same
+  methodology the spec's §4.6 used for the cloud trio: quote the card's own recommended-sampling sentence
+  verbatim in the run's commit/report) before the sr004 session, not invented here.
+- **`--max-tokens 20000`** (spec Р3, both roles, matches the cloud rows) replaces the old default
+  4096/512 caps — pass it explicitly if the CLI default (`DEFAULT_MAX_TOKENS=20000`) ever changes upstream;
+  today it's already the default, so `--max-tokens` can be omitted, but see the `--max-model-len` note above
+  the bring-up commands — the local vLLM server itself must have room for a 20000-token completion.
+- **Per-call gates apply identically to local runs** (spec Р13/Р14/Р15): a `finish_reason=="length"` reply
+  halts the run (`LengthOverflowError`), not just tolerated — size `--max-model-len` generously (see above) so
+  a local model's own context window isn't what triggers this. The served-provider-pin gate (Р14) is
+  irrelevant for `--provider auto` against a local server — it never fires without a pin.
+
+**Pilot gate — 10 articles, same gate set as the cloud pilot (spec §5.2): `finish_reason=length` count = 0,
+`n_extraction_parse_failures` < 1% of paragraphs. No dedicated 10-article `gt.jsonl` subset is committed yet**
+(only the older 20-article `data/eval/wiki/gt_v2_sub20.jsonl` exists) — derive a fresh 10-article file from
+the first 10 titles of the canonical corpus before running the pilot:
+```bash
+head -10 data/eval/wiki/titles_v2.txt | cut -f1 > /tmp/pilot10_titles.txt
+python scripts/wiki_eval.py build-gt --titles /tmp/pilot10_titles.txt --out data/eval/wiki/gt_pilot10.jsonl
+```
+(this reuses the already-cached `data/eval/wiki/pages/` HTML — free, no network beyond a cache check.)
+
 ```bash
 python scripts/wiki_eval.py run \
-  --gt data/eval/wiki/gt_v2_sub20.jsonl \
+  --gt data/eval/wiki/gt_pilot10.jsonl \
   --config 111 --no-sitelink \
   --model Qwen/Qwen3-4B-Instruct-2507 --provider auto \
+  --base-url http://127.0.0.1:8000/v1 \
+  --temperature <per-HF-card> --top-p <per-HF-card> --top-k <per-HF-card> \
   --max-usd 50 --max-judge-calls 30000 \
   --article-workers 6 --llm-workers 8 --wikidata-workers 2
 ```
-For the `qwen3.6-27b` model only, add `--extra-body '{"chat_template_kwargs": {"enable_thinking": false}}'`.
+For `qwen3.6-27b` only, also add `--extra-body '{"chat_template_kwargs": {"enable_thinking": false}}'` — this
+merges per-key over the computed defaults (spec §4.1 finding 4), so it composes safely with the
+`--temperature`/`--top-p`/`--top-k` flags above.
 
 **Full run** — same command, `--gt data/eval/wiki/gt.jsonl` (100 articles), same flags otherwise. Note the
 run dir path this prints (`reports/terminology/wiki-eval/<model-slug>/111/<run_id>/`) — `model_slug()` turns
@@ -301,23 +370,26 @@ python scripts/wiki_eval.py run \
   --gt data/eval/wiki/gt.jsonl \
   --config 111 --no-sitelink \
   --model Qwen/Qwen3-4B-Instruct-2507 --provider auto \
+  --base-url http://127.0.0.1:8000/v1 \
+  --temperature <per-HF-card> --top-p <per-HF-card> --top-k <per-HF-card> \
   --max-usd 50 --max-judge-calls 30000 \
   --article-workers 6 --llm-workers 8 --wikidata-workers 2
 ```
 
-**Report** (offline, no LLM calls — recomputes `metrics.json` + `report.html` from the persisted `pred.jsonl`;
-`--p3` activates the real label-justified precision predicate, matches the already-filled cloud rows):
+**Report (protocol v3, offline, no LLM calls)** — recomputes `metrics.json` (set-based document-level
+`R_doc`/`P_doc`, named/term split) + `report.html` from the persisted `pred.jsonl`. **`--p3`/label-justified
+precision is gone** (deleted along with the mention-level protocol, spec Р9) — `cmd_report` always runs v3:
 ```bash
 python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl \
-  --pred reports/terminology/wiki-eval/Qwen--Qwen3-4B-Instruct-2507--auto/111/<run_id> --p3
+  --pred reports/terminology/wiki-eval/Qwen--Qwen3-4B-Instruct-2507--auto/111/<run_id>
 ```
+(`--tier` defaults to `data/eval/wiki/tier_assignment.json`, the canonical location — no need to pass it
+explicitly unless testing against a different tier file.)
 
 **`--max-usd 50` is deliberately generous, not a real dollar budget** — a local vLLM server reports no
 `usage.cost`, so `BudgetGuard` falls back to its `gpt-4o-mini`-list-price estimate purely for display/forecast
-purposes (`compute_usage_totals`'s `cost_usd_estimated`). The real spend on a local run is **$0** (GPU-hours
-only); `--max-usd 50` just keeps that meaningless estimate from ever tripping the guard's stop condition on a
-free run — the cloud full-100-article runs (`qwen3.7-plus`, `deepseek-v4-flash`) landed around $0.6–$2.6 in
-*real* spend at `--max-usd 12`, so 50 leaves ample headroom purely as a forecast artifact, not a real cost risk.
+purposes. The real spend on a local run is **$0** (GPU-hours only); `--max-usd 50` just keeps that
+meaningless estimate from ever tripping the guard's stop condition on a free run.
 
 **Expected runtime (ASSUMPTION):** the cloud `gemini-3.1-flash-lite` full 100-article run (`config 111`, same
 flags) took ~2.6h wall-clock at `--article-workers 10 --llm-workers 16` (network-latency-bound); a local
@@ -372,9 +444,11 @@ Per model (× 3):
 - [ ] `reports/bouquet/judges/summary.md` — regenerated, includes the new judge's rows.
 - [ ] `reports/terminology/wiki-eval/<model-slug>/111/<run_id>/pred.jsonl` — full per-mention prediction
       records (100 articles).
-- [ ] `reports/terminology/wiki-eval/<model-slug>/111/<run_id>/meta.json` — model/provider/spend-split
-      (spend will read ~0 real cost)/wall-clock/call-counts self-evidencing the run.
-- [ ] `reports/terminology/wiki-eval/<model-slug>/111/<run_id>/metrics.json` + `report.html` — from `report --p3`.
+- [ ] `reports/terminology/wiki-eval/<model-slug>/111/<run_id>/meta.json` — model/provider/spend-split/
+      `generation_params`/wall-clock/call-counts self-evidencing the run (spend will read ~0 real cost).
+- [ ] `reports/terminology/wiki-eval/<model-slug>/111/<run_id>/calls.jsonl` — per-call observability (spec Р8).
+- [ ] `reports/terminology/wiki-eval/<model-slug>/111/<run_id>/metrics.json` + `report.html` — from `report`
+      (protocol v3, no `--p3` flag any more).
 - [ ] Both Ф0 probe transcripts (server-answers curl + thinking-off curl + structured-output curl) — paste
       into the commit body or a short session note, so a reviewer doesn't have to re-derive whether the
       `chat_template_kwargs` toggle actually worked on the real hardware.

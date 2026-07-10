@@ -48,15 +48,36 @@ flat T2/T3 numbering:
 - **Table B — Refinement usefulness** (contribution: refinement module). Cross
   base×refiner matrix — the 7-row proposal below, still pending owner confirmation —
   on wiki-100, reported with QE metrics.
-- **Table C — NER + Wikidata grounding** (contribution: terminology extraction). Owner-locked
-  main-table format (2026-07-09): only $R_{\mathrm{doc}}$ and $P_{\mathrm{label}}$, sitelink-clean,
+- **Table C — NER + Wikidata grounding** (contribution: terminology extraction). **⚠️ 2026-07-10: protocol
+  v3 rework supersedes the $P_{\mathrm{label}}$/mention-level narrative below.** Metrics are now set-based
+  document-level $R_{\mathrm{doc}}$/$P_{\mathrm{doc}}$, split named/term (`metrics.aggregate_corpus_v3`,
+  spec [2026-07-10-wiki-eval-experiment-v2.md](../superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md)
+  Р9) — mention-level M1/M2/M3 matching and $P_{\mathrm{label}}$/P1/P2/P3 precision are **deleted**, not
+  just superseded (`matching.py` and the offline sitelink-replay script are gone). Methodology SSOT:
+  [eval-metrics-terminology.tex](sections/eval-metrics-terminology.tex).
+  **6-model lineup, updated row set**: Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B (local, pending
+  sr004), Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash, **Gemma-4-31B-it** (added 2026-07-10, spec Р1 — replaces
+  the GPT-5.5/GPT-5.4 cloud row). **`GPT-5.4` is excluded from the experiment entirely** (spec Р1: no run, no
+  table row — its earlier run artifacts are archived, commit `275f8c7`, after a leftover `--resume` process
+  completed it post-exclusion; see [known_issues.md](../known_issues.md)). Claude Opus 4.8 stays dropped from
+  Table C (kept in Table A). qwen3.7-plus stays dropped.
+  **Fill status: 0/6 rows filled under protocol v3.** Runner code for the rework landed 2026-07-10 (4
+  commits: `421c99d`/`0d89242`/`275f8c7`/`7e7ddfd`); the pilot (10 articles) and the three full cloud runs
+  are **pending**, as are the three local sr004 rows (runbook:
+  [sr004-local-eval-runbook.md](../runbooks/sr004-local-eval-runbook.md)). Every $R_{\mathrm{doc}}$/
+  $P_{\mathrm{label}}$ number quoted below this point (Gemini 0.735/0.530, DeepSeek 0.657/0.535, GPT-5.4
+  0.583/0.536) is **protocol-v2 history, not comparable to a v3 run** — kept only as a paper-writing
+  reference for what the old numbers looked like, not as current Table C fill state. Historical detail
+  (superseded) retained below for that reference purpose; `docs/paper/sections/table-c-grounding.tex` (the
+  paste-ready v2 table) also needs a v3 rewrite once the pilot lands — not done in this doc pass.
+
+  <details><summary>Protocol-v2 history (superseded 2026-07-10, kept for reference)</summary>
+
+  Owner-locked main-table format (2026-07-09): only $R_{\mathrm{doc}}$ and $P_{\mathrm{label}}$, sitelink-clean,
   $R_{\mathrm{term}}$ tier (n=7174 terminology-relevant gold mentions); the full 6-metric grid
   (sitelink-clean, $R_{\mathrm{all}}$/T0 tier) moved to an appendix table
-  (`\label{app:grounding-full}`). 6-model lineup (canonical row order fixed by owner 2026-07-09):
-  Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B, Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash, GPT-5.5.
-  Claude Opus 4.8 dropped from Table C (kept in Table A as the no-thinking judge row). qwen3.7-plus
-  dropped. Fill status: 3/6 rows FULLY filled with both $R_{\mathrm{doc}}$ and $P_{\mathrm{label}}$
-  (Gemini, DeepSeek, GPT-5.4); remaining 3 rows pending local sr004 runs.
+  (`\label{app:grounding-full}`). Fill status under v2: 3/6 rows FULLY filled with both $R_{\mathrm{doc}}$ and
+  $P_{\mathrm{label}}$ (Gemini, DeepSeek, GPT-5.4); remaining 3 rows pending local sr004 runs.
   (Gemini-3.1-Flash-Lite: $R_{\mathrm{doc}}$ 0.735 $R_{\mathrm{term}}$-tier sitelink-clean,
   $P_{\mathrm{label}}$ 0.530 [.521--.540]; DeepSeek-V4-Flash: $R_{\mathrm{doc}}$ 0.657
   $R_{\mathrm{term}}$-tier sitelink-clean, $P_{\mathrm{label}}$ 0.535 [.524--.545] — clean values
@@ -68,15 +89,17 @@ flat T2/T3 numbering:
   so the figure is a strict lower bound; $P_{\mathrm{label}}$ 0.536 [.525--.548] (3773/7037, Wilson
   95% CI), computed once Wikidata `maxlag` cleared (see
   `docs/reports/ml-engineer-grounding-run-gpt54.md` commit `5546459` and
-  `docs/reports/python-pro-p-label-gpt54-grounding-run.md` commit `19c7389`). Remaining 3 rows
-  pending local sr004 runs (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B).
+  `docs/reports/python-pro-p-label-gpt54-grounding-run.md` commit `19c7389`).
 
-  **2026-07-10:** the in-paper Table C the owner had transferred into Overleaf earlier was
+  **2026-07-10 (pre-rework):** the in-paper Table C the owner had transferred into Overleaf earlier was
   stale ($P_{\mathrm{label}}$ pending, GPT-5.5 row `XX`). The paste-ready replacement (caption
   slimmed with definitions moved to `sec:eval-metrics`, $P_{\mathrm{label}}$ filled for all 3
   cloud rows, GPT-5.5 row swapped for GPT-5.4 with a `\ddagger` footnote, appendix grid caption
-  aligned) now lives in `docs/paper/sections/table-c-grounding.tex` — see the writing-pass
-  subsection below.
+  aligned) landed in `docs/paper/sections/table-c-grounding.tex` — this itself is now superseded by the
+  protocol-v3 rework the same day; the .tex file still needs its own v3 update (not done here, docs-keeper
+  does not edit `docs/paper/sections/*.tex`).
+
+  </details>
 
 ### Done
 - **BOUQUET ru2en (by paragraphs)** → feeds **Table A**. Systems: TranslateGemma / TG-Refined /
@@ -84,21 +107,11 @@ flat T2/T3 numbering:
   Spearman judge↔metrics weak (−0.13…+0.37) — discussion point. Old numbers were
   Danil-verbatim (qwen3_6-27b, T=0.7, thinking on) — kept as a **sensitivity footnote**,
   not recomputed; Table A itself uses the new 7-judge protocol below.
-- **NER+Wikidata grounding, wiki corpus v2 (model-comparison v4)** → **Table C** / §5.1.
-  6-model matrix: 3 local (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B via sr004),
-  2 filled with $R_{\mathrm{term}}$-tier (n=7174) sitelink-clean $R_{\mathrm{doc}}$
-  (Gemini-3.1-Flash-Lite 0.735, DeepSeek-V4-Flash 0.657; the earlier $R_{\mathrm{all}}$/T0-tier
-  figures 0.684/0.609 now live only in the appendix full-grid table), plus GPT-5.4
-  (`gpt-5.4` fallback for `gpt-5.5`) at $R_{\mathrm{doc}}$ 0.583 [.572--.594], coverage 99/100
-  articles. $P_{\mathrm{label}}$ filled via live label checks for all three cloud rows: Gemini
-  0.530 [.521--.540], DeepSeek 0.535 [.524--.545] (see
-  `docs/reports/python-pro-sitelink-clean-replay.md`), GPT-5.4 0.536 [.525--.548] (3773/7037,
-  Wilson 95% CI, computed once Wikidata `maxlag` cleared — see
-  `docs/reports/python-pro-p-label-gpt54-grounding-run.md`, commit `19c7389`).
-  Opus-4.8 dropped (reasoning unreachable via gateway on all 7 providers). qwen3.7-plus dropped.
-  Main table now reports only $R_{\mathrm{doc}}$ + $P_{\mathrm{label}}$ (owner-locked 2026-07-09);
-  full 6-metric grid moved to an appendix table. Artifacts: `reports/terminology/wiki-eval/`,
-  paper section draft `docs/paper/sections/table-c-grounding.tex`.
+- **NER+Wikidata grounding, wiki corpus v2 (model-comparison v4) — protocol-v2 numbers, SUPERSEDED
+  2026-07-10** → historical **Table C** / §5.1 reference only, see the collapsed section above for the
+  full v2 narrative and the current (v3, all-pending) fill state. Artifacts:
+  `reports/terminology/wiki-eval/`, paper section draft `docs/paper/sections/table-c-grounding.tex` (itself
+  pending a v3 rewrite).
 - **Wiki-100 corpus** built & handed to Danil: 2 553 paragraphs / 100 articles
   (`data/eval/wiki/`, README + sha256), pilot = 10 articles / 274 par.
 - **deepseek CloseRouter smoke** ($0.0052): reasoning-off flag mandatory; provider-9 pin
@@ -203,7 +216,13 @@ Gemini judge swapped to flash-lite):**
 - Judge probes: test-retest (verbatim config), J′ = deepseek inter-judge agreement.
 
 ### Queued
-- qwen3.7-plus clean re-run (grounding eval, Table C).
+- **Table C protocol-v3 pilot + full runs** (2026-07-10, spec 2026-07-10-wiki-eval-experiment-v2.md §5):
+  10-article gemini pilot, then 3 full cloud runs (Gemini-3.1-Flash-Lite, DeepSeek-V4-Flash,
+  Gemma-4-31B-it) + 3 local sr004 runs. Code landed, no runs executed yet.
+- `docs/paper/sections/table-c-grounding.tex` needs a v3 rewrite once real numbers land (out of scope for
+  this doc pass — docs-keeper does not edit `docs/paper/sections/*.tex`).
+- qwen3.7-plus clean re-run (grounding eval, Table C) — moot under v3 (qwen3.7-plus already dropped from
+  the v2/v3 lineup, spec Р1).
 - Case study / error analysis (history volume) + qualitative wiki-annotation table.
 
 ### 2026-07-10 writing pass (Artem tasks)
