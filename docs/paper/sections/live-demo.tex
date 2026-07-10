@@ -1,11 +1,40 @@
 % Section 2.4, Live Demo. Body only: the \subsection{Live Demo} heading stays in the
 % main tex. Two variants, variant 1 active, variant 2 commented (same layout as
 % 3-1-wikipedia-dataset.tex). The Interactive Use Cases subsubsection that follows
-% covers the two workflows, so both variants describe interface anatomy and
-% implementation only. All facts repo-verified 2026-07-10.
+% covers the two workflows (scenarios), so these paragraphs describe interface,
+% I/O contract, configurability and implementation only.
 %
-% Integration: add this BibTeX entry to custom.bib for \cite{tiptap} (InkSight-style
-% GitHub-repository reference, cf. their EasyOCR entry):
+% Paragraph ladder (important -> details): Functionality (what the user sees and
+% does) -> Input and Output (the contract with the user's data) -> Model and
+% Prompt Configuration (adaptability, cashes the §2-intro promise "easily
+% deployable for new languages and with different backbone models") ->
+% Implementation (stack).
+%
+% Integration steps:
+% 1. Add \label{sec:live-demo} to \subsection{Live Demo} (referenced from the
+%    2.3 default-criteria sentence).
+% 2. Add the tiptap BibTeX entry below to custom.bib.
+% 3. Owner decision pending: export formats. Code today exports .xlsx + .md
+%    (export.py); the text says "spreadsheet or a Markdown file". If a .txt
+%    export ships before submission, swap the sentence ending.
+%
+% PAPER<->CODE PARITY CHECKLIST (owner committed to implement before the demo
+% video / submission; text below already describes the target state):
+%   [ ] Refiner config (model + prompt) surface in Settings   — absent today
+%   [ ] "Apply all" refinement pass button in the inspector   — today only per-issue accept
+%   [ ] Terminology extraction and disambiguation as separately configurable
+%       roles — today one shared Grounding card (model + prompt)
+%   [ ] (optional) .txt export — today .xlsx + .md
+% Facts verified in code 2026-07-10: editable TipTap Translation pane +
+% per-paragraph revision history with re-scoring, restore and best-revision
+% tracking (EditorParagraph.tsx, app.py /revisions, /restore); upload paste or
+% .docx/.md/.txt with enforced equal paragraph counts (file-ingest.ts,
+% UploadModal.tsx); AI draft translation job (/documents/{id}/translate);
+% model registry name/base_url/api_key/params with OpenRouter + vLLM seed rows
+% and a connectivity test (seed.py, app.py /models); per-criterion judge
+% config (criterion table); React 19 + TypeScript, custom TipTap extension
+% review-extension.ts, FastAPI over single-file SQLite, OpenAI-compatible
+% client (llm/client.py), single Docker container.
 %
 % @misc{tiptap,
 %   author       = {{Tiptap}},
@@ -14,13 +43,6 @@
 %   howpublished = {\url{https://github.com/ueberdosis/tiptap}},
 %   note         = {GitHub repository}
 % }
-%
-% Stack facts verified in code 2026-07-10: React 19 + TypeScript (frontend/package.json),
-% custom TipTap extension = frontend/src/demo/variant-a/review-extension.ts
-% (@tiptap/core Extension + ProseMirror Decoration.inline stacked underlines),
-% FastAPI over single-file SQLite (src/palimpsest/webapp/app.py, db.py),
-% OpenAI-compatible client with per-model base_url (src/palimpsest/llm/client.py,
-% openai SDK), single Docker container via uvicorn (Dockerfile).
 
 % ===== VARIANT 1 (main) =====
 \paragraph{Functionality.}
@@ -29,14 +51,35 @@ and organizes analysis into four tabs (Document, Glossary, Ranking, Settings).
 In the Document tab, findings from the \moduleEvaluation{} module appear as
 span-level underlines colored by criterion, each paragraph carries an
 aggregate score chip, and an inspector panel lists issues with suggested
-corrections that the user can accept in place. Every extracted term carries
-two independent signals, shown as colored spans with hover popovers: its
-grounding difficulty on the Source side (the three resolution states of the
-\moduleTerminology{} module) and the pair accuracy of its rendering in the
-Translation (correct, debatable, or incorrect). The Glossary tab groups terms
-by entity and exposes their grounding traces, the Ranking tab orders
-paragraphs by score or issue count, and the Settings tab lets users create
-and edit judge criteria (name, prompt, judge model, weight, color).
+corrections. The Translation pane is a directly editable rich-text editor:
+users accept suggestions one by one, apply them all in a single refinement
+pass, or edit the text manually. Every change produces a new revision that
+can be re-scored and restored from the paragraph history. Every extracted
+term carries two independent signals, shown as colored spans with hover
+popovers: its grounding difficulty on the Source side (the three resolution
+states of the \moduleTerminology{} module) and the pair accuracy of its
+rendering in the Translation. The Glossary tab groups terms by entity and
+exposes their grounding traces, and the Ranking tab orders paragraphs by
+score or issue count.
+
+\paragraph{Input and Output.}
+A document enters \systemname{} as a pair of Source and Translation aligned
+paragraph by paragraph. Users paste text into the editor or upload .docx,
+.md, or .txt files for each side, and both sides must contain the same
+number of paragraphs. Users can also provide only the Source and generate a
+draft with the configured translation model. The resulting translation
+exports as a paragraph-aligned spreadsheet or a Markdown file.
+
+\paragraph{Model and Prompt Configuration.}
+\systemname{} adapts to new domains through the Settings tab. Its model
+registry defines each LLM as an OpenAI-compatible endpoint with a base URL,
+an API key, and generation parameters, and ships with preconfigured
+OpenRouter and local vLLM entries. Every LLM role in the pipeline is a
+reference into this registry paired with an editable prompt: the draft
+translator, each judge criterion, the refiner, and the terminology
+extraction and disambiguation steps. Defaults tuned for the historical
+domain come preloaded, and users can override any of them without
+redeployment.
 
 \paragraph{Implementation.}
 We build the frontend as a React and TypeScript application. Its editor
@@ -50,33 +93,52 @@ endpoint configuration, which makes the system model agnostic: any hosted
 gateway, such as OpenRouter, or a local vLLM server can act as the model
 backend. Judge scores and issues are stored append-only, so re-evaluation
 appends revisions and never overwrites earlier predictions. The system
-deploys as a single Docker container with one command, and criteria defined
-in the interface apply without redeployment.
+deploys as a single Docker container with one command.
 
 % ===== VARIANT 2 (text-first framing) =====
 % \paragraph{Functionality.}
 % \systemname{} concentrates all model output on the text itself. The Document
 % tab aligns Source and Translation paragraph by paragraph, underlines each
 % detected issue in the color of the criterion that raised it, and shows a
-% score chip per paragraph. An inspector panel on the right lets users review
-% issues and accept suggested corrections. Terms are highlighted with two
-% independent signals, grounding difficulty on the Source side and pair
-% accuracy of the Translation rendering, and a popover on each term reveals
-% the linked Wikidata entity, its resolution state, and the justification.
-% Three further tabs support analysis at other granularities: Glossary
-% aggregates terms with their grounding traces (query, candidate search,
-% decision steps), Ranking sorts paragraphs by score or issue count for
-% triage, and Settings holds the criteria editor, where users define the name,
-% prompt, judge model, weight, and color of each criterion.
+% score chip per paragraph. The Translation pane is not a static view but an
+% editable rich-text editor: users review issues in an inspector panel,
+% accept suggested corrections one by one or in a single refinement pass, and
+% edit the text freely. Each change becomes a revision in the paragraph
+% history, where revisions are re-scored against the active criteria and any
+% earlier state can be restored. Terms are highlighted with two independent
+% signals, grounding difficulty on the Source side and pair accuracy of the
+% Translation rendering, and a popover on each term reveals the linked
+% Wikidata entity, its resolution state, and the justification. Two further
+% tabs support analysis at other granularities: Glossary aggregates terms
+% with their grounding traces (query, candidate search, decision steps), and
+% Ranking sorts paragraphs by score or issue count for triage.
+%
+% \paragraph{Input and Output.}
+% \systemname{} works on paragraph-aligned document pairs. Both panes accept
+% pasted text or .docx, .md, and .txt files, and the upload dialog enforces
+% an equal number of paragraphs on the two sides. When only the Source is
+% provided, the configured translation model produces the draft Translation.
+% At any point the current translation exports as a paragraph-aligned
+% spreadsheet or a Markdown file.
+%
+% \paragraph{Model and Prompt Configuration.}
+% Flexibility in \systemname{} comes from one mechanism: every LLM role is a
+% model reference plus a prompt, both editable in the Settings tab. The model
+% registry declares each LLM as an OpenAI-compatible endpoint (base URL, API
+% key, generation parameters) and comes preloaded with OpenRouter and local
+% vLLM entries. The draft translator, each judge criterion, the refiner, and
+% the terminology extraction and disambiguation steps all draw on this
+% registry, so replacing a backbone model or retargeting the system to a new
+% domain is a configuration change rather than a code change. Domain-tuned
+% defaults are included and remain fully overridable.
 %
 % \paragraph{Implementation.}
 % \systemname{} is model agnostic by construction. Every LLM call, whether
 % from the translator, a judge, or the terminology pipeline, goes through one
 % OpenAI-compatible client with per-model endpoint configuration, so any
 % hosted gateway, such as OpenRouter, or a local vLLM server can serve the
-% models, and criteria created in the interface apply without redeployment.
-% The server is a FastAPI application over a single-file SQLite store that
-% executes translation and first-pass scoring as background jobs. Its
+% models. The server is a FastAPI application over a single-file SQLite store
+% that executes translation and first-pass scoring as background jobs. Its
 % evaluation store is append-only: re-evaluation appends new score revisions
 % and never overwrites earlier predictions. The client is a React and
 % TypeScript application whose editor builds on the open-source TipTap
