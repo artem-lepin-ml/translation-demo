@@ -10,8 +10,6 @@ from dataclasses import dataclass
 import openai
 from openai import OpenAI
 
-from ..config import ModelConfig
-
 # CloseRouter's WAF blocks the OpenAI SDK's default User-Agent (HTTP 403 "Your
 # request was blocked") before it ever routes to a model — any neutral UA
 # passes. Sent on every client so identical code works against CloseRouter,
@@ -55,12 +53,6 @@ class LLMConfig:
     seed: int | None = None               # None → omit (capability-gated, see model_matrix.supports_seed)
     extra_body: dict | None = None        # top_k/min_p/reasoning/provider/usage passthrough
     timeout: float = 30.0                 # per-request wall clock (s)
-
-    @classmethod
-    def from_model_config(cls, cfg: ModelConfig) -> "LLMConfig":
-        return cls(model=cfg.name, base_url=cfg.base_url,
-                   api_key=os.environ[cfg.api_key_env],
-                   temperature=cfg.temperature, max_tokens=cfg.max_tokens)
 
 
 def _extract_usage(resp) -> Usage:
