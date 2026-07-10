@@ -14,8 +14,9 @@
 % 1. Add \label{sec:live-demo} to \subsection{Live Demo} (referenced from the
 %    2.3 default-criteria sentence).
 % 2. Add the tiptap BibTeX entry below to custom.bib.
-% (Export decision closed 2026-07-10: paper says .xlsx with per-paragraph
-% scores + plain Markdown, exactly as export.py ships.)
+% (Export wording, owner decision 2026-07-10: .xlsx with per-paragraph scores
+% matches export.py; the .md export is described as the translation text
+% alone — target state, see checklist.)
 %
 % PAPER<->CODE PARITY CHECKLIST (owner committed to implement before the demo
 % video / submission; text below already describes the target state):
@@ -23,6 +24,8 @@
 %   [ ] "Apply all" refinement pass button in the inspector   — today only per-issue accept
 %   [ ] Terminology extraction and disambiguation as separately configurable
 %       roles — today one shared Grounding card (model + prompt)
+%   [ ] .md export = the current translation text alone — today
+%       build_markdown emits a parallel Source|Translation table
 % Facts verified in code 2026-07-10: editable TipTap Translation pane +
 % per-paragraph revision history with re-scoring, restore and best-revision
 % tracking (EditorParagraph.tsx, app.py /revisions, /restore); upload paste or
@@ -67,14 +70,15 @@ paragraph by paragraph. Users paste text into the editor or upload .docx,
 number of paragraphs. Users can also provide only the Source and generate a
 draft with the configured translation model. The resulting translation
 exports as a paragraph-aligned spreadsheet that includes the per-paragraph
-quality scores, or as a plain Markdown table.
+quality scores, or as a Markdown file containing the translation text
+alone.
 
 \paragraph{Model and Prompt Configuration.}
 \systemname{} adapts to new domains through the Settings tab. Its model
 registry defines each LLM as an OpenAI-compatible endpoint with a base URL,
 an API key, and generation parameters, and ships with preconfigured
-OpenRouter and local vLLM entries, each verifiable with a one-click test
-call. Every LLM role in the pipeline is a
+OpenRouter\footnote{\href{https://openrouter.ai}{openrouter.ai}} and local
+vLLM entries, each verifiable with a one-click test call. Every LLM role in the pipeline is a
 reference into this registry paired with an editable prompt: the draft
 translator, each judge criterion, the refiner, and the terminology
 extraction and disambiguation steps. Defaults tuned for the historical
@@ -82,12 +86,16 @@ domain come preloaded, and users can override any of them without
 redeployment.
 
 \paragraph{Implementation.}
-We build the frontend as a React and TypeScript application. Its editor
-builds on the open-source TipTap framework~\cite{tiptap}, which we extend
-with a custom decoration layer that draws judge findings as stacked
-span-level underlines and marks term spans in place, so all analysis stays
-anchored to the text. The backend is a FastAPI service over a single-file
-SQLite store and runs translation and first-pass scoring as background jobs.
+We build the frontend as a React\footnote{\href{https://react.dev}{react.dev}}
+and TypeScript\footnote{\href{https://www.typescriptlang.org}{typescriptlang.org}}
+application. Its editor builds on the open-source TipTap
+framework~\cite{tiptap}, which we extend with a custom decoration layer that
+draws judge findings as stacked span-level underlines and marks term spans in
+place, so all analysis stays anchored to the text. The backend is a
+FastAPI\footnote{\href{https://fastapi.tiangolo.com}{fastapi.tiangolo.com}}
+service over a single-file
+SQLite\footnote{\href{https://sqlite.org}{sqlite.org}} store and runs
+translation and first-pass scoring as background jobs.
 All LLM calls pass through one OpenAI-compatible client with per-model
 endpoint configuration, which makes the system model agnostic: any hosted
 gateway, such as OpenRouter, or a local vLLM server can act as the model
@@ -119,14 +127,15 @@ deploys as a single Docker container with one command.
 % an equal number of paragraphs on the two sides. When only the Source is
 % provided, the configured translation model produces the draft Translation.
 % At any point the current translation exports as a paragraph-aligned
-% spreadsheet with the per-paragraph quality scores or as a plain Markdown
-% table.
+% spreadsheet with the per-paragraph quality scores or as a Markdown file
+% with the translation text alone.
 %
 % \paragraph{Model and Prompt Configuration.}
 % Flexibility in \systemname{} comes from one mechanism: every LLM role is a
 % model reference plus a prompt, both editable in the Settings tab. The model
 % registry declares each LLM as an OpenAI-compatible endpoint (base URL, API
-% key, generation parameters) and comes preloaded with OpenRouter and local
+% key, generation parameters) and comes preloaded with
+% OpenRouter\footnote{\href{https://openrouter.ai}{openrouter.ai}} and local
 % vLLM entries, each verifiable with a one-click test call. The draft
 % translator, each judge criterion, the refiner, and
 % the terminology extraction and disambiguation steps all draw on this
@@ -139,11 +148,16 @@ deploys as a single Docker container with one command.
 % from the translator, a judge, or the terminology pipeline, goes through one
 % OpenAI-compatible client with per-model endpoint configuration, so any
 % hosted gateway, such as OpenRouter, or a local vLLM server can serve the
-% models. The server is a FastAPI application over a single-file SQLite store
+% models. The server is a
+% FastAPI\footnote{\href{https://fastapi.tiangolo.com}{fastapi.tiangolo.com}}
+% application over a single-file
+% SQLite\footnote{\href{https://sqlite.org}{sqlite.org}} store
 % that executes translation and first-pass scoring as background jobs. Its
 % evaluation store is append-only: re-evaluation appends new score revisions
-% and never overwrites earlier predictions. The client is a React and
-% TypeScript application whose editor builds on the open-source TipTap
+% and never overwrites earlier predictions. The client is a
+% React\footnote{\href{https://react.dev}{react.dev}} and
+% TypeScript\footnote{\href{https://www.typescriptlang.org}{typescriptlang.org}}
+% application whose editor builds on the open-source TipTap
 % framework~\cite{tiptap}, extended with a custom decoration layer that
 % stacks criterion-colored underlines and term marks over the Translation
 % text. The full system ships as one Docker container and starts with a
