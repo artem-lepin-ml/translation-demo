@@ -1,0 +1,12 @@
+{
+ "remove": [10, 11, 12, 13, 15, 16, 43],
+ "reasons": {
+  "10": "modern astronomical term (sidereal year), not Sirius-specific",
+  "11": "generic bare word 'year'",
+  "12": "generic adjective, modern year-type descriptor",
+  "13": "generic bare word 'year'",
+  "15": "generic descriptive verb phrase, calendar-reform narration",
+  "16": "generic descriptive verb phrase, regnal-year narration",
+  "43": "generic occupational noun, astronomers"
+ }
+}

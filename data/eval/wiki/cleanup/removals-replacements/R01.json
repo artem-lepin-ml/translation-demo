@@ -1,0 +1,19 @@
+{
+ "remove": [1, 3, 4, 5, 22, 23, 24, 27, 38, 40, 41, 42, 55, 90],
+ "reasons": {
+  "1": "language template tag (др.-греч.)",
+  "3": "language template tag (др.-евр.)",
+  "4": "language template tag (финик.)",
+  "5": "language template tag (аккад.)",
+  "22": "language template tag (греч.)",
+  "23": "abstract navigational phrase, not term-worthy",
+  "24": "bare year/date, no glossary term",
+  "27": "bare year/date, no glossary term",
+  "38": "generic surface noun for ships, no proper name",
+  "40": "generic flora species, cedar",
+  "41": "generic flora species, cypress",
+  "42": "generic material, resin/pitch",
+  "55": "bare year/date, no glossary term",
+  "90": "generic descriptive verb phrase, military occupation"
+ }
+}

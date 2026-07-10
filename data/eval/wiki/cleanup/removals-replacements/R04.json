@@ -1,0 +1,8 @@
+{
+ "remove": [17, 22, 57],
+ "reasons": {
+  "17": "generic bare noun 'fort', proper name (Saint-Julien) outside span",
+  "22": "generic descriptive verb clause, military defeat narration",
+  "57": "generic descriptive verb clause, script-direction narration"
+ }
+}

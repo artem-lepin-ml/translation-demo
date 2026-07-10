@@ -1,0 +1,19 @@
+{
+ "remove": [1, 9, 18, 21, 24, 29, 30, 39, 40, 45, 49, 51, 54, 55],
+ "reasons": {
+  "1": "language template tag (лат.)",
+  "9": "language template tag (лат.)",
+  "18": "language template tag (лат.)",
+  "21": "language template tag (лат.)",
+  "24": "language template tag (лат.)",
+  "29": "generic vehicle noun, near-synonym of квадрига",
+  "30": "generic material category, no specific metal named",
+  "39": "generic plural noun for priests",
+  "40": "generic descriptive phrase, no proper name (Tullianum)",
+  "45": "generic occupational/performer noun",
+  "49": "bare adjective, proper name (Maximus) outside span",
+  "51": "generic bare noun 'forum', no proper name",
+  "54": "generic everyday legal word",
+  "55": "language template tag (лат.)"
+ }
+}

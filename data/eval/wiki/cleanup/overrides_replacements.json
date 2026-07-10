@@ -1,0 +1,9 @@
+{
+  "note": "Fable verification overrides on top of removals-replacements/R01-R05, 2026-07-10",
+  "restore": [
+    {"article": "R05", "n": 49, "anchor": "Большой", "reason": "proper-name short form (Circus Maximus) in coordinated ellipsis — precedent (b) proper-name exception"},
+    {"article": "R05", "n": 51, "anchor": "форум", "reason": "Roman urban realia, KEEP class of стела/зиккурат/форос"}
+  ],
+  "add_removals": [],
+  "verified": "39 flags reviewed by orchestrator; 37 confirmed, 2 restored"
+}
