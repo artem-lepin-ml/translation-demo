@@ -166,6 +166,68 @@ def render_html(metrics: dict, meta: dict) -> str:
     return "".join(parts)
 
 
+_V3_CLASS_LABELS = {"named": "Named entities", "term": "Terms (common-noun)"}
+
+
+def _v3_cell_td(cell: dict) -> str:
+    flag = ' <span class="flag">underpowered n&lt;30</span>' if cell.get("underpowered") else ""
+    return (
+        f'<td class="{_cell_class(cell)}">'
+        f"{_fmt_value(cell)}"
+        f'<div class="n">ci={_fmt_ci(cell)}{flag}</div>'
+        f"</td>"
+    )
+
+
+def render_html_v3(result: dict, meta: dict) -> str:
+    """Render a ``metrics.aggregate_corpus_v3``-shaped result as a
+    self-contained HTML fragment (protocol v3, spec Sec.4.5/Р9): a header
+    with run identity from ``meta``, and one table with a row per class
+    (named/term) — gold_units, TP, FN, FP, R_doc, P_doc (value + Wilson CI).
+
+    Methodology prose SSOT: docs/paper/sections/eval-metrics-terminology.tex
+    (this renderer only formats numbers, it doesn't restate the formalism).
+    """
+    classes = result.get("classes", {})
+    rows = "".join(
+        f"<tr><td>{_html.escape(_V3_CLASS_LABELS.get(cls, cls))}</td>"
+        f'<td class="cell">{s["gold_units"]}</td>'
+        f'<td class="cell">{s["tp"]}</td>'
+        f'<td class="cell">{s["fn"]}</td>'
+        f'<td class="cell">{s["fp"]}</td>'
+        f"{_v3_cell_td(s['R_doc'])}"
+        f"{_v3_cell_td(s['P_doc'])}"
+        f"</tr>"
+        for cls, s in classes.items()
+        if cls in ("named", "term")
+    )
+
+    parts = [f"<style>{_CSS}</style>", '<div class="wiki-eval-report">']
+    parts.append("<h1>Wiki-eval report (protocol v3)</h1>")
+    parts.append(
+        '<div class="meta">'
+        f'model <code>{_html.escape(str(meta.get("model", "?")))}</code> · '
+        f'provider <code>{_html.escape(str(meta.get("provider", "?")))}</code> · '
+        f'run_id <code>{_html.escape(str(meta.get("run_id", "?")))}</code>'
+        "</div>"
+    )
+    parts.append("<h2>Document-level R_doc / P_doc (set-based, named vs term)</h2>")
+    parts.append(
+        '<table class="metrics"><thead><tr>'
+        "<th>class</th><th>gold_units</th><th>TP</th><th>FN</th><th>FP</th>"
+        "<th>R_doc</th><th>P_doc</th>"
+        f"</tr></thead><tbody>{rows}</tbody></table>"
+    )
+    parts.append(
+        '<p class="note">'
+        f'n_ambiguous_gold_units={result.get("n_ambiguous_gold_units", "?")} · '
+        f'n_gold_mentions_dropped_by_tier={result.get("n_gold_mentions_dropped_by_tier", "?")}'
+        "</p>"
+    )
+    parts.append("</div>")
+    return "".join(parts)
+
+
 def methodology_draft() -> str:
     """EN paper-draft methodology paragraph, verbatim.
 

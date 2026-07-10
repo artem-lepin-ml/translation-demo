@@ -1,0 +1,235 @@
+"""Tests for the protocol-v3 set-based document-level aggregator
+(``aggregate_corpus_v3``, spec 2026-07-10-wiki-eval-experiment-v2.md Sec.4.5,
+decision Р9).
+
+Tuple convention (spec Sec.3/E-D6): (index, surface, qid, span_len).
+"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from palimpsest.terminology.evaluation.metrics import aggregate_corpus_v3
+
+REPO = Path(__file__).resolve().parents[1]
+GT_PATH = REPO / "data/eval/wiki/gt.jsonl"
+TIER_PATH = REPO / "data/eval/wiki/tier_assignment.json"
+RUN_A = REPO / "reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z/pred.jsonl"
+RUN_B = REPO / "reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--provider-9/111/2026-07-05T23-35-52Z/pred.jsonl"
+
+
+# ---------------------------------------------------------------------------
+# (a) Small synthetic-fixture tests
+# ---------------------------------------------------------------------------
+
+
+def test_tier_filter_drops_gold_but_prediction_on_same_qid_is_still_fp():
+    """A gold tuple whose QID sits in a non-zero tier is skipped from the gold
+    unit map (and counted in n_gold_mentions_dropped_by_tier), but a
+    prediction sharing that same QID is not exempted by the filter -- it is
+    still classified and counted as FP (spec Sec.4.5: the tier filter prunes
+    gold, not predictions -- a deliberate protocol asymmetry)."""
+    articles = [
+        {
+            "gt_tuples": [(0, "Кошка", "Qtiered", 1)],
+            "pred_tuples": [(0, "Кошка", "Qtiered", 1)],
+        }
+    ]
+    result = aggregate_corpus_v3(articles, tier_assignment={"Qtiered": 1})
+
+    assert result["n_gold_mentions_dropped_by_tier"] == 1
+    assert result["classes"]["named"]["gold_units"] == 0
+    assert result["classes"]["named"]["fp"] == 1
+    assert result["classes"]["term"]["gold_units"] == 0
+    assert result["classes"]["term"]["fp"] == 0
+
+
+def test_mixed_case_gold_unit_is_named_and_ambiguous():
+    """A gold unit whose repeated mentions disagree on case (one capitalized,
+    one lowercase) is classified 'named' (any-capitalized rule) but also
+    counted in n_ambiguous_gold_units."""
+    articles = [
+        {
+            "gt_tuples": [
+                (0, "Рим", "Q220", 1),
+                (10, "рим", "Q220", 1),
+            ],
+            "pred_tuples": [(0, "Рим", "Q220", 1)],
+        }
+    ]
+    result = aggregate_corpus_v3(articles, tier_assignment={})
+
+    assert result["n_ambiguous_gold_units"] == 1
+    assert result["classes"]["named"]["gold_units"] == 1
+    assert result["classes"]["named"]["tp"] == 1
+    assert result["classes"]["term"]["gold_units"] == 0
+
+
+def test_pred_unit_absent_from_gold_classified_by_own_surfaces():
+    """An FP pred unit (QID not in the filtered gold set) is classified by
+    its OWN predicted surfaces, not by any gold-side information."""
+    articles = [
+        {
+            "gt_tuples": [],
+            "pred_tuples": [(0, "легион", "Qfp", 1)],
+        }
+    ]
+    result = aggregate_corpus_v3(articles, tier_assignment={})
+
+    assert result["classes"]["term"]["fp"] == 1
+    assert result["classes"]["named"]["fp"] == 0
+
+
+def test_repeated_mentions_dedup_to_one_unit():
+    """Repeated gold/pred mentions of the same (article, QID) collapse into a
+    single unit -- gold_units and tp/fn/fp count units, not raw mention rows."""
+    articles = [
+        {
+            "gt_tuples": [
+                (0, "Рим", "Q220", 1),
+                (5, "Рима", "Q220", 1),
+                (9, "Риме", "Q220", 1),
+            ],
+            "pred_tuples": [
+                (0, "Рим", "Q220", 1),
+                (5, "Рима", "Q220", 1),
+            ],
+        }
+    ]
+    result = aggregate_corpus_v3(articles, tier_assignment={})
+
+    assert result["classes"]["named"]["gold_units"] == 1
+    assert result["classes"]["named"]["tp"] == 1
+    assert result["classes"]["named"]["fn"] == 0
+    assert result["classes"]["named"]["fp"] == 0
+
+
+def test_empty_pred_gives_zero_recall_with_correct_totals():
+    articles = [
+        {
+            "gt_tuples": [(0, "Рим", "Q220", 1), (5, "город", "Qterm", 1)],
+            "pred_tuples": [],
+        }
+    ]
+    result = aggregate_corpus_v3(articles, tier_assignment={})
+
+    named = result["classes"]["named"]
+    term = result["classes"]["term"]
+    assert named["tp"] == 0 and named["fn"] == 1 and named["fp"] == 0
+    assert term["tp"] == 0 and term["fn"] == 1 and term["fp"] == 0
+    assert named["R_doc"]["value"] == pytest.approx(0.0)
+    assert named["R_doc"]["total"] == 1
+    assert named["P_doc"]["value"] is None  # 0/0 -- uninformative, not a crash
+    assert named["P_doc"]["total"] == 0
+
+
+def test_cell_shape_has_wilson_ci_keys():
+    articles = [
+        {
+            "gt_tuples": [(0, "Рим", "Q220", 1)],
+            "pred_tuples": [(0, "Рим", "Q220", 1)],
+        }
+    ]
+    result = aggregate_corpus_v3(articles, tier_assignment={})
+    cell = result["classes"]["named"]["R_doc"]
+    assert set(cell) == {"matched", "total", "value", "ci_lo", "ci_hi", "underpowered"}
+    assert cell["matched"] == 1
+    assert cell["total"] == 1
+    assert cell["value"] == pytest.approx(1.0)
+
+
+def test_protocol_key_present():
+    result = aggregate_corpus_v3([], tier_assignment={})
+    assert result["protocol"] == "v3"
+
+
+# ---------------------------------------------------------------------------
+# (b) Regression anchors on committed artifacts
+#
+# These anchors are RAW-pred: the retired sitelink-replay cleaning (spec
+# Sec.7, deleted by this same change) is NOT applied. The paper's pre-redo
+# numbers (named 3265/4032, term 621/1530) were computed on sitelink-CLEAN
+# predictions and differ slightly from the raw numbers below by construction
+# -- both are legitimate, they answer different questions.
+# ---------------------------------------------------------------------------
+
+
+def _load_gt_articles() -> list[dict]:
+    articles = []
+    for line in GT_PATH.read_text(encoding="utf-8").splitlines():
+        rec = json.loads(line)
+        articles.append({"title": rec["title"], "gt_tuples": [tuple(t) for t in rec["gt_tuples"]]})
+    return articles
+
+
+def _load_pred_by_title(pred_path: Path) -> dict[str, list[tuple]]:
+    by_title: dict[str, list[tuple]] = {}
+    for line in pred_path.read_text(encoding="utf-8").splitlines():
+        r = json.loads(line)
+        if r.get("qid"):
+            by_title.setdefault(r["title"], []).append(
+                (r["index"], r["surface"], r["qid"], r["span_len"])
+            )
+    return by_title
+
+
+def _build_articles(pred_path: Path) -> list[dict]:
+    gt_articles = _load_gt_articles()
+    pred_by_title = _load_pred_by_title(pred_path)
+    return [
+        {"gt_tuples": a["gt_tuples"], "pred_tuples": pred_by_title.get(a["title"], [])}
+        for a in gt_articles
+    ]
+
+
+@pytest.fixture(scope="module")
+def tier_assignment() -> dict[str, int]:
+    return json.loads(TIER_PATH.read_text(encoding="utf-8"))
+
+
+@pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
+@pytest.mark.skipif(not TIER_PATH.exists(), reason="tier assignment not present in this checkout")
+@pytest.mark.skipif(not RUN_A.exists(), reason="run A pred.jsonl not present in this checkout")
+def test_regression_anchor_run_a_gemini(tier_assignment):
+    articles = _build_articles(RUN_A)
+    result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
+
+    assert result["n_ambiguous_gold_units"] == 114
+    assert result["n_gold_mentions_dropped_by_tier"] == 785
+
+    named = result["classes"]["named"]
+    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (3297, 735, 1659, 4032)
+
+    term = result["classes"]["term"]
+    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (631, 899, 712, 1530)
+
+    assert named["gold_units"] + term["gold_units"] == 5562
+
+
+@pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
+@pytest.mark.skipif(not TIER_PATH.exists(), reason="tier assignment not present in this checkout")
+@pytest.mark.skipif(not RUN_B.exists(), reason="run B pred.jsonl not present in this checkout")
+def test_regression_anchor_run_b_deepseek(tier_assignment):
+    articles = _build_articles(RUN_B)
+    result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
+
+    named = result["classes"]["named"]
+    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (2881, 1151, 1357, 4032)
+
+    term = result["classes"]["term"]
+    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (590, 940, 592, 1530)
+
+    assert named["gold_units"] + term["gold_units"] == 5562
+
+
+@pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
+@pytest.mark.skipif(not TIER_PATH.exists(), reason="tier assignment not present in this checkout")
+def test_gold_named_plus_term_invariant(tier_assignment):
+    """Spec Sec.6: named+term gold_units == 5562, independent of which run's
+    predictions are scored against it (the gold side alone determines this)."""
+    articles = _build_articles(RUN_A)
+    result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
+    total = result["classes"]["named"]["gold_units"] + result["classes"]["term"]["gold_units"]
+    assert total == 5562
