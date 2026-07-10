@@ -36,7 +36,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sitelink_contamination import run  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
-GT_PATH = REPO / "data/eval/wiki/gt_v2.jsonl"
+GT_PATH = REPO / "data/eval/wiki/gt.jsonl"
 REPLAY_DIR = REPO / "docs/experiments/2026-07-05-model-comparison/drafts/sitelink_replay"
 OUT_PATH = REPO / "docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json"
 

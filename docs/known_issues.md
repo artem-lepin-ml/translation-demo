@@ -160,13 +160,24 @@ Job-control detach (`nohup`/`disown`) is not the same as session detach. Two ind
 
 **Amendment (2026-07-09):** `setsid` only protects against tool-call/shell session teardown. It does NOT survive a cloud-container recycle. On 2026-07-09 the whole firecracker microVM was reclaimed and rebooted at 09:13:49Z after an inactivity window; the entire process table was wiped, taking down two independent `setsid`-detached session-leader pollers (PIDs 6778 and 26112, both `PPID=1`) with it, while the disk/scratchpad survived intact. Evidence in [debugger-poller-silence-diagnosis.md](reports/debugger-poller-silence-diagnosis.md): `uptime -s` and `/proc/uptime` (~191s uptime), `PID 1 = /process_api --firecracker-init`, no OOM traces, and all scratchpad files' last writes clustered 08:51:27–46Z, just before the recycle. Conclusion: no local daemon is immortal in a cloud session. Long-running work must be (a) resume-safe on disk — append-only, keyed rows, not in-memory state — and (b) driven by externally re-armed checks (scheduled wake-ups, agent check-ins), never by a background process assumed to keep running unattended.
 
-### `data/eval/wiki/gt.jsonl` silently drifted to 20/100 articles; `gt_v2.jsonl` is the real reference (2026-07-10)
+### RESOLVED 2026-07-10: `data/eval/wiki/gt.jsonl` silently drifted to 20/100 articles; `gt_v2.jsonl` was the real reference
 Caught during the deepseek backfill pre-flight (see
 [ml-engineer-deepseek-backfill.md](reports/ml-engineer-deepseek-backfill.md)): the file the wiki-eval CLI uses
-as its `--gt` default, `data/eval/wiki/gt.jsonl`, contains only 20 of the 100 corpus articles, while the full
-100-article reference lives in `data/eval/wiki/gt_v2.jsonl`. The v2 file was verified to reproduce the
+as its `--gt` default, `data/eval/wiki/gt.jsonl`, contained only 20 of the 100 corpus articles, while the full
+100-article reference lived in `data/eval/wiki/gt_v2.jsonl`. The v2 file was verified to reproduce the
 committed deepseek metrics (4716/7174 = 0.6574) bit-identically; any run that trusted the CLI default after
-the drift would silently evaluate on a 20-article subset and produce non-comparable numbers. Incident logged
-per owner instruction; root cause, fix spec, and the `gt_v2 -> gt` canonicalization are handled by the
-2026-07-10 gt-canonicalization workflow (spec in `docs/superpowers/specs/`). Until that lands: always pass
-`--gt data/eval/wiki/gt_v2.jsonl` explicitly.
+the drift would silently evaluate on a 20-article subset and produce non-comparable numbers. Root cause (git
+forensics, not drift): `gt.jsonl` was never touched after its 2026-07-03 pilot commit — a retired-pilot
+fragment left in place after the v2 GT build (`dfd835c`/`b730db3`, 2026-07-05) landed under a different,
+explicit `--out` path instead of overwriting the canonical default, and the script's own `DEFAULT_GT` was
+never updated to point at it.
+
+**Resolution (2026-07-10 gt-canonicalization, branch `claude/ner-translation-config-b0ozsc`, spec
+[2026-07-10-gt-canonicalization.md](superpowers/specs/2026-07-10-gt-canonicalization.md)):**
+`gt.jsonl` was overwritten with `gt_v2.jsonl`'s content (100 articles / 7 959 tuples, sha256
+`5c6f407ed443bf0283f040eab0f6f560ee9165c7b5ba446944e4b0ba8cdb94c3`), becoming the sole canonical ground truth;
+all live docs and script defaults now name only `gt.jsonl`. A coverage guard was added to
+`scripts/wiki_eval.py`'s `run`/`ablate`/`report` commands: any prediction title absent from the loaded GT now
+fails loudly (naming the mismatch count and both paths) instead of silently under-scoring, closing the
+recurrence path. `gt_v2.jsonl` remains on disk as a byte-identical duplicate only until the in-flight deepseek
+backfill's driver (which still reads it) lands — deferred deletion, not part of this fix.

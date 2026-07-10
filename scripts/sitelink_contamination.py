@@ -86,7 +86,7 @@ single-threaded ``aggregate_corpus`` pass).
 Usage (from the worktree root, with PYTHONPATH=src):
   uv run python scripts/sitelink_contamination.py \\
       --pred reports/terminology/wiki-eval/<model-slug>/<config>/<run_id> \\
-      --gt data/eval/wiki/gt_v2.jsonl \\
+      --gt data/eval/wiki/gt.jsonl \\
       --out docs/experiments/2026-07-05-model-comparison/drafts/sitelink_replay/<model>.json
 """
 from __future__ import annotations
@@ -468,7 +468,7 @@ def main() -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--pred", required=True, help="wiki-eval run dir (contains pred.jsonl + meta.json)")
-    parser.add_argument("--gt", required=True, help="GT jsonl with gt_tuples per article (e.g. data/eval/wiki/gt_v2.jsonl)")
+    parser.add_argument("--gt", required=True, help="GT jsonl with gt_tuples per article (e.g. data/eval/wiki/gt.jsonl)")
     parser.add_argument("--out", default=None, help="optional path to write the JSON result")
     parser.add_argument("--network-concurrency", type=int, default=DEFAULT_NETWORK_CONCURRENCY,
                          help="bound on concurrent live Wikidata HTTP calls (politeness)")

@@ -79,6 +79,18 @@ Nothing under `reports/terminology/wiki-eval/`, `docs/experiments/`, or
   divergent fork — safe to treat as authoritative. **Flagging this now** so the eventual
   `scripts/wiki_eval.py report --gt ...` re-run (planned for after the backfill) uses
   `--gt data/eval/wiki/gt_v2.jsonl` explicitly, not the silently-wrong default.
+
+  > **Correction (2026-07-10 gt-canonicalization, spec
+  > [2026-07-10-gt-canonicalization.md](../superpowers/specs/2026-07-10-gt-canonicalization.md)):**
+  > the "20 overlapping titles" claim above is factually wrong — git-history forensics on
+  > `gt.jsonl` (added once at `dcd4e0b` 2026-07-03, byte-identical ever since) show the
+  > pilot and v2 corpora are **disjoint**, overlapping on exactly **1/20** titles
+  > (`Древняя Греция`, Q11772), not 20/20. `gt_v2.jsonl` is a full corpus **replacement**,
+  > not a superset. The report's bottom-line conclusion ("safe to treat `gt_v2.jsonl` as
+  > authoritative") still holds — independently confirmed via title-overlap against the
+  > deepseek `pred.jsonl`: all 100 prediction titles match `gt_v2.jsonl`, only 1 matches
+  > the pilot — but the overlap evidence offered for it was wrong. Left uncorrected above
+  > per the append-only convention on historical narrative; this note is the correction.
 - **Backfill design: reuse `scripts/wiki_eval.py`'s own building blocks
   (`_build_extract_fn`, `_build_judge`, `_canonicalize_fn`, `_config_from_bits`,
   `BudgetGuard`, `_CountingSemaphore`, `FailureTracker`, `WIKIDATA_CACHE`) plus

@@ -751,6 +751,25 @@ def _load_gt(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
 
 
+def _assert_pred_gt_coverage(gt_records: list[dict], pred_records: list[dict], gt_path: Path, pred_source: object) -> None:
+    """Guard against a pred/GT corpus mismatch passing silently (2026-07-10
+    gt.jsonl drift incident, docs/known_issues.md): gt.jsonl silently held a
+    stale 20-article pilot while a 100-article run's pred.jsonl kept scoring
+    against it, because the report loop only looks up GT titles in
+    pred_by_title and never checks the reverse direction. Any pred title
+    absent from GT means the two corpora don't match -- fail loudly instead
+    of silently under-scoring."""
+    gt_titles = {rec["title"] for rec in gt_records}
+    extra = sorted({r["title"] for r in pred_records} - gt_titles)
+    if extra:
+        raise SystemExit(
+            f"wiki_eval: {len(extra)} pred title(s) absent from GT; wrong --gt corpus?\n"
+            f"  --gt {gt_path}\n"
+            f"  pred source: {pred_source}\n"
+            f"  example mismatched titles: {extra[:5]}"
+        )
+
+
 # ── build-gt ──────────────────────────────────────────────────────────────────
 
 
@@ -1100,6 +1119,7 @@ def cmd_run(args) -> int:
             old_pred_records = [
                 json.loads(line) for line in partial_path.open(encoding="utf-8") if line.strip()
             ]
+        _assert_pred_gt_coverage(gt_records, old_pred_records, Path(args.gt), partial_path)
         skip_titles = {r["title"] for r in old_pred_records}
         resumed_from_n_articles = len(skip_titles)
         progress_path = out_dir / "progress.jsonl"
@@ -1191,6 +1211,10 @@ def cmd_run(args) -> int:
 
 
 def cmd_ablate(args) -> int:
+    # No separate coverage guard here: `ablate` never reads an external
+    # pred.jsonl itself, it only loops `cmd_run` (whose own
+    # _assert_pred_gt_coverage call fires when --resume replays a prior
+    # pred.partial.jsonl) -- so the guard is inherited per-config for free.
     for bits in ALL_CONFIG_BITS:
         sub_args = argparse.Namespace(**{**vars(args), "config": bits})
         rc = cmd_run(sub_args)
@@ -1241,6 +1265,7 @@ def cmd_report(args) -> int:
     pred_dir = Path(args.pred)
     pred_path = pred_dir / "pred.jsonl"
     all_pred_records = [json.loads(l) for l in pred_path.open(encoding="utf-8") if l.strip()] if pred_path.exists() else []
+    _assert_pred_gt_coverage(gt_records, all_pred_records, Path(args.gt), pred_path)
 
     pred_by_title: dict[str, list[dict]] = defaultdict(list)
     for r in all_pred_records:

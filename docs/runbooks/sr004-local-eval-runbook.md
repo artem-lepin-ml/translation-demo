@@ -40,7 +40,7 @@ instance of the same model — same `base_url`, same `--model` id, zero conflict
 
 1. **This branch checked out on sr004** — no separate clone needed (contrast with Table B). Confirm the 2
    input datasets are present: `external/gse-translation/data/bouquet/` (vendored BOUQUET, read-only) and
-   `data/eval/wiki/gt_v2.jsonl` (100-article grounding GT, committed) + `data/eval/wiki/pages/` (cached
+   `data/eval/wiki/gt.jsonl` (100-article grounding GT, committed) + `data/eval/wiki/pages/` (cached
    article HTML `run` reads from — see [wiki-eval.md Subtleties](../stages/wiki-eval.md#subtleties)).
 2. **Python env**: whatever this repo's own `pyproject.toml`/`uv.lock` already pins (not Danil's separate
    `uv sync --extra vllm` — that's Table B's concern). `scripts/bouquet_judge_rerun.py` needs `httpx`,
@@ -282,7 +282,7 @@ full run if time is tight.
 ## Table C — grounding runs (sitelink OFF)
 
 **Pilot gate** — the established 20-article sub-corpus (`data/eval/wiki/gt_v2_sub20.jsonl`, confirmed a
-proper subset of the 100-article `gt_v2.jsonl` by title):
+proper subset of the 100-article `gt.jsonl` by title):
 ```bash
 python scripts/wiki_eval.py run \
   --gt data/eval/wiki/gt_v2_sub20.jsonl \
@@ -293,12 +293,12 @@ python scripts/wiki_eval.py run \
 ```
 For the `qwen3.6-27b` model only, add `--extra-body '{"chat_template_kwargs": {"enable_thinking": false}}'`.
 
-**Full run** — same command, `--gt data/eval/wiki/gt_v2.jsonl` (100 articles), same flags otherwise. Note the
+**Full run** — same command, `--gt data/eval/wiki/gt.jsonl` (100 articles), same flags otherwise. Note the
 run dir path this prints (`reports/terminology/wiki-eval/<model-slug>/111/<run_id>/`) — `model_slug()` turns
 e.g. `Qwen/Qwen3-4B-Instruct-2507` + `auto` into `Qwen--Qwen3-4B-Instruct-2507--auto`.
 ```bash
 python scripts/wiki_eval.py run \
-  --gt data/eval/wiki/gt_v2.jsonl \
+  --gt data/eval/wiki/gt.jsonl \
   --config 111 --no-sitelink \
   --model Qwen/Qwen3-4B-Instruct-2507 --provider auto \
   --max-usd 50 --max-judge-calls 30000 \
@@ -308,7 +308,7 @@ python scripts/wiki_eval.py run \
 **Report** (offline, no LLM calls — recomputes `metrics.json` + `report.html` from the persisted `pred.jsonl`;
 `--p3` activates the real label-justified precision predicate, matches the already-filled cloud rows):
 ```bash
-python scripts/wiki_eval.py report --gt data/eval/wiki/gt_v2.jsonl \
+python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl \
   --pred reports/terminology/wiki-eval/Qwen--Qwen3-4B-Instruct-2507--auto/111/<run_id> --p3
 ```
 
@@ -388,7 +388,7 @@ already supports `OPENROUTER_BASE_URL` pointing at localhost (no patch needed, c
 `cmd_run` source and a live `uv run python3 -c ...` call); the `extra_body`/`t0_local` patch's request-payload
 logic (`build_payload`, `_resolve_route`, `_parse_extra_body`) via 11 new unit tests, all passing, plus the
 full pre-existing suite (582 tests total across both files' test modules + the rest of `tests/`) showing no
-regression; `data/eval/wiki/gt_v2_sub20.jsonl`'s titles are a genuine subset of `gt_v2.jsonl`'s; the real
+regression; `data/eval/wiki/gt_v2_sub20.jsonl`'s titles are a genuine subset of `gt.jsonl`'s; the real
 `--max-usd`/`--max-judge-calls`/`--article-workers`/`--llm-workers` values used by the 3 already-completed
 100-article cloud grounding runs (`gemini-3.1-flash-lite`, `deepseek-v4-flash`, `qwen3.7-plus`), read directly
 from their committed `meta.json` files, not guessed.

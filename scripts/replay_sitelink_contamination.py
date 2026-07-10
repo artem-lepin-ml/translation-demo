@@ -245,7 +245,7 @@ def analyze(model_name: str, run_dir: Path, cache_path: Path, gt_by_title, tier_
 
 
 def main():
-    gt_by_title = load_gt(REPO / "data/eval/wiki/gt_v2.jsonl")
+    gt_by_title = load_gt(REPO / "data/eval/wiki/gt.jsonl")
     tier_assignment = load_tier_assignment(SCRATCH / "tier_assignment.json")
 
     all_results = {}
