@@ -50,7 +50,7 @@ flat T2/T3 numbering:
   on wiki-100, reported with QE metrics.
 - **Table C — NER + Wikidata grounding** (contribution: terminology extraction). **⚠️ 2026-07-10: protocol
   v3 rework supersedes the $P_{\mathrm{label}}$/mention-level narrative below.** Metrics are now set-based
-  document-level $R_{\mathrm{doc}}$/$P_{\mathrm{doc}}$, split named/term (`metrics.aggregate_corpus_v3`,
+  document-level $R_{\mathrm{doc}}$/$P_{\mathrm{doc}}$, split named/term (`metrics.aggregate_corpus`,
   spec [2026-07-10-wiki-eval-experiment-v2.md](../superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md)
   Р9) — mention-level M1/M2/M3 matching and $P_{\mathrm{label}}$/P1/P2/P3 precision are **deleted**, not
   just superseded (`matching.py` and the offline sitelink-replay script are gone). Methodology SSOT:

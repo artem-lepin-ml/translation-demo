@@ -112,7 +112,7 @@ def main() -> None:
         ]
         articles_for_v3.append({"gt_tuples": gt_tuples, "pred_tuples": pred_tuples})
 
-    v3_result = M.aggregate_corpus_v3(articles_for_v3, tier_assignment=tier_assignment)
+    v3_result = M.aggregate_corpus(articles_for_v3, tier_assignment=tier_assignment)
 
     gate_ok = True
     gate_report = {}
@@ -144,7 +144,7 @@ def main() -> None:
     print("Reconciliation gate: ALL MATCH (own hardcoded expectations + committed metrics.json)")
     print(f"  committed metrics.json match: {committed_match}")
 
-    # ── Step 2: exact unit sets (mirrors aggregate_corpus_v3 internals) ────
+    # ── Step 2: exact unit sets (mirrors aggregate_corpus internals) ────
     # gold_class[(title, qid)] = cls ; pred_qid_present[(title,qid)] = surfaces list
     gold_class: dict[tuple[str, str], str] = {}
     gold_ambiguous: dict[tuple[str, str], bool] = {}
@@ -194,12 +194,12 @@ def main() -> None:
         cls, _amb = M._classify(surfaces)
         fp_units.append((title, qid, cls))
 
-    # self-consistency check against aggregate_corpus_v3's own counts
+    # self-consistency check against aggregate_corpus's own counts
     for cls in ("named", "term"):
         assert sum(1 for t in tp_units if t[2] == cls) == v3_result["classes"][cls]["tp"]
         assert sum(1 for t in fn_units if t[2] == cls) == v3_result["classes"][cls]["fn"]
         assert sum(1 for t in fp_units if t[2] == cls) == v3_result["classes"][cls]["fp"]
-    print("Unit-set self-consistency check (TP/FN/FP set sizes == aggregate_corpus_v3 counts): OK")
+    print("Unit-set self-consistency check (TP/FN/FP set sizes == aggregate_corpus counts): OK")
 
     # ── Step 3: candidate replay for ALL 1203 pred mentions ────────────────
     config = GroundingConfig(use_lemma=True, use_cirrus=True, use_sitelink=False, match_aliases=True)

@@ -1,6 +1,6 @@
 """Dark-theme HTML report + EN methodology draft for wiki-eval (W5).
 
-``render_html_v3`` turns a ``metrics.aggregate_corpus_v3``-shaped dict into
+``render_html`` turns a ``metrics.aggregate_corpus``-shaped dict into
 an HTML fragment (project report palette, Tokyo Night dark, inline CSS
 only) showing document-level R_doc/P_doc per class (named/term) with raw
 counts + Wilson CI; cells below the underpowered threshold
@@ -59,10 +59,10 @@ _CSS = """
 """
 
 
-_V3_CLASS_LABELS = {"named": "Named entities", "term": "Terms (common-noun)"}
+_CLASS_LABELS = {"named": "Named entities", "term": "Terms (common-noun)"}
 
 
-def _v3_cell_td(cell: dict) -> str:
+def _cell_td(cell: dict) -> str:
     flag = ' <span class="flag">underpowered n&lt;30</span>' if cell.get("underpowered") else ""
     return (
         f'<td class="{_cell_class(cell)}">'
@@ -72,8 +72,8 @@ def _v3_cell_td(cell: dict) -> str:
     )
 
 
-def render_html_v3(result: dict, meta: dict) -> str:
-    """Render a ``metrics.aggregate_corpus_v3``-shaped result as a
+def render_html(result: dict, meta: dict) -> str:
+    """Render a ``metrics.aggregate_corpus``-shaped result as a
     self-contained HTML fragment (protocol v3, spec Sec.4.5/Р9): a header
     with run identity from ``meta``, and one table with a row per class
     (named/term) — gold_units, TP, FN, FP, R_doc, P_doc (value + Wilson CI).
@@ -83,13 +83,13 @@ def render_html_v3(result: dict, meta: dict) -> str:
     """
     classes = result.get("classes", {})
     rows = "".join(
-        f"<tr><td>{_html.escape(_V3_CLASS_LABELS.get(cls, cls))}</td>"
+        f"<tr><td>{_html.escape(_CLASS_LABELS.get(cls, cls))}</td>"
         f'<td class="cell">{s["gold_units"]}</td>'
         f'<td class="cell">{s["tp"]}</td>'
         f'<td class="cell">{s["fn"]}</td>'
         f'<td class="cell">{s["fp"]}</td>'
-        f"{_v3_cell_td(s['R_doc'])}"
-        f"{_v3_cell_td(s['P_doc'])}"
+        f"{_cell_td(s['R_doc'])}"
+        f"{_cell_td(s['P_doc'])}"
         f"</tr>"
         for cls, s in classes.items()
         if cls in ("named", "term")

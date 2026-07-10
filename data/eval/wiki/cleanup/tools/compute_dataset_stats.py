@@ -16,7 +16,7 @@ exclusions target anchors the tier filter already dropped, counted in
 
 "entities" = distinct (article, QID) pairs; "qids" = distinct QIDs corpus-wide.
 The final stage's named/term split pools each surviving entity's gold anchor
-surfaces through the same ``_classify`` rule aggregate_corpus_v3 uses for
+surfaces through the same ``_classify`` rule aggregate_corpus uses for
 scoring (uppercase first letter of any surface -> named).
 
 Run:

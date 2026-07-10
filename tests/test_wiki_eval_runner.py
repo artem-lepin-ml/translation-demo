@@ -2200,7 +2200,7 @@ def _write_tier_json(path: Path, tier_by_qid: dict[str, int]) -> None:
     path.write_text(json.dumps(tier_by_qid), encoding="utf-8")
 
 
-def test_cmd_report_writes_v3_metrics_with_named_and_term_classes(tmp_path):
+def test_cmd_report_writes_metrics_with_named_and_term_classes(tmp_path):
     """cmd_report on a tiny synthetic gt/pred/tier fixture writes a v3
     metrics.json (classes.named/term present) and a report.html."""
     gt_path = tmp_path / "gt.jsonl"
@@ -2246,7 +2246,7 @@ def test_cmd_report_applies_tier_filter_to_gold_but_not_predictions(tmp_path):
     """A gold tuple whose QID is tiered (tier != 0) is dropped from gold_units
     but a same-QID prediction still counts as FP (protocol asymmetry, spec
     Sec.4.5) -- end-to-end through the CLI, not just the aggregator unit
-    tests in test_wiki_metrics_v3.py."""
+    tests in test_wiki_metrics.py."""
     gt_path = tmp_path / "gt.jsonl"
     with gt_path.open("w", encoding="utf-8") as fh:
         fh.write(json.dumps({

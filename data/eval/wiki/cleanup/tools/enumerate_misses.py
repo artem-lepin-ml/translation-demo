@@ -101,7 +101,7 @@ def main() -> None:
         pred_by_title[r["title"]].append(r)
 
     # gold_class + TP unit set (same construction as the parent analysis' Step 2,
-    # verified there to reproduce aggregate_corpus_v3's own counts exactly)
+    # verified there to reproduce aggregate_corpus's own counts exactly)
     gold_class: dict[tuple[str, str], str] = {}
     tp_units: set[tuple[str, str]] = set()
     for rec in gt_pilot:

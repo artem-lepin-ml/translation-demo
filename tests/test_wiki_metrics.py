@@ -1,5 +1,5 @@
 """Tests for the protocol-v3 set-based document-level aggregator
-(``aggregate_corpus_v3``, spec 2026-07-10-wiki-eval-experiment-v2.md Sec.4.5,
+(``aggregate_corpus``, spec 2026-07-10-wiki-eval-experiment-v2.md Sec.4.5,
 decision Р9).
 
 Tuple convention (spec Sec.3/E-D6): (index, surface, qid, span_len).
@@ -14,7 +14,7 @@ import pytest
 from palimpsest.terminology.evaluation.metrics import (
     UNDERPOWERED_THRESHOLD,
     _cell,
-    aggregate_corpus_v3,
+    aggregate_corpus,
 )
 
 REPO = Path(__file__).resolve().parents[1]
@@ -41,7 +41,7 @@ def test_tier_filter_drops_gold_but_prediction_on_same_qid_is_still_fp():
             "pred_tuples": [(0, "Кошка", "Qtiered", 1)],
         }
     ]
-    result = aggregate_corpus_v3(articles, tier_assignment={"Qtiered": 1})
+    result = aggregate_corpus(articles, tier_assignment={"Qtiered": 1})
 
     assert result["n_gold_mentions_dropped_by_tier"] == 1
     assert result["classes"]["named"]["gold_units"] == 0
@@ -63,7 +63,7 @@ def test_mixed_case_gold_unit_is_named_and_ambiguous():
             "pred_tuples": [(0, "Рим", "Q220", 1)],
         }
     ]
-    result = aggregate_corpus_v3(articles, tier_assignment={})
+    result = aggregate_corpus(articles, tier_assignment={})
 
     assert result["n_ambiguous_gold_units"] == 1
     assert result["classes"]["named"]["gold_units"] == 1
@@ -80,7 +80,7 @@ def test_pred_unit_absent_from_gold_classified_by_own_surfaces():
             "pred_tuples": [(0, "легион", "Qfp", 1)],
         }
     ]
-    result = aggregate_corpus_v3(articles, tier_assignment={})
+    result = aggregate_corpus(articles, tier_assignment={})
 
     assert result["classes"]["term"]["fp"] == 1
     assert result["classes"]["named"]["fp"] == 0
@@ -102,7 +102,7 @@ def test_repeated_mentions_dedup_to_one_unit():
             ],
         }
     ]
-    result = aggregate_corpus_v3(articles, tier_assignment={})
+    result = aggregate_corpus(articles, tier_assignment={})
 
     assert result["classes"]["named"]["gold_units"] == 1
     assert result["classes"]["named"]["tp"] == 1
@@ -117,7 +117,7 @@ def test_empty_pred_gives_zero_recall_with_correct_totals():
             "pred_tuples": [],
         }
     ]
-    result = aggregate_corpus_v3(articles, tier_assignment={})
+    result = aggregate_corpus(articles, tier_assignment={})
 
     named = result["classes"]["named"]
     term = result["classes"]["term"]
@@ -136,7 +136,7 @@ def test_cell_shape_has_wilson_ci_keys():
             "pred_tuples": [(0, "Рим", "Q220", 1)],
         }
     ]
-    result = aggregate_corpus_v3(articles, tier_assignment={})
+    result = aggregate_corpus(articles, tier_assignment={})
     cell = result["classes"]["named"]["R_doc"]
     assert set(cell) == {"matched", "total", "value", "ci_lo", "ci_hi", "underpowered"}
     assert cell["matched"] == 1
@@ -145,7 +145,7 @@ def test_cell_shape_has_wilson_ci_keys():
 
 
 def test_protocol_key_present():
-    result = aggregate_corpus_v3([], tier_assignment={})
+    result = aggregate_corpus([], tier_assignment={})
     assert result["protocol"] == "v3"
 
 
@@ -191,7 +191,7 @@ def test_cell_zero_total_is_uninformative_not_a_crash():
 #
 # Recomputed again 2026-07-10 (tier extension): tier_assignment.json initially
 # defaulted the 130 QIDs introduced by the 5 replacement articles to
-# drop_level 0 (kept) via aggregate_corpus_v3's `tier_assignment.get(qid, 0)`
+# drop_level 0 (kept) via aggregate_corpus's `tier_assignment.get(qid, 0)`
 # fallback -- extend_tier_assignment.py then classified them properly (2 T1 +
 # 4 T2 drops among them), so n_gold_mentions_dropped_by_tier rises 756->764
 # and gold_units drops 5358->5351; again expected, not a code regression (see
@@ -237,7 +237,7 @@ def tier_assignment() -> dict[str, int]:
 @pytest.mark.skipif(not RUN_A.exists(), reason="run A pred.jsonl not present in this checkout")
 def test_regression_anchor_run_a_gemini(tier_assignment):
     articles = _build_articles(RUN_A)
-    result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
+    result = aggregate_corpus(articles, tier_assignment=tier_assignment)
 
     assert result["n_ambiguous_gold_units"] == 112
     assert result["n_gold_mentions_dropped_by_tier"] == 764
@@ -256,7 +256,7 @@ def test_regression_anchor_run_a_gemini(tier_assignment):
 @pytest.mark.skipif(not RUN_B.exists(), reason="run B pred.jsonl not present in this checkout")
 def test_regression_anchor_run_b_deepseek(tier_assignment):
     articles = _build_articles(RUN_B)
-    result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
+    result = aggregate_corpus(articles, tier_assignment=tier_assignment)
 
     named = result["classes"]["named"]
     assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (2705, 1180, 1259, 3885)
@@ -284,6 +284,6 @@ def test_gold_named_plus_term_invariant(tier_assignment):
     resulting (article, QID) gold units are now correctly tier-dropped instead
     of defaulting to kept."""
     articles = _build_articles(RUN_A)
-    result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
+    result = aggregate_corpus(articles, tier_assignment=tier_assignment)
     total = result["classes"]["named"]["gold_units"] + result["classes"]["term"]["gold_units"]
     assert total == 5351

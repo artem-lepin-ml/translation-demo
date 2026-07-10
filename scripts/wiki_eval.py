@@ -1554,7 +1554,7 @@ def cmd_ablate(args) -> int:
 #
 # GT/pred token indices are ARTICLE-LOCAL (reset to 0 per article -- spec
 # E-D6). Aggregation must therefore group by article title and dedup each
-# article's tuples independently (metrics.aggregate_corpus_v3); flattening
+# article's tuples independently (metrics.aggregate_corpus); flattening
 # all articles' tuples into one list before dedup would cross-collide
 # identical QIDs from unrelated articles.
 
@@ -1582,7 +1582,7 @@ def cmd_report(args) -> int:
         ]
         articles.append({"gt_tuples": gt_tuples, "pred_tuples": pred_tuples})
 
-    result = M.aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
+    result = M.aggregate_corpus(articles, tier_assignment=tier_assignment)
 
     n_gt_tuples = sum(len(a["gt_tuples"]) for a in articles)
     meta = {
@@ -1605,7 +1605,7 @@ def cmd_report(args) -> int:
     metrics_out = pred_dir / "metrics.json"
     metrics_out.write_text(json.dumps({**result, "meta": meta}, ensure_ascii=False, indent=1), encoding="utf-8")
 
-    html_body = report.render_html_v3(result, meta)
+    html_body = report.render_html(result, meta)
     html_doc = f"<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>Wiki-eval report — {meta['config']}</title></head><body>{html_body}</body></html>"
     report_out = pred_dir / "report.html"
     report_out.write_text(html_doc, encoding="utf-8")

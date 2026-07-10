@@ -11,7 +11,7 @@ split named vs. term. Methodology prose SSOT:
 ``docs/paper/sections/eval-metrics-terminology.tex`` — this module only
 implements the formalism, it does not restate it.
 
-``aggregate_corpus_v3`` is the sole aggregator; ``ArticleUnits`` is its
+``aggregate_corpus`` is the sole aggregator; ``ArticleUnits`` is its
 per-article input shape. ``_cell``/``UNDERPOWERED_THRESHOLD``/``wilson_ci``
 are the shared per-cell CI primitives reused from the retired mention-level
 protocol (still correct, protocol-agnostic).
@@ -43,7 +43,7 @@ def _cell(matched: int, total: int) -> dict:
 
 class ArticleUnits(TypedDict):
     """One article's worth of GT/pred tuples for the v3 set-based aggregator
-    (``aggregate_corpus_v3``) — no per-tuple slice maps, since v3 has no
+    (``aggregate_corpus``) — no per-tuple slice maps, since v3 has no
     stratum/resolved_by slicing (spec Sec.4.5, Р9)."""
 
     gt_tuples: list[Tuple4]
@@ -60,7 +60,7 @@ def _classify(surfaces: list[str]) -> tuple[str, bool]:
     return ("named" if named else "term"), ambiguous
 
 
-def aggregate_corpus_v3(
+def aggregate_corpus(
     articles: list[ArticleUnits],
     *,
     tier_assignment: dict[str, int],
