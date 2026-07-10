@@ -52,9 +52,9 @@ historiographic concept, one majority-post-cutoff city article). The owner appro
 replacing each with the next seed-42 walk survivor from the same section; see
 [`cleanup/replacements_2026-07-10.json`](cleanup/replacements_2026-07-10.json) for
 the per-article rationale, ranks and one owner substitution note. This directly
-edited `gt.jsonl` (unlike the anchor-exclusion campaign below, which is still a
-pending draft) and is reflected in `selection_v2.json` (`manual_replacements` key)
-and `titles_v2.txt`.
+edited `gt.jsonl` (unlike the anchor-exclusion campaign below, which is applied
+at scoring time only) and is reflected in `selection_v2.json`
+(`manual_replacements` key) and `titles_v2.txt`.
 
 ## cleanup/ — gold anchor-relevance cleanup campaign (2026-07-10)
 
@@ -64,6 +64,7 @@ language template tags, abstract navigational phrases), later re-verified by a
 human. `audit_prompt_v11.md` is the auditor instruction; `removals-wave1/` holds
 per-article removal lists for articles 001-010; `overrides_wave1.json` is the
 orchestrator verification layer on top of them (restores + added removals +
-open questions). `gt.jsonl` itself is NOT modified by this campaign until the
-owner approves the final exclusion list (see `anchor_exclusions_draft.json`,
-still a draft). `tools/` holds the campaign scripts (see headers).
+open questions). `gt.jsonl` itself is never modified by this campaign — the
+owner APPROVED the final 750-entry exclusion list 2026-07-10 (see
+`anchor_exclusions.json`); exclusions are applied at scoring time only.
+`tools/` holds the campaign scripts (see headers).

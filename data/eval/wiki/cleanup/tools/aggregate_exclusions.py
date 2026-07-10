@@ -20,7 +20,15 @@
 # prefix-gold indirection for them, so ``n`` indexes CURRENT gt_tuples directly.
 # Merged in as provenance="replacement-audit" (or "replacement-audit-override"
 # for orchestrator restores), article_no "R01".."R05".
-"""Aggregate the wave1-10 LLM gold-cleanup flags into one draft exclusions file.
+#
+# Updated 2026-07-10 (same day, later still): the owner APPROVED the 750-entry
+# exclusion list. Output renamed from anchor_exclusions_draft.json to
+# anchor_exclusions.json (git mv) and the ``note`` field switched from
+# DRAFT/pending-approval wording to an APPROVED note -- this script is the
+# note's single source of truth, so a rerun (e.g. after a future gt.jsonl
+# change) regenerates the same approved wording, not a reverted draft one.
+"""Aggregate the wave1-10 LLM gold-cleanup flags into the approved anchor
+exclusions file.
 
 Every removal file (`removals-wave*/NNN.json`) and both override files
 (`overrides_wave1.json`, `overrides_wave2.json`) number their anchors against
@@ -38,8 +46,9 @@ articles the IPA fix touched) is reported separately as
 ``moot_article_replaced`` -- none of these require action.
 
 gt.jsonl itself is never read for writing -- this script only ever WRITES
-``data/eval/wiki/anchor_exclusions_draft.json``. Semantic exclusions are not
-applied until the owner approves the draft.
+``data/eval/wiki/anchor_exclusions.json``. The owner approved this exclusion
+list 2026-07-10; exclusions are applied at scoring time only, gt.jsonl stays
+raw.
 
 Hard-error conditions (the script refuses to guess):
   * a removal/override ``n`` outside the pre-fix article's tuple range
@@ -91,7 +100,7 @@ REPLACEMENTS_PATH = CLEANUP_DIR / "replacements_2026-07-10.json"
 REMOVALS_REPLACEMENTS_DIR = CLEANUP_DIR / "removals-replacements"
 MANIFEST_REPLACEMENTS_PATH = REMOVALS_REPLACEMENTS_DIR / "manifest_replacements.json"
 OVERRIDES_REPLACEMENTS_PATH = CLEANUP_DIR / "overrides_replacements.json"
-OUT_PATH = ROOT / "data/eval/wiki/anchor_exclusions_draft.json"
+OUT_PATH = ROOT / "data/eval/wiki/anchor_exclusions.json"
 
 # manifest order == article numbering 001..100; entry i (1-based) -> file NNN.json
 WAVE_DIRS: list[tuple[str, range]] = [
@@ -624,10 +633,10 @@ def main() -> None:
     open_questions = list(overrides_wave1.get("pending_owner", [])) + OPEN_QUESTIONS_EXTRA
     gt_rev = git_rev(GT_PATH)
     note = (
-        "DRAFT — semantic anchor exclusions from the 2026-07-10 gold-cleanup campaign. "
-        "NOT applied to gt.jsonl; pending owner approval. Anchor identity is "
-        "(token_index, anchor_text, qid, span_len) against gt.jsonl @ "
-        f"{gt_rev}."
+        "APPROVED by owner 2026-07-10. Semantic anchor exclusions from the "
+        "gold-cleanup campaign; applied at scoring time (gt.jsonl stays raw). "
+        "Anchor identity is (token_index, anchor_text, qid, span_len) against "
+        f"gt.jsonl @ {gt_rev}."
     )
     counts = {
         "live_exclusions": len(exclusions),

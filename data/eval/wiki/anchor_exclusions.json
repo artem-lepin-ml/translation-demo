@@ -1,5 +1,5 @@
 {
- "note": "DRAFT — semantic anchor exclusions from the 2026-07-10 gold-cleanup campaign. NOT applied to gt.jsonl; pending owner approval. Anchor identity is (token_index, anchor_text, qid, span_len) against gt.jsonl @ f4c3d00.",
+ "note": "APPROVED by owner 2026-07-10. Semantic anchor exclusions from the gold-cleanup campaign; applied at scoring time (gt.jsonl stays raw). Anchor identity is (token_index, anchor_text, qid, span_len) against gt.jsonl @ f4c3d00.",
  "generated_by": "data/eval/wiki/cleanup/tools/aggregate_exclusions.py",
  "counts": {
   "live_exclusions": 750,

@@ -9,7 +9,7 @@ truth instead of re-deriving the numbers by hand.
 
 Stage order matters: the T2 tier filter (data/eval/wiki/tier_assignment.json,
 kept iff drop_level==0) is applied FIRST, the manual anchor exclusions
-(data/eval/wiki/anchor_exclusions_draft.json, identity
+(data/eval/wiki/anchor_exclusions.json, identity
 (token_index, anchor_text, qid, span_len) scoped by title) SECOND -- some
 exclusions target anchors the tier filter already dropped, counted in
 ``overlap_excl_already_t2dropped`` rather than double-subtracted.
@@ -34,7 +34,7 @@ from palimpsest.terminology.evaluation.metrics import _classify
 ROOT = Path("/home/user/translation-demo")
 GT_PATH = ROOT / "data/eval/wiki/gt.jsonl"
 TIER_PATH = ROOT / "data/eval/wiki/tier_assignment.json"
-EXCL_PATH = ROOT / "data/eval/wiki/anchor_exclusions_draft.json"
+EXCL_PATH = ROOT / "data/eval/wiki/anchor_exclusions.json"
 OUT_PATH = ROOT / "data/eval/wiki/dataset_stats.json"
 
 Identity = tuple[int, str, str, int]

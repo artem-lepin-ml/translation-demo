@@ -9,17 +9,20 @@
 # the 2026-07-10 gemini pilot (1203 pred.jsonl mentions), gold BEFORE (the
 # pre-cleanup snapshot the published report used) vs AFTER (current gt.jsonl
 # restricted to still-present pilot articles, minus the live semantic
-# exclusions from anchor_exclusions_draft.json applied IN-MEMORY only).
+# exclusions from anchor_exclusions.json applied IN-MEMORY only).
 # PURELY OFFLINE: reads only committed files -- pred.jsonl, gt.jsonl (current,
 # read-only) plus `git show` for the pre-cleanup snapshot, tier_assignment.json,
-# anchor_exclusions_draft.json. No LLM calls, no network. gt.jsonl is never
+# anchor_exclusions.json. No LLM calls, no network. gt.jsonl is never
 # written to; nothing under reports/ is written or modified (pred.jsonl is
 # read-only evidence here).
+#
+# Updated 2026-07-10 (same day, later): the owner approved the exclusion list;
+# input renamed anchor_exclusions_draft.json -> anchor_exclusions.json.
 #
 # Run: PYTHONPATH=src uv run --no-sync python3 <this file>
 """Span-level NER recall/precision on the gemini pilot, before vs after the
 2026-07 gold-cleanup campaign (IPA-anchor fix 4c77b7c, 5-article corpus swap
-f4c3d00, DRAFT semantic anchor exclusions in anchor_exclusions_draft.json).
+f4c3d00, owner-approved semantic anchor exclusions in anchor_exclusions.json).
 
 Methodology (span overlap, tier filter, named/term classification): Section D
 of docs/reports/wiki-eval-v2-pilot-ner-vs-disambig.md -- reused, not
@@ -43,7 +46,7 @@ RUN_DIR = ROOT / "reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--G
 PRED_PATH = RUN_DIR / "pred.jsonl"
 GT_PATH = ROOT / "data/eval/wiki/gt.jsonl"
 TIER_PATH = ROOT / "data/eval/wiki/tier_assignment.json"
-EXCL_PATH = ROOT / "data/eval/wiki/anchor_exclusions_draft.json"
+EXCL_PATH = ROOT / "data/eval/wiki/anchor_exclusions.json"
 
 # Pre-cleanup gold snapshot the published report (commit 61bd46e) used -- the
 # commit immediately before the first gold change (4c77b7c, IPA-anchor drop).
@@ -289,7 +292,7 @@ def main() -> None:
             "recall_per_article": baseline_per_article,
         },
         "after": {
-            "gold_snapshot": "gt.jsonl HEAD minus live anchor_exclusions_draft.json exclusions (in-memory)",
+            "gold_snapshot": "gt.jsonl HEAD minus live anchor_exclusions.json exclusions (in-memory)",
             "recall": {cls: rate(after_recall[cls]) for cls in ("named", "term")},
             "recall_overall": overall(after_recall),
             "precision": {cls: rate(after_precision[cls]) for cls in ("named", "term")},

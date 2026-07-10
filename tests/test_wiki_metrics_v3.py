@@ -188,6 +188,14 @@ def test_cell_zero_total_is_uninformative_not_a_crash():
 # articles), so this recompute mechanically re-scores the same runs against
 # the new gold -- gold_units drops from 5551 to 5358 and tp/fn/fp shift
 # accordingly; this is expected and not a code regression.
+#
+# Recomputed again 2026-07-10 (tier extension): tier_assignment.json initially
+# defaulted the 130 QIDs introduced by the 5 replacement articles to
+# drop_level 0 (kept) via aggregate_corpus_v3's `tier_assignment.get(qid, 0)`
+# fallback -- extend_tier_assignment.py then classified them properly (2 T1 +
+# 4 T2 drops among them), so n_gold_mentions_dropped_by_tier rises 756->764
+# and gold_units drops 5358->5351; again expected, not a code regression (see
+# data/eval/wiki/dataset_stats.json for the corpus-wide cascade).
 # ---------------------------------------------------------------------------
 
 
@@ -232,15 +240,15 @@ def test_regression_anchor_run_a_gemini(tier_assignment):
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
 
     assert result["n_ambiguous_gold_units"] == 112
-    assert result["n_gold_mentions_dropped_by_tier"] == 756
+    assert result["n_gold_mentions_dropped_by_tier"] == 764
 
     named = result["classes"]["named"]
-    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (3078, 808, 1526, 3886)
+    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (3078, 807, 1526, 3885)
 
     term = result["classes"]["term"]
-    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (593, 879, 667, 1472)
+    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (593, 873, 667, 1466)
 
-    assert named["gold_units"] + term["gold_units"] == 5358
+    assert named["gold_units"] + term["gold_units"] == 5351
 
 
 @pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
@@ -251,27 +259,31 @@ def test_regression_anchor_run_b_deepseek(tier_assignment):
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
 
     named = result["classes"]["named"]
-    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (2705, 1181, 1259, 3886)
+    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (2705, 1180, 1259, 3885)
 
     term = result["classes"]["term"]
-    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (550, 922, 542, 1472)
+    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (550, 916, 542, 1466)
 
-    assert named["gold_units"] + term["gold_units"] == 5358
+    assert named["gold_units"] + term["gold_units"] == 5351
 
 
 @pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
 @pytest.mark.skipif(not TIER_PATH.exists(), reason="tier assignment not present in this checkout")
 def test_gold_named_plus_term_invariant(tier_assignment):
-    """Spec Sec.6: named+term gold_units == 5358, independent of which run's
+    """Spec Sec.6: named+term gold_units == 5351, independent of which run's
     predictions are scored against it (the gold side alone determines this).
     Was 5562 before the IPA-template symbol-fragment gold-anchor fix (2026-07-10,
     docs/reports/debugger-ipa-parser-gold-anchors.md) dropped 56 spurious
     per-phoneme anchors from gt.jsonl -- most collapsed into already-counted
     gold units or were tier-filtered anyway, netting an 11-unit shift to 5551.
-    Then 5551 -> 5358 (this recompute) after the same-day 5-article corpus swap
+    Then 5551 -> 5358 after the same-day 5-article corpus swap
     (data/eval/wiki/cleanup/replacements_2026-07-10.json) replaced 5 non-ancient
-    articles with 5 new ones of different anchor density."""
+    articles with 5 new ones of different anchor density. Then 5358 -> 5351
+    (this recompute) once tier_assignment.json was extended to the 130 QIDs
+    those 5 articles introduced (extend_tier_assignment.py) -- 7 of the
+    resulting (article, QID) gold units are now correctly tier-dropped instead
+    of defaulting to kept."""
     articles = _build_articles(RUN_A)
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
     total = result["classes"]["named"]["gold_units"] + result["classes"]["term"]["gold_units"]
-    assert total == 5358
+    assert total == 5351
