@@ -105,13 +105,13 @@ def _context_lookup() -> dict[str, str]:
     """Map normalised surface/lemma -> context, built from the gold_sources files.
 
     Only ``grounding_gold.jsonl`` carries a ``context`` field (``pairing_gold.jsonl``
-    and ``terminology_gold_v1.jsonl`` don't); keyed by both surface and lemma so a
+    and ``terminology_gold_manual.jsonl`` don't); keyed by both surface and lemma so a
     golden row missing its own context can still recover one that a sibling source
     hand-authored for the same term. First writer wins per key (source order is
     fixed, not adversarial).
     """
     lookup: dict[str, str] = {}
-    for name in ("grounding_gold.jsonl", "pairing_gold.jsonl", "terminology_gold_v1.jsonl"):
+    for name in ("grounding_gold.jsonl", "pairing_gold.jsonl", "terminology_gold_manual.jsonl"):
         path = GOLD_SOURCES / name
         if not path.exists():
             continue
@@ -324,7 +324,7 @@ def _run_config(bits: str, config: GroundingConfig, gold: list[dict], rows: dict
     return traces, {"score_rows": score_rows, "counters": counters_out}
 
 
-def _metrics_v1(bits: str, config: GroundingConfig, gold: list[dict], scored: dict) -> dict:
+def _metrics(bits: str, config: GroundingConfig, gold: list[dict], scored: dict) -> dict:
     score_rows = scored["score_rows"]
     counters = scored["counters"]
 
@@ -445,7 +445,7 @@ def main() -> int:
             for t in traces:
                 fh.write(json.dumps(t, ensure_ascii=False) + "\n")
 
-        metrics = _metrics_v1(bits, config, gold, scored)
+        metrics = _metrics(bits, config, gold, scored)
         (out_dir / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=1), encoding="utf-8")
 
         qa = metrics["qid_accuracy_groundable"]
