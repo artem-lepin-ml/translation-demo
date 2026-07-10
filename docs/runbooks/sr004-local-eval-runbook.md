@@ -340,7 +340,9 @@ nothing local-specific to configure):**
 
 **Pilot gate — 10 articles, same gate set as the cloud pilot (spec §5.2): `finish_reason=length` count = 0,
 `n_extraction_parse_failures` < 1% of paragraphs. No dedicated 10-article `gt.jsonl` subset is committed yet**
-(only the older 20-article `data/eval/wiki/gt_v2_sub20.jsonl` exists) — derive a fresh 10-article file from
+(the retired 20-article `data/eval/wiki/gt_v2_sub20.jsonl` was deleted 2026-07-10; its exact title list is
+preserved in `data/eval/wiki/titles_ablation20.txt` for byte-rebuild via `wiki_eval.py build-gt --titles
+titles_ablation20.txt` if that subset is ever needed again) — derive a fresh 10-article file from
 the first 10 titles of the canonical corpus before running the pilot:
 ```bash
 head -10 data/eval/wiki/titles.txt | cut -f1 > /tmp/pilot10_titles.txt
@@ -462,7 +464,9 @@ already supports `OPENROUTER_BASE_URL` pointing at localhost (no patch needed, c
 `cmd_run` source and a live `uv run python3 -c ...` call); the `extra_body`/`t0_local` patch's request-payload
 logic (`build_payload`, `_resolve_route`, `_parse_extra_body`) via 11 new unit tests, all passing, plus the
 full pre-existing suite (582 tests total across both files' test modules + the rest of `tests/`) showing no
-regression; `data/eval/wiki/gt_v2_sub20.jsonl`'s titles are a genuine subset of `gt.jsonl`'s; the real
+regression; the (now-retired) `data/eval/wiki/gt_v2_sub20.jsonl`'s titles were a genuine subset of
+`gt.jsonl`'s -- its 20 titles are preserved in `data/eval/wiki/titles_ablation20.txt` for re-derivation
+via `build-gt --titles` if needed; the real
 `--max-usd`/`--max-judge-calls`/`--article-workers`/`--llm-workers` values used by the 3 already-completed
 100-article cloud grounding runs (`gemini-3.1-flash-lite`, `deepseek-v4-flash`, `qwen3.7-plus`), read directly
 from their committed `meta.json` files, not guessed.

@@ -1032,10 +1032,16 @@ def _assert_pred_gt_coverage(gt_records: list[dict], pred_records: list[dict], g
 
 def cmd_build_gt(args) -> int:
     titles_path = Path(args.titles)
-    lines = [l.strip() for l in titles_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    lines = [
+        l.strip()
+        for l in titles_path.read_text(encoding="utf-8").splitlines()
+        if l.strip() and not l.strip().startswith("#")
+    ]
 
     # each line: "<title>" or "<title>\t<stratum>"; untagged lines default to
     # "typical" (legacy pilot-file default -- the v2 titles file tags every line).
+    # Lines starting with "#" are a provenance/header comment (e.g.
+    # titles_ablation20.txt), skipped rather than treated as a title.
     titles: dict[str, str] = {}
     stratum_map: dict[str, str] = {}
     for line in lines:
