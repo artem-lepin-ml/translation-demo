@@ -18,7 +18,16 @@ Judge = Callable[[str], dict]
 
 # An extractor turns source text into raw NER surfaces. Same subagent-injection
 # pattern as Judge, but a different return arity (list[dict], not dict).
-Extractor = Callable[[str], list[dict]]   # source text -> [{surface, category}]
+Extractor = Callable[[str], list[dict]]   # source text -> [{surface, lemma}]
+
+
+class FatalGroundingJudgeError(Exception):
+    """A judge failure that must HALT the run, never collapse to the terminal
+    ``resolved_by=judge_unavailable`` path (wiki-eval experiment v2, spec
+    2026-07-10 Р15: token-limit overflow and per-call gate violations are
+    errors, not tolerable degradations). ``LabelFirstGrounding.ground()``
+    re-raises this marker before its judge catch-all; everything else about
+    judge error handling is unchanged."""
 
 
 @dataclass(frozen=True)

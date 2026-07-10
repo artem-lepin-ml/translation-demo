@@ -35,6 +35,12 @@ class Usage:
 class LLMResult:
     content: str
     usage: Usage
+    # Per-call observability (wiki-eval experiment v2, spec 2026-07-10 Р8/Р15):
+    # finish_reason lets callers detect token-limit overflow ("length") and
+    # provider echoes OpenRouter's served-provider field for pin verification.
+    # Both default to None so fakes/tests and providers that omit them keep working.
+    finish_reason: str | None = None
+    provider: str | None = None
 
 
 @dataclass(slots=True)
@@ -44,6 +50,7 @@ class LLMConfig:
     api_key: str
     temperature: float | None = None      # None → omit (Claude/gemini reject/ignore it)
     max_tokens: int = 4096
+    top_p: float | None = None            # None → omit (vendor-recommended sampling, spec Р3)
     seed: int | None = None               # None → omit (capability-gated, see model_matrix.supports_seed)
     extra_body: dict | None = None        # top_k/min_p/reasoning/provider/usage passthrough
     timeout: float = 30.0                 # per-request wall clock (s)
@@ -114,13 +121,23 @@ class LLMClient:
         }
         if self.config.temperature is not None:
             kwargs["temperature"] = self.config.temperature
+        if self.config.top_p is not None:
+            kwargs["top_p"] = self.config.top_p
         if self.config.seed is not None:
             kwargs["seed"] = self.config.seed
         if self.config.extra_body:
             kwargs["extra_body"] = self.config.extra_body
         resp = self._client.chat.completions.create(**kwargs)
-        content = resp.choices[0].message.content or ""
-        return LLMResult(content=content, usage=_extract_usage(resp))
+        choice = resp.choices[0]
+        content = choice.message.content or ""
+        # OpenRouter surfaces the served provider as a top-level "provider"
+        # field (reaches the SDK object via model_extra); absent elsewhere.
+        provider = getattr(resp, "provider", None)
+        if provider is None:
+            provider = (getattr(resp, "model_extra", None) or {}).get("provider")
+        return LLMResult(content=content, usage=_extract_usage(resp),
+                         finish_reason=getattr(choice, "finish_reason", None),
+                         provider=provider)
 
     def complete_retrying(self, system: str, user: str, *, attempts: int = 3,
                           backoff: tuple[float, ...] = (1.0, 3.0, 9.0)) -> LLMResult:
