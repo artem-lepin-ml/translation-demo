@@ -1,0 +1,57 @@
+% Section 4.2 Evaluation Metrics, \paragraph{Terminology Recognition} block.
+% Replaces the "\paragraph{Terminology Recognition} TODO: Artem" placeholder.
+%
+% INTEGRATION (required): \subsection{Evaluation Metrics} must get
+% \label{sec:eval-metrics} — the §3.1 \datasetWikipediaName{} dataset paragraph
+% references Section~\ref{sec:eval-metrics} twice, and both Table C captions
+% (tab:grounding-results, app:grounding-full) point here for definitions.
+%
+% Provenance: definitions match the evaluation harness and the Table C runs.
+% R_term tier 7174/7959 — docs/reports/python-pro-ner-wikidata-table-c-extraction.md
+% and docs/experiments/2026-07-05-model-comparison/drafts/recall-tiers-analysis.md.
+% P_label = P3\exact (exact-label path excluded) — docs/reports/
+% python-pro-p-label-gpt54-grounding-run.md. Sitelink-off rationale —
+% docs/reports/python-pro-sitelink-clean-replay.md. CIs: eval_harness.wilson_ci.
+
+% ===== VARIANT 1 (main) =====
+\paragraph{Terminology Recognition}
+We evaluate terminology recognition and normalization at the page level, the
+granularity the editor-hyperlink gold of \datasetWikipediaName{} supports.
+Each candidate model serves as both the extractor and the disambiguation
+judge inside an otherwise fixed deterministic pipeline.
+$R_{\mathrm{doc}}^{\mathrm{term}}$ is document-level recall: a gold mention
+counts as recovered if its entity is predicted anywhere in the same article.
+We compute recall on the terminology-filtered reference tier of 7174 of the
+7959 human-linked mentions, which drops structural noise and generic lexical
+classes a terminology task should not reward (languages and scripts, taxa,
+materials, units). $P_{\mathrm{label}}$ is a conservative lower bound on
+precision. Because editors link an entity only at its first mention, the
+annotation is incomplete, so a prediction absent from the reference is
+additionally credited when its surface form exists as a Wikidata label.
+Predictions resolved by the deterministic exact-label match are excluded
+from this credit to avoid self-confirmation, keeping the value a lower
+bound. The title-sitelink fallback of the grounding pipeline is disabled
+during evaluation because it reuses the mechanism the gold annotation is
+built from. We report Wilson 95\% confidence intervals in brackets.
+
+% ===== VARIANT 2 (annotation-defects framing) =====
+% \paragraph{Terminology Recognition}
+% The editor-hyperlink gold of \datasetWikipediaName{} is precise but has two
+% defects, and each metric compensates for one. Scoring is page-level, the
+% granularity the annotation supports. The reference includes links a
+% terminology task should not reward, so document-level recall
+% $R_{\mathrm{doc}}^{\mathrm{term}}$, under which a gold mention is recovered
+% if its entity is predicted anywhere in the same article, is computed on a
+% terminology-filtered tier of 7174 of the 7959 human-linked mentions,
+% dropping structural noise and generic lexical classes (languages and
+% scripts, taxa, materials, units). The reference also misses repeated
+% mentions, since editors link an entity only at its first occurrence, so
+% $P_{\mathrm{label}}$ additionally credits a prediction absent from the
+% reference when its surface form exists as a Wikidata label. Predictions
+% resolved by the deterministic exact-label match receive no such credit,
+% which avoids self-confirmation and keeps $P_{\mathrm{label}}$ a
+% conservative lower bound on precision. Each candidate model serves as both
+% the extractor and the disambiguation judge inside an otherwise fixed
+% deterministic pipeline, with the title-sitelink fallback disabled during
+% evaluation because it reuses the mechanism the gold annotation is built
+% from. We report Wilson 95\% confidence intervals in brackets.

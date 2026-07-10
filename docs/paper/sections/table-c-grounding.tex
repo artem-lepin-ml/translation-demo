@@ -1,20 +1,28 @@
 % Table C: Terminology extraction + Wikidata grounding (Wikipedia corpus).
-% MAIN table (R_doc + P_label only) plus a full-grid table in the appendix.
+% MAIN table (R_doc^term + P_label only) plus a full-grid table in the appendix.
 % Canonical row order fixed by owner 2026-07-09. Claude Opus 4.8 dropped
 % (owner decision 2026-07-09: reasoning unreachable via gateway on all 7
 % providers -- sweep in docs/reports/ml-engineer-grounding-run-opus48.md).
+% Caption rewritten 2026-07-10 (owner flagged the long caption as slop):
+% all metric definitions moved to sec:eval-metrics
+% (docs/paper/sections/eval-metrics-terminology.tex), caption slimmed to
+% dataset + pointers + footnotes.
 % Filled cells are sitelink-clean, R_term tier (n=7174), from the replay in
 % docs/experiments/2026-07-05-model-comparison/drafts/sitelink_replay/ and
-% verified against docs/reports/python-pro-ner-wikidata-table-c-extraction.md.
-% P_label CIs are binomial 95% CIs computed from the matched/total counts in
-% docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json,
-% cross-checked against docs/reports/python-pro-ner-wikidata-table-c-extraction.md.
+% verified against docs/reports/python-pro-ner-wikidata-table-c-extraction.md
+% (gemini 5269/7174 = 0.7345; deepseek 4716/7174 = 0.6574).
+% P_label CIs are Wilson 95% CIs (harness convention, eval_harness.wilson_ci)
+% from the matched/total counts in
+% docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json
+% (gemini 5340/10068, deepseek 4409/8248), cross-checked against
+% docs/reports/python-pro-sitelink-clean-replay.md. All numbers re-verified
+% against these sources 2026-07-10.
 \begin{table}[t]
 \centering
 \small
 \begin{tabular}{@{}lcc@{}}
 \toprule
-Model & $R_{\mathrm{doc}}$ & $P_{\mathrm{label}}$ \\
+Model & $R_{\mathrm{doc}}^{\mathrm{term}}\ \uparrow$ & $P_{\mathrm{label}}\ \uparrow$ \\
 \midrule
 % TODO(sr004 vLLM runbook, owner-side): Qwen3-4B-Instruct grounding replay pending.
 Qwen3-4B-Instruct      & --- & --- \\
@@ -23,36 +31,35 @@ Gemma-3-27B-it         & --- & --- \\
 % TODO(sr004 vLLM runbook, owner-side): Qwen3.6-27B grounding replay pending.
 Qwen3.6-27B            & --- & --- \\
 Gemini-3.1-Flash-Lite  & 0.735 {\scriptsize[.724--.745]} & 0.530 {\scriptsize[.521--.540]} \\
-DeepSeek-V4-Flash      & 0.657 {\scriptsize[.646--.668]} & 0.535 {\scriptsize[.524--.545]} \\
+% dagger: 108 paragraphs (4.1% of the corpus) lost to transient API failures in
+% the deepseek run, declared in run metadata
+% (docs/experiments/2026-07-05-model-comparison/FINDINGS.md).
+DeepSeek-V4-Flash$^{\dagger}$ & 0.657 {\scriptsize[.646--.668]} & 0.535 {\scriptsize[.524--.545]} \\
 % GPT-5.4 substitutes GPT-5.5 (owner fallback, sustained provider rate limits).
-% R_doc filled from docs/reports/ml-engineer-grounding-run-gpt54.md (commit 5546459);
-% sitelink-clean by construction (--no-sitelink), reasoning_effort pinned "medium".
-% P_label filled from docs/reports/python-pro-p-label-gpt54-grounding-run.md (commit
-% 19c7389): 3773/7037, Wilson 95% CI [.5245, .5478], computed on the 99/100 snapshot.
+% R_doc from docs/reports/ml-engineer-grounding-run-gpt54.md (commit 5546459):
+% 4183/7174, R_term tier, sitelink-clean by construction (--no-sitelink),
+% reasoning_effort pinned "medium", coverage 99/100 articles.
+% P_label from docs/reports/python-pro-p-label-gpt54-grounding-run.md (commit
+% 19c7389): 3773/7037, Wilson 95% CI [.5245, .5478], same 99/100 snapshot.
 GPT-5.4$^{\ddagger}$   & 0.583 {\scriptsize[.572--.594]} & 0.536 {\scriptsize[.525--.548]} \\
 \bottomrule
 \end{tabular}
-\caption{Terminology extraction and Wikidata grounding on the Wikipedia corpus
-(100 articles), restricted to the $R_{\mathrm{term}}$ tier (7174
-terminology-relevant gold mentions). The title-sitelink signal is disabled
-during the grounding replay, since it reuses the mechanism the gold
-annotation is built from, avoiding circularity between annotation and
-evaluation. $R_{\mathrm{doc}}$ is document-level recall, crediting a gold
-mention as recovered if its entity is predicted anywhere in the same
-article. $P_{\mathrm{label}}$ is a conservative lower bound on label
-precision, crediting predictions whose surface exists as a Wikidata label.
-Wilson 95\% confidence intervals are given for $R_{\mathrm{doc}}$. Full
-metric grid, including $R_{\mathrm{strict}}$, $R_{\mathrm{span}}$,
-$P_{\mathrm{mention}}$, $P_{\mathrm{type}}$, and the gold-filtering tiers, is
-reported in Appendix~\ref{app:grounding-full}. $^{\ddagger}$GPT-5.4
-substitutes GPT-5.5 due to sustained provider rate limits. The run covers 99
-of the 100 articles, so its recall figure is a strict lower bound.}
+\caption{Terminology recognition and Wikidata grounding on the 100 articles
+of \datasetWikipediaName{}. Metric definitions are given in
+Section~\ref{sec:eval-metrics} and the full metric grid in
+Appendix~\ref{app:grounding-full}. Brackets are Wilson 95\% confidence
+intervals. $^{\dagger}$4.1\% of paragraphs were lost to transient API
+failures in this run. $^{\ddagger}$GPT-5.4 substitutes GPT-5.5 due to
+sustained provider rate limits and covers 99 of the 100 articles, so its
+recall is a strict lower bound.}
 \label{tab:grounding-results}
 \end{table}
 
 % Appendix: full 6-metric grid (sitelink-clean, R_all/T0 tier, n=7959),
 % preserved verbatim from the pre-2026-07-09 main-paper table. Numbers are
-% not recomputed here.
+% not recomputed here. Caption aligned 2026-07-10 with the slimmed main
+% caption: R_doc/P_label definitions now live in sec:eval-metrics, only the
+% appendix-specific rungs and tier notes are kept.
 \begin{table*}[t]
 \centering
 \small
@@ -75,30 +82,25 @@ DeepSeek-V4-Flash$^{\dagger}$ & 0.609 {\scriptsize[.599--.620]} & 0.519 & 0.504 
 GPT-5.4$^{\ddagger}$   & 0.536 {\scriptsize[.525--.547]} & XX & XX & XX & XX & 0.536 \\
 \bottomrule
 \end{tabular}
-\caption{Full metric grid for Table~\ref{tab:grounding-results}, on the
-Wikipedia corpus (100 articles, 7959 gold mentions from editor hyperlinks,
-3868 unique entities), $R_{\mathrm{all}}$/T0 tier, sitelink-clean. Each
-candidate model serves as both the extractor and the disambiguation judge in
-an otherwise fixed deterministic pipeline. A gold mention counts as
-recovered under document-level recall ($R_{\mathrm{doc}}$) if its entity is
-predicted anywhere in the same article, under $R_{\mathrm{span}}$ if token
-spans overlap, and under $R_{\mathrm{strict}}$ if position, surface, and
-entity all match. Because the link annotation is precise but incomplete,
-precision is reported as a conservative lower bound: $P_{\mathrm{mention}}$
-scores every prediction, $P_{\mathrm{type}}$ deduplicates repeated (surface,
-entity) pairs, and $P_{\mathrm{label}}$ additionally credits predictions
-whose surface exists as a Wikidata label. The title-sitelink fallback is
-disabled, as it reuses the mechanism the annotation is built from. Wilson
-95\% confidence intervals are given for $R_{\mathrm{doc}}$. $^{\dagger}$4.1\%
-of paragraphs were lost to transient API failures during this run and are
-declared in the run metadata. $P_{\mathrm{label}}$ values are the clean,
-sitelink-off recomputation with live label checks; since $P_{\mathrm{label}}$
-has no gold-tier dependence, the same clean values are used here and in the
-main table. The main table (Table~\ref{tab:grounding-results}) selects the two rungs most
-relevant to a system-demo audience: $R_{\mathrm{doc}}$ as the most
-permissive recall rung, and $P_{\mathrm{label}}$ as the strictest precision
-rung. $^{\ddagger}$GPT-5.4 substitutes GPT-5.5 due to sustained provider rate
-limits. The run covers 99 of the 100 articles, so its recall figures are a
+\caption{Full metric grid for Table~\ref{tab:grounding-results} on the same
+100 articles of \datasetWikipediaName{}, with the title-sitelink fallback
+disabled. Recall here is computed on the unfiltered reference of all 7959
+human-linked mentions (3868 unique entities) rather than the
+terminology-filtered tier of the main table. $R_{\mathrm{doc}}$ and
+$P_{\mathrm{label}}$ are defined in Section~\ref{sec:eval-metrics}.
+$R_{\mathrm{span}}$ additionally requires overlapping token spans, and
+$R_{\mathrm{strict}}$ an exact match of position, surface, and entity. Under
+the incomplete annotation all precision figures are conservative lower
+bounds: $P_{\mathrm{mention}}$ scores every prediction, and
+$P_{\mathrm{type}}$ deduplicates repeated (surface, entity) pairs.
+$P_{\mathrm{label}}$ does not depend on the reference tier, so the main
+table reports the same values. The main table selects the most permissive
+recall rung ($R_{\mathrm{doc}}$) and the strictest precision rung
+($P_{\mathrm{label}}$). Wilson 95\% confidence intervals are given for
+$R_{\mathrm{doc}}$. $^{\dagger}$4.1\% of paragraphs were lost to transient
+API failures during this run and are declared in the run metadata.
+$^{\ddagger}$GPT-5.4 substitutes GPT-5.5 due to sustained provider rate
+limits and covers 99 of the 100 articles, so its recall figures are a
 strict lower bound.}
 \label{app:grounding-full}
 \end{table*}

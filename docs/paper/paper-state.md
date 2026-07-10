@@ -8,24 +8,30 @@
 
 ## Skeleton (mirrors the abstract)
 
+**2026-07-10: integrated into a single Overleaf tex.** Title: "Beyond Literal
+Equivalence: An Interpretable System for Terminology-Aware Machine Translation
+in Historical Texts". New macros: `\datasetWikipediaName` = WikiHist,
+`\datasetEncyclopediaName` = RuWH, `\systemname` (placeholder, not yet filled).
+
 | # | Section | State |
 |---|---------|-------|
-| — | **Title** | TODO ("Historical Demo Title" placeholder) |
-| — | **Abstract** | Drafted: domain + problem; 3 contributions (translation pipeline; terminology normalization; grammarly-style refinement module); experimental eval on datasets; demo URL + code link — **URLs TODO** |
-| 1 | **Introduction** — tool + contributions | Drafted (interactive web-based tool for interpretable MT analysis; contributes: pipeline, terminology, refinement, eval) |
+| — | **Title** | Set: "Beyond Literal Equivalence: An Interpretable System for Terminology-Aware Machine Translation in Historical Texts" |
+| — | **Abstract** | **TODO (Andrey)** |
+| 1 | **Introduction** — tool + contributions | Drafted in the tex by the team |
 | 2 | **Related work** | Populated with WMT24/25, SemEval-2025 Task 2 (EA-MT), TEaR, DelTA, Tan et al. 2026 (LLM refinement in literary MT), etc. |
+| 2.2 | Terminology module — **Artem** | Recognition/Normalization, Disambiguation, and Ambiguity Categories paragraphs drafted in the tex by the team |
 | 3 | **System** (tech report, 3 submodules) | In progress |
 | 3.1 | Initial translation | In/out + formalization — partial |
-| 3.2 | Terminology Extraction (NER + Wikidata grounding) — **Artem** | Drafted; "Ambiguous Terminology Resolution" — **TODO**; exact/ambiguous/unknown formalism to write |
 | 3.3 | LLM-as-a-judge Evaluation + Refinement — **Danil** | Drafted (judge 1–10, Accuracy/Fluency/Style; issues → editor) |
-| 3.x | Datasets paragraphs | 3 datasets: history volume (томик), BOUQUET, Wikipedia-100. Wikipedia paragraph revised round 2 (docs/paper/sections/3-1-wikipedia-dataset.tex): encyclopedic→Wikipedia, per-dataset stats removed (single shared sentence after all three), appendix ref added, variant 2 reframed (problem→resource); Table 1 Wikipedia column: 100 articles / 160836 words / 2553 paragraphs / 63 avg length. Other datasets **to fill** |
+| 3.1 | WikiHist dataset paragraph | Co-authors rewrote it as `\subsubsection{WikiHist Dataset}` with Data Source + Terminology Annotation paragraphs (docs/paper/sections/3-1-wikipedia-dataset.tex); our Variant 1 kept in the tex as a commented alternative |
+| 3.x | Datasets paragraphs (remaining) | history volume (томик), BOUQUET — other datasets **to fill** |
 | 3.x | Demo ↔ methodology figure | **TODO** (figure linking demo interfaces to methodology) |
 | 3.x | Demo interfaces | TipTap (cite GitHub), LLMs via OpenRouter, HuggingFace record — **to write** |
-| 4 | **Evaluation setup** | 4.1 Evaluation Data — partial; 4.2 Evaluation metrics — **TODO**. Maximize model overlap across tables for consistency |
-| 5 | **Results** (bold-takeaway paragraph names) | 5.1 Terminology Recognition — partial. Two quantitative tables (one per section). Case study / error analysis on the history book (same in demo) — **TODO**. Qualitative table comparing predictions vs Wikipedia annotation — **TODO** |
+| 4 | **Evaluation setup** | 4.1 Evaluation Data — partial; 4.2 Evaluation metrics — `\paragraph{Terminology Recognition}` drafted 2026-07-10, see writing-pass subsection below. Maximize model overlap across tables for consistency |
+| 5 | **Results** (bold-takeaway paragraph names) | 5.1 Terminology Recognition — 2 findings drafted 2026-07-10, see writing-pass subsection below. Two quantitative tables (one per section). Case study / error analysis on the history book (same in demo) — **TODO**. Qualitative table comparing predictions vs Wikipedia annotation — **TODO** |
 | 6 | **Conclusion** | TODO |
 | — | Tables | T1 data statistics; **Table A** LLM-as-a-judge (BOUQUET only, 4 fixed systems, 7-judge comparison); **Table B** Refinement usefulness (cross base×refiner matrix, wiki-100 + QE metrics); **Table C** NER + Wikidata grounding (model-comparison v4) |
-| — | Appendix | Prompts (per spec §8, `v1_core3` variant for Table A); full judge disclosure (model/config/date) per Table A protocol; per-judge full tables (Table A compact in main paper); limitations sentence re: old BOUQUET numbers from stochastic self-judge (spec §8) |
+| — | Appendix | Prompts (per spec §8, `v1_core3` variant for Table A); full judge disclosure (model/config/date) per Table A protocol; per-judge full tables (Table A compact in main paper); limitations sentence re: old BOUQUET numbers from stochastic self-judge (spec §8); `app:wiki-corpus` corpus-construction section drafted 2026-07-10, see writing-pass subsection below |
 
 ## Experiments → paper mapping
 
@@ -64,6 +70,13 @@ flat T2/T3 numbering:
   `docs/reports/ml-engineer-grounding-run-gpt54.md` commit `5546459` and
   `docs/reports/python-pro-p-label-gpt54-grounding-run.md` commit `19c7389`). Remaining 3 rows
   pending local sr004 runs (Qwen3-4B-Instruct, Gemma-3-27B-it, Qwen3.6-27B).
+
+  **2026-07-10:** the in-paper Table C the owner had transferred into Overleaf earlier was
+  stale ($P_{\mathrm{label}}$ pending, GPT-5.5 row `XX`). The paste-ready replacement (caption
+  slimmed with definitions moved to `sec:eval-metrics`, $P_{\mathrm{label}}$ filled for all 3
+  cloud rows, GPT-5.5 row swapped for GPT-5.4 with a `\ddagger` footnote, appendix grid caption
+  aligned) now lives in `docs/paper/sections/table-c-grounding.tex` — see the writing-pass
+  subsection below.
 
 ### Done
 - **BOUQUET ru2en (by paragraphs)** → feeds **Table A**. Systems: TranslateGemma / TG-Refined /
@@ -192,3 +205,29 @@ Gemini judge swapped to flash-lite):**
 ### Queued
 - qwen3.7-plus clean re-run (grounding eval, Table C).
 - Case study / error analysis (history volume) + qualitative wiki-annotation table.
+
+### 2026-07-10 writing pass (Artem tasks)
+
+Five fragments produced today. Each is **delivered to chat, awaiting owner pick of
+variant** — none yet pasted into the Overleaf tex. Fragment texts are not duplicated
+here; see the paths.
+
+- [docs/paper/sections/eval-metrics-terminology.tex](sections/eval-metrics-terminology.tex)
+  — §4.2 `\paragraph{Terminology Recognition}`, 2 variants. Requires
+  `\label{sec:eval-metrics}` on `\subsection{Evaluation Metrics}`.
+- [docs/paper/sections/table-c-grounding.tex](sections/table-c-grounding.tex) — updated
+  2026-07-10: caption slimmed (definitions moved to `sec:eval-metrics`), $P_{\mathrm{label}}$
+  filled for all 3 cloud rows, GPT-5.5 row replaced by GPT-5.4 with a `\ddagger` footnote,
+  appendix grid caption aligned.
+- [docs/paper/sections/results-terminology-findings.tex](sections/results-terminology-findings.tex)
+  — §5.1, 2 findings, 2 variants (commit `f721594`).
+- [docs/paper/sections/live-demo.tex](sections/live-demo.tex) — §2.4 Live Demo
+  Functionality + Implementation, 2 variants (commit `f5cd2b5`).
+- [docs/paper/sections/appendix-wiki-corpus.tex](sections/appendix-wiki-corpus.tex) —
+  appendix `app:wiki-corpus`, corpus-construction section (commit `30499b7`).
+
+Citation proposals for the two remaining `(TODO)` placeholders:
+- WikiHist intro: `semenov-etal-2025-findings` + `conia-etal-2025-semeval`.
+- RuWH intro: `kocmi-etal-2025-findings` + `conia-etal-2024-towards`.
+- Caveat: `conia-etal-2025-semeval` currently appears only in a commented-out `\cite` —
+  needs an Overleaf bib check before it can be relied on.
