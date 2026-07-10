@@ -18,7 +18,7 @@ Outputs: [data/eval/wiki/titles_v2.txt](../../data/eval/wiki/titles_v2.txt) (`ti
 
 **Known residue (disclosed, kept):** ≈3/100 undated pages fall outside the intended period; retained rather than curated post hoc (owner decision 2026-07-05, avoids cherry-picking).
 
-The canonical ground truth is [data/eval/wiki/gt.jsonl](../../data/eval/wiki/gt.jsonl) — 100 articles / 7 959 GT tuples (`build-gt --titles data/eval/wiki/titles_v2.txt`); see [2026-07-10-gt-canonicalization.md](../superpowers/specs/2026-07-10-gt-canonicalization.md) for the canonicalization that retired an earlier 20-article pilot file which used to live at this path.
+The canonical ground truth is [data/eval/wiki/gt.jsonl](../../data/eval/wiki/gt.jsonl) — 100 articles / 7 903 GT tuples (`build-gt --titles data/eval/wiki/titles_v2.txt`); see [2026-07-10-gt-canonicalization.md](../superpowers/specs/2026-07-10-gt-canonicalization.md) for the canonicalization that retired an earlier 20-article pilot file which used to live at this path. (Was 7 959 before the 2026-07-10 single-char symbol-fragment fix dropped 56 spurious per-phoneme IPA-template anchors — see `_is_symbol_fragment` below and [docs/known_issues.md](../known_issues.md).)
 
 ## Prompts (2026-07-10 rework — system/user split, English)
 
@@ -31,6 +31,7 @@ Both roles now split a fixed **system** prompt (role, task definition, output co
 ## Design decisions
 
 - **Modules under `src/palimpsest/terminology/evaluation/`**, one responsibility each: `tokenize.py` (pinned E-D6 tokenizer, shared GT/prediction side), `wiki_gt.py` (Parsoid fetch, anchor→QID GT extraction, chronology filter; corpus selection lives in `scripts/select_wiki_corpus.py`), `predict.py` (eval-owned bridge: paragraph-chunked extractor calls with global-offset stitching → grounding pairing), `metrics.py` (protocol-v3 set-based aggregation — `matching.py` and mention-level M1/M2/M3 matching are **deleted**, see Protocol v3 below), `report.py` (pure offline HTML/JSON rendering of `metrics.aggregate_corpus_v3`'s output).
+- **Single-char symbol-fragment guard in `extract_gt` (`wiki_gt._is_symbol_fragment`).** Ru-wiki IPA/transcription templates hyperlink every phoneme/diacritic to its own article (e.g. `[nijˈsiːwat` — each glyph is a separate `<a>`), which a naive per-anchor walk mistakes for gold mentions. An anchor whose surface is a single letter/digit/mark/bracket-glued character (non-space neighbour in the flattened text) is dropped before it reaches the main-namespace/QID checks, counted in `counters.n_excluded_symbol`, not `n_anchors`. Legit standalone single-char anchors (a whole whitespace token, e.g. «У», or «V» in «V век») are kept — see [docs/known_issues.md](../known_issues.md).
 - **Tuple convention**: `(token_index, surface, qid, span_len)`, whole-article token index **reset per article** (article-local, not a running global offset — `metrics.aggregate_corpus_v3` groups by article title before deduping).
 - **Real extraction entry point**: `extract.NER_SYSTEM_PROMPT`/`extract.ner_user(source)` → `extract.llm_surfaces(paragraph, extractor=callable) -> list[dict]` → `extract.mentions_from_surfaces(paragraph, surfaces) -> list[TermMention]`. `scripts/wiki_eval.py::_build_extract_fn` builds the injected `extractor` closure and hands `predict.predict_tuples` an `extract_fn(paragraph) -> list[TermMention]`.
 - **Standard OpenRouter transport (spec Р2).** `DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"` — the earlier CloseRouter gateway (`WIKI_EVAL_PROVIDER`, `CLOSEROUTER_MODEL`/`CLOSEROUTER_PROVIDER` env vars, three-branch routing) is retired. Both the extractor and the judge always resolve through one shared `_resolve_route(model, provider, extra_body, base_url, temperature, top_p, top_k, max_tokens)` call — extraction and judge use the same model/provider/sampling within a run, unlike the retired design's per-role branches.
@@ -107,7 +108,7 @@ python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl \
 
 ## Status
 
-Modules + CLI implemented; unit tests green. Corpus selection v2 committed (100 titles, 10 sections); canonical `gt.jsonl` = 100 articles / 7 959 GT tuples.
+Modules + CLI implemented; unit tests green. Corpus selection v2 committed (100 titles, 10 sections); canonical `gt.jsonl` = 100 articles / 7 903 GT tuples.
 
 **Experiment v2 rework landed (2026-07-10, 4 commits on `claude/ner-translation-config-b0ozsc`)**: `421c99d` (English NER system/user prompt, `{surface, lemma}` schema, full-sentence judge context), `0d89242` (protocol-v3 set-based aggregator, retires the mention-level/sitelink-replay machinery), `275f8c7` (archived a leftover-resume run, see known_issues.md), `7e7ddfd` (standard-OpenRouter transport, vendor sampling, per-call gates, observability, `cmd_report` on protocol v3). Full spec: [2026-07-10-wiki-eval-experiment-v2.md](../superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md).
 

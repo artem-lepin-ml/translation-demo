@@ -225,6 +225,28 @@ fails loudly (naming the mismatch count and both paths) instead of silently unde
 recurrence path. `gt_v2.jsonl` remains on disk as a byte-identical duplicate only until the in-flight deepseek
 backfill's driver (which still reads it) lands — deferred deletion, not part of this fix.
 
+### RESOLVED 2026-07-10: ru-wiki IPA-transcription templates linked every phoneme, inflating gold anchors
+Ru-wiki's IPA/transcription template (and, separately, a section-nav arrow gadget and a cuneiform
+determinative gloss) hyperlinks **every phonetic symbol/glyph to its own article**, e.g. the token
+`[nijˈsiːwat` in «Тронное имя фараона» carried a separate `<a>` for each of `n`, `i`, `j`, `ˈ`, `s`, `ː`, `w`,
+`a`, `t`. `extract_gt` (`wiki_gt.py`) treated every main-namespace `<a>` as a gold mention, so each glyph's
+single-char `find()` aliased it onto whatever host token contained it, piling up to 9 spurious gold tuples on
+one token. Root-cause diagnosis:
+[debugger-ipa-parser-gold-anchors.md](reports/debugger-ipa-parser-gold-anchors.md). Blast radius: 56 spurious
+tuples across 4 of the 100 corpus articles («Тронное имя фараона» 52, «Веды» 2, «Микенская цивилизация» 1,
+«Нур-Адад» 1) — none of the 4 is in the 20-article gemini pilot corpus.
+
+**Resolution.** `extract_gt` now drops a single-character anchor whose neighbour in the flattened text is a
+letter/digit/combining-mark or bracket (`_is_symbol_fragment`, counted in the new `counters.n_excluded_symbol`,
+never in `n_anchors`) — this catches per-glyph IPA/transliteration/nav-arrow links while keeping legit
+standalone single-char anchors (a whole whitespace token, e.g. «У», or «V» in «V век»/em-dash Roman-numeral
+ranges «X—XII»). `data/eval/wiki/gt.jsonl` was re-derived via an offline post-filter (same predicate, no
+network) — 100 articles / **7 903** GT tuples (was 7 959); only the 4 affected articles' records changed byte-
+for-byte, the other 96 are untouched. **Gotcha for future corpus additions:** any new ru-wiki article using an
+IPA/transcription template will hit the same per-glyph link pattern — the guard handles it automatically, but
+a corpus-wide re-derivation after adding articles should still spot-check `n_excluded_symbol` counts for
+unexpectedly high per-article piles (Тронное's 52 was the tell before the fix existed).
+
 ### RESOLVED 2026-07-10: malformed provider response body killed a wiki-eval run
 
 **Symptom.** During the 2026-07-10 wiki-eval deepseek mini-pilot (Phase 3a, run dir

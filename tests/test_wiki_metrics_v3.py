@@ -223,15 +223,15 @@ def test_regression_anchor_run_a_gemini(tier_assignment):
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
 
     assert result["n_ambiguous_gold_units"] == 114
-    assert result["n_gold_mentions_dropped_by_tier"] == 785
+    assert result["n_gold_mentions_dropped_by_tier"] == 765
 
     named = result["classes"]["named"]
-    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (3297, 735, 1659, 4032)
+    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (3297, 734, 1660, 4031)
 
     term = result["classes"]["term"]
-    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (631, 899, 712, 1530)
+    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (630, 890, 712, 1520)
 
-    assert named["gold_units"] + term["gold_units"] == 5562
+    assert named["gold_units"] + term["gold_units"] == 5551
 
 
 @pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
@@ -242,20 +242,24 @@ def test_regression_anchor_run_b_deepseek(tier_assignment):
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
 
     named = result["classes"]["named"]
-    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (2881, 1151, 1357, 4032)
+    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (2881, 1150, 1358, 4031)
 
     term = result["classes"]["term"]
-    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (590, 940, 592, 1530)
+    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (589, 931, 592, 1520)
 
-    assert named["gold_units"] + term["gold_units"] == 5562
+    assert named["gold_units"] + term["gold_units"] == 5551
 
 
 @pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
 @pytest.mark.skipif(not TIER_PATH.exists(), reason="tier assignment not present in this checkout")
 def test_gold_named_plus_term_invariant(tier_assignment):
-    """Spec Sec.6: named+term gold_units == 5562, independent of which run's
-    predictions are scored against it (the gold side alone determines this)."""
+    """Spec Sec.6: named+term gold_units == 5551, independent of which run's
+    predictions are scored against it (the gold side alone determines this).
+    Was 5562 before the IPA-template symbol-fragment gold-anchor fix (2026-07-10,
+    docs/reports/debugger-ipa-parser-gold-anchors.md) dropped 56 spurious
+    per-phoneme anchors from gt.jsonl -- most collapsed into already-counted
+    gold units or were tier-filtered anyway, netting an 11-unit shift here."""
     articles = _build_articles(RUN_A)
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
     total = result["classes"]["named"]["gold_units"] + result["classes"]["term"]["gold_units"]
-    assert total == 5562
+    assert total == 5551

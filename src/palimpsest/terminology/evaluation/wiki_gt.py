@@ -47,6 +47,10 @@ CHRONO_P31_QIDS = frozenset(
     }
 )
 
+# Brackets that visually "attach" a glyph to its neighbour even though bracket
+# chars are punctuation, not letters/digits/marks (e.g. the "ə" in "(ə)").
+_ATTACHING_BRACKETS = frozenset("()[]{}⟨⟩«»<>")
+
 # Wikipedia namespace prefixes that never denote a main-namespace article.
 _NON_MAIN_PREFIXES = (
     "Category:", "File:", "Template:", "Help:", "Wikipedia:", "Talk:",
@@ -67,6 +71,7 @@ class GtCounters:
     n_redlink: int = 0
     n_excluded_chrono: int = 0
     n_excluded_nonmain: int = 0
+    n_excluded_symbol: int = 0
 
     def as_dict(self) -> dict:
         return {
@@ -75,6 +80,7 @@ class GtCounters:
             "n_redlink": self.n_redlink,
             "n_excluded_chrono": self.n_excluded_chrono,
             "n_excluded_nonmain": self.n_excluded_nonmain,
+            "n_excluded_symbol": self.n_excluded_symbol,
         }
 
 
@@ -156,6 +162,26 @@ def _title_from_href(href: str) -> str | None:
     return urllib.parse.unquote(raw).replace("_", " ")
 
 
+def _attaches(ch: str) -> bool:
+    return unicodedata.category(ch)[0] in ("L", "N", "M") or ch in _ATTACHING_BRACKETS
+
+
+def _is_symbol_fragment(text: str, pos: int, surface: str) -> bool:
+    """A single-char anchor glued into a larger token (IPA/translit/nav glyph).
+
+    Ru-wiki IPA/transcription templates link every phoneme/diacritic to its
+    own article, so a naive per-`<a>` walk mistakes each glyph for a gold
+    mention. Distinguish those from legit standalone single-char anchors
+    (e.g. "У", or "V" in "V век") by checking whether `surface` has a
+    non-space neighbour glued to it in `text` at `pos`.
+    """
+    if len(surface.strip()) != 1:
+        return False
+    before = text[pos - 1] if pos > 0 else " "
+    after = text[pos + len(surface)] if pos + len(surface) < len(text) else " "
+    return _attaches(before) or _attaches(after)
+
+
 def extract_gt(
     html: str,
     title_to_qid: dict[str, dict | None],
@@ -205,6 +231,11 @@ def extract_gt(
                 char_pos = text.find(surface, offset)
             if char_pos == -1:
                 continue  # surface not found in flattened text; skip defensively
+
+            if _is_symbol_fragment(text, char_pos, surface):
+                result.counters.n_excluded_symbol += 1
+                cursor = char_pos + len(surface)
+                continue
 
             if not _is_main_namespace_href(href):
                 result.counters.n_excluded_nonmain += 1

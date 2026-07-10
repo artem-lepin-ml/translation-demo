@@ -8,9 +8,11 @@ import json
 
 import pytest
 
+from palimpsest.terminology.evaluation.tokenize import flatten, tokens
 from palimpsest.terminology.evaluation.wiki_gt import (
     CHRONO_P31_QIDS,
     _follow_redirect_chain,
+    _is_symbol_fragment,
     build_gt,
     extract_gt,
     memoized_titles_to_qids,
@@ -386,3 +388,81 @@ def test_memoized_titles_to_qids_no_call_when_all_titles_cached():
     wrapped(["A"])
     wrapped(["A"])  # fully cached -> underlying fn not called again
     assert calls == [["A"]]
+
+
+# ── single-char symbol-fragment guard (IPA-template glyph links) ───────────
+# Ru-wiki IPA/transcription templates hyperlink every phoneme/diacritic to
+# its own article, e.g. <a>n</a><a>i</a><a>j</a> glued into one token "nij".
+# extract_gt must drop those glyphs while still keeping legit standalone
+# single-char anchors ("V" in "V век", "У" alone).
+
+IPA_TEMPLATE_HTML = """
+<html><body>
+<p>Термин <a href="/wiki/N_sound">n</a><a href="/wiki/I_sound">i</a><a href="/wiki/J_sound">j</a>
+означает нечто в древнеегипетском.</p>
+</body></html>
+"""
+
+LEGIT_SINGLE_CHAR_HTML = """
+<html><body>
+<p>Это <a href="/wiki/V">V</a> век до нашей эры и царство
+<a href="/wiki/У (царство)">У</a> на востоке.</p>
+</body></html>
+"""
+
+LEGIT_SINGLE_CHAR_TITLE_TO_QID = {
+    "V": {"qid": "Q_V", "canonical_title": "V"},
+    "У (царство)": {"qid": "Q_U", "canonical_title": "У (царство)"},
+}
+
+
+def test_extract_gt_drops_ipa_template_glyph_anchors():
+    result = extract_gt(IPA_TEMPLATE_HTML, {})
+    assert result.tuples == []
+    assert result.counters.n_excluded_symbol == 3
+    assert result.counters.n_anchors == 0  # never counted as anchors either
+
+
+def test_extract_gt_keeps_legit_standalone_single_char_anchors():
+    result = extract_gt(LEGIT_SINGLE_CHAR_HTML, LEGIT_SINGLE_CHAR_TITLE_TO_QID)
+    surfaces = {t[1] for t in result.tuples}
+    assert surfaces == {"V", "У"}
+    assert result.counters.n_excluded_symbol == 0
+
+
+def test_extract_gt_no_embedded_single_char_anchor_survives():
+    """No emitted tuple has a single-char surface unless that char IS the
+    whole whitespace-delimited token (i.e. genuinely stands alone)."""
+    fixtures = [
+        (IPA_TEMPLATE_HTML, {}),
+        (LEGIT_SINGLE_CHAR_HTML, LEGIT_SINGLE_CHAR_TITLE_TO_QID),
+        (FIXTURE_HTML, TITLE_TO_QID),
+    ]
+    for html, title_to_qid in fixtures:
+        result = extract_gt(html, title_to_qid)
+        text_tokens = tokens(flatten(html))
+        for token_index, surface, _qid, _span_len in result.tuples:
+            if len(surface.strip()) == 1:
+                assert text_tokens[token_index] == surface, (
+                    f"embedded single-char anchor survived: {surface!r} "
+                    f"inside token {text_tokens[token_index]!r}"
+                )
+
+
+def test_is_symbol_fragment_bracket_and_dash_edge_cases():
+    # Bracket-glued glyph (matches the real "(ə)" case in Тронное имя фараона).
+    text = "текст (ə) конец"
+    idx = text.index("ə")
+    assert _is_symbol_fragment(text, idx, "ə") is True
+
+    # Em-dash-joined Roman-numeral range: "X" must NOT be dropped -- the
+    # em-dash is punctuation, not a letter/digit/mark/bracket, so it does
+    # not "attach" per the guard.
+    text = "жил в X—XII века"
+    idx = text.index("X—XII")
+    assert _is_symbol_fragment(text, idx, "X") is False
+
+    # A whole-token single char (space on both sides) is never a fragment.
+    text = "царство У было"
+    idx = text.index("У")
+    assert _is_symbol_fragment(text, idx, "У") is False
