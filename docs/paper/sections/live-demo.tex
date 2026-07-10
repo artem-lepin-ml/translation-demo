@@ -1,0 +1,65 @@
+% Section 2.4, Live Demo. Body only: the \subsection{Live Demo} heading stays in the
+% main tex. Two variants, variant 1 active, variant 2 commented (same layout as
+% 3-1-wikipedia-dataset.tex). The Interactive Use Cases subsubsection that follows
+% covers the two workflows, so both variants describe interface anatomy and
+% implementation only. All facts repo-verified 2026-07-10.
+
+% ===== VARIANT 1 (main) =====
+\paragraph{Functionality.}
+\systemname{} presents each document as parallel Source and Translation panes
+and organizes analysis into four tabs (Document, Glossary, Ranking, Settings).
+In the Document tab, findings from the \moduleEvaluation{} module appear as
+span-level underlines colored by criterion, each paragraph carries an
+aggregate score chip, and an inspector panel lists issues with suggested
+corrections that the user can accept in place. Every extracted term carries
+two independent signals, shown as colored spans with hover popovers: its
+grounding difficulty on the Source side (the three resolution states of the
+\moduleTerminology{} module) and the pair accuracy of its rendering in the
+Translation (correct, debatable, or incorrect). The Glossary tab groups terms
+by entity and exposes their grounding traces, the Ranking tab orders
+paragraphs by score or issue count, and the Settings tab lets users create
+and edit judge criteria (name, prompt, judge model, weight, color).
+
+\paragraph{Implementation.}
+We build the frontend as a React application on the TipTap editor
+framework\footnote{\href{https://tiptap.dev}{tiptap.dev}}. A custom extension
+draws judge findings as stacked span-level underlines and marks term spans in
+place, so all analysis stays anchored to the text. The backend is a FastAPI
+service with a SQLite store that runs translation and first-pass scoring as
+background jobs. All LLM calls pass through a single OpenAI-compatible
+client, which makes the system model agnostic: any hosted gateway, such as
+OpenRouter, or a local vLLM server can act as the model backend. Judge scores
+and issues are stored append-only, so re-evaluation appends revisions and
+never overwrites earlier predictions. The system deploys as a single Docker
+container with one command, and criteria defined in the interface apply
+without redeployment.
+
+% ===== VARIANT 2 (text-first framing) =====
+% \paragraph{Functionality.}
+% \systemname{} concentrates all model output on the text itself. The Document
+% tab aligns Source and Translation paragraph by paragraph, underlines each
+% detected issue in the color of the criterion that raised it, and shows a
+% score chip per paragraph. An inspector panel on the right lets users review
+% issues and accept suggested corrections. Terms are highlighted with two
+% independent signals, grounding difficulty on the Source side and pair
+% accuracy of the Translation rendering, and a popover on each term reveals
+% the linked Wikidata entity, its resolution state, and the justification.
+% Three further tabs support analysis at other granularities: Glossary
+% aggregates terms with their grounding traces (query, candidate search,
+% decision steps), Ranking sorts paragraphs by score or issue count for
+% triage, and Settings holds the criteria editor, where users define the name,
+% prompt, judge model, weight, and color of each criterion.
+%
+% \paragraph{Implementation.}
+% \systemname{} is model agnostic by construction. Every LLM call, whether
+% from the translator, a judge, or the terminology pipeline, goes through one
+% OpenAI-compatible client, so any hosted gateway or a local vLLM server can
+% serve the models, and criteria created in the interface apply without
+% redeployment. The server is a FastAPI application over SQLite that executes
+% translation and first-pass scoring as background jobs. Its evaluation store
+% is append-only: re-evaluation appends new score revisions and never
+% overwrites earlier predictions. The client is a React application whose
+% editor builds on TipTap\footnote{\href{https://tiptap.dev}{tiptap.dev}},
+% extended with a custom decoration layer that stacks criterion-colored
+% underlines and term marks over the Translation text. The full system ships
+% as one Docker container and starts with a single command.
