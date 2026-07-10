@@ -14,9 +14,8 @@
 % 1. Add \label{sec:live-demo} to \subsection{Live Demo} (referenced from the
 %    2.3 default-criteria sentence).
 % 2. Add the tiptap BibTeX entry below to custom.bib.
-% 3. Owner decision pending: export formats. Code today exports .xlsx + .md
-%    (export.py); the text says "spreadsheet or a Markdown file". If a .txt
-%    export ships before submission, swap the sentence ending.
+% (Export decision closed 2026-07-10: paper says .xlsx with per-paragraph
+% scores + plain Markdown, exactly as export.py ships.)
 %
 % PAPER<->CODE PARITY CHECKLIST (owner committed to implement before the demo
 % video / submission; text below already describes the target state):
@@ -24,7 +23,6 @@
 %   [ ] "Apply all" refinement pass button in the inspector   — today only per-issue accept
 %   [ ] Terminology extraction and disambiguation as separately configurable
 %       roles — today one shared Grounding card (model + prompt)
-%   [ ] (optional) .txt export — today .xlsx + .md
 % Facts verified in code 2026-07-10: editable TipTap Translation pane +
 % per-paragraph revision history with re-scoring, restore and best-revision
 % tracking (EditorParagraph.tsx, app.py /revisions, /restore); upload paste or
@@ -68,13 +66,15 @@ paragraph by paragraph. Users paste text into the editor or upload .docx,
 .md, or .txt files for each side, and both sides must contain the same
 number of paragraphs. Users can also provide only the Source and generate a
 draft with the configured translation model. The resulting translation
-exports as a paragraph-aligned spreadsheet or a Markdown file.
+exports as a paragraph-aligned spreadsheet that includes the per-paragraph
+quality scores, or as a plain Markdown table.
 
 \paragraph{Model and Prompt Configuration.}
 \systemname{} adapts to new domains through the Settings tab. Its model
 registry defines each LLM as an OpenAI-compatible endpoint with a base URL,
 an API key, and generation parameters, and ships with preconfigured
-OpenRouter and local vLLM entries. Every LLM role in the pipeline is a
+OpenRouter and local vLLM entries, each verifiable with a one-click test
+call. Every LLM role in the pipeline is a
 reference into this registry paired with an editable prompt: the draft
 translator, each judge criterion, the refiner, and the terminology
 extraction and disambiguation steps. Defaults tuned for the historical
@@ -119,14 +119,16 @@ deploys as a single Docker container with one command.
 % an equal number of paragraphs on the two sides. When only the Source is
 % provided, the configured translation model produces the draft Translation.
 % At any point the current translation exports as a paragraph-aligned
-% spreadsheet or a Markdown file.
+% spreadsheet with the per-paragraph quality scores or as a plain Markdown
+% table.
 %
 % \paragraph{Model and Prompt Configuration.}
 % Flexibility in \systemname{} comes from one mechanism: every LLM role is a
 % model reference plus a prompt, both editable in the Settings tab. The model
 % registry declares each LLM as an OpenAI-compatible endpoint (base URL, API
 % key, generation parameters) and comes preloaded with OpenRouter and local
-% vLLM entries. The draft translator, each judge criterion, the refiner, and
+% vLLM entries, each verifiable with a one-click test call. The draft
+% translator, each judge criterion, the refiner, and
 % the terminology extraction and disambiguation steps all draw on this
 % registry, so replacing a backbone model or retargeting the system to a new
 % domain is a configuration change rather than a code change. Domain-tuned
