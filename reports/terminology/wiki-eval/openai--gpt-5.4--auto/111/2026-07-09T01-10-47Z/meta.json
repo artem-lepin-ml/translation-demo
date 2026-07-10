@@ -1,0 +1,306 @@
+{
+ "article_workers": 1,
+ "calls": {
+  "extract": 146,
+  "judge": 160
+ },
+ "config": "111",
+ "failed_paragraphs": [
+  {
+   "paragraph_index": 35,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 82,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 83,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 84,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 85,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 86,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 87,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 88,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 89,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 90,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 92,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 91,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 93,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 96,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 94,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 95,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 97,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 100,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 99,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 98,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 101,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 103,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 105,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 102,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 104,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 106,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 107,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 108,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 109,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 111,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 113,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 112,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 110,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 114,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 116,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 117,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 115,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 119,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 118,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 121,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 120,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 122,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 123,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 124,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 125,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 126,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 129,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 127,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 128,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 130,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 132,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 133,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 131,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 134,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 136,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 137,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 135,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 141,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 138,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 140,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 139,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 142,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 144,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 143,
+   "title": "Яффа"
+  },
+  {
+   "paragraph_index": 145,
+   "title": "Яффа"
+  }
+ ],
+ "finished_at": "2026-07-10T07:23:12.265176+00:00",
+ "grounding_config": {
+  "match_aliases": true,
+  "use_cirrus": true,
+  "use_lemma": true,
+  "use_sitelink": false
+ },
+ "llm_max_in_flight_observed": 4,
+ "llm_semaphore": 4,
+ "max_judge_calls": 30000,
+ "max_usd": 15.0,
+ "model": "openai/gpt-5.4",
+ "n_articles": 100,
+ "n_failed_judge_calls": 67,
+ "n_failed_paragraphs": 65,
+ "n_paragraphs": 146,
+ "n_pred_mentions": 627,
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "auto",
+ "resumed_from_n_articles": 99,
+ "run_id": "2026-07-09T01-10-47Z",
+ "spend": {
+  "extract": 0.06412139999999979,
+  "judge": 0.040649549999999875,
+  "total": 6.05288699999974
+ },
+ "started_at": "2026-07-10T05:23:22.946310+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 7189.318866,
+ "wikidata": {
+  "cache_hits": 1791,
+  "calls": 71,
+  "seconds": 36.926
+ },
+ "wikidata_workers": 2
+}
