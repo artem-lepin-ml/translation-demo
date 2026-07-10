@@ -42,7 +42,7 @@ bbd61fdda3865a8a2b0b8f3ddf3e137417bd08fb571592e439a20449abdc748a  wiki_index.jso
 
 Artifacts of the grounding eval and corpus selection, not part of the translation
 handoff: `gt*.jsonl` (ground-truth extractions), `pages/` (cached article HTML),
-`selection_v2.json`, `titles_*.txt`.
+`selection.json`, `titles.txt`.
 
 ## Manual article replacement (2026-07-10)
 
@@ -53,8 +53,8 @@ replacing each with the next seed-42 walk survivor from the same section; see
 [`cleanup/replacements_2026-07-10.json`](cleanup/replacements_2026-07-10.json) for
 the per-article rationale, ranks and one owner substitution note. This directly
 edited `gt.jsonl` (unlike the anchor-exclusion campaign below, which is applied
-at scoring time only) and is reflected in `selection_v2.json`
-(`manual_replacements` key) and `titles_v2.txt`.
+at scoring time only) and is reflected in `selection.json`
+(`manual_replacements` key) and `titles.txt`.
 
 ## cleanup/ — gold anchor-relevance cleanup campaign (2026-07-10)
 

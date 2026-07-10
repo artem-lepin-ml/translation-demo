@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Selection v2: ns0-only + transparent date-cutoff topicality gate (<500 CE,
+"""Selection: ns0-only + transparent date-cutoff topicality gate (<500 CE,
 undated kept, tiny P31 blacklist) + hard section-binding (first fixed-order
 section claims each article, used once). Fixed seed. Records the date used, so
 the rule is visible in the table.
 
-Output committed as data/eval/wiki/selection_v2.json + titles_v2.txt; documented
+Output committed as data/eval/wiki/selection.json + titles.txt; documented
 in docs/stages/wiki-eval.md § Corpus."""
 from __future__ import annotations
 import sys, os, json, re, time, random, urllib.parse, urllib.request, urllib.error, concurrent.futures as cf
@@ -201,6 +201,6 @@ out = {"seed": SEED, "nmin": NMIN, "cutoff_ce": CUTOFF,
        "metric": "unique ns0 article links in <p> body",
        "rule": "ns0 + earliest-date<500CE (undated kept) + P31 blacklist {film,painting,museum} + hard bind: first fixed-order section, used once",
        "sections": out_sections}
-path = str(ROOT / "data" / "eval" / "wiki" / "selection_v2.json")
+path = str(ROOT / "data" / "eval" / "wiki" / "selection.json")
 json.dump(out, open(path, "w"), ensure_ascii=False, indent=1)
 print("WROTE " + path, flush=True)

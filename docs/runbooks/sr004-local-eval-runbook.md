@@ -343,7 +343,7 @@ nothing local-specific to configure):**
 (only the older 20-article `data/eval/wiki/gt_v2_sub20.jsonl` exists) — derive a fresh 10-article file from
 the first 10 titles of the canonical corpus before running the pilot:
 ```bash
-head -10 data/eval/wiki/titles_v2.txt | cut -f1 > /tmp/pilot10_titles.txt
+head -10 data/eval/wiki/titles.txt | cut -f1 > /tmp/pilot10_titles.txt
 python scripts/wiki_eval.py build-gt --titles /tmp/pilot10_titles.txt --out data/eval/wiki/gt_pilot10.jsonl
 ```
 (this reuses the already-cached `data/eval/wiki/pages/` HTML — free, no network beyond a cache check.)

@@ -1,7 +1,7 @@
 """Wiki ground-truth builder (W3): Parsoid fetch, anchor->QID GT tuples,
 chronology filter.
 
-Corpus selection lives in scripts/select_wiki_corpus.py (selection v2).
+Corpus selection lives in scripts/select_wiki_corpus.py (corpus selection).
 
 See docs/superpowers/specs/2026-07-03-wiki-eval-design.md E-D5..E-D8,
 E-D17 and Sec.11 for the pinned contracts this module implements.

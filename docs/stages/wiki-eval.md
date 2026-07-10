@@ -4,9 +4,9 @@ Up-link: [docs/pipeline.md](../pipeline.md). Design: [2026-07-03-wiki-eval-desig
 
 ## Purpose
 
-Measure the terminology extraction (E1) + Wikidata grounding (E2, G6 `label_first`) pipeline against human hyperlink annotations on 100 full Russian Wikipedia ancient-history articles (selection v2: 10 thematic sections × 10). Reports **set-based document-level recall/precision** (protocol v3, below), split named/term, each with raw n + Wilson 95% CI. This is a standalone evaluation harness — it consumes the terminology stage's public contracts (`extract.NER_SYSTEM_PROMPT`/`extract.ner_user`, `grounding.LabelFirstGrounding`) but writes no code inside `grounding/`.
+Measure the terminology extraction (E1) + Wikidata grounding (E2, G6 `label_first`) pipeline against human hyperlink annotations on 100 full Russian Wikipedia ancient-history articles (corpus selection: 10 thematic sections × 10). Reports **set-based document-level recall/precision** (protocol v3, below), split named/term, each with raw n + Wilson 95% CI. This is a standalone evaluation harness — it consumes the terminology stage's public contracts (`extract.NER_SYSTEM_PROMPT`/`extract.ner_user`, `grounding.LabelFirstGrounding`) but writes no code inside `grounding/`.
 
-## Corpus (selection v2, 2026-07-05)
+## Corpus (selection, 2026-07-05)
 
 100 articles across **10 fixed thematic sections** of ancient history (10 per section): Sumer/Mesopotamia, Ancient Egypt, Assyria, Hittite kingdom, Phoenicia, Achaemenid Iran, Ancient India, Ancient China, Ancient Greece, Ancient Rome. Selection is deterministic and reproducible ([scripts/select_wiki_corpus.py](../../scripts/select_wiki_corpus.py), seed=42):
 
@@ -14,13 +14,13 @@ Measure the terminology extraction (E1) + Wikidata grounding (E2, G6 `label_firs
 - **Gate** — ≥30 unique main-namespace links in body paragraphs; earliest Wikidata date (P571/P580/P585/P569/P577) before 500 CE, undated pages kept; P31 blacklist {film, painting, museum, art museum}.
 - **Binding** — an article reachable from several sections is bound to the first in fixed section order and used once.
 
-Outputs: [data/eval/wiki/titles_v2.txt](../../data/eval/wiki/titles_v2.txt) (`title<TAB><section-slug>`; the slug becomes the GT record's `stratum` value) and [data/eval/wiki/selection_v2.json](../../data/eval/wiki/selection_v2.json) (full audit trail: pool sizes, gate drops, per-pick links/date/QID).
+Outputs: [data/eval/wiki/titles.txt](../../data/eval/wiki/titles.txt) (`title<TAB><section-slug>`; the slug becomes the GT record's `stratum` value) and [data/eval/wiki/selection.json](../../data/eval/wiki/selection.json) (full audit trail: pool sizes, gate drops, per-pick links/date/QID).
 
 **Known residue (disclosed, kept):** ≈3/100 undated pages fall outside the intended period; retained rather than curated post hoc (owner decision 2026-07-05, avoids cherry-picking).
 
-**Manual article replacement (2026-07-10):** a full manual review flagged 5 articles as out-of-scope despite passing the automated gate (two fictional-universe topics, one modern-geography article, one modern historiographic concept, one majority-post-cutoff city article — root cause: the P31 chronology gate's blacklist doesn't cover fictional-universe entities). The owner approved replacing each with the next seed-42 walk survivor from the same section; provenance, ranks and one owner substitution note: [data/eval/wiki/cleanup/replacements_2026-07-10.json](../../data/eval/wiki/cleanup/replacements_2026-07-10.json). The corpus is still 100 articles / 10 sections; `selection_v2.json` and `titles_v2.txt` reflect the swap.
+**Manual article replacement (2026-07-10):** a full manual review flagged 5 articles as out-of-scope despite passing the automated gate (two fictional-universe topics, one modern-geography article, one modern historiographic concept, one majority-post-cutoff city article — root cause: the P31 chronology gate's blacklist doesn't cover fictional-universe entities). The owner approved replacing each with the next seed-42 walk survivor from the same section; provenance, ranks and one owner substitution note: [data/eval/wiki/cleanup/replacements_2026-07-10.json](../../data/eval/wiki/cleanup/replacements_2026-07-10.json). The corpus is still 100 articles / 10 sections; `selection.json` and `titles.txt` reflect the swap.
 
-The canonical ground truth is [data/eval/wiki/gt.jsonl](../../data/eval/wiki/gt.jsonl) — 100 articles / 7 658 GT tuples (`build-gt --titles data/eval/wiki/titles_v2.txt`); see [2026-07-10-gt-canonicalization.md](../superpowers/specs/2026-07-10-gt-canonicalization.md) for the canonicalization that retired an earlier 20-article pilot file which used to live at this path. (Was 7 959 before the 2026-07-10 single-char symbol-fragment fix dropped 56 spurious per-phoneme IPA-template anchors, then 7 903, then 7 658 after the same-day manual 5-article corpus replacement above — see `_is_symbol_fragment` below and [docs/known_issues.md](../known_issues.md).)
+The canonical ground truth is [data/eval/wiki/gt.jsonl](../../data/eval/wiki/gt.jsonl) — 100 articles / 7 658 GT tuples (`build-gt --titles data/eval/wiki/titles.txt`); see [2026-07-10-gt-canonicalization.md](../superpowers/specs/2026-07-10-gt-canonicalization.md) for the canonicalization that retired an earlier 20-article pilot file which used to live at this path. (Was 7 959 before the 2026-07-10 single-char symbol-fragment fix dropped 56 spurious per-phoneme IPA-template anchors, then 7 903, then 7 658 after the same-day manual 5-article corpus replacement above — see `_is_symbol_fragment` below and [docs/known_issues.md](../known_issues.md).)
 
 ## Prompts (2026-07-10 rework — system/user split, English)
 
@@ -113,7 +113,7 @@ python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl \
 
 ## Status
 
-Modules + CLI implemented; unit tests green. Corpus selection v2 committed (100 titles, 10 sections, 5 manually replaced 2026-07-10 — see Corpus above); canonical `gt.jsonl` = 100 articles / 7 658 GT tuples.
+Modules + CLI implemented; unit tests green. Corpus selection committed (100 titles, 10 sections, 5 manually replaced 2026-07-10 — see Corpus above); canonical `gt.jsonl` = 100 articles / 7 658 GT tuples.
 
 **Experiment v2 rework landed (2026-07-10, 4 commits on `claude/ner-translation-config-b0ozsc`)**: `421c99d` (English NER system/user prompt, `{surface, lemma}` schema, full-sentence judge context), `0d89242` (protocol-v3 set-based aggregator, retires the mention-level/sitelink-replay machinery), `275f8c7` (archived a leftover-resume run, see known_issues.md), `7e7ddfd` (standard-OpenRouter transport, vendor sampling, per-call gates, observability, `cmd_report` on protocol v3). Full spec: [2026-07-10-wiki-eval-experiment-v2.md](../superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md).
 
