@@ -91,11 +91,23 @@ def test_deterministic_extract_finds_proper_nouns():
 
 
 def test_ner_system_prompt_covers_full_category_scope():
-    from palimpsest.terminology.extract import NER_SYSTEM_PROMPT
+    from palimpsest.terminology.extract import NER_CATEGORIES, NER_SYSTEM_PROMPT
     assert "<categories>" in NER_SYSTEM_PROMPT
     assert "What to extract (examples)" in NER_SYSTEM_PROMPT
     for cat in ("deity", "work", "religion"):
         assert cat in NER_SYSTEM_PROMPT
+    for cat in NER_CATEGORIES:                    # every canonical token is named in the prompt
+        assert cat in NER_SYSTEM_PROMPT
+
+
+def test_ner_system_prompt_requires_category_and_is_frozen():
+    from palimpsest.terminology.extract import NER_SYSTEM_PROMPT
+    assert "{surface, lemma, category}" in NER_SYSTEM_PROMPT
+    assert "category NEVER changes" in NER_SYSTEM_PROMPT     # category never affects extraction decisions
+    src = Path(__file__).resolve().parents[1] / "src/palimpsest/terminology/extract.py"
+    text = src.read_text(encoding="utf-8")
+    assert "FROZEN 2026-07-10" in text                       # freeze marker above NER_SYSTEM_PROMPT
+    assert "Do not modify without an owner-approved spec" in text
 
 
 def test_ner_user_wraps_source():
@@ -107,7 +119,8 @@ def test_parse_surfaces_tolerates_fence():
     from palimpsest.terminology.extract import parse_surfaces
     raw = '```json\n[{"surface":"Лагаше","lemma":"Лагаш"},{"surface":"x","lemma":"x"}]\n```'
     out = parse_surfaces(raw)
-    assert out == [{"surface": "Лагаше", "lemma": "Лагаш"}, {"surface": "x", "lemma": "x"}]
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other"},
+                    {"surface": "x", "lemma": "x", "category": "other"}]  # missing category -> "other"
 
 
 def test_parse_surfaces_ignores_trailing_commentary_with_brackets():
@@ -115,14 +128,50 @@ def test_parse_surfaces_ignores_trailing_commentary_with_brackets():
     raw = ('[{"surface":"Лагаше","lemma":"Лагаш"}]\n'
            'Note: this also mentions [Вавилон] as a location.')
     out = parse_surfaces(raw)
-    assert out == [{"surface": "Лагаше", "lemma": "Лагаш"}]
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other"}]
 
 
 def test_parse_surfaces_includes_lemma():
     from palimpsest.terminology.extract import parse_surfaces
     raw = '[{"surface":"династии Цин","lemma":"династия Цин"}]'
     out = parse_surfaces(raw)
-    assert out == [{"surface": "династии Цин", "lemma": "династия Цин"}]
+    assert out == [{"surface": "династии Цин", "lemma": "династия Цин", "category": "other"}]
+
+
+def test_parse_surfaces_valid_category_passes():
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш", "category": "place"}], ensure_ascii=False)
+    out = parse_surfaces(raw)
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "place"}]
+    assert "category_raw" not in out[0]           # known token -> nothing to preserve
+
+
+def test_parse_surfaces_unknown_category_normalizes_with_raw_preserved():
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш", "category": "monument"}], ensure_ascii=False)
+    out = parse_surfaces(raw)
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other", "category_raw": "monument"}]
+
+
+def test_parse_surfaces_missing_category_normalizes_to_other_no_raw():
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш"}], ensure_ascii=False)
+    out = parse_surfaces(raw)
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other"}]
+    assert "category_raw" not in out[0]           # nothing was emitted, nothing to preserve
+
+    raw_empty = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш", "category": ""}], ensure_ascii=False)
+    out_empty = parse_surfaces(raw_empty)
+    assert out_empty == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other"}]
+    assert "category_raw" not in out_empty[0]
+
+
+def test_parse_surfaces_never_rejects_over_category_value():
+    # an otherwise-valid extraction is never dropped/raised over a bad category value
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш", "category": 42}], ensure_ascii=False)
+    out = parse_surfaces(raw)
+    assert out[0]["surface"] == "Лагаше" and out[0]["category"] == "other"
 
 
 def test_parse_surfaces_lemma_sanity_falls_back_to_surface():
@@ -167,8 +216,21 @@ def test_validate_surfaces_drops_not_in_source_and_dedups():
                 {"surface": "Lagash", "lemma": "Lagash"}, {"surface": "", "lemma": None}]
     valid, dropped = validate_surfaces(src, surfaces)
     assert [v["surface"] for v in valid] == ["Лагаше"]   # deduped, only substring
-    assert valid == [{"surface": "Лагаше", "lemma": "Лагаш"}]  # {surface, lemma} schema, no category
+    assert valid == [{"surface": "Лагаше", "lemma": "Лагаш"}]  # no category key in input -> none added
     assert dropped == 1                                   # "Lagash" not in source
+
+
+def test_validate_surfaces_passes_category_through_untouched():
+    # validate_surfaces re-validates only substring/dedup -- it never touches category itself
+    from palimpsest.terminology.extract import validate_surfaces
+    src = "В Лагаше правил лугаль."
+    surfaces = [{"surface": "Лагаше", "lemma": "Лагаш", "category": "place"},
+                {"surface": "лугаль", "lemma": "лугаль", "category": "other", "category_raw": "monument"}]
+    valid, dropped = validate_surfaces(src, surfaces)
+    assert valid == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "place"},
+                      {"surface": "лугаль", "lemma": "лугаль", "category": "other",
+                       "category_raw": "monument"}]
+    assert dropped == 0
 
 
 def test_gazetteer_matches_lowercase_forms_word_boundary():
@@ -213,8 +275,10 @@ def test_llm_surfaces_validates_against_source():
     from palimpsest.terminology.extract import llm_surfaces
     src = "В Лагаше правил лугаль."
     fake = lambda s: [{"surface":"лугаль","category":"title"},{"surface":"Lagash","category":"place"}]
-    got = {v["surface"] for v in llm_surfaces(src, extractor=fake)}
+    out = llm_surfaces(src, extractor=fake)
+    got = {v["surface"] for v in out}
     assert got == {"лугаль"}                     # hallucinated "Lagash" dropped
+    assert out[0]["category"] == "title"          # category survives the validate_surfaces roundtrip
 
 
 def test_extract_key_is_stable_and_canonical():

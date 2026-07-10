@@ -5,11 +5,15 @@ to ``data/seed/terminology_terms.jsonl`` (reproducible, no live LLM at demo
 time). ``deterministic_extract`` is a stdlib fallback used when no persisted
 file exists — capitalized tokens and multi-word proper-noun runs.
 
-The LLM extractor's wire schema is ``{surface, lemma}`` (no ``category`` — a
-2026-07-10 owner decision, see ``NER_SYSTEM_PROMPT``'s "What to extract"
-block, which keeps the category list only as scope-defining examples).
-``NER_SYSTEM_PROMPT`` is the fixed English system prompt; ``ner_user(source)``
-wraps the per-call source text.
+The LLM extractor's wire schema is ``{surface, lemma, category}`` (2026-07-10
+owner decision, reversing the same-day decision to drop ``category`` -- the
+owner needs the per-category error distribution for the paper's appendix,
+spec 2026-07-10-wiki-eval-experiment-v2.md amendment (3)). ``category`` is
+one of ``NER_CATEGORIES`` or ``"other"``; ``parse_surfaces`` normalizes an
+unrecognized or missing value to ``"other"`` -- it never changes whether an
+item is extracted, only how the result is labelled. ``NER_SYSTEM_PROMPT`` is
+the fixed English system prompt (FROZEN, see the comment above it);
+``ner_user(source)`` wraps the per-call source text.
 """
 from __future__ import annotations
 
@@ -33,6 +37,9 @@ class ExtractionParseError(ValueError):
     """
 
 
+# FROZEN 2026-07-10 for the full evaluation runs (owner decision). Category
+# field is the final edit. Do not modify without an owner-approved spec
+# amendment.
 NER_SYSTEM_PROMPT = """## Role
 You are a source-criticism historian and linguist. You annotate Russian
 academic texts on ancient history and extract TERMS and PROPER NAMES.
@@ -113,17 +120,23 @@ not an exhaustive list.
   nominative case («Лагаше» → «Лагаш»); for a phrase, ALL words agree in
   the nominative («династии Цин» → «династия Цин», «авилумов» → «авилум»).
   If surface is already in the nominative, lemma equals surface.
+- category labels each extracted item: use the token before the dash in the
+  <categories> list above (person, place, people, title, social,
+  institution, dynasty, culture, language, realia, event, deity, work,
+  religion), or "other" when none of them fits. category NEVER changes
+  whether an item is extracted -- decide what to extract using the rules
+  above exactly as written, then label the result.
 - One record per UNIQUE surface (deduplicate only literally identical
   surface strings; different case forms are different surfaces).
 
 ## Good examples
 <example>
 <source>В Лагаше, одном из номов, правитель-лугаль опирался на авилумов, тогда как амореи наступали с запада.</source>
-<output>[{"surface":"Лагаше","lemma":"Лагаш"},{"surface":"номов","lemma":"ном"},{"surface":"лугаль","lemma":"лугаль"},{"surface":"авилумов","lemma":"авилум"},{"surface":"амореи","lemma":"амореи"}]</output>
+<output>[{"surface":"Лагаше","lemma":"Лагаш","category":"place"},{"surface":"номов","lemma":"ном","category":"title"},{"surface":"лугаль","lemma":"лугаль","category":"title"},{"surface":"авилумов","lemma":"авилум","category":"social"},{"surface":"амореи","lemma":"амореи","category":"people"}]</output>
 </example>
 <example>
 <source>Дарий прошёл через Иранское нагорье и подчинил Лидию, Карию и Ликию; сатрапы Дария собирали подать электрумом и вели записи на арамейском языке.</source>
-<output>[{"surface":"Дарий","lemma":"Дарий"},{"surface":"Иранское нагорье","lemma":"Иранское нагорье"},{"surface":"Лидию","lemma":"Лидия"},{"surface":"Карию","lemma":"Кария"},{"surface":"Ликию","lemma":"Ликия"},{"surface":"сатрапы","lemma":"сатрап"},{"surface":"Дария","lemma":"Дарий"},{"surface":"подать","lemma":"подать"},{"surface":"электрумом","lemma":"электрум"},{"surface":"арамейском языке","lemma":"арамейский язык"}]</output>
+<output>[{"surface":"Дарий","lemma":"Дарий","category":"person"},{"surface":"Иранское нагорье","lemma":"Иранское нагорье","category":"place"},{"surface":"Лидию","lemma":"Лидия","category":"place"},{"surface":"Карию","lemma":"Кария","category":"place"},{"surface":"Ликию","lemma":"Ликия","category":"place"},{"surface":"сатрапы","lemma":"сатрап","category":"title"},{"surface":"Дария","lemma":"Дарий","category":"person"},{"surface":"подать","lemma":"подать","category":"realia"},{"surface":"электрумом","lemma":"электрум","category":"realia"},{"surface":"арамейском языке","lemma":"арамейский язык","category":"language"}]</output>
 </example>
 
 ## Bad example (do NOT do this)
@@ -134,8 +147,8 @@ not an exhaustive list.
 </bad_example>
 
 ## Output format
-A JSON array of {surface, lemma} objects only. No explanations and no
-markdown fences.
+A JSON array of {surface, lemma, category} objects only. No explanations and
+no markdown fences.
 """
 
 
@@ -156,6 +169,34 @@ def _sane_lemma(lemma: str, surface: str) -> str:
     if lemma and len(lemma) <= _LEMMA_MAX_LEN and "\n" not in lemma:
         return lemma
     return surface
+
+
+# The canonical machine-friendly tokens for NER_SYSTEM_PROMPT's <categories>
+# list, in the same order -- each token is literally the word before the dash
+# in the prompt text, so the prompt and the parser can never drift apart.
+NER_CATEGORIES = (
+    "person", "place", "people", "title", "social", "institution", "dynasty",
+    "culture", "language", "realia", "event", "deity", "work", "religion",
+)
+_NER_CATEGORY_TOKENS = frozenset(NER_CATEGORIES) | {"other"}
+
+
+def _normalize_category(raw: object) -> tuple[str, str | None]:
+    """Normalize a raw ``category`` value against ``NER_CATEGORIES`` ∪ {"other"}.
+
+    Returns ``(category, category_raw)``: ``category`` is always a valid
+    non-empty token. ``category_raw`` carries the original value ONLY when it
+    was present but did not match a known token (an unknown value) --
+    missing/empty input normalizes to "other" with no ``category_raw`` (there
+    is nothing to preserve). An otherwise-valid extraction is never rejected
+    or retried over the category value.
+    """
+    value = raw.strip() if isinstance(raw, str) else ""
+    if value in _NER_CATEGORY_TOKENS:
+        return value, None
+    if value:
+        return "other", value
+    return "other", None
 
 
 def _first_balanced_array(text: str) -> str | None:
@@ -194,8 +235,14 @@ def _first_balanced_array(text: str) -> str | None:
 
 
 def parse_surfaces(raw: str) -> list[dict]:
-    """Parse an LLM JSON reply into [{surface, lemma}]; tolerant of ``` fences
-    and of commentary before/after the array.
+    """Parse an LLM JSON reply into [{surface, lemma, category}]; tolerant of
+    ``` fences and of commentary before/after the array.
+
+    ``category`` is normalized against ``NER_CATEGORIES`` ∪ {"other"} (see
+    ``_normalize_category``): an unrecognized or missing value becomes
+    "other", and the original value is preserved as ``category_raw`` only
+    when it was present and differed from the normalized result. category
+    never causes a parse failure -- only the surrounding JSON shape does.
 
     Raises ExtractionParseError when no JSON array can be recovered (no
     balanced ``[...]``, malformed JSON, or valid JSON that isn't a list) --
@@ -217,13 +264,23 @@ def parse_surfaces(raw: str) -> list[dict]:
             continue
         surface = (item.get("surface") or "").strip()
         lemma = (item.get("lemma") or "").strip()
-        if surface:
-            out.append({"surface": surface, "lemma": _sane_lemma(lemma, surface)})
+        if not surface:
+            continue
+        category, category_raw = _normalize_category(item.get("category"))
+        rec = {"surface": surface, "lemma": _sane_lemma(lemma, surface), "category": category}
+        if category_raw is not None:
+            rec["category_raw"] = category_raw
+        out.append(rec)
     return out
 
 
 def validate_surfaces(source: str, surfaces: list[dict]) -> tuple[list[dict], int]:
-    """Keep only surfaces that are literal substrings of source; dedup; count drops."""
+    """Keep only surfaces that are literal substrings of source; dedup; count drops.
+
+    Passes ``category``/``category_raw`` through untouched when present (set
+    by ``parse_surfaces`` at parse time) -- this function re-validates only
+    the substring/dedup contract, never the category value.
+    """
     seen: set[str] = set()
     valid: list[dict] = []
     dropped = 0
@@ -237,7 +294,12 @@ def validate_surfaces(source: str, surfaces: list[dict]) -> tuple[list[dict], in
         if s in seen:
             continue
         seen.add(s)
-        valid.append({"surface": s, "lemma": item.get("lemma") or s})
+        rec = {"surface": s, "lemma": item.get("lemma") or s}
+        if "category" in item:
+            rec["category"] = item["category"]
+        if "category_raw" in item:
+            rec["category_raw"] = item["category_raw"]
+        valid.append(rec)
     return valid, dropped
 
 
@@ -316,10 +378,11 @@ def sentence_context(source: str, start: int, end: int) -> str:
 def mentions_from_surfaces(source: str, surfaces: list[dict]) -> list[TermMention]:
     """Turn extracted surfaces into one mention per occurrence with char spans.
 
-    Each surface dict: ``{surface, lemma?, category?}`` -- ``category`` is
-    read only for legacy demo-seed dicts (fresh LLM extractions no longer
-    produce it; TermMention.category is simply ``None`` for those, per the
-    2026-07-10 owner decision to drop categories from the output schema).
+    Each surface dict: ``{surface, lemma?, category?}`` -- for the real LLM
+    extractor (E1) ``category`` is now always present, normalized by
+    ``parse_surfaces`` to one of ``NER_CATEGORIES`` or ``"other"``. The
+    deterministic fallback (E0, no model) still emits ``category=None`` for
+    capitalised-run surfaces, since there is no model output to label with.
     Every non-overlapping occurrence of ``surface`` in ``source`` becomes its
     own mention.
     """

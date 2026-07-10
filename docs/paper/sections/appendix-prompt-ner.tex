@@ -1,8 +1,13 @@
 % Appendix figure: terminology extraction prompt, verbatim from
 % src/palimpsest/terminology/extract.py::NER_SYSTEM_PROMPT (experiment-v2
-% protocol, spec 2026-07-10-wiki-eval-experiment-v2.md §3.1). The user
-% message is exactly the source paragraph wrapped in <source> tags
-% (extract.py::ner_user) -- stated in the caption, no separate figure.
+% protocol, spec 2026-07-10-wiki-eval-experiment-v2.md §3.1, amendment (3)).
+% FROZEN 2026-07-10 for the full evaluation runs (owner decision) -- this is
+% the final edit to the prompt; do not modify without an owner-approved spec
+% amendment. Output schema is {surface, lemma, category}: category is one of
+% the tokens in <categories> below or "other", and never changes whether an
+% item is extracted. The user message is exactly the source paragraph
+% wrapped in <source> tags (extract.py::ner_user) -- stated in the caption,
+% no separate figure.
 % INTEGRATION: place inside \section{LLM prompts}\label{appx:prompts};
 % referenced from the Terminology Recognition texts as
 % Appendix~\ref{appx:ner-prompt}. Uses the paper's existing
@@ -93,17 +98,23 @@ not an exhaustive list.
   nominative case («Лагаше» → «Лагаш»); for a phrase, ALL words agree in
   the nominative («династии Цин» → «династия Цин», «авилумов» → «авилум»).
   If surface is already in the nominative, lemma equals surface.
+- category labels each extracted item: use the token before the dash in the
+  <categories> list above (person, place, people, title, social,
+  institution, dynasty, culture, language, realia, event, deity, work,
+  religion), or "other" when none of them fits. category NEVER changes
+  whether an item is extracted -- decide what to extract using the rules
+  above exactly as written, then label the result.
 - One record per UNIQUE surface (deduplicate only literally identical
   surface strings; different case forms are different surfaces).
 
 ## Good examples
 <example>
 <source>В Лагаше, одном из номов, правитель-лугаль опирался на авилумов, тогда как амореи наступали с запада.</source>
-<output>[{"surface":"Лагаше","lemma":"Лагаш"},{"surface":"номов","lemma":"ном"},{"surface":"лугаль","lemma":"лугаль"},{"surface":"авилумов","lemma":"авилум"},{"surface":"амореи","lemma":"амореи"}]</output>
+<output>[{"surface":"Лагаше","lemma":"Лагаш","category":"place"},{"surface":"номов","lemma":"ном","category":"title"},{"surface":"лугаль","lemma":"лугаль","category":"title"},{"surface":"авилумов","lemma":"авилум","category":"social"},{"surface":"амореи","lemma":"амореи","category":"people"}]</output>
 </example>
 <example>
 <source>Дарий прошёл через Иранское нагорье и подчинил Лидию, Карию и Ликию; сатрапы Дария собирали подать электрумом и вели записи на арамейском языке.</source>
-<output>[{"surface":"Дарий","lemma":"Дарий"},{"surface":"Иранское нагорье","lemma":"Иранское нагорье"},{"surface":"Лидию","lemma":"Лидия"},{"surface":"Карию","lemma":"Кария"},{"surface":"Ликию","lemma":"Ликия"},{"surface":"сатрапы","lemma":"сатрап"},{"surface":"Дария","lemma":"Дарий"},{"surface":"подать","lemma":"подать"},{"surface":"электрумом","lemma":"электрум"},{"surface":"арамейском языке","lemma":"арамейский язык"}]</output>
+<output>[{"surface":"Дарий","lemma":"Дарий","category":"person"},{"surface":"Иранское нагорье","lemma":"Иранское нагорье","category":"place"},{"surface":"Лидию","lemma":"Лидия","category":"place"},{"surface":"Карию","lemma":"Кария","category":"place"},{"surface":"Ликию","lemma":"Ликия","category":"place"},{"surface":"сатрапы","lemma":"сатрап","category":"title"},{"surface":"Дария","lemma":"Дарий","category":"person"},{"surface":"подать","lemma":"подать","category":"realia"},{"surface":"электрумом","lemma":"электрум","category":"realia"},{"surface":"арамейском языке","lemma":"арамейский язык","category":"language"}]</output>
 </example>
 
 ## Bad example (do NOT do this)
@@ -114,10 +125,10 @@ not an exhaustive list.
 </bad_example>
 
 ## Output format
-A JSON array of {surface, lemma} objects only. No explanations and no
-markdown fences.
+A JSON array of {surface, lemma, category} objects only. No explanations and
+no markdown fences.
 "
 \end{prompt}
-\caption{Terminology extraction system prompt. The user message contains only the source paragraph wrapped in \texttt{<source>} tags.}
+\caption{Terminology extraction system prompt (FROZEN 2026-07-10). The user message contains only the source paragraph wrapped in \texttt{<source>} tags.}
 \label{appx:ner-prompt}
 \end{figure*}
