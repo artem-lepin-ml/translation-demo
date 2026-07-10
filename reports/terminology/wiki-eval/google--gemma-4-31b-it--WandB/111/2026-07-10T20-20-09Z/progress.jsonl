@@ -1,0 +1,15 @@
+{"article": "KV35YL", "done": 1, "of": 100, "spent": 0.03536460999999997, "spent_by_kind": {"extract": 0.03536460999999997, "judge": 0.0}, "calls_by_kind": {"extract": 48, "judge": 0}}
+{"article": "Академия Цзися", "done": 2, "of": 100, "spent": 0.05744938999999989, "spent_by_kind": {"extract": 0.05744938999999989, "judge": 0.0}, "calls_by_kind": {"extract": 69, "judge": 0}}
+{"article": "Абдмилькат", "done": 3, "of": 100, "spent": 0.05744938999999989, "spent_by_kind": {"extract": 0.05744938999999989, "judge": 0.0}, "calls_by_kind": {"extract": 69, "judge": 0}}
+{"article": "Азиатская экспедиция (336—334 до н. э.)", "done": 4, "of": 100, "spent": 0.05744938999999989, "spent_by_kind": {"extract": 0.05744938999999989, "judge": 0.0}, "calls_by_kind": {"extract": 69, "judge": 0}}
+{"article": "XXX династия", "done": 5, "of": 100, "spent": 0.0873225399999999, "spent_by_kind": {"extract": 0.0873225399999999, "judge": 0.0}, "calls_by_kind": {"extract": 95, "judge": 0}}
+{"article": "XXVII династия", "done": 6, "of": 100, "spent": 0.09140702999999994, "spent_by_kind": {"extract": 0.09140702999999994, "judge": 0.0}, "calls_by_kind": {"extract": 101, "judge": 0}}
+{"article": "Амударьинский клад", "done": 7, "of": 100, "spent": 0.10973540000000001, "spent_by_kind": {"extract": 0.10973540000000001, "judge": 0.0}, "calls_by_kind": {"extract": 124, "judge": 0}}
+{"article": "Арахозия", "done": 8, "of": 100, "spent": 0.11349987000000003, "spent_by_kind": {"extract": 0.11349987000000003, "judge": 0.0}, "calls_by_kind": {"extract": 130, "judge": 0}}
+{"article": "Ахеменидские сатрапии", "done": 9, "of": 100, "spent": 0.14394279000000015, "spent_by_kind": {"extract": 0.14394279000000015, "judge": 0.0}, "calls_by_kind": {"extract": 162, "judge": 0}}
+{"article": "Армия империи Хань", "done": 10, "of": 100, "spent": 0.18252010000000038, "spent_by_kind": {"extract": 0.18252010000000038, "judge": 0.0}, "calls_by_kind": {"extract": 208, "judge": 0}}
+{"article": "Ашшур-этель-илани", "done": 11, "of": 100, "spent": 0.21561872000000046, "spent_by_kind": {"extract": 0.21561872000000046, "judge": 0.0}, "calls_by_kind": {"extract": 237, "judge": 0}}
+{"article": "Арслантепе (Мелид)", "done": 12, "of": 100, "spent": 0.2306824100000005, "spent_by_kind": {"extract": 0.2306824100000005, "judge": 0.0}, "calls_by_kind": {"extract": 252, "judge": 0}}
+{"article": "Ашшур (город)", "done": 13, "of": 100, "spent": 0.24504577000000055, "spent_by_kind": {"extract": 0.24504577000000055, "judge": 0.0}, "calls_by_kind": {"extract": 267, "judge": 0}}
+{"article": "Беотийский союз", "done": 14, "of": 100, "spent": 0.3176871099999992, "spent_by_kind": {"extract": 0.3176871099999992, "judge": 0.0}, "calls_by_kind": {"extract": 330, "judge": 0}}
+{"article": "Ашшурбанапал", "done": 15, "of": 100, "spent": 0.3176871099999992, "spent_by_kind": {"extract": 0.3176871099999992, "judge": 0.0}, "calls_by_kind": {"extract": 330, "judge": 0}}

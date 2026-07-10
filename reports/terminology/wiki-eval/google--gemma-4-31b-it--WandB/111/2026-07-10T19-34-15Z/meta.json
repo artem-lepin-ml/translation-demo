@@ -1,0 +1,74 @@
+{
+ "article_workers": 3,
+ "calls": {
+  "extract": 25,
+  "judge": 0
+ },
+ "config": "111",
+ "failed_paragraphs": [],
+ "finished_at": "2026-07-10T20:03:41.471280+00:00",
+ "generation_params": {
+  "base_url": "https://openrouter.ai/api/v1",
+  "extra_body_effective": {
+   "provider": {
+    "allow_fallbacks": false,
+    "order": [
+     "WandB"
+    ]
+   },
+   "reasoning": {
+    "enabled": true
+   },
+   "top_k": 64,
+   "usage": {
+    "include": true
+   }
+  },
+  "max_tokens": 20000,
+  "model": "google/gemma-4-31b-it",
+  "provider_pin": "WandB",
+  "reasoning": {
+   "enabled": true
+  },
+  "temperature": 1.0,
+  "top_k": 64,
+  "top_p": 0.95
+ },
+ "grounding_config": {
+  "match_aliases": true,
+  "use_cirrus": true,
+  "use_lemma": true,
+  "use_sitelink": false
+ },
+ "llm_max_in_flight_observed": 4,
+ "llm_semaphore": 4,
+ "max_judge_calls": 1,
+ "max_usd": 1.0,
+ "model": "google/gemma-4-31b-it",
+ "n_articles": 2,
+ "n_extraction_parse_failures": 0,
+ "n_failed_judge_calls": 0,
+ "n_failed_paragraphs": 0,
+ "n_paragraphs": 25,
+ "n_pred_mentions": 246,
+ "no_judge": true,
+ "parse_failed_paragraphs": [],
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "WandB",
+ "run_id": "2026-07-10T19-34-15Z",
+ "spend": {
+  "extract": 0.024423770000000004,
+  "judge": 0.0,
+  "total": 0.024423770000000004
+ },
+ "started_at": "2026-07-10T19:34:15.434672+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 1766.036608,
+ "wikidata": {
+  "cache_hits": 701,
+  "calls": 13,
+  "seconds": 4.566
+ },
+ "wikidata_workers": 3
+}

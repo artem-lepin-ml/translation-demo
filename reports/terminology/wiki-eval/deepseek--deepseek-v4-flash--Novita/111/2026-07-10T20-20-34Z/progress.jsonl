@@ -1,0 +1,21 @@
+{"article": "KV35YL", "done": 1, "of": 100, "spent": 0.029246168000000003, "spent_by_kind": {"extract": 0.029246168000000003, "judge": 0.0}, "calls_by_kind": {"extract": 33, "judge": 0}}
+{"article": "XXX династия", "done": 2, "of": 100, "spent": 0.030926168000000004, "spent_by_kind": {"extract": 0.030926168000000004, "judge": 0.0}, "calls_by_kind": {"extract": 37, "judge": 0}}
+{"article": "XXVII династия", "done": 3, "of": 100, "spent": 0.05099749199999994, "spent_by_kind": {"extract": 0.05099749199999994, "judge": 0.0}, "calls_by_kind": {"extract": 61, "judge": 0}}
+{"article": "Абдмилькат", "done": 4, "of": 100, "spent": 0.0663510399999999, "spent_by_kind": {"extract": 0.0663510399999999, "judge": 0.0}, "calls_by_kind": {"extract": 79, "judge": 0}}
+{"article": "Азиатская экспедиция (336—334 до н. э.)", "done": 5, "of": 100, "spent": 0.07101449599999993, "spent_by_kind": {"extract": 0.07101449599999993, "judge": 0.0}, "calls_by_kind": {"extract": 85, "judge": 0}}
+{"article": "Амударьинский клад", "done": 6, "of": 100, "spent": 0.07841030399999999, "spent_by_kind": {"extract": 0.07841030399999999, "judge": 0.0}, "calls_by_kind": {"extract": 100, "judge": 0}}
+{"article": "Арахозия", "done": 7, "of": 100, "spent": 0.08836402400000004, "spent_by_kind": {"extract": 0.08836402400000004, "judge": 0.0}, "calls_by_kind": {"extract": 112, "judge": 0}}
+{"article": "Армия империи Хань", "done": 8, "of": 100, "spent": 0.09514884400000005, "spent_by_kind": {"extract": 0.09514884400000005, "judge": 0.0}, "calls_by_kind": {"extract": 121, "judge": 0}}
+{"article": "Ахеменидские сатрапии", "done": 9, "of": 100, "spent": 0.13320207600000017, "spent_by_kind": {"extract": 0.13320207600000017, "judge": 0.0}, "calls_by_kind": {"extract": 156, "judge": 0}}
+{"article": "Академия Цзися", "done": 10, "of": 100, "spent": 0.14428789200000028, "spent_by_kind": {"extract": 0.14428789200000028, "judge": 0.0}, "calls_by_kind": {"extract": 178, "judge": 0}}
+{"article": "Ашшур-этель-илани", "done": 11, "of": 100, "spent": 0.19550092800000046, "spent_by_kind": {"extract": 0.19550092800000046, "judge": 0.0}, "calls_by_kind": {"extract": 232, "judge": 0}}
+{"article": "Арслантепе (Мелид)", "done": 12, "of": 100, "spent": 0.2469373760000007, "spent_by_kind": {"extract": 0.2469373760000007, "judge": 0.0}, "calls_by_kind": {"extract": 275, "judge": 0}}
+{"article": "Ашока", "done": 13, "of": 100, "spent": 0.28249121599999977, "spent_by_kind": {"extract": 0.28249121599999977, "judge": 0.0}, "calls_by_kind": {"extract": 319, "judge": 0}}
+{"article": "Беотийский союз", "done": 14, "of": 100, "spent": 0.31071109999999896, "spent_by_kind": {"extract": 0.31071109999999896, "judge": 0.0}, "calls_by_kind": {"extract": 350, "judge": 0}}
+{"article": "Библ", "done": 15, "of": 100, "spent": 0.31071109999999896, "spent_by_kind": {"extract": 0.31071109999999896, "judge": 0.0}, "calls_by_kind": {"extract": 350, "judge": 0}}
+{"article": "Ашшурбанапал", "done": 16, "of": 100, "spent": 0.31071109999999896, "spent_by_kind": {"extract": 0.31071109999999896, "judge": 0.0}, "calls_by_kind": {"extract": 350, "judge": 0}}
+{"article": "Восстания в державе Ахеменидов (521—516 до н. э.)", "done": 17, "of": 100, "spent": 0.3887537919999966, "spent_by_kind": {"extract": 0.3887537919999966, "judge": 0.0}, "calls_by_kind": {"extract": 442, "judge": 0}}
+{"article": "Второй Афинский морской союз", "done": 18, "of": 100, "spent": 0.3887537919999966, "spent_by_kind": {"extract": 0.3887537919999966, "judge": 0.0}, "calls_by_kind": {"extract": 442, "judge": 0}}
+{"article": "Веды", "done": 19, "of": 100, "spent": 0.3887537919999966, "spent_by_kind": {"extract": 0.3887537919999966, "judge": 0.0}, "calls_by_kind": {"extract": 442, "judge": 0}}
+{"article": "Гай Сосий (консул)", "done": 20, "of": 100, "spent": 0.45204868799999426, "spent_by_kind": {"extract": 0.45204868799999426, "judge": 0.0}, "calls_by_kind": {"extract": 535, "judge": 0}}
+{"article": "Гандхара", "done": 21, "of": 100, "spent": 0.45204868799999426, "spent_by_kind": {"extract": 0.45204868799999426, "judge": 0.0}, "calls_by_kind": {"extract": 535, "judge": 0}}
