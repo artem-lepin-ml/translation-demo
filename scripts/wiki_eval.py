@@ -58,6 +58,7 @@ DEFAULT_PAGES_CACHE = ROOT / "data/eval/wiki/pages"
 WIKIDATA_CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
 OUT_ROOT = ROOT / "reports/terminology/wiki-eval"
 TIER_PATH = ROOT / "data/eval/wiki/tier_assignment.json"
+EXCLUSIONS_PATH = ROOT / "data/eval/wiki/anchor_exclusions.json"
 
 # Standard OpenRouter (spec 2026-07-10 Р2) -- the CloseRouter gateway/env-var
 # machinery (WIKI_EVAL_PROVIDER, CLOSEROUTER_MODEL, CLOSEROUTER_PROVIDER) is
@@ -1891,9 +1892,23 @@ def cmd_ablate(args) -> int:
 # identical QIDs from unrelated articles.
 
 
+def _load_excluded_gold_identities(path: Path) -> set[M.ExclusionId]:
+    """Parse ``anchor_exclusions.json``'s ``exclusions`` list into
+    ``metrics.aggregate_survival``'s title-scoped identity set (spec: the
+    file's own identity is ``(token_index, anchor_text, qid, span_len)``
+    scoped by ``title``, same tuple order as ``search_miss_analysis.py``'s
+    ``excl_by_title`` just flattened to include ``title`` as element 0)."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        (e["title"], e["token_index"], e["anchor_text"], e["qid"], e["span_len"])
+        for e in data.get("exclusions", [])
+    }
+
+
 def cmd_report(args) -> int:
     gt_records = _load_gt(Path(args.gt))
     tier_assignment: dict[str, int] = json.loads(Path(args.tier).read_text(encoding="utf-8"))
+    excluded_gold_identities = _load_excluded_gold_identities(Path(args.exclusions))
 
     pred_dir = Path(args.pred)
     pred_path = pred_dir / "pred.jsonl"
@@ -1905,6 +1920,7 @@ def cmd_report(args) -> int:
         pred_by_title[r["title"]].append(r)
 
     articles: list[M.ArticleUnits] = []
+    survival_articles: list[M.SurvivalArticleUnits] = []
     for rec in gt_records:
         gt_tuples = [tuple(t) for t in rec["gt_tuples"]]
         title_pred_records = pred_by_title.get(rec["title"], [])
@@ -1914,7 +1930,30 @@ def cmd_report(args) -> int:
         ]
         articles.append({"gt_tuples": gt_tuples, "pred_tuples": pred_tuples})
 
+        # Survival-stage metrics need EVERY predicted mention (not just the
+        # grounded ones) plus its own candidate list -- R_NER counts a
+        # recognized-but-ungrounded mention, R_search/A_disamb need the raw
+        # per-mention candidates/qid the protocol-v3 pred_tuples above
+        # already discard.
+        pred_mentions: list[M.PredMention] = [
+            {
+                "index": r["index"],
+                "span_len": r["span_len"],
+                "qid": r.get("qid"),
+                "candidates": r.get("candidates") or [],
+            }
+            for r in title_pred_records
+        ]
+        survival_articles.append({
+            "title": rec["title"], "gt_tuples": gt_tuples, "pred_mentions": pred_mentions,
+        })
+
     result = M.aggregate_corpus(articles, tier_assignment=tier_assignment)
+    survival = M.aggregate_survival(
+        survival_articles, tier_assignment=tier_assignment,
+        excluded_gold_identities=excluded_gold_identities,
+    )
+    result = {**result, "survival": survival}
 
     n_gt_tuples = sum(len(a["gt_tuples"]) for a in articles)
     meta = {
@@ -1929,6 +1968,9 @@ def cmd_report(args) -> int:
     # wall-clock, ...) into the report meta when present -- run_meta's fields
     # fill in first, then meta's freshly-computed run_id/config/generated_at
     # win on any overlapping key (derived directly from pred_dir, authoritative).
+    # This is also how search_mode/reuse_extraction_from/no_judge (when the run
+    # used them) reach the survival section's provenance -- meta.json already
+    # carries them as top-level fields, nothing survival-specific to add here.
     run_meta_path = pred_dir / "meta.json"
     if run_meta_path.exists():
         run_meta = json.loads(run_meta_path.read_text(encoding="utf-8"))
@@ -1947,6 +1989,13 @@ def cmd_report(args) -> int:
     for cls in ("named", "term"):
         s = result["classes"][cls]
         print(f"{cls}: gold_units={s['gold_units']}  R_doc={s['R_doc']['value']}  P_doc={s['P_doc']['value']}")
+    print(
+        f"survival: n_gold_entities={survival['n_gold_entities']}  "
+        f"R_NER={survival['R_NER']['value']}  R_search={survival['R_search']['value']}  "
+        f"A_disamb={survival['A_disamb']['value']}  R={survival['R']['value']}  "
+        f"R_direct={survival['R_direct']['value']}  P={survival['P']['value']}  "
+        f"n_resolved_correct_search_miss={survival['n_resolved_correct_search_miss']}"
+    )
     return 0
 
 
@@ -2081,6 +2130,10 @@ def _build_parser() -> argparse.ArgumentParser:
     p_report.add_argument("--tier", default=str(TIER_PATH),
                            help="tier_assignment.json path (QID -> tier int; protocol v3's "
                                 "generic-lexical-class gold filter, spec Sec.4.5)")
+    p_report.add_argument("--exclusions", default=str(EXCLUSIONS_PATH),
+                           help="anchor_exclusions.json path (approved scoring-time gold-anchor "
+                                "drops, applied only to the survival-stage factorized metrics; "
+                                "gt.jsonl itself stays raw)")
     p_report.set_defaults(func=cmd_report)
 
     return ap
