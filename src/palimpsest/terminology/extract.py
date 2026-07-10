@@ -58,6 +58,11 @@ not an exhaustive list.
 - institution — institutions/law codes/associations: Законы Хаммурапи, принципат, клерухия
 - dynasty     — dynasties: III династия Ура, Чжоу
 - culture     — cultures/periods: старовавилонский период
+- language    — languages/scripts/language families, incl. those named by
+                an adjective: аккадский язык, санскрит, клинопись, семитские языки
+- realia      — artifact types/materials/practices with specialized
+                historical translations (often lowercase): стела, электрум,
+                амфора, подать
 - event       — battles/wars/treaties/reforms: битва при Кадеше
 - deity       — deities/mythological beings: Мардук, Осирис, эпимелиды
 - work        — texts/inscriptions/literary works: упанишады, амарнские письма
@@ -77,6 +82,9 @@ not an exhaustive list.
   that is part of a multiword proper name is extracted with the whole name
   («Иранское нагорье», «Великая Китайская стена»).
 - Standalone dates, years, numbers.
+- Modern non-historical entities (brands, companies, websites, social
+  media) and natural-science vocabulary (genetics, chemistry): the
+  annotation covers HISTORICAL terminology only.
 - Principle: extract CONCRETE terms (names, titles, peoples, social strata,
   institutions, cultures), not general concepts. If it is a general word
   used descriptively, skip it.
@@ -94,6 +102,13 @@ not an exhaustive list.
   the most prominent one.
 - Do not skip a mention because the same entity already appeared in
   another form: «Дарий» and «Дария» are different surfaces — output both.
+- Lowercase nouns for historical realia ARE terms when scholarship
+  translates them in a specialized way («стела», «электрум», «подать»);
+  generic everyday nouns used descriptively are not («украшения»,
+  «предметы»).
+- When a language or script is named by an adjective, extract the
+  established phrase («на арамейском языке» → surface «арамейском языке»,
+  lemma «арамейский язык»).
 - lemma is the agreed NOMINATIVE form of the term: for a single word, the
   nominative case («Лагаше» → «Лагаш»); for a phrase, ALL words agree in
   the nominative («династии Цин» → «династия Цин», «авилумов» → «авилум»).
@@ -107,8 +122,8 @@ not an exhaustive list.
 <output>[{"surface":"Лагаше","lemma":"Лагаш"},{"surface":"номов","lemma":"ном"},{"surface":"лугаль","lemma":"лугаль"},{"surface":"авилумов","lemma":"авилум"},{"surface":"амореи","lemma":"амореи"}]</output>
 </example>
 <example>
-<source>Дарий прошёл через Иранское нагорье и подчинил Лидию, Карию и Ликию; позднее сатрапы Дария управляли Лидией из Сард.</source>
-<output>[{"surface":"Дарий","lemma":"Дарий"},{"surface":"Иранское нагорье","lemma":"Иранское нагорье"},{"surface":"Лидию","lemma":"Лидия"},{"surface":"Карию","lemma":"Кария"},{"surface":"Ликию","lemma":"Ликия"},{"surface":"сатрапы","lemma":"сатрап"},{"surface":"Дария","lemma":"Дарий"},{"surface":"Лидией","lemma":"Лидия"},{"surface":"Сард","lemma":"Сарды"}]</output>
+<source>Дарий прошёл через Иранское нагорье и подчинил Лидию, Карию и Ликию; сатрапы Дария собирали подать электрумом и вели записи на арамейском языке.</source>
+<output>[{"surface":"Дарий","lemma":"Дарий"},{"surface":"Иранское нагорье","lemma":"Иранское нагорье"},{"surface":"Лидию","lemma":"Лидия"},{"surface":"Карию","lemma":"Кария"},{"surface":"Ликию","lemma":"Ликия"},{"surface":"сатрапы","lemma":"сатрап"},{"surface":"Дария","lemma":"Дарий"},{"surface":"подать","lemma":"подать"},{"surface":"электрумом","lemma":"электрум"},{"surface":"арамейском языке","lemma":"арамейский язык"}]</output>
 </example>
 
 ## Bad example (do NOT do this)
