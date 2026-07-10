@@ -13,3 +13,11 @@
 {"article": "Ашшур (город)", "done": 13, "of": 100, "spent": 0.24504577000000055, "spent_by_kind": {"extract": 0.24504577000000055, "judge": 0.0}, "calls_by_kind": {"extract": 267, "judge": 0}}
 {"article": "Беотийский союз", "done": 14, "of": 100, "spent": 0.3176871099999992, "spent_by_kind": {"extract": 0.3176871099999992, "judge": 0.0}, "calls_by_kind": {"extract": 330, "judge": 0}}
 {"article": "Ашшурбанапал", "done": 15, "of": 100, "spent": 0.3176871099999992, "spent_by_kind": {"extract": 0.3176871099999992, "judge": 0.0}, "calls_by_kind": {"extract": 330, "judge": 0}}
+{"article": "Восстания в державе Ахеменидов (521—516 до н. э.)", "done": 16, "of": 100, "spent": 0.40052135999999716, "spent_by_kind": {"extract": 0.40052135999999716, "judge": 0.0}, "calls_by_kind": {"extract": 428, "judge": 0}}
+{"article": "Библ", "done": 17, "of": 100, "spent": 0.4185472899999967, "spent_by_kind": {"extract": 0.4185472899999967, "judge": 0.0}, "calls_by_kind": {"extract": 448, "judge": 0}}
+{"article": "Второй Афинский морской союз", "done": 18, "of": 100, "spent": 0.4250859799999965, "spent_by_kind": {"extract": 0.4250859799999965, "judge": 0.0}, "calls_by_kind": {"extract": 458, "judge": 0}}
+{"article": "Гай Сосий (консул)", "done": 19, "of": 100, "spent": 0.43061433999999627, "spent_by_kind": {"extract": 0.43061433999999627, "judge": 0.0}, "calls_by_kind": {"extract": 467, "judge": 0}}
+{"article": "Ашока", "done": 20, "of": 100, "spent": 0.45024082999999554, "spent_by_kind": {"extract": 0.45024082999999554, "judge": 0.0}, "calls_by_kind": {"extract": 499, "judge": 0}}
+{"article": "Гандхара", "done": 21, "of": 100, "spent": 0.4626048099999951, "spent_by_kind": {"extract": 0.4626048099999951, "judge": 0.0}, "calls_by_kind": {"extract": 518, "judge": 0}}
+{"article": "Данайцы", "done": 22, "of": 100, "spent": 0.4759986899999947, "spent_by_kind": {"extract": 0.4759986899999947, "judge": 0.0}, "calls_by_kind": {"extract": 537, "judge": 0}}
+{"article": "Гаруда", "done": 23, "of": 100, "spent": 0.4783378799999947, "spent_by_kind": {"extract": 0.4783378799999947, "judge": 0.0}, "calls_by_kind": {"extract": 537, "judge": 0}}

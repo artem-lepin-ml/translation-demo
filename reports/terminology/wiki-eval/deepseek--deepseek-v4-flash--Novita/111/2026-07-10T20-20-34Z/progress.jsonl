@@ -19,3 +19,11 @@
 {"article": "Веды", "done": 19, "of": 100, "spent": 0.3887537919999966, "spent_by_kind": {"extract": 0.3887537919999966, "judge": 0.0}, "calls_by_kind": {"extract": 442, "judge": 0}}
 {"article": "Гай Сосий (консул)", "done": 20, "of": 100, "spent": 0.45204868799999426, "spent_by_kind": {"extract": 0.45204868799999426, "judge": 0.0}, "calls_by_kind": {"extract": 535, "judge": 0}}
 {"article": "Гандхара", "done": 21, "of": 100, "spent": 0.45204868799999426, "spent_by_kind": {"extract": 0.45204868799999426, "judge": 0.0}, "calls_by_kind": {"extract": 535, "judge": 0}}
+{"article": "Гаруда", "done": 22, "of": 100, "spent": 0.45204868799999426, "spent_by_kind": {"extract": 0.45204868799999426, "judge": 0.0}, "calls_by_kind": {"extract": 535, "judge": 0}}
+{"article": "Данайцы", "done": 23, "of": 100, "spent": 0.49375155199999304, "spent_by_kind": {"extract": 0.49375155199999304, "judge": 0.0}, "calls_by_kind": {"extract": 585, "judge": 0}}
+{"article": "Дауния", "done": 24, "of": 100, "spent": 0.49543155199999295, "spent_by_kind": {"extract": 0.49543155199999295, "judge": 0.0}, "calls_by_kind": {"extract": 589, "judge": 0}}
+{"article": "Древнеегипетский календарь", "done": 25, "of": 100, "spent": 0.5219778199999915, "spent_by_kind": {"extract": 0.5219778199999915, "judge": 0.0}, "calls_by_kind": {"extract": 631, "judge": 0}}
+{"article": "Ашшур (город)", "done": 26, "of": 100, "spent": 0.5321164519999912, "spent_by_kind": {"extract": 0.5321164519999912, "judge": 0.0}, "calls_by_kind": {"extract": 640, "judge": 0}}
+{"article": "Древнегреческая религия", "done": 27, "of": 100, "spent": 0.539808807999991, "spent_by_kind": {"extract": 0.539808807999991, "judge": 0.0}, "calls_by_kind": {"extract": 650, "judge": 0}}
+{"article": "Древнехеттское царство", "done": 28, "of": 100, "spent": 0.5668184759999905, "spent_by_kind": {"extract": 0.5668184759999905, "judge": 0.0}, "calls_by_kind": {"extract": 680, "judge": 0}}
+{"article": "Зимрида (правитель Сидона)", "done": 29, "of": 100, "spent": 0.6438472319999885, "spent_by_kind": {"extract": 0.6438472319999885, "judge": 0.0}, "calls_by_kind": {"extract": 752, "judge": 0}}

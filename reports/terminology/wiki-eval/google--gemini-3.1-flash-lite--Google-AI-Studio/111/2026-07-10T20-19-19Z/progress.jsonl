@@ -28,3 +28,9 @@
 {"article": "Завоевание царства Шу царством Вэй", "done": 28, "of": 100, "spent": 1.9084057500000284, "spent_by_kind": {"extract": 1.9084057500000284, "judge": 0.0}, "calls_by_kind": {"extract": 896, "judge": 0}}
 {"article": "Зимрида (правитель Сидона)", "done": 29, "of": 100, "spent": 1.9282345000000294, "spent_by_kind": {"extract": 1.9282345000000294, "judge": 0.0}, "calls_by_kind": {"extract": 904, "judge": 0}}
 {"article": "Ибаль-пи-Эль II", "done": 30, "of": 100, "spent": 1.9634505000000306, "spent_by_kind": {"extract": 1.9634505000000306, "judge": 0.0}, "calls_by_kind": {"extract": 920, "judge": 0}}
+{"article": "Ибби-Суэн", "done": 31, "of": 100, "spent": 1.9979865000000323, "spent_by_kind": {"extract": 1.9979865000000323, "judge": 0.0}, "calls_by_kind": {"extract": 936, "judge": 0}}
+{"article": "Ашшурбанапал", "done": 32, "of": 100, "spent": 2.005112000000033, "spent_by_kind": {"extract": 2.005112000000033, "judge": 0.0}, "calls_by_kind": {"extract": 940, "judge": 0}}
+{"article": "Древняя Греция", "done": 33, "of": 100, "spent": 2.005112000000033, "spent_by_kind": {"extract": 2.005112000000033, "judge": 0.0}, "calls_by_kind": {"extract": 940, "judge": 0}}
+{"article": "Ишува", "done": 34, "of": 100, "spent": 2.215322250000042, "spent_by_kind": {"extract": 2.215322250000042, "judge": 0.0}, "calls_by_kind": {"extract": 1050, "judge": 0}}
+{"article": "Калан (мудрец)", "done": 35, "of": 100, "spent": 2.2171275000000423, "spent_by_kind": {"extract": 2.2171275000000423, "judge": 0.0}, "calls_by_kind": {"extract": 1053, "judge": 0}}
+{"article": "Калинга (государство)", "done": 36, "of": 100, "spent": 2.2756142500000456, "spent_by_kind": {"extract": 2.2756142500000456, "judge": 0.0}, "calls_by_kind": {"extract": 1084, "judge": 0}}
