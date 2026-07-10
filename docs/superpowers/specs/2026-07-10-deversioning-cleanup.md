@@ -353,8 +353,9 @@ match nor obvious residue is surfaced to the owner rather than silently resolved
 24. `localhost:\d+/v1` as a PATTERN (replaces the single-port `localhost:8001/v1` literal
     previously in item 5) — third-party API contract, the port varies by environment.
 25. Prose citations of the external v1/v2 scoring-prompt lineage at
-    `src/palimpsest/webapp/seed.py:27` and `src/palimpsest/webapp/judge.py:17` — external-prompt
-    provenance, same class as items 3-4/8.
+    `src/palimpsest/webapp/seed.py:27` and `src/palimpsest/webapp/judge.py:17`, plus the
+    `docs/stages/translation-eval.md:115` `from_model_config` citation of the sr004 external clone's
+    `client.py` — external-prompt/external-clone provenance, same class as items 3-4/8.
 
 ### C9 — `chore: durable de-versioning guard (convention + allowlist + advisory hook)` · [S · after C8 · OWNER-GATE(blocking flip)]
 The durable guard the owner asked for (§ finding-unknowns W6→next map).

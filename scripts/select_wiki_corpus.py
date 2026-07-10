@@ -193,7 +193,7 @@ for name, cat in SECTIONS:
                          "examined": examined, "dropped_gate": dropped,
                          "n_found": len(picks), "picks": picks})
     yrs = [p["year"] for p in picks if p["year"] is not None]
-    print(f"[v2] {name:26s} found={len(picks)}/10 examined={examined} "
+    print(f"{name:26s} found={len(picks)}/10 examined={examined} "
           f"dropped={dropped} pool_excl={len(exclusive[name])} "
           f"years[{min(yrs) if yrs else '—'}..{max(yrs) if yrs else '—'}]", flush=True)
 
