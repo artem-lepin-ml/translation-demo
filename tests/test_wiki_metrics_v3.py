@@ -179,6 +179,15 @@ def test_cell_zero_total_is_uninformative_not_a_crash():
 # numbers (named 3265/4032, term 621/1530) were computed on sitelink-CLEAN
 # predictions and differ slightly from the raw numbers below by construction
 # -- both are legitimate, they answer different questions.
+#
+# Recomputed 2026-07-10 (corpus swap): 5 non-ancient-history articles in
+# gt.jsonl (Гелиополиты, Стигия, Яффа, Кесарево безумие, Керченский пролив)
+# were replaced by the next seed-42 walk survivors from the same sections
+# (see data/eval/wiki/cleanup/replacements_2026-07-10.json). RUN_A/RUN_B
+# pred.jsonl are unchanged (predictions were never generated for the 5 new
+# articles), so this recompute mechanically re-scores the same runs against
+# the new gold -- gold_units drops from 5551 to 5358 and tp/fn/fp shift
+# accordingly; this is expected and not a code regression.
 # ---------------------------------------------------------------------------
 
 
@@ -222,16 +231,16 @@ def test_regression_anchor_run_a_gemini(tier_assignment):
     articles = _build_articles(RUN_A)
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
 
-    assert result["n_ambiguous_gold_units"] == 114
-    assert result["n_gold_mentions_dropped_by_tier"] == 765
+    assert result["n_ambiguous_gold_units"] == 112
+    assert result["n_gold_mentions_dropped_by_tier"] == 756
 
     named = result["classes"]["named"]
-    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (3297, 734, 1660, 4031)
+    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (3078, 808, 1526, 3886)
 
     term = result["classes"]["term"]
-    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (630, 890, 712, 1520)
+    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (593, 879, 667, 1472)
 
-    assert named["gold_units"] + term["gold_units"] == 5551
+    assert named["gold_units"] + term["gold_units"] == 5358
 
 
 @pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
@@ -242,24 +251,27 @@ def test_regression_anchor_run_b_deepseek(tier_assignment):
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
 
     named = result["classes"]["named"]
-    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (2881, 1150, 1358, 4031)
+    assert (named["tp"], named["fn"], named["fp"], named["gold_units"]) == (2705, 1181, 1259, 3886)
 
     term = result["classes"]["term"]
-    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (589, 931, 592, 1520)
+    assert (term["tp"], term["fn"], term["fp"], term["gold_units"]) == (550, 922, 542, 1472)
 
-    assert named["gold_units"] + term["gold_units"] == 5551
+    assert named["gold_units"] + term["gold_units"] == 5358
 
 
 @pytest.mark.skipif(not GT_PATH.exists(), reason="gold corpus not present in this checkout")
 @pytest.mark.skipif(not TIER_PATH.exists(), reason="tier assignment not present in this checkout")
 def test_gold_named_plus_term_invariant(tier_assignment):
-    """Spec Sec.6: named+term gold_units == 5551, independent of which run's
+    """Spec Sec.6: named+term gold_units == 5358, independent of which run's
     predictions are scored against it (the gold side alone determines this).
     Was 5562 before the IPA-template symbol-fragment gold-anchor fix (2026-07-10,
     docs/reports/debugger-ipa-parser-gold-anchors.md) dropped 56 spurious
     per-phoneme anchors from gt.jsonl -- most collapsed into already-counted
-    gold units or were tier-filtered anyway, netting an 11-unit shift here."""
+    gold units or were tier-filtered anyway, netting an 11-unit shift to 5551.
+    Then 5551 -> 5358 (this recompute) after the same-day 5-article corpus swap
+    (data/eval/wiki/cleanup/replacements_2026-07-10.json) replaced 5 non-ancient
+    articles with 5 new ones of different anchor density."""
     articles = _build_articles(RUN_A)
     result = aggregate_corpus_v3(articles, tier_assignment=tier_assignment)
     total = result["classes"]["named"]["gold_units"] + result["classes"]["term"]["gold_units"]
-    assert total == 5551
+    assert total == 5358

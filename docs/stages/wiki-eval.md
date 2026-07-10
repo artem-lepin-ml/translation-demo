@@ -18,7 +18,9 @@ Outputs: [data/eval/wiki/titles_v2.txt](../../data/eval/wiki/titles_v2.txt) (`ti
 
 **Known residue (disclosed, kept):** ≈3/100 undated pages fall outside the intended period; retained rather than curated post hoc (owner decision 2026-07-05, avoids cherry-picking).
 
-The canonical ground truth is [data/eval/wiki/gt.jsonl](../../data/eval/wiki/gt.jsonl) — 100 articles / 7 903 GT tuples (`build-gt --titles data/eval/wiki/titles_v2.txt`); see [2026-07-10-gt-canonicalization.md](../superpowers/specs/2026-07-10-gt-canonicalization.md) for the canonicalization that retired an earlier 20-article pilot file which used to live at this path. (Was 7 959 before the 2026-07-10 single-char symbol-fragment fix dropped 56 spurious per-phoneme IPA-template anchors — see `_is_symbol_fragment` below and [docs/known_issues.md](../known_issues.md).)
+**Manual article replacement (2026-07-10):** a full manual review flagged 5 articles as out-of-scope despite passing the automated gate (two fictional-universe topics, one modern-geography article, one modern historiographic concept, one majority-post-cutoff city article — root cause: the P31 chronology gate's blacklist doesn't cover fictional-universe entities). The owner approved replacing each with the next seed-42 walk survivor from the same section; provenance, ranks and one owner substitution note: [data/eval/wiki/cleanup/replacements_2026-07-10.json](../../data/eval/wiki/cleanup/replacements_2026-07-10.json). The corpus is still 100 articles / 10 sections; `selection_v2.json` and `titles_v2.txt` reflect the swap.
+
+The canonical ground truth is [data/eval/wiki/gt.jsonl](../../data/eval/wiki/gt.jsonl) — 100 articles / 7 658 GT tuples (`build-gt --titles data/eval/wiki/titles_v2.txt`); see [2026-07-10-gt-canonicalization.md](../superpowers/specs/2026-07-10-gt-canonicalization.md) for the canonicalization that retired an earlier 20-article pilot file which used to live at this path. (Was 7 959 before the 2026-07-10 single-char symbol-fragment fix dropped 56 spurious per-phoneme IPA-template anchors, then 7 903, then 7 658 after the same-day manual 5-article corpus replacement above — see `_is_symbol_fragment` below and [docs/known_issues.md](../known_issues.md).)
 
 ## Prompts (2026-07-10 rework — system/user split, English)
 
@@ -108,7 +110,7 @@ python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl \
 
 ## Status
 
-Modules + CLI implemented; unit tests green. Corpus selection v2 committed (100 titles, 10 sections); canonical `gt.jsonl` = 100 articles / 7 903 GT tuples.
+Modules + CLI implemented; unit tests green. Corpus selection v2 committed (100 titles, 10 sections, 5 manually replaced 2026-07-10 — see Corpus above); canonical `gt.jsonl` = 100 articles / 7 658 GT tuples.
 
 **Experiment v2 rework landed (2026-07-10, 4 commits on `claude/ner-translation-config-b0ozsc`)**: `421c99d` (English NER system/user prompt, `{surface, lemma}` schema, full-sentence judge context), `0d89242` (protocol-v3 set-based aggregator, retires the mention-level/sitelink-replay machinery), `275f8c7` (archived a leftover-resume run, see known_issues.md), `7e7ddfd` (standard-OpenRouter transport, vendor sampling, per-call gates, observability, `cmd_report` on protocol v3). Full spec: [2026-07-10-wiki-eval-experiment-v2.md](../superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md).
 

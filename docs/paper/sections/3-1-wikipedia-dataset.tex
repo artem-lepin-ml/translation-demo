@@ -60,3 +60,19 @@ quality.
 % July 2026. Because the Wikipedia category graph is noisy, roughly three of the
 % 100 articles fall outside the target period. They are disclosed and retained
 % to avoid manual curation.
+%
+% A subsequent manual review of all 100 articles (2026-07-10) flagged five
+% additional articles as out of scope despite passing the automated gate: two
+% fictional-universe topics (Marvel's Heliopolitans and Conan's Stygia), one
+% modern-geography article, one modern historiographic concept, and one city
+% article with roughly 72\% post-cutoff content. The root cause is that the
+% P31 chronology gate's blacklist covers only films, paintings, and museums
+% and does not catch fictional-universe entities, whose Wikidata items often
+% carry no inception date and so pass under the ``undated kept'' rule. Each
+% flagged article was replaced by the next seed-42 walk survivor from the same
+% section -- re-running the selection reproduced the original candidate pools
+% exactly -- and each replacement was individually verified as genuinely
+% ancient via lead-paragraph and P31 inspection. One substitution was a
+% reviewer decision: the rank-11 candidate was rejected as chronologically
+% borderline (terminal event 537~CE), and the rank-14 candidate was taken
+% instead.

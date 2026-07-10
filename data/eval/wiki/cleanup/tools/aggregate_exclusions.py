@@ -4,6 +4,14 @@
 # DRAFT anchor-exclusions file, reconciled against the CURRENT gt.jsonl by tuple
 # identity (never by index -- commit 4c77b7c re-derived gt.jsonl after an IPA
 # parser fix and shifted tuple indices in 4 articles).
+#
+# Updated 2026-07-10 (same day, later): the owner-approved 5-article corpus swap
+# (see REPLACEMENTS_PATH) re-sorts gt.jsonl alphabetically, which moves 74/100
+# article positions -- not just the 5 replaced ones. Reconciliation against
+# "current gt.jsonl" was therefore switched from positional (current_records[i-1])
+# to title-keyed (current_by_title[titles[i-1]]); the 5 replaced articles'
+# flags are exempt (their title no longer exists in current gt.jsonl at all) and
+# go to the new ``moot_article_replaced`` bucket instead.
 """Aggregate the wave1-10 LLM gold-cleanup flags into one draft exclusions file.
 
 Every removal file (`removals-wave*/NNN.json`) and both override files
@@ -11,10 +19,15 @@ Every removal file (`removals-wave*/NNN.json`) and both override files
 the PRE-parser-fix gt.jsonl (``n = tuple_index + 1`` in that version). This
 script resolves each ``n`` to a stable identity --
 ``(token_index, anchor_text, qid, span_len)`` -- in the pre-fix gold, then
-reconciles that identity against the CURRENT (post-fix, committed) gt.jsonl.
-An identity still present there becomes a "live" exclusion; an identity that
-vanished (only possible in the 4 articles the IPA fix touched) is reported
-separately as ``dropped_by_parser_fix`` and requires no action.
+reconciles that identity against the CURRENT gt.jsonl, keyed by the article's
+TITLE (never by list position -- gt.jsonl is kept sorted by title, so any
+title-set change reorders most of the file; position is not a stable article
+identifier). An identity still present there becomes a "live" exclusion; an
+identity that vanished for a still-present article (only possible in the 4
+articles the IPA fix touched) is reported separately as
+``dropped_by_parser_fix``; an identity whose whole article was replaced by the
+2026-07-10 manual corpus swap (REPLACED_ARTICLES) is reported separately as
+``moot_article_replaced`` -- none of these require action.
 
 gt.jsonl itself is never read for writing -- this script only ever WRITES
 ``data/eval/wiki/anchor_exclusions_draft.json``. Semantic exclusions are not
@@ -27,8 +40,10 @@ Hard-error conditions (the script refuses to guess):
   * an override ``restore``/``add_removals`` referencing an (article, n) pair
     that is not (respectively: is already) in the base flagged set
   * a flagged identity missing from current gt.jsonl in an article OTHER than
-    the 4 known IPA-fix articles (017, 051, 057, 081)
+    the 4 known IPA-fix articles (017, 051, 057, 081) or REPLACED_ARTICLES
   * article 081's known-live survivors (n=1, 68, 77) failing to land as live
+  * REPLACED_ARTICLES disagreeing with REPLACEMENTS_PATH about which manifest
+    titles were replaced, in either direction
 
 Run:
   cd /home/user/translation-demo && PYTHONPATH=src python3 \\
@@ -53,6 +68,7 @@ GT_PATH = ROOT / "data/eval/wiki/gt.jsonl"
 MANIFEST_PATH = CLEANUP_DIR / "manifest.json"
 OVERRIDES_WAVE1_PATH = CLEANUP_DIR / "overrides_wave1.json"
 OVERRIDES_WAVE2_PATH = CLEANUP_DIR / "overrides_wave2.json"
+REPLACEMENTS_PATH = CLEANUP_DIR / "replacements_2026-07-10.json"
 OUT_PATH = ROOT / "data/eval/wiki/anchor_exclusions_draft.json"
 
 # manifest order == article numbering 001..100; entry i (1-based) -> file NNN.json
@@ -69,16 +85,37 @@ WAVE_DIRS: list[tuple[str, range]] = [
 PARSER_FIX_ARTICLES = {"017", "051", "057", "081"}
 PARSER_FIX_COMMIT = "4c77b7c"
 
+# The owner-approved 2026-07-10 manual corpus swap (see REPLACEMENTS_PATH)
+# replaced these 5 manifest articles' titles wholesale (not just individual
+# anchors) -- their flags can never resolve as live/dropped against current
+# gt.jsonl because the article itself is gone; cross-validated against
+# REPLACEMENTS_PATH at runtime (see main()).
+REPLACED_ARTICLES = {"023", "041", "042", "076", "100"}
+REPLACEMENT_NOTE = "article replaced 2026-07-10, exclusion moot"
+
 Identity = tuple[int, str, str, int]
 
 # ── Cross-wave consistency rules (task step 6), hardcoded per the spec ──────
-CROSS_WAVE_HISTORICAL_SOURCE = {
-    "article": "004",
-    # matches any inflection of the two-word phrase "исторический источник"
-    # (историческим источником, историческому источнику, ...)
-    "pattern": re.compile(r"^истор\w*\s+источник\w*$", re.IGNORECASE),
-    "reason": "cross-wave: align with 030 (generic historiographic phrase)",
-}
+CROSS_WAVE_RULES: list[dict[str, Any]] = [
+    {
+        "article": "004",
+        # matches any inflection of the two-word phrase "исторический источник"
+        # (историческим источником, историческому источнику, ...)
+        "pattern": re.compile(r"^истор\w*\s+источник\w*$", re.IGNORECASE),
+        "reason": "cross-wave: align with 030 (generic historiographic phrase)",
+    },
+    {
+        "article": "094",
+        # the sole remaining un-flagged "пиньинь" transliteration-tag anchor in
+        # the whole corpus (all its siblings were caught by wave/override
+        # flags); added per orchestrator context review of the sweep candidate.
+        "pattern": re.compile(r"^пиньинь$"),
+        "reason": (
+            "transliteration template tag (orchestrator context review of "
+            "sweep candidate; aligns with the 006 пиньинь ruling)"
+        ),
+    },
+]
 PINYIN_ANCHOR_TEXT = "пиньинь"
 PINYIN_SWEEP_RULE = "piniyin-tag-vs-standalone (needs context review)"
 
@@ -145,6 +182,7 @@ def main() -> None:
     current_records = load_jsonl(GT_PATH)
     overrides_wave1 = json.loads(OVERRIDES_WAVE1_PATH.read_text(encoding="utf-8"))
     overrides_wave2 = json.loads(OVERRIDES_WAVE2_PATH.read_text(encoding="utf-8"))
+    replacements = json.loads(REPLACEMENTS_PATH.read_text(encoding="utf-8"))
 
     if not (len(manifest) == len(prefix_records) == len(current_records) == 100):
         raise SystemExit(
@@ -152,29 +190,73 @@ def main() -> None:
             f"manifest={len(manifest)} prefix={len(prefix_records)} current={len(current_records)}"
         )
 
-    # ── sanity gate: manifest n_anchors must equal len(pre-fix gt_tuples), in order ──
+    # cross-validate the hardcoded REPLACED_ARTICLES against the durable
+    # replacements record, in both directions
+    replaced_flagged_titles = {r["flagged_title"] for r in replacements}
+    new_title_by_old_title = {r["flagged_title"]: r["replacement_title"] for r in replacements}
+    if len(replaced_flagged_titles) != len(REPLACED_ARTICLES):
+        raise SystemExit(
+            f"HARD ERROR: REPLACED_ARTICLES has {len(REPLACED_ARTICLES)} entries but "
+            f"{REPLACEMENTS_PATH.name} lists {len(replaced_flagged_titles)} flagged titles"
+        )
+
+    # current gt.jsonl is kept sorted by title, not by manifest position -- any
+    # title-set change (like the 2026-07-10 swap) reorders most of the file, so
+    # reconciliation below is keyed by TITLE, never by list index
+    current_by_title: dict[str, dict[str, Any]] = {rec["title"]: rec for rec in current_records}
+    if len(current_by_title) != 100:
+        raise SystemExit("HARD ERROR: duplicate titles in current gt.jsonl")
+
+    # ── sanity gate: manifest n_anchors must equal len(pre-fix gt_tuples), in order;
+    # current-gold presence is checked by TITLE and must agree with REPLACED_ARTICLES ──
     for i, entry in enumerate(manifest, start=1):
         pre = prefix_records[i - 1]
+        art = art3(i)
         if pre["title"] != entry["title"]:
             raise SystemExit(
-                f"HARD ERROR: article {art3(i)} title mismatch: "
+                f"HARD ERROR: article {art} title mismatch: "
                 f"manifest={entry['title']!r} prefix-gold={pre['title']!r}"
             )
         if len(pre["gt_tuples"]) != entry["n_anchors"]:
             raise SystemExit(
-                f"HARD ERROR: article {art3(i)} ({entry['title']}) anchor-count mismatch: "
+                f"HARD ERROR: article {art} ({entry['title']}) anchor-count mismatch: "
                 f"manifest n_anchors={entry['n_anchors']} pre-fix gt_tuples={len(pre['gt_tuples'])}"
             )
-        if current_records[i - 1]["title"] != entry["title"]:
+        is_replaced = art in REPLACED_ARTICLES
+        if is_replaced != (entry["title"] in replaced_flagged_titles):
             raise SystemExit(
-                f"HARD ERROR: article {art3(i)} title mismatch against current gt.jsonl: "
-                f"manifest={entry['title']!r} current={current_records[i - 1]['title']!r}"
+                f"HARD ERROR: article {art} ({entry['title']!r}) REPLACED_ARTICLES "
+                f"membership ({is_replaced}) disagrees with {REPLACEMENTS_PATH.name} "
+                f"({entry['title'] in replaced_flagged_titles})"
             )
+        if is_replaced:
+            if entry["title"] in current_by_title:
+                raise SystemExit(
+                    f"HARD ERROR: article {art} ({entry['title']!r}) is in REPLACED_ARTICLES "
+                    f"but its title is still present in current gt.jsonl"
+                )
+        else:
+            if entry["title"] not in current_by_title:
+                raise SystemExit(
+                    f"HARD ERROR: article {art} ({entry['title']!r}) title missing from "
+                    f"current gt.jsonl and it is not in REPLACED_ARTICLES"
+                )
 
     titles = [e["title"] for e in manifest]
-    article_qids = [rec["qid"] for rec in current_records]
     prefix_tuples: list[list[list[Any]]] = [rec["gt_tuples"] for rec in prefix_records]
-    current_tuples: list[list[list[Any]]] = [rec["gt_tuples"] for rec in current_records]
+
+    def current_tuples_for(i: int) -> list[list[Any]] | None:
+        """gt_tuples for manifest article i in the CURRENT gold, keyed by title;
+        None if that article's title was replaced (see REPLACED_ARTICLES)."""
+        rec = current_by_title.get(titles[i - 1])
+        return rec["gt_tuples"] if rec is not None else None
+
+    def article_qid_for(i: int) -> str:
+        """qid to report for manifest article i: the CURRENT qid if the article
+        is still live, else its own PRE-fix qid (the article is gone; report
+        its original identity for audit continuity)."""
+        rec = current_by_title.get(titles[i - 1])
+        return rec["qid"] if rec is not None else prefix_records[i - 1]["qid"]
 
     # duplicate-tuple detection in the PRE-fix gold (informational -- see step 5;
     # empirically all 6 groups live in article 081, whose duplicated single-char
@@ -182,8 +264,10 @@ def main() -> None:
     prefix_identity_counts: list[Counter[Identity]] = [
         Counter(tuple(t) for t in tuples) for tuples in prefix_tuples
     ]
-    current_identity_counts: list[Counter[Identity]] = [
-        Counter(tuple(t) for t in tuples) for tuples in current_tuples
+    # None for the 5 REPLACED_ARTICLES (no current tuples to count)
+    current_identity_counts: list[Counter[Identity] | None] = [
+        Counter(tuple(t) for t in cur) if (cur := current_tuples_for(i)) is not None else None
+        for i in range(1, 101)
     ]
 
     def resolve(i: int, n: int) -> Identity:
@@ -237,7 +321,7 @@ def main() -> None:
             )
         del flags[key]
         restored.append({
-            "article_no": art3(i), "title": titles[i - 1], "article_qid": article_qids[i - 1],
+            "article_no": art3(i), "title": titles[i - 1], "article_qid": article_qid_for(i),
             "token_index": idx, "span_len": slen, "anchor_text": surf, "qid": qid,
             "reason": r["reason"],
         })
@@ -265,37 +349,51 @@ def main() -> None:
             flags[key] = {"identity": (idx, surf, qid, slen), "reason": a["reason"], "provenance": provenance}
             override_add_counts[provenance] += 1
 
-    # ── step 6a: cross-wave add -- article 004 "исторический источник" ──
+    # ── step 6a: cross-wave adds (article 004 "исторический источник", article
+    # 094 "пиньинь" -- see CROSS_WAVE_RULES) ──
     cross_wave_add_count = 0
-    rule = CROSS_WAVE_HISTORICAL_SOURCE
-    ci = int(rule["article"])
-    for n0, t in enumerate(prefix_tuples[ci - 1], start=1):
-        idx, surf, qid, slen = t
-        if rule["pattern"].match(surf) and (ci, n0) not in flags:
-            flags[(ci, n0)] = {"identity": (idx, surf, qid, slen), "reason": rule["reason"], "provenance": "cross-wave"}
-            cross_wave_add_count += 1
+    for rule in CROSS_WAVE_RULES:
+        ci = int(rule["article"])
+        for n0, t in enumerate(prefix_tuples[ci - 1], start=1):
+            idx, surf, qid, slen = t
+            if rule["pattern"].match(surf) and (ci, n0) not in flags:
+                flags[(ci, n0)] = {"identity": (idx, surf, qid, slen), "reason": rule["reason"], "provenance": "cross-wave"}
+                cross_wave_add_count += 1
 
-    # ── step 4: reconcile every flag against CURRENT gold by identity ──
+    # ── step 4: reconcile every flag against CURRENT gold by identity, keyed by
+    # article TITLE; REPLACED_ARTICLES flags cannot be reconciled (their article
+    # is gone) and go to moot_article_replaced regardless of prefix/current state ──
     exclusions: list[dict[str, Any]] = []
     dropped: list[dict[str, Any]] = []
+    moot_article_replaced: list[dict[str, Any]] = []
     duplicate_identity_cases: list[dict[str, Any]] = []
 
     for (i, n), rec in flags.items():
         identity = rec["identity"]
         idx, surf, qid, slen = identity
+        art = art3(i)
         base = {
-            "article_no": art3(i), "title": titles[i - 1], "article_qid": article_qids[i - 1],
+            "article_no": art, "title": titles[i - 1], "article_qid": article_qid_for(i),
             "token_index": idx, "span_len": slen, "anchor_text": surf, "qid": qid,
         }
         if prefix_identity_counts[i - 1][identity] > 1:
             duplicate_identity_cases.append({**base, "n_prefix": n})
 
-        if current_identity_counts[i - 1][identity] > 0:
+        if art in REPLACED_ARTICLES:
+            moot_article_replaced.append({
+                **base, "reason": rec["reason"], "provenance": rec["provenance"],
+                "note": REPLACEMENT_NOTE,
+            })
+            continue
+
+        cur_counts = current_identity_counts[i - 1]
+        assert cur_counts is not None, f"article {art} has no current tuples but is not REPLACED_ARTICLES"
+        if cur_counts[identity] > 0:
             exclusions.append({**base, "reason": rec["reason"], "provenance": rec["provenance"]})
         else:
-            if art3(i) not in PARSER_FIX_ARTICLES:
+            if art not in PARSER_FIX_ARTICLES:
                 raise SystemExit(
-                    f"HARD ERROR: article {art3(i)} n={n} identity {identity} is absent from "
+                    f"HARD ERROR: article {art} n={n} identity {identity} is absent from "
                     f"current gt.jsonl but the article is not one of the known IPA-fix articles "
                     f"{sorted(PARSER_FIX_ARTICLES)} -- investigate before treating as dropped"
                 )
@@ -315,25 +413,43 @@ def main() -> None:
     exclusions.sort(key=lambda e: (e["article_no"], e["token_index"]))
     dropped.sort(key=lambda e: (e["article_no"], e["token_index"]))
     restored.sort(key=lambda e: (e["article_no"], e["token_index"]))
+    moot_article_replaced.sort(key=lambda e: (e["article_no"], e["token_index"]))
 
-    # ── step 6b + 7: sweep candidates over CURRENT gold, not already excluded ──
-    excluded_identity_by_article: list[set[Identity]] = [set() for _ in range(100)]
+    # ── step 6b + 7: sweep candidates over CURRENT gold, not already excluded.
+    # Keyed by TITLE (current gt.jsonl position is not a stable article id).
+    # The 5 new articles from the 2026-07-10 swap have no manifest entry; they
+    # are labeled with the manifest article_no they replaced, for continuity. ──
+    excluded_identity_by_title: dict[str, set[Identity]] = {}
     for (i, n), rec in flags.items():
-        excluded_identity_by_article[i - 1].add(rec["identity"])
+        excluded_identity_by_title.setdefault(titles[i - 1], set()).add(rec["identity"])
+
+    manifest_article_no_by_title = {e["title"]: art3(i) for i, e in enumerate(manifest, start=1)}
+    replaced_article_no_by_new_title = {
+        new_title_by_old_title[e["title"]]: art3(i)
+        for i, e in enumerate(manifest, start=1)
+        if art3(i) in REPLACED_ARTICLES
+    }
+
+    def article_no_for(title: str) -> str:
+        if title in manifest_article_no_by_title:
+            return manifest_article_no_by_title[title]
+        return replaced_article_no_by_new_title[title]
 
     sweep_candidates: list[dict[str, Any]] = []
     sweep_rule_counts: Counter[str] = Counter()
 
-    for i, rec in enumerate(current_records, start=1):
-        title = titles[i - 1]
+    for rec in current_records:
+        title = rec["title"]
+        article_no = article_no_for(title)
+        excluded = excluded_identity_by_title.get(title, set())
         for t in rec["gt_tuples"]:
             idx, surf, qid, slen = t[0], t[1], t[2], t[3]
             identity = (idx, surf, qid, slen)
-            if identity in excluded_identity_by_article[i - 1]:
+            if identity in excluded:
                 continue
             if surf == PINYIN_ANCHOR_TEXT:
                 sweep_candidates.append({
-                    "article_no": art3(i), "title": title, "anchor_text": surf,
+                    "article_no": article_no, "title": title, "anchor_text": surf,
                     "token_index": idx, "qid": qid, "rule": PINYIN_SWEEP_RULE,
                 })
                 sweep_rule_counts[PINYIN_SWEEP_RULE] += 1
@@ -341,7 +457,7 @@ def main() -> None:
             for rule_name, pattern in SWEEP_REGEXES:
                 if pattern.match(surf):
                     sweep_candidates.append({
-                        "article_no": art3(i), "title": title, "anchor_text": surf,
+                        "article_no": article_no, "title": title, "anchor_text": surf,
                         "token_index": idx, "qid": qid, "rule": rule_name,
                     })
                     sweep_rule_counts[rule_name] += 1
@@ -361,6 +477,7 @@ def main() -> None:
     counts = {
         "live_exclusions": len(exclusions),
         "dropped_by_parser_fix": len(dropped),
+        "moot_article_replaced": len(moot_article_replaced),
         "restored": len(restored),
         "override_add": sum(override_add_counts.values()),
         "cross_wave_add": cross_wave_add_count,
@@ -373,6 +490,7 @@ def main() -> None:
         "counts": counts,
         "exclusions": exclusions,
         "dropped_by_parser_fix": dropped,
+        "moot_article_replaced": moot_article_replaced,
         "restored": restored,
         "sweep_candidates": sweep_candidates,
         "open_questions": open_questions,
@@ -392,6 +510,10 @@ def main() -> None:
     dropped_by_article = Counter(e["article_no"] for e in dropped)
     for art in sorted(dropped_by_article):
         print(f"  dropped in {art}: {dropped_by_article[art]}")
+    print(f"\nmoot_article_replaced total: {len(moot_article_replaced)}")
+    moot_by_article = Counter(e["article_no"] for e in moot_article_replaced)
+    for art in sorted(moot_by_article):
+        print(f"  moot in {art}: {moot_by_article[art]}")
     print(f"\nsweep candidates total: {len(sweep_candidates)}")
     for rule_name, cnt in sorted(sweep_rule_counts.items()):
         print(f"  {rule_name}: {cnt}")

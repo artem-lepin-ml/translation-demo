@@ -247,6 +247,28 @@ IPA/transcription template will hit the same per-glyph link pattern — the guar
 a corpus-wide re-derivation after adding articles should still spot-check `n_excluded_symbol` counts for
 unexpectedly high per-article piles (Тронное's 52 was the tell before the fix existed).
 
+### WikiHist corpus selection P31 gate does not exclude fictional-universe entities
+**Discovered 2026-07-10**, during a full manual review of all 100 corpus articles. 5 articles passed the
+automated selection gate (§Corpus in [wiki-eval.md](stages/wiki-eval.md)) despite being out of scope for an
+ancient-history corpus: two fictional-universe topics («Гелиополиты» — Marvel's Heliopolitans, «Стигия» —
+Conan's Stygia), one modern-geography article («Керченский пролив»), one modern historiographic concept
+(«Кесарево безумие»), and one article whose body is roughly 72% post-cutoff content («Яффа»).
+
+**Root cause.** The chronology gate's P31 blacklist covers only `{film, painting, museum}` (see
+[wiki-eval.md](stages/wiki-eval.md) §Corpus). It has no entry for fictional-universe entities
+(Wikidata P31 values like "comics location" or "fictional location"), and such items frequently carry no
+`inception`/`start time`/`point in time` date at all, so they pass the gate's "undated pages kept" rule instead
+of being caught by the date cutoff.
+
+**Mitigation applied.** The owner approved replacing all 5 with the next seed-42 walk survivor from the same
+section (re-running the selection reproduced the original candidate pools exactly); each replacement was
+individually verified ancient via lead-paragraph + P31 inspection before being accepted. Provenance:
+[data/eval/wiki/cleanup/replacements_2026-07-10.json](../data/eval/wiki/cleanup/replacements_2026-07-10.json).
+This was a one-off manual fix, not a gate change — **the underlying gate gap is still open**: any future corpus
+build (new sections, a re-run at a larger N) can reintroduce the same failure mode. Consider extending the P31
+blacklist with fictional/comics/mythos-adjacent types, or adding a lightweight "is this a real historical
+topic" LLM pre-check before an article enters the candidate pool.
+
 ### RESOLVED 2026-07-10: malformed provider response body killed a wiki-eval run
 
 **Symptom.** During the 2026-07-10 wiki-eval deepseek mini-pilot (Phase 3a, run dir
