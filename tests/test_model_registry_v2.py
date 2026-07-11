@@ -1,8 +1,9 @@
-"""EMNLP demo sprint (2026-07-11): the model registry collapses to the 5
-paper models, migrate() upserts them on a live prod DB and remaps every
-role reference (criterion/translator_config/grounding_config/refiner_config)
-to the new default, then prunes the 8 obsolete rows once nothing references
-them."""
+"""EMNLP demo sprint (2026-07-11): the model registry collapses to the 4
+paper models (a 5th, TranslateGemma-27B, was dropped the same day once the
+owner finalized the registry on prod via the Settings UI), migrate() upserts
+them on a live prod DB and remaps every role reference (criterion/
+translator_config/grounding_config/refiner_config) to the new default, then
+prunes the 8 obsolete rows once nothing references them."""
 from __future__ import annotations
 
 import sqlite3
@@ -19,7 +20,7 @@ OLD_VLLM = "Qwen/Qwen3.6-27B"  # old vLLM placeholder name — NOT in the new MA
 @pytest.fixture()
 def prod_conn(tmp_path):
     """A DB shaped like the live prod DB pre-sprint: 8 legacy model rows
-    (5 OpenRouter + 3 vLLM, none of which share a name with the new 5),
+    (5 OpenRouter + 3 vLLM, none of which share a name with the new 4),
     3 criteria + translator_config + grounding_config all pointing at the
     retiring default."""
     path = tmp_path / "prod.db"
@@ -82,7 +83,7 @@ def prod_conn(tmp_path):
     return conn
 
 
-def test_five_matrix_models_present_after_migration(prod_conn):
+def test_four_matrix_models_present_after_migration(prod_conn):
     migrate.migrate(prod_conn)
     names = {r["name"] for r in prod_conn.execute("SELECT name FROM model")}
     assert names == set(MATRIX.keys())
@@ -125,12 +126,29 @@ def test_refiner_config_created_and_seeded_with_new_default(prod_conn):
     assert row["params_json"]
 
 
-def test_translategemma_vllm_row_present_and_display_only(prod_conn):
+def test_translategemma_not_in_matrix_and_never_inserted(prod_conn):
+    """TranslateGemma-27B (the local vLLM placeholder from the 2026-07-11
+    sprint's original 5-row draft) was dropped once the owner finalized the
+    registry to 4 OpenRouter-only rows on prod — migrate() must never
+    (re)insert it."""
+    assert "TranslateGemma-27B" not in MATRIX
     migrate.migrate(prod_conn)
-    row = prod_conn.execute("SELECT base_url, api_key FROM model WHERE name='TranslateGemma-27B'").fetchone()
-    assert row is not None
-    assert row["base_url"] == "http://localhost:8001/v1"
-    assert row["api_key"] == ""
+    row = prod_conn.execute("SELECT 1 FROM model WHERE name='TranslateGemma-27B'").fetchone()
+    assert row is None
+
+
+def test_translategemma_pruned_if_present_from_pre_finalization_snapshot(prod_conn):
+    """A DB snapshotted before the owner's prod finalization may still carry
+    the row from the sprint's original 5-row draft — migrate() prunes it like
+    any other now-obsolete, unreferenced model row (never re-added since it
+    is no longer in MATRIX)."""
+    prod_conn.execute(
+        "INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
+        ("TranslateGemma-27B", "http://localhost:8001/v1", "", "{}"))
+    prod_conn.commit()
+    migrate.migrate(prod_conn)
+    row = prod_conn.execute("SELECT 1 FROM model WHERE name='TranslateGemma-27B'").fetchone()
+    assert row is None
 
 
 def test_owner_edited_api_key_not_clobbered_on_second_run(prod_conn):

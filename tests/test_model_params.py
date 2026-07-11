@@ -3,19 +3,19 @@ from palimpsest.webapp.model_matrix import ModelSpec
 from palimpsest.webapp.model_params import JUDGE_SEED, ModelParams
 
 
-def test_matrix_has_five_models_four_openrouter():
-    assert len(mm.MATRIX) == 5
+def test_matrix_has_four_models_all_openrouter():
+    assert len(mm.MATRIX) == 4
     assert sum(s.is_openrouter for s in mm.MATRIX.values()) == 4
 
 
 def test_gemini_flash_lite_drops_temperature():
-    # the one temp=False row in the new 5-model matrix (mirrors the retired
+    # the one temp=False row in the 4-model matrix (mirrors the retired
     # gemini-3.5-flash row's obligatory-reasoning finding)
     assert mm.MATRIX["google/gemini-3.1-flash-lite"].supports_temperature is False
 
 
 def test_additive_reasoning_only_for_max_tokens_kind(monkeypatch):
-    # No row in the current 5-model matrix is reasoning="max_tokens" kind (that
+    # No row in the current 4-model matrix is reasoning="max_tokens" kind (that
     # was Anthropic-specific, and Anthropic isn't in the new registry) — this
     # pure-function behavior is exercised via a synthetic spec instead of
     # depending on which real models happen to be seeded right now.
@@ -39,7 +39,7 @@ def test_temperature_dropped_for_gemini_flash_lite():
 
 
 def test_top_k_min_p_independent_stripping(monkeypatch):
-    # None of the 5 real rows has an asymmetric (top_k, min_p) capability
+    # None of the 4 real rows has an asymmetric (top_k, min_p) capability
     # combo any more (they're either both True or both False) — exercise the
     # independent-stripping LOGIC in ModelParams.for_model via a synthetic
     # spec, decoupled from whichever real models happen to be registered.
@@ -63,9 +63,16 @@ def test_unknown_model_passes_known_fields_through():
     assert mp.temperature == 0.3 and mp.max_tokens == 256
 
 
-def test_vllm_no_usage_accounting_field():
-    mp = ModelParams.for_model("TranslateGemma-27B", {"max_tokens": 1024})
-    eb = mp.to_extra_body("TranslateGemma-27B", "http://localhost:8001/v1")
+def test_vllm_no_usage_accounting_field(monkeypatch):
+    # non-OpenRouter (local/self-hosted) row, decoupled from whichever real
+    # local placeholders happen to be registered today — TranslateGemma-27B
+    # (this test's original example) was dropped once the owner finalized the
+    # registry to 4 OpenRouter-only rows on prod.
+    monkeypatch.setitem(mm.MATRIX, "test/local-placeholder", ModelSpec(
+        "test/local-placeholder", "http://localhost:8001/v1", False,
+        True, False, False, False, "none", {}))
+    mp = ModelParams.for_model("test/local-placeholder", {"max_tokens": 1024})
+    eb = mp.to_extra_body("test/local-placeholder", "http://localhost:8001/v1")
     assert "usage" not in eb                          # non-OR → no OR accounting param
 
 
@@ -93,7 +100,12 @@ def test_seed_included_when_supported():
     assert mp.seed == JUDGE_SEED
 
 
-def test_seed_omitted_when_unsupported():
-    # the vLLM placeholder is supports_seed=False → seed must not be sent
-    mp = ModelParams.for_model("TranslateGemma-27B", {"max_tokens": 512})
+def test_seed_omitted_when_unsupported(monkeypatch):
+    # a supports_seed=False row (e.g. a local placeholder) → seed must not be
+    # sent; synthetic spec, decoupled from the registry (see
+    # test_vllm_no_usage_accounting_field for why)
+    monkeypatch.setitem(mm.MATRIX, "test/local-placeholder", ModelSpec(
+        "test/local-placeholder", "http://localhost:8001/v1", False,
+        True, False, False, False, "none", {}))
+    mp = ModelParams.for_model("test/local-placeholder", {"max_tokens": 512})
     assert mp.seed is None

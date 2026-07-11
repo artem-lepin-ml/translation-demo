@@ -66,12 +66,13 @@ def seed() -> None:
     conn = db.init_db(reset=True)
     ts = _now()
 
-    # model registry: all 5 curated demo/paper rows, unconditionally (2026-07-11
+    # model registry: all 4 curated demo/paper rows, unconditionally (2026-07-11
     # EMNLP sprint — MATRIX itself is now exactly the curated set, so the old
     # PALIMPSEST_SEED_DEMO "skip the dead vLLM placeholders" branch no longer
-    # applies; the one remaining vLLM row, TranslateGemma-27B, is a deliberate
-    # display-only placeholder every environment seeds the same way). Shared OR
-    # key from env goes to OpenRouter rows; the vLLM row keeps an empty key.
+    # applies; all 4 rows are OpenRouter — the sprint's original TranslateGemma-27B
+    # local vLLM placeholder was dropped once the owner finalized the registry on
+    # prod). Shared OR key from env goes to every row (is_openrouter is still
+    # checked per-row, not hardcoded, in case a non-OR row is ever added back).
     or_key = os.environ.get("OPENROUTER_API_KEY", "")
     for spec in MATRIX.values():
         conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",

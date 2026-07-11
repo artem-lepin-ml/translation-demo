@@ -60,8 +60,10 @@ def test_test_endpoint_slashed_name_routes(client, monkeypatch):
 
 def test_delete_unused_model_slashed_name_routes(client):
     c, _ = client
-    # a vLLM row not referenced by any criterion → 204 (proves the route matched)
-    r = c.delete("/api/models/TranslateGemma-27B")
+    # google/gemma-3-27b-it is seeded but not referenced by any criterion/
+    # config (only qwen/qwen3.6-27b, DEFAULT_CRITERION_MODEL, is) → 204
+    # (proves the slashed-name route matched a real, existing row)
+    r = c.delete("/api/models/google/gemma-3-27b-it")
     assert r.status_code == 204, r.text
 
 

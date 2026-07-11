@@ -205,7 +205,7 @@ def _backfill_paragraph_revisions(conn: sqlite3.Connection) -> None:
 
 
 def _upsert_model_registry_and_remap(conn: sqlite3.Connection) -> None:
-    """Ensure the current 5-row MATRIX exists in `model` and every `criterion`
+    """Ensure the current 4-row MATRIX exists in `model` and every `criterion`
     row points at the new default model (EMNLP demo sprint, 2026-07-11).
     `INSERT OR IGNORE` — never clobbers an api_key/params an owner already
     edited via Settings on a prior migrate() run; `model`/`criterion` are base
@@ -345,7 +345,7 @@ def _reduce_to_three_criteria(conn: sqlite3.Connection) -> None:
 
 
 def _prune_obsolete_model_rows(conn: sqlite3.Connection) -> None:
-    """Delete registry rows outside the current 5-model MATRIX, once nothing
+    """Delete registry rows outside the current 4-model MATRIX, once nothing
     references them any more (criterion/translator_config/grounding_config/
     refiner_config were all repointed to the new default above) — model rows
     are config, not predictions, so deletion (unlike score/issue) is fine.
