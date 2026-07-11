@@ -2,12 +2,12 @@
  "article_workers": 6,
  "calls": {
   "extract": 0,
-  "judge": 3318,
+  "judge": 5906,
   "label_guess": 0
  },
  "config": "111",
  "failed_paragraphs": [],
- "finished_at": "2026-07-11T07:12:08.671035+00:00",
+ "finished_at": "2026-07-11T08:11:18.180171+00:00",
  "generation_params": {
   "base_url": "https://openrouter.ai/api/v1",
   "extra_body_effective": {
@@ -40,40 +40,40 @@
   "use_lemma": true,
   "use_sitelink": false
  },
- "llm_max_in_flight_observed": 2,
+ "llm_max_in_flight_observed": 6,
  "llm_semaphore": 6,
  "max_judge_calls": 25000,
  "max_usd": 8.0,
  "model": "google/gemini-3.1-flash-lite",
- "n_articles": 59,
+ "n_articles": 100,
  "n_extraction_parse_failures": 0,
  "n_failed_judge_calls": 0,
  "n_failed_paragraphs": 0,
- "n_paragraphs": 65,
- "n_pred_mentions": 12607,
+ "n_paragraphs": 1154,
+ "n_pred_mentions": 22649,
  "n_reuse_extraction_unmatched": 0,
  "no_judge": false,
  "parse_failed_paragraphs": [],
  "price_in_per_token": 1.5e-07,
  "price_out_per_token": 6e-07,
  "provider": "Google AI Studio",
- "resumed_from_n_articles": 57,
- "reuse_extraction_from": "/tmp/claude-0/-home-user-translation-demo/d94abddc-f105-576c-b81a-a51a1ca3f0ff/scratchpad/endgame/prefix-judge/gemini-src",
+ "resumed_from_n_articles": 59,
+ "reuse_extraction_from": "reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--Google-AI-Studio/111/2026-07-10T20-19-19Z",
  "run_id": "2026-07-11T05-27-07Z",
  "search_mode": "baseline",
  "spend": {
   "extract": 0.0,
-  "judge": 2.455156749999894,
+  "judge": 4.400310749999598,
   "label_guess": 0.0,
-  "total": 2.455156749999894
+  "total": 4.400310749999598
  },
- "started_at": "2026-07-11T06:58:21.289181+00:00",
+ "started_at": "2026-07-11T07:43:23.740595+00:00",
  "stopped_reason": null,
- "wall_clock_s": 827.381854,
+ "wall_clock_s": 1674.439576,
  "wikidata": {
-  "cache_hits": 1705,
-  "calls": 60,
-  "seconds": 19.026
+  "cache_hits": 28902,
+  "calls": 725,
+  "seconds": 211.26
  },
  "wikidata_workers": 2
 }
