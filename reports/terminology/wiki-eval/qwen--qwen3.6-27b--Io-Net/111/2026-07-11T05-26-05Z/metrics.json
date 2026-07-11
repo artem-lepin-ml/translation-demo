@@ -1,0 +1,186 @@
+{
+ "protocol": "v3",
+ "n_ambiguous_gold_units": 68,
+ "n_gold_mentions_dropped_by_tier": 371,
+ "classes": {
+  "named": {
+   "tp": 1825,
+   "fn": 449,
+   "fp": 911,
+   "gold_units": 2274,
+   "R_doc": {
+    "matched": 1825,
+    "total": 2274,
+    "value": 0.8025505716798593,
+    "ci_lo": 0.7857,
+    "ci_hi": 0.8184,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 1825,
+    "total": 2736,
+    "value": 0.66703216374269,
+    "ci_lo": 0.6491,
+    "ci_hi": 0.6844,
+    "underpowered": false
+   }
+  },
+  "term": {
+   "tp": 374,
+   "fn": 414,
+   "fp": 716,
+   "gold_units": 788,
+   "R_doc": {
+    "matched": 374,
+    "total": 788,
+    "value": 0.4746192893401015,
+    "ci_lo": 0.44,
+    "ci_hi": 0.5095,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 374,
+    "total": 1090,
+    "value": 0.3431192660550459,
+    "ci_lo": 0.3155,
+    "ci_hi": 0.3718,
+    "underpowered": false
+   }
+  }
+ },
+ "survival": {
+  "n_gold_entities": 2943,
+  "n_gold_mentions_dropped_by_tier": 371,
+  "n_gold_mentions_dropped_by_exclusion": 129,
+  "n_pred_linked_entities": 3826,
+  "n_resolved_correct_search_miss": 0,
+  "R_NER": {
+   "matched": 2723,
+   "total": 2943,
+   "value": 0.9252463472646959,
+   "ci_lo": 0.9152,
+   "ci_hi": 0.9342,
+   "underpowered": false
+  },
+  "R_search": {
+   "matched": 2244,
+   "total": 2723,
+   "value": 0.8240910760190966,
+   "ci_lo": 0.8093,
+   "ci_hi": 0.8379,
+   "underpowered": false
+  },
+  "A_disamb": {
+   "matched": 2103,
+   "total": 2244,
+   "value": 0.9371657754010695,
+   "ci_lo": 0.9264,
+   "ci_hi": 0.9465,
+   "underpowered": false
+  },
+  "R": {
+   "matched": 2103,
+   "total": 2943,
+   "value": 0.7145769622833843,
+   "ci_lo": 0.698,
+   "ci_hi": 0.7306,
+   "underpowered": false
+  },
+  "R_direct": {
+   "matched": 2103,
+   "total": 2943,
+   "value": 0.7145769622833843,
+   "ci_lo": 0.698,
+   "ci_hi": 0.7306,
+   "underpowered": false
+  },
+  "P": {
+   "matched": 2191,
+   "total": 3826,
+   "value": 0.5726607422895975,
+   "ci_lo": 0.5569,
+   "ci_hi": 0.5883,
+   "underpowered": false
+  }
+ },
+ "meta": {
+  "article_workers": 6,
+  "calls": {
+   "extract": 0,
+   "judge": 3347,
+   "label_guess": 0
+  },
+  "config": "111",
+  "failed_paragraphs": [],
+  "finished_at": "2026-07-11T06:56:01.398483+00:00",
+  "generation_params": {
+   "base_url": "https://openrouter.ai/api/v1",
+   "extra_body_effective": {
+    "provider": {
+     "allow_fallbacks": false,
+     "order": [
+      "Io Net"
+     ]
+    },
+    "reasoning": {
+     "enabled": false
+    },
+    "usage": {
+     "include": true
+    }
+   },
+   "max_tokens": 20000,
+   "model": "qwen/qwen3.6-27b",
+   "provider_pin": "Io Net",
+   "reasoning": {
+    "enabled": false
+   },
+   "temperature": 1.0,
+   "top_k": null,
+   "top_p": null
+  },
+  "grounding_config": {
+   "match_aliases": true,
+   "use_cirrus": true,
+   "use_lemma": true,
+   "use_sitelink": false
+  },
+  "llm_max_in_flight_observed": 6,
+  "llm_semaphore": 6,
+  "max_judge_calls": 25000,
+  "max_usd": 3.0,
+  "model": "qwen/qwen3.6-27b",
+  "n_articles": 62,
+  "n_extraction_parse_failures": 0,
+  "n_failed_judge_calls": 0,
+  "n_failed_paragraphs": 0,
+  "n_paragraphs": 1415,
+  "n_pred_mentions": 12632,
+  "n_reuse_extraction_unmatched": 0,
+  "no_judge": false,
+  "parse_failed_paragraphs": [],
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "Io Net",
+  "reuse_extraction_from": "/tmp/claude-0/-home-user-translation-demo/d94abddc-f105-576c-b81a-a51a1ca3f0ff/scratchpad/endgame/prefix-judge/qwen-src",
+  "run_id": "2026-07-11T05-26-05Z",
+  "search_mode": "baseline",
+  "spend": {
+   "extract": 0.0,
+   "judge": 0.7706231400000285,
+   "label_guess": 0.0,
+   "total": 0.7706231400000285
+  },
+  "started_at": "2026-07-11T05:26:05.601470+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 5395.797013,
+  "wikidata": {
+   "cache_hits": 35542,
+   "calls": 1444,
+   "seconds": 452.785
+  },
+  "wikidata_workers": 2,
+  "n_gt_tuples": 4360,
+  "generated_at": "2026-07-11T06:58:53.450456+00:00"
+ }
+}
