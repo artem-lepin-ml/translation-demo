@@ -1,0 +1,224 @@
+{
+ "purpose": "Coordinator follow-up (2026-07-09, after provider-6 rejected): smoke provider-8 for openai/gpt-5.5 -- (a) padding check, (b) rate-limit burst, (c) cost_usd surfacing -- plus a cross-check on route 'auto' to determine whether any rate-limit pressure found is provider-8-specific or a shared upstream bucket.",
+ "outcome": "PARKED. Every attempt on both provider-8 and auto (27 total across ~5 min of real backoff) returned HTTP 429 upstream_status from OpenAI. Padding/cost_usd could not be measured on provider-8 -- no call ever completed. Confirmed NOT provider-8-specific: 'auto' (no provider pin) hit the identical error in parallel. Root cause: reports/bouquet/judges/gpt-5.5/ (a concurrent BOUQUET judge run on this same key) was actively writing during this test and its own throughput collapsed to ~0 successful calls in the same window (scores.jsonl flat at 646 while parse_failures.jsonl grew +246 in ~4 minutes) -- the whole account's openai/gpt-5.5 quota is currently saturated, independent of which CloseRouter 'provider' route is requested.",
+ "provider8_padding_check_3_calls": [
+  {
+   "title": "Первая династия Ура",
+   "ok": false,
+   "latency_s": 0.9869439110007079,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '97f157f9-21"
+  },
+  {
+   "title": "Урукагина",
+   "ok": false,
+   "latency_s": 0.5056000299991865,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': 'cd522ee2-5e"
+  },
+  {
+   "title": "Касситская династия",
+   "ok": false,
+   "latency_s": 0.3120915330000571,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '7f2988ef-6b"
+  }
+ ],
+ "provider8_burst_10_calls": [
+  {
+   "i": 0,
+   "ok": false,
+   "latency_s": 1.0622506360014086,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': 'a3dd37c0-40",
+   "http_status": 429
+  },
+  {
+   "i": 1,
+   "ok": false,
+   "latency_s": 0.3558603920009773,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': 'aa3859b6-cb",
+   "http_status": 429
+  },
+  {
+   "i": 2,
+   "ok": false,
+   "latency_s": 0.35057409799992456,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '840ec146-b3",
+   "http_status": 429
+  },
+  {
+   "i": 3,
+   "ok": false,
+   "latency_s": 0.31928790799975104,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '22bc7c97-5d",
+   "http_status": 429
+  },
+  {
+   "i": 4,
+   "ok": false,
+   "latency_s": 0.32449249499950383,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '5005730b-dd",
+   "http_status": 429
+  },
+  {
+   "i": 5,
+   "ok": false,
+   "latency_s": 0.3290683120012545,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '63519b2b-9b",
+   "http_status": 429
+  },
+  {
+   "i": 6,
+   "ok": false,
+   "latency_s": 0.3200469579987839,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '142c1d80-71",
+   "http_status": 429
+  },
+  {
+   "i": 7,
+   "ok": false,
+   "latency_s": 0.29540993600130605,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': 'ce49af80-ea",
+   "http_status": 429
+  },
+  {
+   "i": 8,
+   "ok": false,
+   "latency_s": 0.3062337040009879,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': 'e3f0c2d8-a1",
+   "http_status": 429
+  },
+  {
+   "i": 9,
+   "ok": false,
+   "latency_s": 0.3041604959998949,
+   "error_class": "RateLimitError",
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_exceeded', 'raw': {'code': 'rate_limit_exceeded', 'type': 'rate_limit_error'}, 'request_id': '8b361cb0-86",
+   "http_status": 429
+  }
+ ],
+ "provider8_burst_summary": {
+  "n_calls": 10,
+  "n_success": 0,
+  "wall_s": 3.96841024600144
+ },
+ "provider8_backoff_retry_up_to_110s_cumulative": [
+  {
+   "attempt": 0,
+   "waited_s": 0,
+   "ok": false,
+   "latency_s": 0.9412794279996888,
+   "error_class": "RateLimitError",
+   "http_status": 429
+  },
+  {
+   "attempt": 1,
+   "waited_s": 5,
+   "ok": false,
+   "latency_s": 0.6663860110002133,
+   "error_class": "RateLimitError",
+   "http_status": 429
+  },
+  {
+   "attempt": 2,
+   "waited_s": 15,
+   "ok": false,
+   "latency_s": 0.7637053140006174,
+   "error_class": "RateLimitError",
+   "http_status": 429
+  },
+  {
+   "attempt": 3,
+   "waited_s": 30,
+   "ok": false,
+   "latency_s": 0.8317255519996252,
+   "error_class": "RateLimitError",
+   "http_status": 429
+  },
+  {
+   "attempt": 4,
+   "waited_s": 60,
+   "ok": false,
+   "latency_s": 0.6521383880008216,
+   "error_class": "RateLimitError",
+   "http_status": 429
+  }
+ ],
+ "auto_quick_3_calls": [
+  {
+   "i": 0,
+   "ok": false,
+   "latency_s": 1.0560179419990163,
+   "error_class": "RateLimitError",
+   "http_status": 429,
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_excee"
+  },
+  {
+   "i": 1,
+   "ok": false,
+   "latency_s": 0.3233288419996825,
+   "error_class": "RateLimitError",
+   "http_status": 429,
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_excee"
+  },
+  {
+   "i": 2,
+   "ok": false,
+   "latency_s": 0.30204840199985483,
+   "error_class": "RateLimitError",
+   "http_status": 429,
+   "error_message": "Error code: 429 - {'error': {'code': 'rate_limited', 'message': 'Rate limit exceeded', 'status': 429, 'metadata': {'provider_name': 'OpenAI', 'upstream_status': 429, 'upstream_code': 'rate_limit_excee"
+  }
+ ],
+ "auto_patient_backoff_up_to_60s_cumulative_before_tool_timeout": [
+  {
+   "attempt": 0,
+   "waited_s": 0,
+   "ok": false,
+   "latency_s": 0.9865367860002152,
+   "error_class": "RateLimitError",
+   "http_status": 429
+  },
+  {
+   "attempt": 1,
+   "waited_s": 20,
+   "ok": false,
+   "latency_s": 0.7493353890004073,
+   "error_class": "RateLimitError",
+   "http_status": 429
+  },
+  {
+   "attempt": 2,
+   "waited_s": 40,
+   "ok": false,
+   "latency_s": 0.702381664999848,
+   "error_class": "RateLimitError",
+   "http_status": 429
+  }
+ ],
+ "bouquet_gpt55_judge_run_cross_check": {
+  "scores_jsonl_lines_at_first_observation": 646,
+  "parse_failures_jsonl_lines_at_first_observation": 313,
+  "first_observation_utc": "2026-07-09T00:43:22Z",
+  "scores_jsonl_lines_4min_later": 646,
+  "parse_failures_jsonl_lines_4min_later": 559,
+  "second_observation_utc": "2026-07-09T00:46:58Z",
+  "interpretation": "0 new successful scores, +246 new failures in ~4 minutes -- the concurrent same-model run is itself stalled by the same saturation, not a healthy baseline I'm merely contending with."
+ },
+ "runtime_projection": {
+  "coordinator_reference_throughput": "~50 calls/hour observed on route auto for the parallel judge run (per coordinator's message) -- this was evidently measured before the current saturation window.",
+  "current_observed_throughput_all_routes": "0 calls/hour (27/27 failed across provider-8 + auto, ~5 min of real backoff up to 110s single-wait)",
+  "my_task_estimated_call_volume": "~2644 extraction calls (1/paragraph, no hard cap besides $ budget) + up to 900 judge calls (default --max-judge-calls) ~= up to ~3544 calls, based on the 100-article corpus's paragraph count in the existing gemini-3.1-flash-lite reference run (reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z/meta.json: n_paragraphs=2644)",
+  "projected_wall_clock_at_coordinators_50_per_hour_reference": "~71 hours (~3 days) -- already far past the 12h ceiling even using the optimistic pre-saturation figure, before accounting for the current 0/hour reality or for sharing that budget with the still-running BOUQUET judge",
+  "decision": "PARK -- do not start. Per coordinator's explicit rule: 'do not start if projected >12h -- park and report instead'."
+ }
+}

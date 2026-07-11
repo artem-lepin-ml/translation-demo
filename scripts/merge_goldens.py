@@ -3,7 +3,7 @@
 
 Sources (all over the same 16-paragraph pilot corpus, hand-authored, third-source
 verified — never a strategy's output):
-  - gold_sources/terminology_gold_v1.jsonl  (mine, 38: both signals)
+  - gold_sources/terminology_gold_manual.jsonl  (mine, 38: both signals)
   - gold_sources/grounding_gold.jsonl        (term-grounding, 65: grounding + candidates + source_url)
   - gold_sources/pairing_gold.jsonl          (term-pairing, 74: rich pairing hard cases)
 
@@ -132,7 +132,7 @@ def main() -> int:
     # (context/candidates), then mine (paragraph_id anchor) — prefer() only fills gaps.
     for name, origin in [("pairing_gold.jsonl", "pairing"),
                          ("grounding_gold.jsonl", "grounding"),
-                         ("terminology_gold_v1.jsonl", "mine")]:
+                         ("terminology_gold_manual.jsonl", "mine")]:
         for r in load(name):
             u = unify(r, origin)
             # apply the nominative lemma BEFORE keying — pairing rows carry no lemma, so

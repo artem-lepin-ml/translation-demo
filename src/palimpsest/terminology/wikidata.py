@@ -115,7 +115,13 @@ class WikidataClient:
                         time.sleep(_retry_after(exc.headers, attempt))
                         continue
                     raise
-                except (json.JSONDecodeError, urllib.error.URLError) as exc:  # empty/malformed body, transient net
+                except (json.JSONDecodeError, OSError) as exc:  # empty/malformed body, transient net
+                    # OSError also covers ConnectionResetError/ConnectionAbortedError/
+                    # BrokenPipeError/socket.timeout, none of which urllib.error.URLError
+                    # alone catches (URLError IS an OSError subclass so this is a strict
+                    # broadening, not a behavior change for the cases already handled --
+                    # 2026-07-09 gpt-5.4 grounding run tail: an uncaught ConnectionResetError
+                    # from search_entities() crashed the whole worker pool with zero retries).
                     with self._cache_lock:
                         self.total_network_seconds += time.monotonic() - call_started
                     if attempt < 4:

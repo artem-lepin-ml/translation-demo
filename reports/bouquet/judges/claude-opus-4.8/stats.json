@@ -1,0 +1,243 @@
+{
+  "judge_slug": "claude-opus-4.8",
+  "generated_at": "2026-07-08T23:21:51.194954+00:00",
+  "n_paragraphs_total": 198,
+  "systems": {
+    "qwen-27b-bouquet": {
+      "accuracy": {
+        "n": 198,
+        "mean": 9.2929,
+        "tie_rate_9_10": 0.9192,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.0193,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": 0.0668,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.1694,
+            "n": 198
+          }
+        }
+      },
+      "fluency": {
+        "n": 198,
+        "mean": 9.7677,
+        "tie_rate_9_10": 0.9798,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.0295,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.1114,
+            "n": 198
+          },
+          "comet": {
+            "rho": -0.0101,
+            "n": 198
+          }
+        }
+      },
+      "style": {
+        "n": 198,
+        "mean": 8.7323,
+        "tie_rate_9_10": 0.697,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.0552,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": 0.1142,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2244,
+            "n": 198
+          }
+        }
+      }
+    },
+    "qwen-27b-bouquet-refined": {
+      "accuracy": {
+        "n": 198,
+        "mean": 9.3838,
+        "tie_rate_9_10": 0.9394,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.0195,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": 0.0425,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2448,
+            "n": 198
+          }
+        }
+      },
+      "fluency": {
+        "n": 198,
+        "mean": 9.7525,
+        "tie_rate_9_10": 0.9899,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.0261,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": 0.0427,
+            "n": 198
+          },
+          "comet": {
+            "rho": -0.002,
+            "n": 198
+          }
+        }
+      },
+      "style": {
+        "n": 198,
+        "mean": 8.7323,
+        "tie_rate_9_10": 0.7172,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1523,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": 0.0113,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.217,
+            "n": 198
+          }
+        }
+      }
+    },
+    "translate-gemma-bouquet": {
+      "accuracy": {
+        "n": 198,
+        "mean": 9.3232,
+        "tie_rate_9_10": 0.9242,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1759,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0228,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2234,
+            "n": 198
+          }
+        }
+      },
+      "fluency": {
+        "n": 198,
+        "mean": 9.6566,
+        "tie_rate_9_10": 0.9798,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1605,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0984,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2245,
+            "n": 198
+          }
+        }
+      },
+      "style": {
+        "n": 198,
+        "mean": 8.8131,
+        "tie_rate_9_10": 0.7525,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1473,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0991,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2579,
+            "n": 198
+          }
+        }
+      }
+    },
+    "translate-gemma-bouquet-refined": {
+      "accuracy": {
+        "n": 198,
+        "mean": 9.4444,
+        "tie_rate_9_10": 0.9495,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1051,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.0232,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.1199,
+            "n": 198
+          }
+        }
+      },
+      "fluency": {
+        "n": 198,
+        "mean": 9.6465,
+        "tie_rate_9_10": 0.9697,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1222,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.012,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.1448,
+            "n": 198
+          }
+        }
+      },
+      "style": {
+        "n": 198,
+        "mean": 8.9091,
+        "tie_rate_9_10": 0.8333,
+        "spearman": {
+          "metricx_ref": {
+            "rho": -0.1588,
+            "n": 198
+          },
+          "metricx_qe": {
+            "rho": -0.1095,
+            "n": 198
+          },
+          "comet": {
+            "rho": 0.2038,
+            "n": 198
+          }
+        }
+      }
+    }
+  }
+}

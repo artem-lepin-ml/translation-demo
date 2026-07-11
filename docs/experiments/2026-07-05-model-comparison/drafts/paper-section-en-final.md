@@ -1,3 +1,8 @@
+> ⚠️ **SUPERSEDED** by [docs/paper/sections/](../../../paper/sections/) (protocol v3, 2026-07-10). This draft
+> describes the retired mention-level/P-label protocol (M1/M2/M3 matching, P1/P2/P3 precision) — kept for
+> historical reference only, not reproducible with current code. Methodology SSOT:
+> [eval-metrics-terminology.tex](../../../paper/sections/eval-metrics-terminology.tex).
+
 # 5 Evaluation
 
 We ask one question that standard entity-linking benchmarks leave open: given

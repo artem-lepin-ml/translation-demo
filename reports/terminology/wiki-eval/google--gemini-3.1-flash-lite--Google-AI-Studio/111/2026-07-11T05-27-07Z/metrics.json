@@ -1,0 +1,187 @@
+{
+ "protocol": "v3",
+ "n_ambiguous_gold_units": 112,
+ "n_gold_mentions_dropped_by_tier": 764,
+ "classes": {
+  "named": {
+   "tp": 3226,
+   "fn": 659,
+   "fp": 1557,
+   "gold_units": 3885,
+   "R_doc": {
+    "matched": 3226,
+    "total": 3885,
+    "value": 0.8303732303732304,
+    "ci_lo": 0.8182,
+    "ci_hi": 0.8418,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 3226,
+    "total": 4783,
+    "value": 0.6744720886472925,
+    "ci_lo": 0.6611,
+    "ci_hi": 0.6876,
+    "underpowered": false
+   }
+  },
+  "term": {
+   "tp": 765,
+   "fn": 701,
+   "fp": 1554,
+   "gold_units": 1466,
+   "R_doc": {
+    "matched": 765,
+    "total": 1466,
+    "value": 0.5218281036834925,
+    "ci_lo": 0.4962,
+    "ci_hi": 0.5473,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 765,
+    "total": 2319,
+    "value": 0.3298835705045278,
+    "ci_lo": 0.311,
+    "ci_hi": 0.3493,
+    "underpowered": false
+   }
+  }
+ },
+ "survival": {
+  "n_gold_entities": 5061,
+  "n_gold_mentions_dropped_by_tier": 764,
+  "n_gold_mentions_dropped_by_exclusion": 321,
+  "n_pred_linked_entities": 7102,
+  "n_resolved_correct_search_miss": 0,
+  "R_NER": {
+   "matched": 4779,
+   "total": 5061,
+   "value": 0.944279786603438,
+   "ci_lo": 0.9376,
+   "ci_hi": 0.9503,
+   "underpowered": false
+  },
+  "R_search": {
+   "matched": 4021,
+   "total": 4779,
+   "value": 0.8413894120108809,
+   "ci_lo": 0.8308,
+   "ci_hi": 0.8515,
+   "underpowered": false
+  },
+  "A_disamb": {
+   "matched": 3834,
+   "total": 4021,
+   "value": 0.953494155682666,
+   "ci_lo": 0.9465,
+   "ci_hi": 0.9596,
+   "underpowered": false
+  },
+  "R": {
+   "matched": 3834,
+   "total": 5061,
+   "value": 0.7575577949021932,
+   "ci_lo": 0.7456,
+   "ci_hi": 0.7692,
+   "underpowered": false
+  },
+  "R_direct": {
+   "matched": 3834,
+   "total": 5061,
+   "value": 0.7575577949021932,
+   "ci_lo": 0.7456,
+   "ci_hi": 0.7692,
+   "underpowered": false
+  },
+  "P": {
+   "matched": 3966,
+   "total": 7102,
+   "value": 0.5584342438749648,
+   "ci_lo": 0.5469,
+   "ci_hi": 0.5699,
+   "underpowered": false
+  }
+ },
+ "meta": {
+  "article_workers": 6,
+  "calls": {
+   "extract": 0,
+   "judge": 5906,
+   "label_guess": 0
+  },
+  "config": "111",
+  "failed_paragraphs": [],
+  "finished_at": "2026-07-11T08:11:18.180171+00:00",
+  "generation_params": {
+   "base_url": "https://openrouter.ai/api/v1",
+   "extra_body_effective": {
+    "provider": {
+     "allow_fallbacks": false,
+     "order": [
+      "Google AI Studio"
+     ]
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "usage": {
+     "include": true
+    }
+   },
+   "max_tokens": 20000,
+   "model": "google/gemini-3.1-flash-lite",
+   "provider_pin": "Google AI Studio",
+   "reasoning": {
+    "effort": "medium"
+   },
+   "temperature": 1.0,
+   "top_k": null,
+   "top_p": null
+  },
+  "grounding_config": {
+   "match_aliases": true,
+   "use_cirrus": true,
+   "use_lemma": true,
+   "use_sitelink": false
+  },
+  "llm_max_in_flight_observed": 6,
+  "llm_semaphore": 6,
+  "max_judge_calls": 25000,
+  "max_usd": 8.0,
+  "model": "google/gemini-3.1-flash-lite",
+  "n_articles": 100,
+  "n_extraction_parse_failures": 0,
+  "n_failed_judge_calls": 0,
+  "n_failed_paragraphs": 0,
+  "n_paragraphs": 1154,
+  "n_pred_mentions": 22649,
+  "n_reuse_extraction_unmatched": 0,
+  "no_judge": false,
+  "parse_failed_paragraphs": [],
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "Google AI Studio",
+  "resumed_from_n_articles": 59,
+  "reuse_extraction_from": "reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--Google-AI-Studio/111/2026-07-10T20-19-19Z",
+  "run_id": "2026-07-11T05-27-07Z",
+  "search_mode": "baseline",
+  "spend": {
+   "extract": 0.0,
+   "judge": 4.400310749999598,
+   "label_guess": 0.0,
+   "total": 4.400310749999598
+  },
+  "started_at": "2026-07-11T07:43:23.740595+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 1674.439576,
+  "wikidata": {
+   "cache_hits": 28902,
+   "calls": 725,
+   "seconds": 211.26
+  },
+  "wikidata_workers": 2,
+  "n_gt_tuples": 7658,
+  "generated_at": "2026-07-11T08:12:52.207434+00:00"
+ }
+}

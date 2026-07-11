@@ -1,3 +1,8 @@
+> ⚠️ **SUPERSEDED** by [docs/paper/sections/](../../../paper/sections/) (protocol v3, 2026-07-10). Kept for
+> historical reference only. The tier concept this analysis motivated survives as
+> `data/eval/wiki/tier_assignment.json`, now consumed directly by
+> `metrics.aggregate_corpus_v3` — see [docs/stages/wiki-eval.md](../../../stages/wiki-eval.md).
+
 # Reference-annotation noise analysis — deterministic recall tiers
 
 **Question (owner hypothesis).** Many lowercase ("term") reference links in the

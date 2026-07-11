@@ -8,11 +8,13 @@ class _FakeCompletions:
     def create(self, **kwargs):
         self.holder["kwargs"] = kwargs
         return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content="hi"))],
+            choices=[SimpleNamespace(message=SimpleNamespace(content="hi"),
+                                     finish_reason="stop")],
             usage=SimpleNamespace(
                 prompt_tokens=10, completion_tokens=5,
                 completion_tokens_details=SimpleNamespace(reasoning_tokens=3),
                 cost=0.0004),
+            provider="Novita",
         )
 
 
@@ -33,9 +35,23 @@ def test_complete_returns_result_with_usage(monkeypatch):
     assert r.content == "hi"
     assert r.usage.prompt_tokens == 10 and r.usage.reasoning_tokens == 3
     assert r.usage.cost_usd == 0.0004
+    # per-call observability (spec 2026-07-10 Р8): finish_reason + served provider
+    assert r.finish_reason == "stop"
+    assert r.provider == "Novita"
     # temperature is None → NOT sent; extra_body IS sent
     assert "temperature" not in holder["kwargs"]
     assert holder["kwargs"]["extra_body"] == {"reasoning": {"effort": "low"}}
+
+
+def test_complete_sends_top_p_when_set_and_omits_when_none(monkeypatch):
+    cfg = LLMConfig(model="m", base_url="u", api_key="k", max_tokens=64, top_p=0.95)
+    c, holder = _client(monkeypatch, cfg)
+    c.complete("s", "u")
+    assert holder["kwargs"]["top_p"] == 0.95
+    cfg2 = LLMConfig(model="m", base_url="u", api_key="k", max_tokens=64)
+    c2, holder2 = _client(monkeypatch, cfg2)
+    c2.complete("s", "u")
+    assert "top_p" not in holder2["kwargs"]
 
 
 def test_complete_sends_temperature_when_set(monkeypatch):

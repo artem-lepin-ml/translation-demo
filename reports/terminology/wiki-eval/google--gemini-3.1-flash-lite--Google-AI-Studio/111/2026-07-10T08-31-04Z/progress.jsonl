@@ -1,0 +1,10 @@
+{"article": "KV35YL", "done": 1, "of": 10, "spent": 0.1053507499999998, "spent_by_kind": {"extract": 0.05610274999999998, "judge": 0.04924799999999993}, "calls_by_kind": {"extract": 33, "judge": 67}}
+{"article": "XXX династия", "done": 2, "of": 10, "spent": 0.11293924999999984, "spent_by_kind": {"extract": 0.06161374999999996, "judge": 0.05132549999999992}, "calls_by_kind": {"extract": 40, "judge": 69}}
+{"article": "XXVII династия", "done": 3, "of": 10, "spent": 0.15251224999999993, "spent_by_kind": {"extract": 0.09436375, "judge": 0.05814849999999988}, "calls_by_kind": {"extract": 61, "judge": 79}}
+{"article": "Академия Цзися", "done": 4, "of": 10, "spent": 0.21024250000000047, "spent_by_kind": {"extract": 0.11229650000000002, "judge": 0.09794599999999969}, "calls_by_kind": {"extract": 69, "judge": 131}}
+{"article": "Абдмилькат", "done": 5, "of": 10, "spent": 0.21937600000000054, "spent_by_kind": {"extract": 0.11981125000000004, "judge": 0.09956474999999969}, "calls_by_kind": {"extract": 76, "judge": 133}}
+{"article": "Арахозия", "done": 6, "of": 10, "spent": 0.26733875000000096, "spent_by_kind": {"extract": 0.1388975000000001, "judge": 0.12844124999999956}, "calls_by_kind": {"extract": 85, "judge": 173}}
+{"article": "Азиатская экспедиция (336—334 до н. э.)", "done": 7, "of": 10, "spent": 0.3391847500000004, "spent_by_kind": {"extract": 0.18750350000000024, "judge": 0.15168124999999993}, "calls_by_kind": {"extract": 121, "judge": 204}}
+{"article": "Амударьинский клад", "done": 8, "of": 10, "spent": 0.34145825000000035, "spent_by_kind": {"extract": 0.18918350000000025, "judge": 0.15227474999999993}, "calls_by_kind": {"extract": 125, "judge": 204}}
+{"article": "Армия империи Хань", "done": 9, "of": 10, "spent": 0.48835725000000124, "spent_by_kind": {"extract": 0.23623825000000032, "judge": 0.25211900000000126}, "calls_by_kind": {"extract": 140, "judge": 334}}
+{"article": "Арслантепе (Мелид)", "done": 10, "of": 10, "spent": 0.48935575000000126, "spent_by_kind": {"extract": 0.23623825000000032, "judge": 0.25311750000000127}, "calls_by_kind": {"extract": 140, "judge": 335}}

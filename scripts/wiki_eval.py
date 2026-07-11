@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
-"""Wiki-eval CLI (W5): build-gt / run / ablate / report over 100 RU-Wikipedia
-history articles, evaluating G6 label_first NER+grounding against human
-hyperlink annotations.
+"""Wiki-eval CLI (W5, transport rework v2): build-gt / run / ablate / report
+over 100 RU-Wikipedia history articles, evaluating G6 label_first
+NER+grounding against human hyperlink annotations.
 
-Spec: docs/superpowers/specs/2026-07-03-wiki-eval-design.md.
-Plan: docs/superpowers/plans/2026-07-03-wiki-eval-plan.md (W5).
+Spec: docs/superpowers/specs/2026-07-03-wiki-eval-design.md (build-gt/GT).
+Route/params/observability/protocol-v3 rework:
+docs/superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md.
 
 Usage (from the worktree root, with PYTHONPATH=src):
   python scripts/wiki_eval.py build-gt --titles <file> --out data/eval/wiki/gt.jsonl --cache data/eval/wiki/pages
   python scripts/wiki_eval.py run --gt data/eval/wiki/gt.jsonl --config 111 --dry-run
   python scripts/wiki_eval.py run --gt data/eval/wiki/gt.jsonl --config 111 --max-usd 40
-  python scripts/wiki_eval.py run --gt data/eval/wiki/gt.jsonl --config 111 --model openai/gpt-5.5 --provider provider-3 --max-usd 12 --max-judge-calls 5000
+  python scripts/wiki_eval.py run --gt data/eval/wiki/gt.jsonl --config 111 --model deepseek/deepseek-v4-flash --provider Novita --max-usd 12 --max-judge-calls 5000
   python scripts/wiki_eval.py ablate --gt data/eval/wiki/gt.jsonl --max-usd 40 --dry-run
   python scripts/wiki_eval.py report --gt data/eval/wiki/gt.jsonl --pred reports/terminology/wiki-eval/<model-slug>/111/<run_id>
 """
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import itertools
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -30,18 +33,22 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from palimpsest.terminology.base import GroundingConfig
+from palimpsest.terminology.base import FatalGroundingJudgeError, GroundingConfig, TermMention
 from palimpsest.terminology.evaluation import metrics as M
 from palimpsest.terminology.evaluation import predict, report, wiki_gt
-from palimpsest.terminology.evaluation.tokenize import flatten
+from palimpsest.terminology.evaluation.tokenize import char_to_token_index, flatten
 from palimpsest.terminology.extract import (
-    DEFAULT_NER_PROMPT,
+    NER_SYSTEM_PROMPT,
+    ExtractionParseError,
     llm_surfaces,
     mentions_from_surfaces,
+    ner_user,
     parse_surfaces,
+    sentence_context,
 )
 from palimpsest.terminology.grounding import LabelFirstGrounding
-from palimpsest.terminology.grounding.match import norm
+from palimpsest.terminology.grounding.candidates import DEFAULT_LABEL_GUESS_SYSTEM_PROMPT
+from palimpsest.terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
 from palimpsest.terminology.wikidata import DEFAULT_NETWORK_CONCURRENCY, WikidataClient
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,68 +57,163 @@ DEFAULT_GT = ROOT / "data/eval/wiki/gt.jsonl"
 DEFAULT_PAGES_CACHE = ROOT / "data/eval/wiki/pages"
 WIKIDATA_CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
 OUT_ROOT = ROOT / "reports/terminology/wiki-eval"
+TIER_PATH = ROOT / "data/eval/wiki/tier_assignment.json"
+EXCLUSIONS_PATH = ROOT / "data/eval/wiki/anchor_exclusions.json"
 
-# Extraction + judge provider. Default = CloseRouter (OpenAI-compatible gateway at
-# OPENROUTER_BASE_URL) running google/gemini-3.1-flash-lite pinned to provider-9.
-# Model and route are overridable three ways, in priority order: CLI --model/
-# --provider (ticket 002, model-comparison runs) > CLOSEROUTER_MODEL/
-# CLOSEROUTER_PROVIDER env vars > the hardcoded defaults below. provider-9 was
-# verified on a 2026-07-05 probe: 10/10, ~1.4s, honest prompt tokens (5),
-# cost surfaced — the fastest/cheapest clean route in the fleet. Pin an explicit
-# route because "auto" can land on a reseller-padded provider for some models
-# (e.g. gpt-5.4-mini -> provider-6, +4400 hidden prompt tokens/call). CloseRouter's
-# WAF rejects the OpenAI SDK's default User-Agent; palimpsest.llm.client sends a
-# neutral one. WIKI_EVAL_PROVIDER switches the gateway: "openrouter" (openrouter.ai)
-# or "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks -- --model/
-# --provider only affect the closerouter branch (see _resolve_route).
-WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "closerouter")
-CLOSEROUTER_MODEL = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
-CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
+# Standard OpenRouter (spec 2026-07-10 Р2) -- the CloseRouter gateway/env-var
+# machinery (WIKI_EVAL_PROVIDER, CLOSEROUTER_MODEL, CLOSEROUTER_PROVIDER) is
+# retired along with it; every run goes through this one base URL.
+DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
+DEFAULT_MODEL = "google/gemini-3.1-flash-lite"
+DEFAULT_MAX_TOKENS = 20000  # both roles, spec Р3
 
-JUDGE_MAX_TOKENS = 512
+# Vendor-recommended sampling + pinned provider + reasoning shape per cloud
+# model (spec Р3/Р13/Р14; pins probed live 2026-07-10, see spec §4.6).
+# Changing a pin requires a spec edit, not a code-side decision.
+MODEL_PARAMS: dict[str, dict] = {
+    "deepseek/deepseek-v4-flash": {
+        "temperature": 1.0, "top_p": 1.0, "top_k": None,
+        "provider_pin": "Novita", "reasoning": {"enabled": True},
+    },
+    "google/gemini-3.1-flash-lite": {
+        "temperature": 1.0, "top_p": None, "top_k": None,
+        "provider_pin": "Google AI Studio",
+        # {"enabled": true} silently yields reasoning_tokens=0 on gemini --
+        # only the effort form ignites reasoning (probed 2026-07-10, spec Р13)
+        "reasoning": {"effort": "medium"},
+    },
+    "google/gemma-4-31b-it": {
+        "temperature": 1.0, "top_p": 0.95, "top_k": 64,
+        "provider_pin": "WandB", "reasoning": {"enabled": True},
+    },
+    # 2026-07-10 owner-authorized addition (spec Р1/Р14 amendment,
+    # docs/superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md):
+    # gemma-3-27b-it/qwen3.6-27b are the local sr004 pair in the paper's
+    # Table C plan (sr004-local-eval-runbook.md), routed through OpenRouter
+    # here instead for a separate NER-extraction-only cost run, not a Table C
+    # substitute. Pins probed live via GET /v1/models/{id}/endpoints
+    # (cheapest provider with the best uptime), not from a HF-card vendor
+    # recommendation like the three entries above.
+    "google/gemma-3-27b-it": {
+        # Same Gemma-family vendor sampling as gemma-4-31b-it above (no
+        # separate HF-card probe done for this smaller sibling). Not a
+        # reasoning/thinking model at all -- no "reasoning" key needed or sent.
+        "temperature": 1.0, "top_p": 0.95, "top_k": 64,
+        # Parasail, not the cheaper/higher-uptime DeepInfra: DeepInfra's
+        # max_completion_tokens=16384 < DEFAULT_MAX_TOKENS=20000 (spec Р3,
+        # every model/role), so with allow_fallbacks=false (Р14) OpenRouter
+        # returns 404 "No endpoints found" -- same disqualification pattern
+        # as Venice for gemma-4-31b-it (spec Р14). Parasail is the cheapest
+        # of the remaining 20000-token-capable options with solid uptime
+        # (Nebius/Phala also qualify on tokens but have <70% uptime_last_30m,
+        # disqualified on reliability instead) -- live-probed 2026-07-10.
+        "provider_pin": "Parasail",
+    },
+    "qwen/qwen3.6-27b": {
+        "temperature": 1.0, "top_p": None, "top_k": None,
+        "provider_pin": "Io Net",  # $0.285/$2.40 per Mtok, uptime 99.97% (cheapest + most reliable of 6 probed)
+        # Hybrid-thinking model, reasons by default (docs/runbooks/
+        # sr004-local-eval-runbook.md: "hybrid thinking model that reasons by
+        # default unless a request sets it off"). The local vLLM runbook uses
+        # chat_template_kwargs.enable_thinking=false, not available through
+        # OpenRouter's normalized API; reasoning:{"enabled": false} is the
+        # only lever this transport offers, and it IS honored here (probed
+        # live 2026-07-10: reasoning_tokens=0 on a real extraction-shaped
+        # call via Io Net, unlike gemini's enabled/effort split above).
+        "reasoning": {"enabled": False},
+    },
+}
 
 
-def _resolve_route(model: str | None = None, provider: str | None = None) -> dict:
-    """Resolve the extractor+judge route config for this call.
+def _resolve_route(model: str | None = None, provider: str | None = None,
+                    extra_body: dict | None = None, base_url: str | None = None,
+                    temperature: float | None = None, top_p: float | None = None,
+                    top_k: int | None = None, max_tokens: int | None = None) -> dict:
+    """Resolve ONE route config used for BOTH the extractor and the judge
+    (spec 2026-07-10 §4.1/Р2/Р3/Р13/Р14) -- unlike the retired CloseRouter
+    three-branch design, extraction and judge always share the same model/
+    provider/sampling on the standard OpenRouter endpoint.
 
-    Computed as a function (not module-level constants) so CLI ``--model``/
-    ``--provider`` always win regardless of import order -- the previous
-    design baked ``CLOSEROUTER_MODEL``/``CLOSEROUTER_PROVIDER`` into
-    module-level constants at import time, before argparse had even run
-    (ticket 002). ``model``/``provider`` override the env vars only on the
-    default ``closerouter`` branch; the ``openrouter``/``openai-direct``
-    fallbacks keep their own fixed model, unaffected by CLI overrides.
+    Resolution order per field: an explicit CLI-ish keyword argument (not
+    ``None``) always wins; otherwise ``MODEL_PARAMS[model]`` supplies the
+    vendor-recommended default when ``model`` is a known cloud model;
+    otherwise the field is omitted (``None``) -- except ``max_tokens``,
+    which falls back to ``DEFAULT_MAX_TOKENS`` (not a `MODEL_PARAMS` field,
+    spec Р3: 20000 for every model) and ``base_url``, which falls back to
+    ``DEFAULT_BASE_URL``. ``model=None`` resolves to ``DEFAULT_MODEL`` so
+    callers/tests that don't pass one still get a fully-specified route.
+
+    ``provider``: the literal ``"auto"`` disables pinning (and therefore the
+    served-by gate) entirely, same semantics as the retired CloseRouter
+    ``"auto"`` handling.
+
+    ``extra_body`` is merged PER-KEY over the computed defaults (provider
+    pin, reasoning shape, top_k, OpenRouter's ``usage.include``), never
+    replaces them wholesale (finding 4 regression: an unrelated
+    ``--extra-body`` key must not silently drop the provider pin). The pin
+    used for the per-call served-by gate (returned as ``"provider_pin"``) is
+    read back from the EFFECTIVE (post-merge) ``extra_body["provider"]
+    ["order"][0]`` when present, so an explicit ``--extra-body`` provider
+    override changes the gate consistently instead of gating against a pin
+    that's no longer actually requested; no ``"provider"`` key in the
+    effective body means no gate.
     """
-    cr_model = model or CLOSEROUTER_MODEL
-    cr_provider = provider or CLOSEROUTER_PROVIDER
-    if WIKI_EVAL_PROVIDER == "closerouter":
-        base = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
-        # "auto" (ticket 004, model-comparison matrix): omit the provider key
-        # from extra_body entirely rather than send {"provider": "auto"} --
-        # verified in ticket-003 triage for models with no clean pinned route
-        # (e.g. qwen3.7-plus). model_slug() still appends "--auto" to the
-        # run-dir slug since it just formats whatever --provider was passed.
-        cr_extra_body = None if cr_provider == "auto" else {"provider": cr_provider}
-        return {
-            "extract_model": cr_model, "judge_model": cr_model,
-            "extract_base_url": base, "judge_base_url": base,
-            "extract_api_key_env": "OPENROUTER_API_KEY", "judge_api_key_env": "OPENROUTER_API_KEY",
-            "extract_extra_body": cr_extra_body, "judge_extra_body": cr_extra_body,
-        }
-    elif WIKI_EVAL_PROVIDER == "openrouter":
-        return {
-            "extract_model": "anthropic/claude-haiku-4.5", "judge_model": "anthropic/claude-haiku-4.5",
-            "extract_base_url": "https://openrouter.ai/api/v1", "judge_base_url": "https://openrouter.ai/api/v1",
-            "extract_api_key_env": "OPENROUTER_API_KEY", "judge_api_key_env": "OPENROUTER_API_KEY",
-            "extract_extra_body": None, "judge_extra_body": None,
-        }
-    else:  # openai-direct fallback
-        return {
-            "extract_model": "gpt-4o-mini", "judge_model": "gpt-4o-mini",
-            "extract_base_url": "https://api.openai.com/v1", "judge_base_url": "https://api.openai.com/v1",
-            "extract_api_key_env": "OPENAI_API_KEY", "judge_api_key_env": "OPENAI_API_KEY",
-            "extract_extra_body": None, "judge_extra_body": None,
-        }
+    model = model or DEFAULT_MODEL
+    params = MODEL_PARAMS.get(model, {})
+    resolved_base_url = base_url or DEFAULT_BASE_URL
+
+    resolved_temperature = temperature if temperature is not None else params.get("temperature")
+    resolved_top_p = top_p if top_p is not None else params.get("top_p")
+    resolved_top_k = top_k if top_k is not None else params.get("top_k")
+    resolved_max_tokens = max_tokens if max_tokens is not None else DEFAULT_MAX_TOKENS
+
+    if provider is not None:
+        provider_pin = None if provider == "auto" else provider
+    else:
+        provider_pin = params.get("provider_pin")
+    reasoning = params.get("reasoning")
+
+    default_extra_body: dict = {}
+    if provider_pin:
+        default_extra_body["provider"] = {"order": [provider_pin], "allow_fallbacks": False}
+    if reasoning:
+        default_extra_body["reasoning"] = reasoning
+    if resolved_top_k is not None:
+        default_extra_body["top_k"] = resolved_top_k
+    if "openrouter.ai" in resolved_base_url:
+        default_extra_body["usage"] = {"include": True}  # OR only returns usage.cost when asked
+
+    effective_extra_body = {**default_extra_body, **(extra_body or {})}
+
+    gate_pin = None
+    provider_field = effective_extra_body.get("provider")
+    if provider_field:
+        order = provider_field.get("order") or []
+        gate_pin = order[0] if order else None
+
+    # expect_reasoning (2026-07-10, qwen3.6-27b amendment): a "reasoning" key
+    # being present does NOT by itself mean reasoning should ignite -- a
+    # request can deliberately ask for it OFF (reasoning={"enabled": False},
+    # qwen3.6-27b's MODEL_PARAMS entry, the only lever OpenRouter's
+    # normalized API offers to suppress a hybrid-thinking model's default-on
+    # reasoning). The Р13 gate ("reasoning didn't ignite") must only fire
+    # when reasoning was actually asked for, not when it was asked to be
+    # off and correctly stayed off -- reasoning_tokens=0 in that case is the
+    # CORRECT, expected outcome, not a gate violation.
+    reasoning_field = effective_extra_body.get("reasoning")
+    expect_reasoning = bool(reasoning_field) and reasoning_field.get("enabled") is not False
+
+    return {
+        "model": model,
+        "base_url": resolved_base_url,
+        "api_key_env": "OPENROUTER_API_KEY",
+        "temperature": resolved_temperature,
+        "top_p": resolved_top_p,
+        "max_tokens": resolved_max_tokens,
+        "extra_body": effective_extra_body,
+        "provider_pin": gate_pin,
+        "expect_reasoning": expect_reasoning,
+    }
 
 
 # E-D11/Sec.11: pre-call reservation cap + hard call-count ceiling (judge calls
@@ -156,14 +258,18 @@ RESILIENT_BACKOFF: tuple[float, ...] = (1.0, 3.0, 9.0, 20.0, 40.0, 60.0)
 PRICE_IN = 0.15 / 1_000_000
 PRICE_OUT = 0.60 / 1_000_000
 EST_PROMPT_TOKENS = 1000
-EST_COMPLETION_TOKENS = JUDGE_MAX_TOKENS
-EST_COST_PER_JUDGE_CALL = EST_PROMPT_TOKENS * PRICE_IN + EST_COMPLETION_TOKENS * PRICE_OUT
+# Decoupled from the judge's hard output cap (now DEFAULT_MAX_TOKENS=20000,
+# spec Р3) -- this is a typical reasoning+answer completion length for the
+# reservation estimate, not the cap itself (2026-07-10 rework).
+EST_JUDGE_COMPLETION_TOKENS = 600
+EST_COST_PER_JUDGE_CALL = EST_PROMPT_TOKENS * PRICE_IN + EST_JUDGE_COMPLETION_TOKENS * PRICE_OUT
 
-# Extraction prompt = DEFAULT_NER_PROMPT template (~500 tokens) + one paragraph
-# of RU source text; completion = a JSON list of extracted surfaces, typically
-# well short of the extractor's 4096-token LLMConfig default. Deliberately
-# generous vs. a typical paragraph so the estimate doesn't under-shoot (same
-# worst-case-bound philosophy as EST_COST_PER_JUDGE_CALL above).
+# Extraction prompt = NER_SYSTEM_PROMPT (~500 tokens, fixed system) + one
+# paragraph of RU source text as the user message; completion = a JSON list
+# of extracted surfaces, typically well short of DEFAULT_MAX_TOKENS.
+# Deliberately generous vs. a typical paragraph so the estimate doesn't
+# under-shoot (same worst-case-bound philosophy as EST_COST_PER_JUDGE_CALL
+# above).
 EST_EXTRACT_PROMPT_TOKENS = 1200
 EST_EXTRACT_COMPLETION_TOKENS = 400
 EST_COST_PER_EXTRACT_CALL = EST_EXTRACT_PROMPT_TOKENS * PRICE_IN + EST_EXTRACT_COMPLETION_TOKENS * PRICE_OUT
@@ -176,9 +282,12 @@ def model_slug(model: str, provider: str) -> str:
     every ``/`` in the model id becomes ``--``, then ``--<provider>`` is
     appended. Dots are preserved (dotted model names stay dotted in filenames,
     working-style.md "Naming & PRs") -- e.g. ``openai/gpt-5.5`` + ``provider-3``
-    -> ``openai--gpt-5.5--provider-3``.
+    -> ``openai--gpt-5.5--provider-3``. OpenRouter provider pins are display
+    names that may contain spaces (e.g. ``"Google AI Studio"``, spec Р14) --
+    those become ``-`` so the slug stays a single filesystem path segment:
+    ``"Google AI Studio"`` -> ``"Google-AI-Studio"``.
     """
-    return f"{model.replace('/', '--')}--{provider}"
+    return f"{model.replace('/', '--')}--{provider.replace(' ', '-')}"
 
 
 def _load_dotenv(path: Path = ENV_FILE) -> None:
@@ -195,9 +304,28 @@ def _load_dotenv(path: Path = ENV_FILE) -> None:
             os.environ[key] = value
 
 
-def _config_from_bits(bits: str) -> GroundingConfig:
+def _config_from_bits(bits: str, *, use_sitelink: bool | None = None,
+                       search_mode: str = "baseline") -> GroundingConfig:
+    """Build a GroundingConfig from the 3-bit ablation id.
+
+    ``use_sitelink`` overrides the bit-derived value when given (not ``None``)
+    -- the wiki-eval protocol (docs/stages/wiki-eval.md Subtleties, "G6
+    sitelink rung creates evaluation circularity") requires eval-scoring runs
+    to use ``use_cirrus=True, use_sitelink=False`` rather than the historical
+    ``use_fallbacks`` bit-configs that couple both rungs to the same bit --
+    the 3-bit id has no room for a 4th independent toggle, so this keyword
+    lets ``run``'s ``--no-sitelink`` flag force the rung off without changing
+    the bit-string format ablate/tests already depend on.
+
+    ``search_mode`` (2026-07-10, --search-mode): likewise CLI-only, not part
+    of the 3-bit id -- passed straight through to ``GroundingConfig``.
+    """
     use_lemma, use_fallbacks, match_aliases = (c == "1" for c in bits)
-    return GroundingConfig(use_lemma=use_lemma, use_fallbacks=use_fallbacks, match_aliases=match_aliases)
+    config = GroundingConfig(use_lemma=use_lemma, use_fallbacks=use_fallbacks,
+                              match_aliases=match_aliases, search_mode=search_mode)
+    if use_sitelink is not None and use_sitelink != config.use_sitelink:
+        config = dataclasses.replace(config, use_sitelink=use_sitelink)
+    return config
 
 
 class BudgetGuard:
@@ -234,7 +362,7 @@ class BudgetGuard:
 
     @property
     def n_calls(self) -> int:
-        return self.calls_by_kind["extract"] + self.calls_by_kind["judge"]
+        return sum(self.calls_by_kind.values())
 
     def can_reserve(self, est: float, *, kind: str = "judge") -> bool:
         with self._lock:
@@ -251,8 +379,16 @@ class BudgetGuard:
     def reserve(self, est: float, *, kind: str = "judge") -> None:
         with self._lock:
             self.spent += est
-            self.spent_by_kind[kind] += est
-            self.calls_by_kind[kind] += 1
+            # .get()-based lazy-init (not a plain [kind] +=): __init__ only
+            # pre-seeds "extract"/"judge" -- a THIRD kind ("label_guess",
+            # search_mode="label-guess") must not require every existing
+            # caller/test to know about it up front, and must never appear
+            # in spent_by_kind/calls_by_kind for a run that never uses it
+            # (baseline-mode wire-identical constraint extends to meta.json
+            # shape: a run with no label_guess calls keeps the pre-existing
+            # 2-key dict, see test_guard_spend_and_call_split_tracked_per_kind).
+            self.spent_by_kind[kind] = self.spent_by_kind.get(kind, 0.0) + est
+            self.calls_by_kind[kind] = self.calls_by_kind.get(kind, 0) + 1
 
     def settle(self, est: float, actual: float | None, *, kind: str = "judge") -> None:
         if actual is None:
@@ -260,7 +396,7 @@ class BudgetGuard:
         with self._lock:
             delta = actual - est
             self.spent += delta
-            self.spent_by_kind[kind] += delta
+            self.spent_by_kind[kind] = self.spent_by_kind.get(kind, 0.0) + delta
 
 
 class _CountingSemaphore:
@@ -308,6 +444,15 @@ class FailureTracker:
     already had before this patch (judge), unchanged either way. Shared
     across every concurrent article/paragraph worker thread (same
     lock-per-mutation pattern as ``BudgetGuard``).
+
+    ``record_parse_failure`` (spec 2026-07-10 §4.2.5, finding 1): a THIRD,
+    separate thing tracked here -- an LLM NER reply that ``parse_surfaces``
+    could not parse at all (``ExtractionParseError``, distinct from an
+    honest empty ``[]`` reply). Unlike the transient-exhausted tolerance
+    above, this is a deterministic parsing failure: it is still tolerated as
+    zero mentions for that one paragraph (pilot gate: <1% of paragraphs),
+    but counted under its own counter so it's never confused with network
+    flakiness in meta.json.
     """
 
     def __init__(self) -> None:
@@ -315,6 +460,8 @@ class FailureTracker:
         self.n_failed_paragraphs = 0
         self.failed_paragraphs: list[dict] = []
         self.n_failed_judge_calls = 0
+        self.n_extraction_parse_failures = 0
+        self.parse_failed_paragraphs: list[dict] = []
 
     def record_failed_paragraph(self, title: str | None, paragraph_index: int) -> None:
         with self._lock:
@@ -324,6 +471,11 @@ class FailureTracker:
     def record_failed_judge_call(self) -> None:
         with self._lock:
             self.n_failed_judge_calls += 1
+
+    def record_parse_failure(self, title: str | None, paragraph_index: int) -> None:
+        with self._lock:
+            self.n_extraction_parse_failures += 1
+            self.parse_failed_paragraphs.append({"title": title, "paragraph_index": paragraph_index})
 
 
 # ── extractor + judge builders (E-D16 bridge) ────────────────────────────────
@@ -365,10 +517,109 @@ def _complete_with_slot(client, system: str, user: str,
     raise RuntimeError("unreachable")  # pragma: no cover
 
 
+# ── per-call gates + observability (spec 2026-07-10 Р8/Р13/Р14/Р15) ─────────
+
+
+class LengthOverflowError(FatalGroundingJudgeError):
+    """A call's reply was truncated by the token cap: ``finish_reason ==
+    "length"``, or empty content with ``reasoning_tokens > 0`` (the model
+    spent its whole budget reasoning and never emitted an answer). Per spec
+    Р15 this is NEVER tolerated or silently retried -- it halts the run with
+    full diagnostics (model, role, usage) in the message so the operator can
+    raise the cap and ``--resume``; the checkpoint stays intact."""
+
+
+class CallGateError(FatalGroundingJudgeError):
+    """A per-call vendor-params gate failed: reasoning didn't ignite despite
+    being requested (spec Р13), or the served provider doesn't match the
+    pin (spec Р14)."""
+
+
+class BudgetExhaustedError(FatalGroundingJudgeError):
+    """``BudgetGuard.can_reserve()`` returned False mid-call: the $ cap or
+    the judge-call ceiling was hit. Halts the run loudly (finding 2/10) --
+    the previous bare ``RuntimeError`` here was swallowed by
+    ``LabelFirstGrounding.ground()``'s judge catch-all into
+    ``resolved_by=judge_unavailable``, silently corrupting slices instead of
+    stopping the run."""
+
+
+class CallLogger:
+    """Per-call JSONL append (spec Р8): one line per completed LLM call
+    (extract/judge/judge_reask) to ``<out_dir>/calls.jsonl`` -- lock+append+
+    flush, same pattern as ``Checkpointer``. Called AFTER a reply is
+    received but BEFORE ``_gate_reply`` runs, so a call that then trips a
+    gate is still recorded in the artifact (the offending call must be
+    auditable, not silently dropped)."""
+
+    def __init__(self, out_dir: Path) -> None:
+        self.path = Path(out_dir) / "calls.jsonl"
+        self._lock = threading.Lock()
+
+    def log(self, reply, *, kind: str, model: str, latency_ms: float) -> None:
+        line = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "kind": kind,
+            "model": model,
+            "provider": reply.provider,
+            "finish_reason": reply.finish_reason,
+            "prompt_tokens": reply.usage.prompt_tokens,
+            "completion_tokens": reply.usage.completion_tokens,
+            "reasoning_tokens": reply.usage.reasoning_tokens,
+            "cost_usd": reply.usage.cost_usd,
+            "latency_ms": round(latency_ms, 1),
+            "content_len": len(reply.content),
+        }
+        with self._lock:
+            with self.path.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(line, ensure_ascii=False) + "\n")
+                fh.flush()
+
+
+def _gate_reply(reply, *, kind: str, model: str, pin: str | None,
+                 expect_reasoning: bool, context: str) -> None:
+    """Per-call gate (spec Р15/Р13/Р14 §4.1.4), run after EVERY completed LLM
+    call (extractor + judge + judge reask), after that call has already been
+    logged to ``calls.jsonl`` by ``CallLogger``. Raises a
+    ``FatalGroundingJudgeError`` subclass on violation -- these halt the run
+    rather than collapsing to a tolerated degradation: on the judge side
+    ``LabelFirstGrounding.ground()`` re-raises them past its catch-all; on
+    the extraction side ``_parallel_extract_fn.safe_extract`` re-raises them
+    (not tolerated as transient).
+
+    Order matters: length-overflow is checked first (it can co-occur with
+    ``reasoning_tokens == 0`` when reasoning itself got truncated, and the
+    overflow is the more actionable diagnosis), then the reasoning-ignition
+    gate, then the served-provider pin gate.
+    """
+    usage = reply.usage
+    if reply.finish_reason == "length" or (not reply.content.strip() and usage.reasoning_tokens > 0):
+        raise LengthOverflowError(
+            f"{kind} call to {model!r} hit the output-length limit ({context}): "
+            f"finish_reason={reply.finish_reason!r} prompt_tokens={usage.prompt_tokens} "
+            f"completion_tokens={usage.completion_tokens} reasoning_tokens={usage.reasoning_tokens}"
+        )
+    if expect_reasoning and usage.reasoning_tokens == 0:
+        raise CallGateError(
+            f"{kind} call to {model!r} did not ignite reasoning ({context}): "
+            f"reasoning_tokens=0 despite expect_reasoning=True"
+        )
+    if pin is not None and reply.provider is not None:
+        if reply.provider.strip().casefold() != pin.strip().casefold():
+            raise CallGateError(
+                f"{kind} call to {model!r} was served by {reply.provider!r}, "
+                f"pinned to {pin!r} ({context})"
+            )
+
+
 def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
-                       model: str | None = None, provider: str | None = None):
-    """Real NER extraction entry point: LLMClient + DEFAULT_NER_PROMPT ->
-    llm_surfaces -> mentions_from_surfaces -> list[TermMention].
+                       model: str | None = None, provider: str | None = None,
+                       extra_body: dict | None = None, base_url: str | None = None,
+                       temperature: float | None = None, top_p: float | None = None,
+                       top_k: int | None = None, max_tokens: int | None = None,
+                       call_logger: "CallLogger | None" = None):
+    """Real NER extraction entry point: LLMClient + NER_SYSTEM_PROMPT/ner_user
+    -> llm_surfaces -> mentions_from_surfaces -> list[TermMention].
 
     Mirrors term_pipeline.py's `extract --real` path (same prompt, validated
     substrings only) but wrapped as the single-paragraph `extract_fn` predict.py
@@ -390,6 +641,13 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
     article-level pool) may be larger, they just block on this semaphore
     before actually calling the provider.
 
+    ``model``/``provider``/``extra_body``/``base_url``/``temperature``/
+    ``top_p``/``top_k``/``max_tokens`` are forwarded straight into
+    ``_resolve_route`` (spec 2026-07-10 §4.1) -- CLI overrides win, else the
+    per-model vendor defaults in ``MODEL_PARAMS`` apply. ``timeout=120.0``
+    (not the client default 30s): reasoning at a 20000-token output cap can
+    run well past 30s.
+
     Retries at ``RESILIENT_ATTEMPTS``/``RESILIENT_BACKOFF`` (6 attempts, up
     to 60s backoff -- qwen-run resilience patch): if the call is still
     TRANSIENT-failing after that, it raises here unchanged and out through
@@ -403,31 +661,70 @@ def _build_extract_fn(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | th
     holds ``llm_semaphore`` only during each network attempt -- never during
     the sleep between attempts (semaphore-starvation fix, 2026-07-06; see its
     docstring).
+
+    ``call_logger`` (spec Р8, optional): when given, every completed reply
+    is appended to ``calls.jsonl`` BEFORE ``_gate_reply`` runs -- a call that
+    then trips a gate (``LengthOverflowError``/``CallGateError``, both
+    ``FatalGroundingJudgeError`` subclasses) still propagates and halts the
+    run (spec Р15), it is not tolerated here or by ``safe_extract``.
     """
     from palimpsest.llm.client import LLMClient, LLMConfig
 
     _load_dotenv()
-    route = _resolve_route(model, provider)
-    api_key = os.environ.get(route["extract_api_key_env"])
+    route = _resolve_route(model, provider, extra_body, base_url, temperature, top_p, top_k, max_tokens)
+    api_key = os.environ.get(route["api_key_env"])
     if not api_key:
-        raise RuntimeError(f"{route['extract_api_key_env']} not set (checked .env and environment) -- required for extraction")
+        raise RuntimeError(f"{route['api_key_env']} not set (checked .env and environment) -- required for extraction")
 
-    client = LLMClient(LLMConfig(model=route["extract_model"], base_url=route["extract_base_url"], api_key=api_key,
-                                 temperature=0, extra_body=route["extract_extra_body"]))
+    client = LLMClient(LLMConfig(
+        model=route["model"], base_url=route["base_url"], api_key=api_key,
+        temperature=route["temperature"], top_p=route["top_p"], max_tokens=route["max_tokens"],
+        extra_body=route["extra_body"], timeout=120.0,
+    ))
 
     def extractor(source: str) -> list[dict]:
-        if not guard.can_reserve(EST_COST_PER_EXTRACT_CALL, kind="extract"):
-            raise RuntimeError(guard.stopped_reason)
-        guard.reserve(EST_COST_PER_EXTRACT_CALL, kind="extract")
-        reply = _complete_with_slot(
-            client, system="", user=DEFAULT_NER_PROMPT.replace("{{source}}", source),
-            semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
-        )
-        actual_cost = reply.usage.cost_usd
-        if actual_cost is None and reply.usage.prompt_tokens:
-            actual_cost = (reply.usage.prompt_tokens * PRICE_IN
-                           + reply.usage.completion_tokens * PRICE_OUT)
-        guard.settle(EST_COST_PER_EXTRACT_CALL, actual_cost, kind="extract")
+        def _attempt():
+            if not guard.can_reserve(EST_COST_PER_EXTRACT_CALL, kind="extract"):
+                raise BudgetExhaustedError(guard.stopped_reason)
+            guard.reserve(EST_COST_PER_EXTRACT_CALL, kind="extract")
+            t0 = time.perf_counter()
+            reply = _complete_with_slot(
+                client, system=NER_SYSTEM_PROMPT, user=ner_user(source),
+                semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
+            )
+            if call_logger is not None:
+                call_logger.log(reply, kind="extract", model=route["model"],
+                                 latency_ms=(time.perf_counter() - t0) * 1000)
+            _gate_reply(reply, kind="extract", model=route["model"], pin=route["provider_pin"],
+                        expect_reasoning=route["expect_reasoning"], context="extraction call")
+            actual_cost = reply.usage.cost_usd
+            if actual_cost is None and reply.usage.prompt_tokens:
+                actual_cost = (reply.usage.prompt_tokens * PRICE_IN
+                               + reply.usage.completion_tokens * PRICE_OUT)
+            guard.settle(EST_COST_PER_EXTRACT_CALL, actual_cost, kind="extract")
+            return reply
+
+        try:
+            reply = _attempt()
+        except CallGateError as exc:
+            # One-retry tolerance for reasoning-ignition misses only (2026-07-10
+            # patch, --no-judge cost run): observed as a genuine one-off
+            # provider quirk on BOTH gemini-3.1-flash-lite and deepseek-v4-flash
+            # under real load (not a single-model fluke), always followed by
+            # normal reasoning-positive calls on the very next attempt -- see
+            # docs/stages/wiki-eval.md for the two real occurrences that
+            # motivated this. A SECOND consecutive miss on the same paragraph
+            # still halts loudly exactly as before (Р13/Р15 intent preserved:
+            # a PERSISTENT failure to reason is still fatal, only a one-off
+            # blip is absorbed). The served-by pin-mismatch gate (Р14) is
+            # NEVER retried here -- only the specific "did not ignite
+            # reasoning" message is caught. Never silent: printed to stderr
+            # either way.
+            if "did not ignite reasoning" not in str(exc):
+                raise
+            print(f"wiki_eval: reasoning-ignition miss, retrying once ({exc})", file=sys.stderr)
+            reply = _attempt()  # a second CallGateError here propagates uncaught, as designed
+
         return parse_surfaces(reply.content)
 
     def extract_fn(paragraph: str):
@@ -492,6 +789,22 @@ def _parallel_extract_fn(extract_fn, paragraphs: list[str], *, title: str | None
     callers (including this function's own pre-existing tests) keep working
     unchanged -- the tolerance logic simply runs without an owner-visible
     counter in that case.
+
+    Two more outcomes layered in by the 2026-07-10 rework, checked BEFORE
+    the transient/deterministic split above:
+
+    - A ``FatalGroundingJudgeError`` (``LengthOverflowError``/
+      ``CallGateError``/``BudgetExhaustedError``, spec Р15) is a halt
+      marker, never tolerated -- it is enriched with this paragraph's
+      article/index context via ``exc.add_note`` (so the offending call is
+      identifiable without re-deriving it from ``calls.jsonl``) and
+      re-raised to kill the run.
+    - An ``ExtractionParseError`` (spec §4.2.5, finding 1: ``parse_surfaces``
+      now raises instead of silently returning ``[]`` on malformed LLM
+      output) IS tolerated, same as a transient failure -- but recorded
+      under its own counter (``tracker.record_parse_failure``), never
+      conflated with network flakiness, and printed loudly to stderr since
+      the pilot gate requires this to stay under 1% of paragraphs.
     """
     from palimpsest.llm.client import DEFAULT_MAX_CONCURRENCY, is_transient_error
 
@@ -499,6 +812,15 @@ def _parallel_extract_fn(extract_fn, paragraphs: list[str], *, title: str | None
         idx, paragraph = item
         try:
             return extract_fn(paragraph)
+        except FatalGroundingJudgeError as exc:
+            exc.add_note(f"article={title!r} paragraph={idx}")
+            raise
+        except ExtractionParseError:
+            if tracker is not None:
+                tracker.record_parse_failure(title, idx)
+            print(f"wiki_eval: extraction parse failure -- article={title!r} paragraph={idx}",
+                  file=sys.stderr)
+            return []
         except Exception as exc:  # noqa: BLE001 -- re-raised unless transient
             if not is_transient_error(exc):
                 raise
@@ -512,11 +834,21 @@ def _parallel_extract_fn(extract_fn, paragraphs: list[str], *, title: str | None
     return lambda _paragraph: next(ordered)
 
 
-JUDGE_SYSTEM_PROMPT = "You are a Wikidata disambiguation judge. Return strict JSON only."
+# Role + strict-JSON output contract, single source of truth in
+# grounding/label_first.py (spec 2026-07-10 Р7: the Role and output contract
+# belong in system, not user; this module used to carry its own one-line
+# stub here instead of importing the real thing).
+JUDGE_SYSTEM_PROMPT = DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
 # One re-ask on unparseable JSON (qwen-run resilience patch) uses this instead
-# of JUDGE_SYSTEM_PROMPT -- a corrective nudge rather than a byte-identical
-# retry, since temperature=0 against the same prompt+system would otherwise
-# very likely reproduce the exact same malformed reply.
+# of JUDGE_SYSTEM_PROMPT -- a corrective nudge, NOT a byte-identical retry.
+# The original rationale here assumed temperature=0 (a byte-identical retry
+# would reproduce the same malformed reply); under the 2026-07-10 vendor
+# sampling rework (spec Р3) every model runs at temperature>=1.0 with
+# reasoning on, so a plain retry could already vary -- but a MALFORMED reply
+# specifically (wrong shape, markdown fence, commentary) tends to be a
+# systematic prompt-following miss that sampling alone doesn't fix, which is
+# why the reask still explicitly restates the output contract rather than
+# just re-asking the same question again.
 JUDGE_REASK_SYSTEM_PROMPT = (
     JUDGE_SYSTEM_PROMPT + " Your previous reply was not valid JSON -- return ONLY the JSON "
     "object, with no markdown code fence and no commentary before or after it."
@@ -525,21 +857,27 @@ JUDGE_REASK_SYSTEM_PROMPT = (
 
 def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
                   model: str | None = None, provider: str | None = None,
-                  tracker: FailureTracker | None = None):
-    """Judge on the same provider as the extractor (default CloseRouter
-    claude-haiku-4.5, pinned via CLOSEROUTER_PROVIDER). Returns None when the
-    provider key is unset so the caller can fall back to judge=None.
+                  extra_body: dict | None = None, base_url: str | None = None,
+                  temperature: float | None = None, top_p: float | None = None,
+                  top_k: int | None = None, max_tokens: int | None = None,
+                  tracker: FailureTracker | None = None,
+                  call_logger: "CallLogger | None" = None):
+    """Judge on the same route as the extractor (spec 2026-07-10 §4.1: one
+    ``_resolve_route`` call, shared model/provider/sampling for both roles).
+    Returns None when the API key is unset so the caller can fall back to
+    judge=None.
 
     ``llm_semaphore`` (ticket 002b): same shared instance as
     ``_build_extract_fn`` -- see its docstring. Judge calls happen inside
     grounding (phase 2), which with article-level parallelism now runs
     concurrently across article workers, so this closure needs the same
-    global cap.
+    global cap. ``timeout=120.0`` (not the client default 30s), same
+    rationale as the extractor's.
 
     Last-resort tolerance (qwen-run resilience patch, 2026-07-05): retries at
     ``RESILIENT_ATTEMPTS``/``RESILIENT_BACKOFF`` (6 attempts, up to 60s
     backoff) instead of ``complete_retrying``'s 3-attempt default, to ride
-    out CloseRouter's multi-minute circuit-breaker windows -- via the shared
+    out multi-minute upstream circuit-breaker windows -- via the shared
     ``_complete_with_slot`` helper, which holds ``llm_semaphore`` only during
     each network attempt, never during the sleep between attempts
     (semaphore-starvation fix, 2026-07-06; see its docstring). If a call is
@@ -550,9 +888,13 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
     (grounding/label_first.py's module docstring: "judge raising ... collapse
     to yellow/judge_unavailable -- terminal, no retry"; see also
     ``test_label_first_judge_raises_resolves_judge_unavailable_called_once_not_retried``
-    in tests/test_terminology.py). So the tolerance itself needs no change at
-    the grounding call boundary -- this wrapper's only job is to make the two
-    "gave up" cases LOUD before re-raising: ``tracker.record_failed_judge_call()``
+    in tests/test_terminology.py) -- EXCEPT a ``FatalGroundingJudgeError``
+    (``LengthOverflowError``/``CallGateError``/``BudgetExhaustedError``, spec
+    Р15), which ``ground()`` re-raises past that same catch-all instead of
+    collapsing it, so it kills the run as intended. So the tolerance itself
+    needs no change at the grounding call boundary -- this wrapper's only
+    job is to make the two "gave up" (transient-exhausted / re-ask also
+    unparseable) cases LOUD before re-raising: ``tracker.record_failed_judge_call()``
     so meta.json's ``n_failed_judge_calls`` shows how many mentions fell back
     to judge_unavailable via this path, instead of that fact being invisible
     inside ground()'s pre-existing catch-all. A judge call that raises a
@@ -561,30 +903,42 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
     unchanged from before this patch; that's an existing, separate contract,
     not something this task changes. ``tracker`` defaults to ``None`` so
     existing callers/tests keep working unchanged (no counter observed).
+
+    ``call_logger`` (spec Р8, optional): every completed reply (original ask
+    AND the corrective reask, tagged ``kind="judge"``/``"judge_reask"``) is
+    appended to ``calls.jsonl`` before ``_gate_reply`` runs -- same ordering
+    contract as the extractor's.
     """
     from palimpsest.llm.client import LLMClient, LLMConfig, is_transient_error
 
     _load_dotenv()
-    route = _resolve_route(model, provider)
-    api_key = os.environ.get(route["judge_api_key_env"])
+    route = _resolve_route(model, provider, extra_body, base_url, temperature, top_p, top_k, max_tokens)
+    api_key = os.environ.get(route["api_key_env"])
     if not api_key:
         return None
 
     client = LLMClient(LLMConfig(
-        model=route["judge_model"], base_url=route["judge_base_url"], api_key=api_key,
-        temperature=0, max_tokens=JUDGE_MAX_TOKENS, extra_body=route["judge_extra_body"],
+        model=route["model"], base_url=route["base_url"], api_key=api_key,
+        temperature=route["temperature"], top_p=route["top_p"], max_tokens=route["max_tokens"],
+        extra_body=route["extra_body"], timeout=120.0,
     ))
 
-    def _call(prompt: str, *, system: str) -> str:
+    def _call(prompt: str, *, system: str, kind: str) -> str:
         """One real judge network call: reserve, call (resilient retries,
-        semaphore slot released during backoff), settle."""
+        semaphore slot released during backoff), log, gate, settle."""
         if not guard.can_reserve(EST_COST_PER_JUDGE_CALL, kind="judge"):
-            raise RuntimeError(guard.stopped_reason)
+            raise BudgetExhaustedError(guard.stopped_reason)
         guard.reserve(EST_COST_PER_JUDGE_CALL, kind="judge")
+        t0 = time.perf_counter()
         result = _complete_with_slot(
             client, system=system, user=prompt,
             semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
         )
+        if call_logger is not None:
+            call_logger.log(result, kind=kind, model=route["model"],
+                             latency_ms=(time.perf_counter() - t0) * 1000)
+        _gate_reply(result, kind=kind, model=route["model"], pin=route["provider_pin"],
+                    expect_reasoning=route["expect_reasoning"], context=f"{kind} call")
         actual_cost = result.usage.cost_usd
         if actual_cost is None and result.usage.prompt_tokens:
             actual_cost = (result.usage.prompt_tokens * PRICE_IN
@@ -602,7 +956,7 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
 
     def judge(prompt: str) -> dict:
         try:
-            content = _call(prompt, system=JUDGE_SYSTEM_PROMPT)
+            content = _call(prompt, system=JUDGE_SYSTEM_PROMPT, kind="judge")
         except Exception as exc:  # noqa: BLE001 -- re-raised either way, see docstring
             if tracker is not None and is_transient_error(exc):
                 tracker.record_failed_judge_call()
@@ -614,7 +968,7 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
             pass  # one corrective re-ask below before giving up
 
         try:
-            content = _call(prompt, system=JUDGE_REASK_SYSTEM_PROMPT)
+            content = _call(prompt, system=JUDGE_REASK_SYSTEM_PROMPT, kind="judge_reask")
         except Exception as exc:  # noqa: BLE001 -- re-raised either way, see docstring
             if tracker is not None and is_transient_error(exc):
                 tracker.record_failed_judge_call()
@@ -628,6 +982,75 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
             raise
 
     return judge
+
+
+def _build_label_guesser(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
+                          model: str | None = None, provider: str | None = None,
+                          extra_body: dict | None = None, base_url: str | None = None,
+                          temperature: float | None = None, top_p: float | None = None,
+                          top_k: int | None = None, max_tokens: int | None = None,
+                          call_logger: "CallLogger | None" = None):
+    """One-shot label-guess call for ``search_mode="label-guess"``
+    (candidates.py's widening tier, 2026-07-10): shares the SAME resolved
+    route (model/provider/sampling) as the run's disambiguation judge --
+    "the run's judge LLM client" per spec -- but is its OWN small LLMClient
+    rather than reusing ``_build_judge``'s closure, since that closure
+    hardcodes ``JUDGE_SYSTEM_PROMPT`` (a different role/output contract than
+    the label-guess prompt) and its own ``kind="judge"``/``"judge_reask"``
+    tagging. Tagged ``kind="label_guess"`` for its own meta.json spend/call
+    split (BudgetGuard's lazy per-kind dicts, see its ``reserve``/``settle``).
+
+    Returns ``None`` when the API key is unset, same fallback contract as
+    ``_build_judge`` -- ``generate_candidates`` treats a ``None``
+    ``label_guesser`` as "skip this tier", it is the CALLER's job
+    (``cmd_run``'s CLI guard) to fail fast up front when
+    ``search_mode == "label-guess"`` is combined with ``--no-judge``.
+
+    Unlike ``_build_judge`` there is no corrective re-ask on malformed JSON
+    (spec: "make ONE LLM call") -- a bad/unparseable reply degrades to "no
+    guess" one level up in ``candidates._guess_labels``, not retried here.
+    """
+    from palimpsest.llm.client import LLMClient, LLMConfig
+
+    _load_dotenv()
+    route = _resolve_route(model, provider, extra_body, base_url, temperature, top_p, top_k, max_tokens)
+    api_key = os.environ.get(route["api_key_env"])
+    if not api_key:
+        return None
+
+    client = LLMClient(LLMConfig(
+        model=route["model"], base_url=route["base_url"], api_key=api_key,
+        temperature=route["temperature"], top_p=route["top_p"], max_tokens=route["max_tokens"],
+        extra_body=route["extra_body"], timeout=120.0,
+    ))
+
+    def guess(prompt: str) -> dict:
+        if not guard.can_reserve(EST_COST_PER_JUDGE_CALL, kind="label_guess"):
+            raise BudgetExhaustedError(guard.stopped_reason)
+        guard.reserve(EST_COST_PER_JUDGE_CALL, kind="label_guess")
+        t0 = time.perf_counter()
+        result = _complete_with_slot(
+            client, system=DEFAULT_LABEL_GUESS_SYSTEM_PROMPT, user=prompt,
+            semaphore=llm_semaphore, attempts=RESILIENT_ATTEMPTS, backoff=RESILIENT_BACKOFF,
+        )
+        if call_logger is not None:
+            call_logger.log(result, kind="label_guess", model=route["model"],
+                             latency_ms=(time.perf_counter() - t0) * 1000)
+        _gate_reply(result, kind="label_guess", model=route["model"], pin=route["provider_pin"],
+                    expect_reasoning=route["expect_reasoning"], context="label_guess call")
+        actual_cost = result.usage.cost_usd
+        if actual_cost is None and result.usage.prompt_tokens:
+            actual_cost = (result.usage.prompt_tokens * PRICE_IN
+                           + result.usage.completion_tokens * PRICE_OUT)
+        guard.settle(EST_COST_PER_JUDGE_CALL, actual_cost, kind="label_guess")
+        text = result.content.strip()
+        if text.startswith("```"):
+            text = text.strip("`")
+            if text.startswith("json"):
+                text = text[4:]
+        return json.loads(text)
+
+    return guess
 
 
 def _canonicalize_fn(wd: WikidataClient):
@@ -688,35 +1111,117 @@ def _p31_of_fn(wd: WikidataClient):
     return p31_of
 
 
-def _label_exists_fn(wd: WikidataClient):
-    """P3 predicate (spec Sec.4): does `surface` exist as a Wikidata RU label
-    anywhere reachable via wbsearchentities exact-prefix search?
-
-    Thread safety (ticket 002b): same dict-lock pattern as ``_canonicalize_fn``
-    -- see its docstring.
-    """
-    cache: dict[str, bool] = {}
-    lock = threading.Lock()
-
-    def label_exists(surface: str) -> bool:
-        key = norm(surface)
-        with lock:
-            if key in cache:
-                return cache[key]
-        hits = wd.search_entities(surface, lang="ru", limit=1)
-        exists = any(norm(h.get("label", "")) == key for h in hits)
-        with lock:
-            cache[key] = exists
-        return exists
-
-    return label_exists
-
-
 # ── gt.jsonl I/O ──────────────────────────────────────────────────────────────
 
 
-def _load_gt(path: Path) -> list[dict]:
+def _read_jsonl(path: Path) -> list[dict]:
+    """One JSON object per non-blank line -- the shared shape of gt.jsonl,
+    pred.jsonl and pred.partial.jsonl alike."""
     return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
+
+
+def _load_gt(path: Path) -> list[dict]:
+    return _read_jsonl(path)
+
+
+def _assert_reuse_extraction_coverage(gt_records: list[dict], source_records: list[dict], reuse_dir: Path) -> None:
+    """``--reuse-extraction`` guard (Deliverable 2): every article this run
+    intends to process (the full ``--gt`` corpus) must already have
+    extraction output in the source run's pred.jsonl, or grounding would
+    silently run over an incomplete mention set for that article. Missing
+    titles fail fast, named -- same "loud, not silent" philosophy as
+    ``_assert_pred_gt_coverage`` below, just the opposite direction (every GT
+    title must be COVERED by the source, not the other way around)."""
+    gt_titles = {rec["title"] for rec in gt_records}
+    source_titles = {r["title"] for r in source_records}
+    missing = sorted(gt_titles - source_titles)
+    if missing:
+        raise SystemExit(
+            f"wiki_eval: --reuse-extraction {reuse_dir} is missing {len(missing)} requested "
+            f"article(s) -- extraction output isn't available for them, cannot reuse.\n"
+            f"  missing titles: {missing}"
+        )
+
+
+def _reconstruct_mentions_for_article(
+    article_text: str, records: list[dict],
+) -> tuple[list[tuple[TermMention, int]], int]:
+    """Rebuild ``(TermMention, index)`` pairs for one article from a PRIOR
+    run's pred.jsonl records (``--reuse-extraction``, Deliverable 2):
+    surface/lemma/category/index are already on disk (predict.py's records
+    schema) -- char_start/char_end/context are re-derived by scanning
+    ``article_text`` for the literal ``surface`` occurrence whose
+    ``char_to_token_index`` matches the recorded ``index``, the exact
+    inverse of how the ORIGINAL run computed that index (same pinned E-D6
+    tokenizer on both sides), so it round-trips exactly for any mention
+    whose source HTML hasn't drifted since. ``context`` is reconstructed via
+    ``extract.sentence_context`` over the WHOLE article text rather than the
+    original single paragraph (the paragraph boundary isn't recoverable from
+    pred.jsonl alone) -- a reasonable approximation since paragraphs already
+    end in sentence-terminating punctuation, but not byte-identical to a
+    fresh extraction run's context (known limitation, see
+    docs/stages/wiki-eval.md).
+
+    ``index`` is REUSED verbatim from the record, never recomputed here --
+    it is the original run's own authoritative answer, and recomputing it
+    from a possibly-unmatched char_start (e.g. ``char_to_token_index(text,
+    -1)``) would silently produce a wrong index instead.
+
+    Returns ``(mentions_with_index, n_unmatched)``. An unmatched record
+    (source HTML drifted, or a genuinely duplicate (surface, index) pair)
+    still yields a ``TermMention`` (surface/lemma/category preserved,
+    context="", char_start=char_end=-1) paired with its recorded index,
+    rather than silently dropping the mention from re-grounding -- candidate
+    search only needs surface/lemma to still work; only the alt-names/
+    label-guess widening tiers and judge context quality degrade for that
+    one mention. ``n_unmatched`` is counted for meta.json disclosure
+    (``n_reuse_extraction_unmatched``).
+    """
+    taken: set[int] = set()  # char_start positions already claimed this article
+    out: list[tuple[TermMention, int]] = []
+    n_unmatched = 0
+    for rec in records:
+        surface = rec["surface"]
+        index = rec["index"]
+        lemma = rec.get("lemma") or surface
+        category = rec.get("category")
+        span = None
+        for m in re.finditer(re.escape(surface), article_text):
+            if m.start() in taken:
+                continue
+            if char_to_token_index(article_text, m.start()) == index:
+                span = (m.start(), m.end())
+                break
+        if span is None:
+            n_unmatched += 1
+            mention = TermMention(surface=surface, context="", lemma=lemma,
+                                   char_start=-1, char_end=-1, lang="ru", category=category)
+        else:
+            start, end = span
+            taken.add(start)
+            mention = TermMention(surface=surface, context=sentence_context(article_text, start, end),
+                                   lemma=lemma, char_start=start, char_end=end, lang="ru", category=category)
+        out.append((mention, index))
+    return out, n_unmatched
+
+
+def _assert_pred_gt_coverage(gt_records: list[dict], pred_records: list[dict], gt_path: Path, pred_source: object) -> None:
+    """Guard against a pred/GT corpus mismatch passing silently (2026-07-10
+    gt.jsonl drift incident, docs/known_issues.md): gt.jsonl silently held a
+    stale 20-article pilot while a 100-article run's pred.jsonl kept scoring
+    against it, because the report loop only looks up GT titles in
+    pred_by_title and never checks the reverse direction. Any pred title
+    absent from GT means the two corpora don't match -- fail loudly instead
+    of silently under-scoring."""
+    gt_titles = {rec["title"] for rec in gt_records}
+    extra = sorted({r["title"] for r in pred_records} - gt_titles)
+    if extra:
+        raise SystemExit(
+            f"wiki_eval: {len(extra)} pred title(s) absent from GT; wrong --gt corpus?\n"
+            f"  --gt {gt_path}\n"
+            f"  pred source: {pred_source}\n"
+            f"  example mismatched titles: {extra[:5]}"
+        )
 
 
 # ── build-gt ──────────────────────────────────────────────────────────────────
@@ -724,10 +1229,16 @@ def _load_gt(path: Path) -> list[dict]:
 
 def cmd_build_gt(args) -> int:
     titles_path = Path(args.titles)
-    lines = [l.strip() for l in titles_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    lines = [
+        l.strip()
+        for l in titles_path.read_text(encoding="utf-8").splitlines()
+        if l.strip() and not l.strip().startswith("#")
+    ]
 
     # each line: "<title>" or "<title>\t<stratum>"; untagged lines default to
     # "typical" (legacy pilot-file default -- the v2 titles file tags every line).
+    # Lines starting with "#" are a provenance/header comment (e.g.
+    # titles_ablation20.txt), skipped rather than treated as a title.
     titles: dict[str, str] = {}
     stratum_map: dict[str, str] = {}
     for line in lines:
@@ -785,9 +1296,10 @@ class Checkpointer:
 
     ``--resume`` (``cmd_run``) reads ``pred.partial.jsonl`` back to skip
     already-done titles and seeds a fresh ``BudgetGuard`` from
-    ``progress.jsonl``'s last recorded ``spent`` -- see ``cmd_run``.
-    ``pred.partial.jsonl`` is deleted once ``cmd_run`` finishes cleanly and
-    has written the merged final ``pred.jsonl``.
+    ``progress.jsonl``'s last recorded ``spent`` (plus, since the 2026-07-10
+    rework, ``spent_by_kind``/``calls_by_kind`` -- see ``cmd_run``, finding
+    3). ``pred.partial.jsonl`` is deleted once ``cmd_run`` finishes cleanly
+    and has written the merged final ``pred.jsonl``.
     """
 
     def __init__(self, out_dir: Path, *, n_total: int, n_done: int = 0,
@@ -806,12 +1318,15 @@ class Checkpointer:
                     fh.write(json.dumps(r, ensure_ascii=False) + "\n")
                 fh.flush()
             self.n_done += 1
-            spent = self.guard.spent if self.guard is not None else 0.0
+            line = {"article": title, "done": self.n_done, "of": self.n_total,
+                     "spent": self.guard.spent if self.guard is not None else 0.0}
+            if self.guard is not None:
+                # finding 3: --resume needs the split, not just the total, to
+                # restore the judge-call ceiling and the spend-by-kind meta.
+                line["spent_by_kind"] = dict(self.guard.spent_by_kind)
+                line["calls_by_kind"] = dict(self.guard.calls_by_kind)
             with self.progress_path.open("a", encoding="utf-8") as fh:
-                fh.write(json.dumps(
-                    {"article": title, "done": self.n_done, "of": self.n_total, "spent": spent},
-                    ensure_ascii=False,
-                ) + "\n")
+                fh.write(json.dumps(line, ensure_ascii=False) + "\n")
                 fh.flush()
 
 
@@ -819,7 +1334,8 @@ def _process_articles_parallel(
     articles: list[tuple[str, list[str], str]], *, article_workers: int,
     extract_fn, judge, canonicalize, wd: WikidataClient, config: GroundingConfig,
     guard: BudgetGuard | None, tracker: FailureTracker | None = None,
-    checkpoint: Checkpointer | None = None,
+    checkpoint: Checkpointer | None = None, label_guesser=None,
+    reuse_mentions_by_title: dict[str, list[tuple[TermMention, int]]] | None = None,
 ) -> tuple[list[dict], int]:
     """Article-level parallelism (ticket 002b): process every ``(title,
     paragraphs, article_text)`` triple in ``articles`` CONCURRENTLY, up to
@@ -851,6 +1367,17 @@ def _process_articles_parallel(
     article's records are ready, so on-disk progress reflects REAL completion
     order, not ``pool.map``'s submission-order yield. ``None`` (default)
     keeps every pre-existing caller/test of this function unchanged.
+
+    ``label_guesser`` (2026-07-10, search_mode="label-guess"): passed
+    straight through to each per-article ``LabelFirstGrounding`` instance,
+    same sharing rationale as ``extract_fn``/``judge`` above.
+
+    ``reuse_mentions_by_title`` (2026-07-10, ``--reuse-extraction``,
+    Deliverable 2): when given, ``process_one`` skips the paragraph-chunked
+    extraction phase entirely (``extract_fn`` is never called for that
+    article) and grounds ``reuse_mentions_by_title[title]`` directly via
+    ``predict.predict_tuples_from_mentions`` -- ``None`` (default) keeps
+    every pre-existing caller/test on the normal extraction path unchanged.
     """
 
     def process_one(item: tuple[str, list[str], str]) -> tuple[list[dict], int]:
@@ -862,24 +1389,33 @@ def _process_articles_parallel(
         if guard is not None and guard.stopped_reason is not None:
             return [], 0
 
-        grounder = LabelFirstGrounding(wd, config)
+        grounder = LabelFirstGrounding(wd, config, label_guesser=label_guesser)
 
         def ground_fn(mention, *, judge=judge, scope_id=None, judge_cache=None):
             return grounder.ground(mention, judge=judge, scope_id=scope_id, judge_cache=judge_cache)
 
         judge_cache: dict = {}
-        # Phase 1 (parallel, capped at DEFAULT_MAX_CONCURRENCY per article):
-        # extract every paragraph's mentions concurrently. Phase 2 (grounding +
-        # judge, inside predict_tuples) is untouched and stays sequential
-        # WITHIN one article -- it's the across-article overlap that's new.
-        # title/tracker (qwen-run resilience patch): _parallel_extract_fn needs
-        # both to record which article/paragraph a tolerated transient failure
-        # came from -- see its docstring.
-        paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs, title=title, tracker=tracker)
-        result = predict.predict_tuples(
-            article_text, paragraphs, paragraph_extract_fn, ground_fn,
-            judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
-        )
+        if reuse_mentions_by_title is not None:
+            # --reuse-extraction: mentions were already extracted by a prior
+            # run (Deliverable 2) -- ground them directly, no extraction call.
+            mentions_with_index = reuse_mentions_by_title.get(title, [])
+            result = predict.predict_tuples_from_mentions(
+                mentions_with_index, ground_fn,
+                judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
+            )
+        else:
+            # Phase 1 (parallel, capped at DEFAULT_MAX_CONCURRENCY per article):
+            # extract every paragraph's mentions concurrently. Phase 2 (grounding +
+            # judge, inside predict_tuples) is untouched and stays sequential
+            # WITHIN one article -- it's the across-article overlap that's new.
+            # title/tracker (qwen-run resilience patch): _parallel_extract_fn needs
+            # both to record which article/paragraph a tolerated transient failure
+            # came from -- see its docstring.
+            paragraph_extract_fn = _parallel_extract_fn(extract_fn, paragraphs, title=title, tracker=tracker)
+            result = predict.predict_tuples(
+                article_text, paragraphs, paragraph_extract_fn, ground_fn,
+                judge=judge, judge_cache=judge_cache, scope_id=title, canonicalize=canonicalize,
+            )
         records = [{"title": title, **r} for r in result["records"]]
         if checkpoint is not None:
             checkpoint.record(title, records)
@@ -895,15 +1431,29 @@ def _process_articles_parallel(
 
 
 def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_run: bool, guard: BudgetGuard | None,
-                     model: str | None = None, provider: str | None = None,
+                     model: str | None = None, provider: str | None = None, extra_body: dict | None = None,
+                     base_url: str | None = None, temperature: float | None = None,
+                     top_p: float | None = None, top_k: int | None = None,
+                     max_tokens: int | None = None,
                      article_workers: int = DEFAULT_ARTICLE_WORKERS,
                      llm_workers: int = DEFAULT_LLM_WORKERS,
                      wikidata_cache: str | Path = WIKIDATA_CACHE,
                      wikidata_workers: int = DEFAULT_NETWORK_CONCURRENCY,
                      out_dir: str | Path | None = None,
                      skip_titles: frozenset[str] = frozenset(),
-                     n_done_start: int = 0) -> tuple[list[dict], dict]:
-    config = _config_from_bits(bits)
+                     n_done_start: int = 0,
+                     use_sitelink: bool | None = None,
+                     no_judge: bool = False,
+                     search_mode: str = "baseline",
+                     reuse_source_records_by_title: dict[str, list[dict]] | None = None,
+                     ) -> tuple[list[dict], dict]:
+    if search_mode == "label-guess" and no_judge:
+        # Defense in depth: cmd_run's CLI guard already rejects this
+        # combination before any work starts (spec: "fail fast at CLI
+        # arg-parse time") -- this second check protects direct callers of
+        # _run_one_config (tests, future scripts) that bypass cmd_run.
+        raise ValueError("search_mode='label-guess' requires a judge -- no_judge=True was also given")
+    config = _config_from_bits(bits, use_sitelink=use_sitelink, search_mode=search_mode)
     wd = WikidataClient(cache_path=wikidata_cache, network_concurrency=wikidata_workers)
     canonicalize = _canonicalize_fn(wd)
 
@@ -941,8 +1491,43 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
     # and into _process_articles_parallel (per-paragraph extraction tolerance)
     # so both loud-accounting counters land in this run's meta.json.
     tracker = FailureTracker()
-    judge = _build_judge(guard, llm_semaphore, model=model, provider=provider, tracker=tracker)
-    extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider)
+    # CallLogger (spec Р8): built only when the caller hands us a run dir --
+    # same "no out_dir -> no artifact I/O" contract as Checkpointer, so
+    # tests/ablate-without-persistence paths stay unaffected.
+    call_logger = CallLogger(Path(out_dir)) if out_dir is not None else None
+    # --no-judge (NER-extraction-only mode): judge=None makes
+    # LabelFirstGrounding.ground() take its own pre-existing "judge not
+    # configured" branch -- resolved_by=judge_unavailable, no LLM call, no
+    # cost -- while exact-label matches (no ambiguity) and the free Wikidata
+    # candidate search still run exactly as before. See grounding/label_first.py
+    # `if judge is None:` branch; this flag only decides which callable
+    # (real judge vs None) is threaded in, no grounding logic changes.
+    judge = None if no_judge else _build_judge(
+        guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
+        base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
+        max_tokens=max_tokens, tracker=tracker, call_logger=call_logger)
+    # label_guesser (search_mode="label-guess" only): the widening tier's
+    # one-shot call, built from the SAME route as the judge above. Never
+    # built otherwise -- generate_candidates only ever consults it when
+    # config.search_mode == "label-guess" anyway, but skipping the build
+    # entirely for the other two modes avoids an unused LLMClient/API-key
+    # check.
+    label_guesser = None
+    if config.search_mode == "label-guess":
+        label_guesser = _build_label_guesser(
+            guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
+            base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
+            max_tokens=max_tokens, call_logger=call_logger)
+    # --reuse-extraction (Deliverable 2): skip building the extraction
+    # closure entirely -- no extraction LLM calls are ever made, so
+    # guard.spent_by_kind["extract"] stays exactly 0 by construction (never
+    # reserved against), which is exactly what meta.json's spend.extract
+    # must show for a reuse run.
+    extract_fn = None
+    if reuse_source_records_by_title is None:
+        extract_fn = _build_extract_fn(guard, llm_semaphore, model=model, provider=provider, extra_body=extra_body,
+                                        base_url=base_url, temperature=temperature, top_p=top_p, top_k=top_k,
+                                        max_tokens=max_tokens, call_logger=call_logger)
 
     # Checkpointer (container-restart resilience patch): built only when the
     # caller (cmd_run) hands us a run dir -- ``n_done_start``/``skip_titles``
@@ -957,6 +1542,13 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         )
 
     articles: list[tuple[str, list[str], str]] = []
+    # --reuse-extraction: reconstructed (mention, index) pairs per article,
+    # built alongside `articles` below (needs the SAME re-derived
+    # article_text) -- only populated when reuse_source_records_by_title is
+    # given, left as {} (and therefore ignored, see _process_articles_parallel's
+    # `reuse_mentions_by_title=None` contract) otherwise.
+    reuse_mentions_by_title: dict[str, list[tuple[TermMention, int]]] = {}
+    n_reuse_unmatched_total = 0
     for rec in gt_records:
         title = rec["title"]
         if title in skip_titles:  # --resume: already checkpointed in a prior invocation
@@ -968,17 +1560,32 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         article_text = flatten(html)
         paragraphs = article_text.split("\n")
         articles.append((title, paragraphs, article_text))
+        if reuse_source_records_by_title is not None:
+            source_recs = reuse_source_records_by_title.get(title, [])
+            mentions_with_index, n_unmatched = _reconstruct_mentions_for_article(article_text, source_recs)
+            reuse_mentions_by_title[title] = mentions_with_index
+            n_reuse_unmatched_total += n_unmatched
 
     pred_records, n_paragraphs_total = _process_articles_parallel(
         articles, article_workers=article_workers, extract_fn=extract_fn, judge=judge,
         canonicalize=canonicalize, wd=wd, config=config, guard=guard, tracker=tracker,
-        checkpoint=checkpoint,
+        checkpoint=checkpoint, label_guesser=label_guesser,
+        reuse_mentions_by_title=reuse_mentions_by_title if reuse_source_records_by_title is not None else None,
     )
 
     counters = {
         "n_articles": len(gt_records),
         "n_paragraphs": n_paragraphs_total,
         "n_pred_mentions": len(pred_records),
+        # Self-evidencing (wiki-eval sitelink-circularity protocol, Subtleties):
+        # every run's meta.json records the actually-applied grounding toggles,
+        # not just the requested --config bits + --no-sitelink flag.
+        "grounding_config": {
+            "use_lemma": config.use_lemma,
+            "use_cirrus": config.use_cirrus,
+            "use_sitelink": config.use_sitelink,
+            "match_aliases": config.match_aliases,
+        },
         # Observed peak of simultaneous in-flight LLM calls (extract + judge
         # combined) -- must never exceed llm_workers (the llm_semaphore size,
         # ticket 004); recorded so every run's meta.json carries the evidence,
@@ -989,6 +1596,10 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
         "n_failed_paragraphs": tracker.n_failed_paragraphs,
         "failed_paragraphs": tracker.failed_paragraphs,
         "n_failed_judge_calls": tracker.n_failed_judge_calls,
+        # Parse-fail accounting (spec §4.2.5, finding 1): a malformed LLM NER
+        # reply, distinct from an honest empty [] and from network flakiness.
+        "n_extraction_parse_failures": tracker.n_extraction_parse_failures,
+        "parse_failed_paragraphs": tracker.parse_failed_paragraphs,
         # Wikidata usage evidence (run-metadata counters): merged into
         # cmd_run's meta.json via `**counters`, alongside "calls" for the LLM
         # side (extract/judge, already tracked by BudgetGuard). `getattr`
@@ -1000,17 +1611,78 @@ def _run_one_config(bits: str, gt_records: list[dict], cache_dir: str, *, dry_ru
             "cache_hits": getattr(wd, "n_cache_hits", 0),
             "seconds": round(getattr(wd, "total_network_seconds", 0.0), 3),
         },
+        # NER-extraction-only mode marker (--no-judge): disclosed in meta.json
+        # so a run dir is self-evidencing about whether judge calls were even
+        # attempted, not just their count (which would read 0 either way if
+        # every mention happened to resolve by exact_label).
+        "no_judge": no_judge,
+        # --search-mode (2026-07-10): disclosed in meta.json like "no_judge"
+        # above, same top-level-key convention (spec: "recorded in meta.json
+        # (like no_judge)").
+        "search_mode": config.search_mode,
     }
+    if reuse_source_records_by_title is not None:
+        # --reuse-extraction accounting (Deliverable 2): how many of the
+        # reused mentions couldn't be re-matched to a char span in the
+        # re-fetched HTML (see _reconstruct_mentions_for_article) -- loud,
+        # not silent, same "counted, never hidden" philosophy as
+        # FailureTracker's other counters above.
+        counters["n_reuse_extraction_unmatched"] = n_reuse_unmatched_total
     return pred_records, counters
 
 
+def _parse_extra_body(raw: str | None) -> dict | None:
+    """``--extra-body`` CLI value (a JSON object string) -> dict, or ``None``
+    when the flag wasn't passed (sr004 local-judge patch, 2026-07-09).
+    Deliberately not caught here -- a malformed JSON string should fail loud
+    at argument-parse time, not silently fall back to no override."""
+    return json.loads(raw) if raw else None
+
+
 def cmd_run(args) -> int:
+    search_mode = getattr(args, "search_mode", "baseline")
+    # --search-mode label-guess needs a judge to make its one-shot guess call
+    # (spec: "label-guess only makes sense in judge-enabled runs") --
+    # --no-judge explicitly disables the judge, so the combination is
+    # rejected up front, before any I/O or network work starts ("fail fast
+    # at CLI arg-parse time").
+    if search_mode == "label-guess" and getattr(args, "no_judge", False):
+        raise SystemExit(
+            "wiki_eval: --search-mode label-guess requires a judge (it makes one LLM "
+            "label-guess call via the run's judge client) -- --no-judge was also given; "
+            "drop --no-judge or use --search-mode baseline/alt-names instead."
+        )
+
     gt_records = _load_gt(Path(args.gt))
     guard = BudgetGuard(args.max_usd, max_judge_calls=args.max_judge_calls)
+    use_sitelink = False if getattr(args, "no_sitelink", False) else None
+    extra_body = _parse_extra_body(getattr(args, "extra_body", None))
+
+    # --reuse-extraction (Deliverable 2): read a PRIOR run's completed
+    # pred.jsonl and validate it covers every article this invocation
+    # intends to process -- fail fast, before any real (paid) work, rather
+    # than discovering a coverage gap mid-run. Never touches the source
+    # dir (predictions are append-only, Hard Invariant) -- read-only here.
+    reuse_dir = getattr(args, "reuse_extraction", None)
+    reuse_source_records_by_title: dict[str, list[dict]] | None = None
+    if reuse_dir:
+        reuse_path = Path(reuse_dir)
+        reuse_pred_path = reuse_path / "pred.jsonl"
+        if not reuse_pred_path.exists():
+            raise SystemExit(
+                f"wiki_eval: --reuse-extraction {reuse_dir} has no pred.jsonl -- the source "
+                "run must be complete (a still-in-flight pred.partial.jsonl-only run isn't "
+                "supported; let it finish, or point at a different completed run dir)"
+            )
+        source_records = _read_jsonl(reuse_pred_path)
+        _assert_reuse_extraction_coverage(gt_records, source_records, reuse_path)
+        reuse_source_records_by_title = defaultdict(list)
+        for r in source_records:
+            reuse_source_records_by_title[r["title"]].append(r)
 
     if args.dry_run:
         _, counters = _run_one_config(args.config, gt_records, args.cache, dry_run=True, guard=None,
-                                       wikidata_cache=args.wikidata_cache)
+                                       wikidata_cache=args.wikidata_cache, use_sitelink=use_sitelink)
         # Forecast: 1 judge call per ~3 mentions (rough escalation-rate prior,
         # matches eval_grounding.py's dry-run intent -- an upper-bound sanity
         # check, not a precise simulation, per spec Sec.5 cap-reconciliation).
@@ -1024,15 +1696,18 @@ def cmd_run(args) -> int:
         print(f"\nForecast ${est_cost:.4f} is within --max-usd ${args.max_usd:.2f}. Dry run only -- nothing written.")
         return 0
 
-    model = args.model or CLOSEROUTER_MODEL
-    provider = args.provider or CLOSEROUTER_PROVIDER
+    route = _resolve_route(args.model, args.provider, extra_body, args.base_url,
+                            args.temperature, args.top_p, args.top_k, args.max_tokens)
+    model = route["model"]
+    provider = route["provider_pin"] or "auto"
     slug = model_slug(model, provider)
 
     # --resume (container-restart resilience patch): reuse a prior run's dir
     # and run_id, skip articles it already finished (by title, read back from
     # its pred.partial.jsonl), and seed THIS invocation's guard from
-    # progress.jsonl's last recorded spend -- so a killed container loses at
-    # most the article(s) in flight when it died, never the whole run.
+    # progress.jsonl's last recorded spend/spend-split -- so a killed
+    # container loses at most the article(s) in flight when it died, never
+    # the whole run.
     resume_dir = getattr(args, "resume", None)
     old_pred_records: list[dict] = []
     skip_titles: set[str] = set()
@@ -1046,6 +1721,7 @@ def cmd_run(args) -> int:
             old_pred_records = [
                 json.loads(line) for line in partial_path.open(encoding="utf-8") if line.strip()
             ]
+        _assert_pred_gt_coverage(gt_records, old_pred_records, Path(args.gt), partial_path)
         skip_titles = {r["title"] for r in old_pred_records}
         resumed_from_n_articles = len(skip_titles)
         progress_path = out_dir / "progress.jsonl"
@@ -1053,11 +1729,35 @@ def cmd_run(args) -> int:
             progress_text = progress_path.read_text(encoding="utf-8")
             progress_lines = [line for line in progress_text.splitlines() if line.strip()]
             if progress_lines:
-                guard.spent = json.loads(progress_lines[-1])["spent"]
+                last = json.loads(progress_lines[-1])
+                guard.spent = last["spent"]
+                # finding 3: restore the spend/call SPLIT too, not just the
+                # total -- otherwise a resumed run's max_judge_calls ceiling
+                # silently resets to zero judge calls spent, and meta.json's
+                # spend-by-kind undercounts everything before the resume.
+                if "spent_by_kind" in last and "calls_by_kind" in last:
+                    guard.spent_by_kind = dict(last["spent_by_kind"])
+                    guard.calls_by_kind = dict(last["calls_by_kind"])
+                else:
+                    print(
+                        "wiki_eval: WARNING --resume from an old-format progress.jsonl line "
+                        "(no spent_by_kind/calls_by_kind) -- spend split and judge-call ceiling "
+                        "reset to zero for the resumed portion (bounded imprecision, spec finding 3)",
+                        file=sys.stderr,
+                    )
 
     started_at = datetime.now(timezone.utc)
     if run_id is None:
         run_id = started_at.strftime("%Y-%m-%dT%H-%M-%SZ")
+        # Mode discoverable from the run-dir name too, not just meta.json --
+        # ONLY for the two non-default modes (spec: "if you can also encode
+        # it in the timestamp-level dir name WITHOUT breaking any existing
+        # glob/parsing ... do so"; checked: nothing strptime's/globs run_id
+        # as a rigid fixed-width timestamp, see docs/stages/wiki-eval.md).
+        # baseline's run_id stays EXACTLY the bare timestamp -- part of the
+        # hard "wire-identical to today" constraint.
+        if search_mode != "baseline":
+            run_id = f"{run_id}_{search_mode}"
         out_dir = OUT_ROOT / slug / args.config / run_id
     # Created at START, not at the end (checkpoint patch): _process_articles_
     # parallel needs somewhere to append pred.partial.jsonl/progress.jsonl as
@@ -1066,10 +1766,16 @@ def cmd_run(args) -> int:
 
     new_pred_records, counters = _run_one_config(
         args.config, gt_records, args.cache, dry_run=False, guard=guard,
-        model=args.model, provider=args.provider, article_workers=args.article_workers,
+        model=args.model, provider=args.provider, extra_body=extra_body,
+        base_url=args.base_url, temperature=args.temperature, top_p=args.top_p,
+        top_k=args.top_k, max_tokens=args.max_tokens,
+        article_workers=args.article_workers,
         llm_workers=args.llm_workers, wikidata_cache=args.wikidata_cache,
-        wikidata_workers=args.wikidata_workers,
+        wikidata_workers=args.wikidata_workers, use_sitelink=use_sitelink,
         out_dir=out_dir, skip_titles=frozenset(skip_titles), n_done_start=len(skip_titles),
+        no_judge=getattr(args, "no_judge", False),
+        search_mode=search_mode,
+        reuse_source_records_by_title=reuse_source_records_by_title,
     )
     finished_at = datetime.now(timezone.utc)
 
@@ -1105,10 +1811,16 @@ def cmd_run(args) -> int:
             "total": guard.spent,
             "extract": guard.spent_by_kind["extract"],
             "judge": guard.spent_by_kind["judge"],
+            # Always present (like extract/judge) regardless of search_mode --
+            # 0.0 for baseline/alt-names runs, since BudgetGuard only ever
+            # reserves this kind from _build_label_guesser's "guess" closure,
+            # never called outside search_mode="label-guess".
+            "label_guess": guard.spent_by_kind.get("label_guess", 0.0),
         },
         "calls": {
             "extract": guard.calls_by_kind["extract"],
             "judge": guard.calls_by_kind["judge"],
+            "label_guess": guard.calls_by_kind.get("label_guess", 0),
         },
         "max_usd": args.max_usd,
         "max_judge_calls": args.max_judge_calls,
@@ -1119,10 +1831,33 @@ def cmd_run(args) -> int:
         "started_at": started_at.isoformat(),
         "finished_at": finished_at.isoformat(),
         "wall_clock_s": (finished_at - started_at).total_seconds(),
+        # Per-run effective generation params (spec Р3/Р8): audit trail for
+        # exactly what was sent on the wire, not just the CLI flags given.
+        "generation_params": {
+            "model": route["model"],
+            "base_url": route["base_url"],
+            "provider_pin": route["provider_pin"],
+            "temperature": route["temperature"],
+            "top_p": route["top_p"],
+            "top_k": route["extra_body"].get("top_k"),
+            "max_tokens": route["max_tokens"],
+            "reasoning": route["extra_body"].get("reasoning"),
+            "extra_body_effective": route["extra_body"],
+        },
         **counters,
     }
     if resumed_from_n_articles is not None:
         meta["resumed_from_n_articles"] = resumed_from_n_articles
+    if reuse_dir:
+        # Deliverable 2: disclose the reuse source so a run dir is
+        # self-evidencing about where its mentions came from -- mirrors
+        # "no_judge"/"resumed_from_n_articles"'s "loud, not silent" pattern.
+        meta["reuse_extraction_from"] = str(reuse_dir)
+    # Self-consistency fix (finding 3): counters["n_pred_mentions"] from
+    # _run_one_config only counts THIS invocation's newly-produced records --
+    # on a --resume run that undercounts the merged total. pred_records above
+    # is already the full resumed+new merge, so it's the honest count.
+    meta["n_pred_mentions"] = len(pred_records)
     (out_dir / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
 
     print(f"model={model}  provider={provider}  config={args.config}  run_id={run_id}  {counters}")
@@ -1136,6 +1871,10 @@ def cmd_run(args) -> int:
 
 
 def cmd_ablate(args) -> int:
+    # No separate coverage guard here: `ablate` never reads an external
+    # pred.jsonl itself, it only loops `cmd_run` (whose own
+    # _assert_pred_gt_coverage call fires when --resume replays a prior
+    # pred.partial.jsonl) -- so the guard is inherited per-config for free.
     for bits in ALL_CONFIG_BITS:
         sub_args = argparse.Namespace(**{**vars(args), "config": bits})
         rc = cmd_run(sub_args)
@@ -1144,72 +1883,77 @@ def cmd_ablate(args) -> int:
     return 0
 
 
-# ── report ────────────────────────────────────────────────────────────────────
+# ── report (protocol v3, spec 2026-07-10 Р9) ────────────────────────────────
 #
 # GT/pred token indices are ARTICLE-LOCAL (reset to 0 per article -- spec
-# E-D6). Aggregation must therefore group by article title and match/slice
-# each article independently (metrics.aggregate_corpus); flattening all
-# articles' tuples into one list before matching would cross-match identical
-# (index, qid) pairs from unrelated articles.
+# E-D6). Aggregation must therefore group by article title and dedup each
+# article's tuples independently (metrics.aggregate_corpus); flattening
+# all articles' tuples into one list before dedup would cross-collide
+# identical QIDs from unrelated articles.
 
 
-def _resolved_by_of_for_article(pred_records: list[dict]) -> dict[int, str]:
-    return {r["index"]: r["resolved_by"] for r in pred_records if r.get("resolved_by")}
-
-
-def _stratum_of_for_article(gt_tuples: list[tuple], stratum: str) -> dict[int, str]:
-    return {t[0]: stratum for t in gt_tuples}
-
-
-def _type_of_for_article(gt_tuples: list[tuple]) -> dict[int, str]:
-    """named vs term, classified by GT anchor surface capitalization (spec Sec.4 caveat)."""
-    return {t[0]: ("named" if t[1][:1].isupper() else "term") for t in gt_tuples}
+def _load_excluded_gold_identities(path: Path) -> set[M.ExclusionId]:
+    """Parse ``anchor_exclusions.json``'s ``exclusions`` list into
+    ``metrics.aggregate_survival``'s title-scoped identity set (spec: the
+    file's own identity is ``(token_index, anchor_text, qid, span_len)``
+    scoped by ``title``, same tuple order as ``search_miss_analysis.py``'s
+    ``excl_by_title`` just flattened to include ``title`` as element 0)."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        (e["title"], e["token_index"], e["anchor_text"], e["qid"], e["span_len"])
+        for e in data.get("exclusions", [])
+    }
 
 
 def cmd_report(args) -> int:
     gt_records = _load_gt(Path(args.gt))
-
-    # --p3: activate P3 label-justified precision with the REAL Wikidata-label
-    # predicate (spec Sec.4 / owner directive "чтобы было чисто" -- P3 must be
-    # informative, not tautological). Network use is bounded: `label_exists`
-    # (scripts/wiki_eval.py::_label_exists_fn) is called at most once per
-    # unique unmatched prediction surface, cached both in its own closure dict
-    # and in the shared on-disk Wikidata cache -- thousands of lookups at
-    # most, against the free wbsearchentities endpoint. Default (no --p3)
-    # reproduces the prior stub (`label_exists=lambda _s: False`, P3≡P1)
-    # exactly -- see metrics.aggregate_corpus's `label_exists` parameter.
-    label_exists = None
-    if getattr(args, "p3", False):
-        wd = WikidataClient(cache_path=WIKIDATA_CACHE)
-        label_exists = _label_exists_fn(wd)
+    tier_assignment: dict[str, int] = json.loads(Path(args.tier).read_text(encoding="utf-8"))
+    excluded_gold_identities = _load_excluded_gold_identities(Path(args.exclusions))
 
     pred_dir = Path(args.pred)
     pred_path = pred_dir / "pred.jsonl"
     all_pred_records = [json.loads(l) for l in pred_path.open(encoding="utf-8") if l.strip()] if pred_path.exists() else []
+    _assert_pred_gt_coverage(gt_records, all_pred_records, Path(args.gt), pred_path)
 
     pred_by_title: dict[str, list[dict]] = defaultdict(list)
     for r in all_pred_records:
         pred_by_title[r["title"]].append(r)
 
-    articles: list[M.ArticleTuples] = []
+    articles: list[M.ArticleUnits] = []
+    survival_articles: list[M.SurvivalArticleUnits] = []
     for rec in gt_records:
         gt_tuples = [tuple(t) for t in rec["gt_tuples"]]
         title_pred_records = pred_by_title.get(rec["title"], [])
         pred_tuples = [
             (r["index"], r["surface"], r["qid"], r["span_len"])
-            for r in title_pred_records if r.get("qid") is not None
+            for r in title_pred_records if r.get("qid")
         ]
-        articles.append(
-            {
-                "gt_tuples": gt_tuples,
-                "pred_tuples": pred_tuples,
-                "resolved_by_of": _resolved_by_of_for_article(title_pred_records),
-                "stratum_of": _stratum_of_for_article(gt_tuples, rec["stratum"]),
-                "type_of": _type_of_for_article(gt_tuples),
-            }
-        )
+        articles.append({"gt_tuples": gt_tuples, "pred_tuples": pred_tuples})
 
-    result = M.aggregate_corpus(articles, label_exists=label_exists)
+        # Survival-stage metrics need EVERY predicted mention (not just the
+        # grounded ones) plus its own candidate list -- R_NER counts a
+        # recognized-but-ungrounded mention, R_search/A_disamb need the raw
+        # per-mention candidates/qid the protocol-v3 pred_tuples above
+        # already discard.
+        pred_mentions: list[M.PredMention] = [
+            {
+                "index": r["index"],
+                "span_len": r["span_len"],
+                "qid": r.get("qid"),
+                "candidates": r.get("candidates") or [],
+            }
+            for r in title_pred_records
+        ]
+        survival_articles.append({
+            "title": rec["title"], "gt_tuples": gt_tuples, "pred_mentions": pred_mentions,
+        })
+
+    result = M.aggregate_corpus(articles, tier_assignment=tier_assignment)
+    survival = M.aggregate_survival(
+        survival_articles, tier_assignment=tier_assignment,
+        excluded_gold_identities=excluded_gold_identities,
+    )
+    result = {**result, "survival": survival}
 
     n_gt_tuples = sum(len(a["gt_tuples"]) for a in articles)
     meta = {
@@ -1224,6 +1968,9 @@ def cmd_report(args) -> int:
     # wall-clock, ...) into the report meta when present -- run_meta's fields
     # fill in first, then meta's freshly-computed run_id/config/generated_at
     # win on any overlapping key (derived directly from pred_dir, authoritative).
+    # This is also how search_mode/reuse_extraction_from/no_judge (when the run
+    # used them) reach the survival section's provenance -- meta.json already
+    # carries them as top-level fields, nothing survival-specific to add here.
     run_meta_path = pred_dir / "meta.json"
     if run_meta_path.exists():
         run_meta = json.loads(run_meta_path.read_text(encoding="utf-8"))
@@ -1239,16 +1986,16 @@ def cmd_report(args) -> int:
 
     print(f"wrote {metrics_out}")
     print(f"wrote {report_out}")
-    print(f"recall m2 = {result['recall']['m2']['value']}")
-    if "p3_ex" in result["precision"]:
-        p3_ex = result["precision"]["p3_ex"]
-        print(f"P3\\exact (headline, excl. exact-label path) = {p3_ex['value']} "
-              f"(matched={p3_ex['matched']} n={p3_ex['total']})")
-        for value, slice_result in sorted(result["slices"]["resolved_by"].items()):
-            p3_slice = slice_result["precision"].get("p3")
-            if p3_slice is not None:
-                print(f"  P3[resolved_by={value}] = {p3_slice['value']} "
-                      f"(matched={p3_slice['matched']} n={p3_slice['total']})")
+    for cls in ("named", "term"):
+        s = result["classes"][cls]
+        print(f"{cls}: gold_units={s['gold_units']}  R_doc={s['R_doc']['value']}  P_doc={s['P_doc']['value']}")
+    print(
+        f"survival: n_gold_entities={survival['n_gold_entities']}  "
+        f"R_NER={survival['R_NER']['value']}  R_search={survival['R_search']['value']}  "
+        f"A_disamb={survival['A_disamb']['value']}  R={survival['R']['value']}  "
+        f"R_direct={survival['R_direct']['value']}  P={survival['P']['value']}  "
+        f"n_resolved_correct_search_miss={survival['n_resolved_correct_search_miss']}"
+    )
     return 0
 
 
@@ -1273,8 +2020,23 @@ def _build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--cache", default=str(DEFAULT_PAGES_CACHE))
     p_run.add_argument("--config", default="111", help="3-bit config id, e.g. 111 = use_lemma+use_fallbacks+match_aliases")
     p_run.add_argument("--max-usd", type=float, default=DEFAULT_MAX_USD)
-    p_run.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
-    p_run.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
+    p_run.add_argument("--model", default=DEFAULT_MODEL, help="OpenRouter model id (default: %(default)s)")
+    p_run.add_argument("--provider", default=None,
+                        help="OpenRouter provider pin (display name, e.g. \"Novita\"); default "
+                             "from MODEL_PARAMS for known models; \"auto\" disables pinning and "
+                             "the per-call served-by gate")
+    p_run.add_argument("--base-url", default=None, help=f"OpenAI-compatible base URL (default: {DEFAULT_BASE_URL}; "
+                        "local vLLM runs pass their own, spec Р12)")
+    p_run.add_argument("--temperature", type=float, default=None, help="default: MODEL_PARAMS per-model vendor recommendation")
+    p_run.add_argument("--top-p", type=float, default=None, help="default: MODEL_PARAMS per-model vendor recommendation")
+    p_run.add_argument("--top-k", type=int, default=None, help="default: MODEL_PARAMS per-model vendor recommendation")
+    p_run.add_argument("--max-tokens", type=int, default=None, help=f"default: {DEFAULT_MAX_TOKENS} (spec Р3, both roles)")
+    p_run.add_argument("--extra-body", default=None,
+                        help="JSON object merged PER-KEY over the computed defaults (provider pin, "
+                             "reasoning shape, top_k, OpenRouter usage.include) -- never replaces "
+                             "them wholesale (sr004 local-judge patch: e.g. "
+                             "'{\"chat_template_kwargs\": {\"enable_thinking\": false}}' for a local "
+                             "vLLM thinking-capable model -- see docs/runbooks/sr004-local-eval-runbook.md)")
     p_run.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_run.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
                         help="articles processed concurrently (ticket 002b); LLM calls "
@@ -1291,18 +2053,58 @@ def _build_parser() -> argparse.ArgumentParser:
                              "bound; matrix runs pass 2 so 4 parallel processes stay under the "
                              "API's rate limit -- 2026-07-05 canary 429-storm adaptation)")
     p_run.add_argument("--dry-run", action="store_true", help="print cost forecast only, write nothing")
+    p_run.add_argument("--no-sitelink", action="store_true",
+                        help="force GroundingConfig.use_sitelink=False regardless of --config's "
+                             "bits (docs/stages/wiki-eval.md Subtleties: the RU-title->Wikidata "
+                             "sitelink rung shares its mapping with wiki-eval's own GT construction, "
+                             "so scoring runs must disable it to avoid annotation-mechanism "
+                             "circularity; use_cirrus stays whatever --config's middle bit says)")
     p_run.add_argument("--resume", default=None,
                         help="resume a prior run dir: skip articles already in its "
                              "pred.partial.jsonl (by title), reuse its run_id, and seed the "
                              "budget guard from progress.jsonl's last recorded spend")
+    p_run.add_argument("--no-judge", action="store_true",
+                        help="NER-extraction-only cost mode: never build/call the disambiguation "
+                             "judge (judge=None). Exact-label matches (no ambiguity) and the free "
+                             "Wikidata candidate search still run unchanged; genuinely ambiguous "
+                             "mentions resolve to resolved_by=judge_unavailable instead of an LLM "
+                             "judge call. meta.json's no_judge field discloses this.")
+    p_run.add_argument("--search-mode", choices=("baseline", "alt-names", "label-guess"), default="baseline",
+                        help="candidate-search widening tiers (2026-07-10 experiment), cumulative: "
+                             "baseline (today's search, default) -> alt-names (+ parenthesized-alternate "
+                             "re-search when baseline finds 0 candidates, zero LLM calls) -> label-guess "
+                             "(+ one LLM label-guess call when still 0, via the run's judge client -- "
+                             "requires a judge, incompatible with --no-judge). meta.json's search_mode "
+                             "field discloses this; each candidate in pred.jsonl carries a matching "
+                             "source field in non-baseline modes.")
+    p_run.add_argument("--reuse-extraction", default=None, metavar="RUN_DIR",
+                        help="skip the extraction LLM entirely and reuse a PRIOR completed run's "
+                             "pred.jsonl for surface/lemma/category per article (candidate search + "
+                             "judge still run fresh, per --search-mode); writes a NEW run dir, never "
+                             "touches RUN_DIR (predictions are append-only). RUN_DIR must cover every "
+                             "article in --gt or this fails fast listing what's missing. meta.json's "
+                             "reuse_extraction_from field discloses the source, and spend.extract "
+                             "reads 0 (no extraction calls were made).")
     p_run.set_defaults(func=cmd_run)
 
     p_ablate = sub.add_parser("ablate", help="loop `run` over all 8 configs, sharing the judge cache")
     p_ablate.add_argument("--gt", default=str(DEFAULT_GT))
     p_ablate.add_argument("--cache", default=str(DEFAULT_PAGES_CACHE))
     p_ablate.add_argument("--max-usd", type=float, default=DEFAULT_MAX_USD)
-    p_ablate.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
-    p_ablate.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
+    p_ablate.add_argument("--model", default=DEFAULT_MODEL, help="OpenRouter model id (default: %(default)s)")
+    p_ablate.add_argument("--provider", default=None,
+                           help="OpenRouter provider pin (display name, e.g. \"Novita\"); default "
+                                "from MODEL_PARAMS for known models; \"auto\" disables pinning and "
+                                "the per-call served-by gate")
+    p_ablate.add_argument("--base-url", default=None, help=f"OpenAI-compatible base URL (default: {DEFAULT_BASE_URL}; "
+                           "local vLLM runs pass their own, spec Р12)")
+    p_ablate.add_argument("--temperature", type=float, default=None, help="default: MODEL_PARAMS per-model vendor recommendation")
+    p_ablate.add_argument("--top-p", type=float, default=None, help="default: MODEL_PARAMS per-model vendor recommendation")
+    p_ablate.add_argument("--top-k", type=int, default=None, help="default: MODEL_PARAMS per-model vendor recommendation")
+    p_ablate.add_argument("--max-tokens", type=int, default=None, help=f"default: {DEFAULT_MAX_TOKENS} (spec Р3, both roles)")
+    p_ablate.add_argument("--extra-body", default=None,
+                           help="JSON object merged PER-KEY over the computed defaults -- see "
+                                "`run --extra-body`'s help for the sr004 local-judge use case")
     p_ablate.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_ablate.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
                            help="articles processed concurrently (ticket 002b); LLM calls "
@@ -1325,12 +2127,13 @@ def _build_parser() -> argparse.ArgumentParser:
     p_report.add_argument("--gt", default=str(DEFAULT_GT))
     p_report.add_argument("--pred", required=True, help="run dir containing pred.jsonl, e.g. reports/terminology/wiki-eval/<model-slug>/111/<run_id>")
     p_report.add_argument("--ablation", action="store_true", help="reserved for a future multi-config comparison report")
-    p_report.add_argument("--p3", action="store_true",
-                           help="activate P3 label-justified precision with the real "
-                                "wd.search_entities label predicate (bounded, cached "
-                                "network calls): real (not stubbed) P3 per resolved_by "
-                                "slice, plus the non-tautological 'P3\\exact' headline "
-                                "cell (excl. exact-label path)")
+    p_report.add_argument("--tier", default=str(TIER_PATH),
+                           help="tier_assignment.json path (QID -> tier int; protocol v3's "
+                                "generic-lexical-class gold filter, spec Sec.4.5)")
+    p_report.add_argument("--exclusions", default=str(EXCLUSIONS_PATH),
+                           help="anchor_exclusions.json path (approved scoring-time gold-anchor "
+                                "drops, applied only to the survival-stage factorized metrics; "
+                                "gt.jsonl itself stays raw)")
     p_report.set_defaults(func=cmd_report)
 
     return ap

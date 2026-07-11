@@ -1,0 +1,1 @@
+{"remove": [1, 2, 6, 7, 20, 35, 57], "reasons": {"1": "abbreviated language/transliteration tag", "2": "abbreviated language/transliteration tag", "6": "generic noun 'source', non-terminological", "7": "generic 'origin' phrase, no proper name", "20": "generic 'army' noun, no proper name", "35": "generic verb 'resettled', not a term", "57": "generic noun 'court', no proper name"}}

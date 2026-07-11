@@ -1,0 +1,47 @@
+{
+  "purpose": "Protocol step 2 MANDATORY padding smoke before a full wiki-eval run — openai/gpt-5.5 pinned to provider-6 per owner instruction. This is NOT a pipeline run (no wiki_eval.py invocation happened); it is a raw diagnostic replicating _build_extract_fn's exact call shape.",
+  "outcome": "STOPPED — padding confirmed at the same scale the protocol's stop-condition names; full 100-article run was NOT started. See docs/reports/ml-engineer-grounding-run-gpt55.md.",
+  "method": "3 real extraction-sized calls: system=\"\", user=DEFAULT_NER_PROMPT.replace('{{source}}', <real corpus paragraph>), temperature=0, extra_body={'provider': 'provider-6'}, via palimpsest.llm.client.LLMClient (same client class/User-Agent the harness uses). Paragraphs pulled from data/eval/wiki/pages/ (v2 corpus), sizes chosen to vary (42/93/136 words) so a fixed-padding hypothesis could be tested against a per-content-token hypothesis.",
+  "calls": [
+    {
+      "title": "Ибби-Суэн",
+      "paragraph_words": 42,
+      "full_prompt_words": 431,
+      "full_prompt_chars": 3810,
+      "observed_prompt_tokens": 5650,
+      "observed_completion_tokens": 141,
+      "observed_reasoning_tokens": 94,
+      "cost_usd_surfaced": null
+    },
+    {
+      "title": "Ибаль-пи-Эль II",
+      "paragraph_words": 93,
+      "full_prompt_words": 482,
+      "full_prompt_chars": 4211,
+      "observed_prompt_tokens": 5782,
+      "observed_completion_tokens": 742,
+      "observed_reasoning_tokens": 516,
+      "cost_usd_surfaced": null
+    },
+    {
+      "title": "Нур-Адад",
+      "paragraph_words": 136,
+      "full_prompt_words": 525,
+      "full_prompt_chars": 4489,
+      "observed_prompt_tokens": 5863,
+      "observed_completion_tokens": 807,
+      "observed_reasoning_tokens": 516,
+      "cost_usd_surfaced": null
+    }
+  ],
+  "analysis": {
+    "marginal_tokens_per_word_across_the_3_calls": 2.266,
+    "implied_fixed_hidden_padding_per_call_tokens": [4673, 4690, 4673],
+    "padding_variance_tokens": 17,
+    "interpretation": "Near-constant ~4670-4690 hidden prompt tokens regardless of real content size (431-525 words) is the textbook signature of a fixed reseller-padding overhead, not content-proportional tokenization. This matches (and slightly exceeds) the ~4400 tokens/call documented in docs/stages/wiki-eval.md for gpt-5.4-mini on provider-6, and is consistent with the pre-existing 2026-07-05 triage finding for openai/gpt-5.5 itself on provider-6 (docs/experiments/2026-07-05-model-comparison/triage/gpt-5.5.json: 10/10 success, prompt_tokens_median=4395 on a ~10-word probe prompt, verdict='padded', excluded from the eligible-route pool).",
+    "cost_usd_field": "null on all 3 calls (provider-6 does not surface real billed cost for this model/route) -- confirmed against the same behavior in the 2026-07-05 triage (cost_source='estimated' for every provider-6/gpt-5.5 call there too). This means BudgetGuard.settle() in scripts/wiki_eval.py, which only updates spend when `actual` (usage.cost_usd) is not None, would NEVER correct its pre-call estimate (EST_COST_PER_EXTRACT_CALL / EST_COST_PER_JUDGE_CALL, built from a 1000-1200 assumed prompt tokens) toward the real ~5650-5863 padded token count -- the $15 cap in the harness would not reliably detect or stop on the true padded spend.",
+    "estimated_smoke_cost_usd": 0.005695,
+    "estimated_smoke_cost_basis": "PRICE_TABLE openai/gpt-5.5 = $0.30/$0.30 per Mtok in/out (scripts/probe_providers.py), applied to observed prompt+completion tokens since cost_usd was not surfaced."
+  },
+  "decision": "Per the owner-locked protocol (\"if you observe padding anywhere near that scale for gpt-5.5, STOP and report instead of running\"), the full 100-article run was not started. No --model/--provider run of scripts/wiki_eval.py occurred; no article/pred/meta files exist for this model-slug beyond this diagnostic."
+}

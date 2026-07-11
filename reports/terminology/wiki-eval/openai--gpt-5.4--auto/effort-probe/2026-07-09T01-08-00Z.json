@@ -1,0 +1,166 @@
+{
+ "purpose": "Owner hard rule (2026-07-09, arrived mid-run): GPT/Claude models allowed ONLY if reasoning effort is explicitly settable and demonstrably honored. Probe: same real NER prompt (Ибаль-пи-Эль II smoke paragraph), 3x reasoning_effort=low + 3x reasoning_effort=high on openai/gpt-5.4 route auto, flat param shape.",
+ "param_shape": "flat `reasoning_effort` (top-level extra_body key) -- accepted, no 400, no fallback to the nested {'reasoning':{'effort':...}} shape needed.",
+ "calls": [
+  {
+   "label": "flat_low_probe",
+   "extra_body": {
+    "reasoning_effort": "low"
+   },
+   "ok": true,
+   "latency_s": 7.779453385999659,
+   "prompt_tokens": 1398,
+   "completion_tokens": 431,
+   "reasoning_tokens": 205,
+   "cost_usd": 0.001674
+  },
+  {
+   "label": "flat_low_1",
+   "extra_body": {
+    "reasoning_effort": "low"
+   },
+   "ok": true,
+   "latency_s": 7.512338373999228,
+   "prompt_tokens": 1398,
+   "completion_tokens": 459,
+   "reasoning_tokens": 233,
+   "cost_usd": 0.0011
+  },
+  {
+   "label": "flat_low_2",
+   "extra_body": {
+    "reasoning_effort": "low"
+   },
+   "ok": false,
+   "latency_s": 60.43815064500086,
+   "error_class": "APITimeoutError",
+   "http_status": null,
+   "error_message": "Request timed out."
+  },
+  {
+   "label": "flat_high_0",
+   "extra_body": {
+    "reasoning_effort": "high"
+   },
+   "ok": true,
+   "latency_s": 31.29156868500104,
+   "prompt_tokens": 1398,
+   "completion_tokens": 2348,
+   "reasoning_tokens": 2122,
+   "cost_usd": 0.0057
+  },
+  {
+   "label": "flat_low_2_retry",
+   "extra_body": {
+    "reasoning_effort": "low"
+   },
+   "ok": true,
+   "latency_s": 7.037307246000637,
+   "prompt_tokens": 1398,
+   "completion_tokens": 404,
+   "reasoning_tokens": 178,
+   "cost_usd": 0.001618
+  },
+  {
+   "label": "flat_high_1",
+   "extra_body": {
+    "reasoning_effort": "high"
+   },
+   "ok": true,
+   "latency_s": 25.885593934001008,
+   "prompt_tokens": 1398,
+   "completion_tokens": 1978,
+   "reasoning_tokens": 1752,
+   "cost_usd": 0.004922
+  },
+  {
+   "label": "flat_high_2",
+   "extra_body": {
+    "reasoning_effort": "high"
+   },
+   "ok": true,
+   "latency_s": 20.142971821000174,
+   "prompt_tokens": 1398,
+   "completion_tokens": 1458,
+   "reasoning_tokens": 1232,
+   "cost_usd": 0.003198
+  }
+ ],
+ "low_reasoning_tokens": [
+  205,
+  233,
+  178
+ ],
+ "low_mean": 205.33333333333334,
+ "high_reasoning_tokens": [
+  2122,
+  1752,
+  1232
+ ],
+ "high_mean": 1702.0,
+ "verdict": "EFFORT IS SETTABLE AND DEMONSTRABLY HONORED -- low mean ~205 reasoning tokens vs high mean ~1702, a ~8.3x separation with zero overlap in observed ranges (low: 178-233, high: 1232-2122). gpt-5.4 is ALLOWED under the owner's new rule.",
+ "implicit_default_comparison": {
+  "note": "From the earlier gpt-5.4/auto padding smoke (same paragraph, NO reasoning_effort param sent at all): reasoning_tokens=204 for this exact title/paragraph -- see reports/terminology/wiki-eval/openai--gpt-5.4--auto/smoke/2026-07-09T00-58-00Z.json",
+  "title": "Ибаль-пи-Эль II",
+  "implicit_reasoning_tokens": 204
+ },
+ "implicit_default_interpretation": "204 (implicit/no param) sits inside the LOW range (178-233), not between low and high -- the model's implicit default behaves like low effort, NOT the OpenAI-documented 'medium' default the coordinator assumed. Per the coordinator's branching rule this means the aborted first run dir (2026-07-09T00-59-37Z, implicit effort, 0 articles checkpointed) should NOT be resumed -- a fresh run with reasoning_effort='medium' explicitly pinned was started instead (2026-07-09T01-10-47Z).",
+ "judge_call_shape_truncation_check": {
+  "purpose": "JUDGE_MAX_TOKENS=512 in scripts/wiki_eval.py is a hard cap on completion_tokens (reasoning + JSON answer combined) for judge calls specifically -- checked whether reasoning_effort=medium starves the actual JSON answer of room, using a realistic judge-shaped prompt (JUDGE_SYSTEM_PROMPT + a 7-candidate disambiguation case).",
+  "calls": [
+   {
+    "i": 0,
+    "ok": true,
+    "latency_s": 4.353929867000261,
+    "prompt_tokens": 294,
+    "completion_tokens": 167,
+    "reasoning_tokens": 111,
+    "cost_usd": 0.000512,
+    "hit_max_tokens": false,
+    "json_parse_ok": true,
+    "parsed": {
+     "qid": "Q116362",
+     "reason": "«Ура» here is the genitive form of «Ур» in the phrase «царь Ура», referring to the ancient Sumerian city-state of Ur in Mesopotamia."
+    },
+    "raw_content": "{\"qid\":\"Q116362\",\"reason\":\"«Ура» here is the genitive form of «Ур» in the phrase «царь Ура», referring to the ancient Sumerian city-state of Ur in Mesopotamia.\"}"
+   },
+   {
+    "i": 1,
+    "ok": true,
+    "latency_s": 5.699533895000059,
+    "prompt_tokens": 294,
+    "completion_tokens": 236,
+    "reasoning_tokens": 181,
+    "cost_usd": 0.000658,
+    "hit_max_tokens": false,
+    "json_parse_ok": true,
+    "parsed": {
+     "qid": "Q116362",
+     "reason": "В контексте «царь Ура» имеется в виду древний шумерский город-государство Ур, а не династия или другие одноимённые объекты."
+    },
+    "raw_content": "{\"qid\":\"Q116362\",\"reason\":\"В контексте «царь Ура» имеется в виду древний шумерский город-государство Ур, а не династия или другие одноимённые объекты.\"}"
+   },
+   {
+    "i": 2,
+    "ok": true,
+    "latency_s": 4.964722935001191,
+    "prompt_tokens": 294,
+    "completion_tokens": 195,
+    "reasoning_tokens": 131,
+    "cost_usd": 0.000572,
+    "hit_max_tokens": false,
+    "json_parse_ok": true,
+    "parsed": {
+     "qid": "Q116362",
+     "reason": "В контексте шумеро-аккадской истории выражение «царь Ура» означает правителя древнего города-государства Ур в Месопотамии, а не династию или другие значения."
+    },
+    "raw_content": "{\"qid\":\"Q116362\",\"reason\":\"В контексте шумеро-аккадской истории выражение «царь Ура» означает правителя древнего города-государства Ур в Месопотамии, а не династию или другие значения.\"}"
+   }
+  ],
+  "verdict": "NO TRUNCATION RISK at medium effort for judge calls: reasoning_tokens 111-181 (well under 512), completion_tokens 167-236, valid JSON returned in all 3 calls, correct disambiguation answer each time."
+ },
+ "pinned_param_for_the_run": {
+  "reasoning_effort": "medium"
+ },
+ "run_dir_using_this_pin": "reports/terminology/wiki-eval/openai--gpt-5.4--auto/111/2026-07-09T01-10-47Z"
+}

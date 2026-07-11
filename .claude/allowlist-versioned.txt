@@ -1,0 +1,120 @@
+# Allowlist of legitimate vN-style survivors — seeded from
+# docs/superpowers/specs/2026-07-10-deversioning-cleanup.md § C8 (items 1-25).
+# One entry per line; blank lines and '#'-prefixed lines are ignored.
+# Consulted by both a human running the C8 sweep by hand and by the C9 advisory
+# hook (.claude/hooks/no-new-version-suffix.py), which skips any staged content
+# or file path containing one of these substrings. Extend this file, not the
+# hook's own source, when a new legitimate survivor is found.
+
+# 1. schema-provenance tag on GT chronology records (wiki_gt.py)
+chrono_p31_v1
+CHRONO_P31_VERSION
+
+# 2. schema tag on the live term.trace_json column (label_first.py, eval_grounding.py, DDL)
+GroundingTrace
+
+# 3-4. "protocol v3" methodology self-description (KEPT proper noun, J-PROTO resolution)
+protocol": "v3"
+Protocol v3
+protocol v3
+PROTOCOL v3
+
+# 5. external API contract strings (third-party, not ours to de-version)
+openrouter.ai/api/v1
+closerouter.dev/v1
+api.openai.com/v1
+sk-or-v1-
+rest_v1
+
+# 6. packaging/UA slots
+USER_AGENT
+__version__
+
+# 7. contract revisions coexisting live in prod DB
+rev-4
+rev-5
+
+# 8. vendored prompt dir (external/ is read-only; name itself is a KEPT identifier, J-V1C3)
+v1_core3
+
+# 9. dotted/hyphenated third-party model names (multiple judges run simultaneously, Table A)
+gpt-5.4
+gpt-5.5
+claude-opus-4.8
+claude-haiku-4.5
+claude-sonnet-5
+gemini-3.1
+gemini-3.5
+qwen3.6
+qwen3.7
+deepseek-v4-flash
+gemma-3-27b-it
+gemma-4-31b-it
+
+# 10. wiki_eval.py --config 3-bit ablation flag ids
+--config 111
+--config 001
+--config 000
+
+# 11. cleanup batch tier keys / wave labels (disjoint batches read together)
+R-T0
+R-T1
+R-T2
+wave1
+wave2
+overrides_wave
+
+# 12. optimistic-concurrency counter (wire contract)
+document.version
+docVersion
+
+# 13. frozen 11th-iteration campaign artifact (J5, RESOLVED KEEP)
+audit_prompt_v11
+
+# 14. write-only seed-row provenance DB value (J-SEED, deferred to a future forced reseed)
+seed_prompt_variant
+
+# 15. external report revision series / snapshots
+report-ru-v3.md
+model-comparison-experiment-v4
+model-comparison-v4
+
+# 16. dated spec/schema filenames (owner-chosen topic names, not our code identifiers)
+2026-07-10-wiki-eval-experiment-v2.md
+2026-07-01-model-registry-design.md
+loop.v1.schema.json
+
+# 17. stage-order script prefix, not a version
+01_parse_pdf.py
+
+# 18. status-lifecycle name (post the separate in-flight _draft rename, out of this spec)
+anchor_exclusions.json
+
+# 19. provenance value = merged-output filename (no vN, listed to prevent a false edit)
+"version": "terminology_gold.jsonl"
+
+# 20. live output of export_wiki_corpus.py, verified live (not a corpus-selection artifact)
+pilot_articles.json
+
+# 21. strategy/aspect codenames, not the vN pattern
+G6
+G1-G5
+P1/P2/P3
+C1/C5
+S1-S6
+
+# 22. SVG path-data v<digit> commands in frontend markup (path syntax, not a version suffix)
+<path d=
+
+# 23. opaque test-fixture placeholder payloads (not identifiers to de-version)
+test_revision_history.py
+
+# 24. localhost:<port>/v1 as a pattern (third-party API contract, port varies by environment)
+localhost:8000/v1
+localhost:8001/v1
+127.0.0.1:8000/v1
+
+# 25. external v1/v2 scoring-prompt lineage provenance prose + sr004 external-clone citations
+carried v2 prompt
+v2 judge prompts
+from_model_config

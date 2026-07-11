@@ -1,0 +1,125 @@
+{
+ "protocol": "v3",
+ "n_ambiguous_gold_units": 15,
+ "n_gold_mentions_dropped_by_tier": 50,
+ "classes": {
+  "named": {
+   "tp": 255,
+   "fn": 47,
+   "fp": 106,
+   "gold_units": 302,
+   "R_doc": {
+    "matched": 255,
+    "total": 302,
+    "value": 0.8443708609271523,
+    "ci_lo": 0.7992,
+    "ci_hi": 0.8809,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 255,
+    "total": 361,
+    "value": 0.7063711911357341,
+    "ci_lo": 0.6574,
+    "ci_hi": 0.751,
+    "underpowered": false
+   }
+  },
+  "term": {
+   "tp": 32,
+   "fn": 45,
+   "fp": 62,
+   "gold_units": 77,
+   "R_doc": {
+    "matched": 32,
+    "total": 77,
+    "value": 0.4155844155844156,
+    "ci_lo": 0.3121,
+    "ci_hi": 0.5271,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 32,
+    "total": 94,
+    "value": 0.3404255319148936,
+    "ci_lo": 0.2526,
+    "ci_hi": 0.4408,
+    "underpowered": false
+   }
+  }
+ },
+ "meta": {
+  "article_workers": 3,
+  "calls": {
+   "extract": 140,
+   "judge": 335
+  },
+  "config": "111",
+  "failed_paragraphs": [],
+  "finished_at": "2026-07-10T08:37:49.382781+00:00",
+  "generation_params": {
+   "base_url": "https://openrouter.ai/api/v1",
+   "extra_body_effective": {
+    "provider": {
+     "allow_fallbacks": false,
+     "order": [
+      "Google AI Studio"
+     ]
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "usage": {
+     "include": true
+    }
+   },
+   "max_tokens": 20000,
+   "model": "google/gemini-3.1-flash-lite",
+   "provider_pin": "Google AI Studio",
+   "reasoning": {
+    "effort": "medium"
+   },
+   "temperature": 1.0,
+   "top_k": null,
+   "top_p": null
+  },
+  "grounding_config": {
+   "match_aliases": true,
+   "use_cirrus": true,
+   "use_lemma": true,
+   "use_sitelink": false
+  },
+  "llm_max_in_flight_observed": 4,
+  "llm_semaphore": 4,
+  "max_judge_calls": 2000,
+  "max_usd": 0.6,
+  "model": "google/gemini-3.1-flash-lite",
+  "n_articles": 10,
+  "n_extraction_parse_failures": 0,
+  "n_failed_judge_calls": 0,
+  "n_failed_paragraphs": 0,
+  "n_paragraphs": 140,
+  "n_pred_mentions": 1203,
+  "parse_failed_paragraphs": [],
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "Google AI Studio",
+  "run_id": "2026-07-10T08-31-04Z",
+  "spend": {
+   "extract": 0.23623825000000032,
+   "judge": 0.25311750000000127,
+   "total": 0.48935575000000126
+  },
+  "started_at": "2026-07-10T08:31:04.506996+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 404.875785,
+  "wikidata": {
+   "cache_hits": 3204,
+   "calls": 352,
+   "seconds": 110.467
+  },
+  "wikidata_workers": 3,
+  "n_gt_tuples": 573,
+  "generated_at": "2026-07-10T09:04:10.254607+00:00"
+ }
+}

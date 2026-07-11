@@ -2,7 +2,11 @@
 
 100 ru-Wikipedia articles used by two paper sections: the NER/Wikidata grounding eval
 and the LLM-judge translation eval. The text is token-identical between both
-(audited: [cleanliness check](../../../docs/reports/python-pro-wiki-corpus-cleanliness-check.md)).
+(audited: [cleanliness check](../../../docs/reports/python-pro-wiki-corpus-cleanliness-check.md))
+— **except for the 5 articles replaced 2026-07-10 (see below)**: `gt.jsonl` now
+carries the replacement text, while `wiki_original.json`/`wiki_index.json` (the
+translation-pipeline handoff, already run against the old corpus) still carry the
+5 flagged articles. Re-syncing the handoff files is a separate follow-up task.
 Spec: [2026-07-07-wiki-llm-judge-eval.md](../../../docs/superpowers/specs/2026-07-07-wiki-llm-judge-eval.md).
 
 ## Handoff files for the gse-translation pipeline
@@ -38,4 +42,29 @@ bbd61fdda3865a8a2b0b8f3ddf3e137417bd08fb571592e439a20449abdc748a  wiki_index.jso
 
 Artifacts of the grounding eval and corpus selection, not part of the translation
 handoff: `gt*.jsonl` (ground-truth extractions), `pages/` (cached article HTML),
-`selection_v2.json`, `titles_*.txt`.
+`selection.json`, `titles.txt`.
+
+## Manual article replacement (2026-07-10)
+
+Manual review of all 100 articles flagged 5 as out-of-scope for an ancient-history
+corpus (two fictional-universe topics, one modern-geography article, one modern
+historiographic concept, one majority-post-cutoff city article). The owner approved
+replacing each with the next seed-42 walk survivor from the same section; see
+[`cleanup/replacements_2026-07-10.json`](cleanup/replacements_2026-07-10.json) for
+the per-article rationale, ranks and one owner substitution note. This directly
+edited `gt.jsonl` (unlike the anchor-exclusion campaign below, which is applied
+at scoring time only) and is reflected in `selection.json`
+(`manual_replacements` key) and `titles.txt`.
+
+## cleanup/ — gold anchor-relevance cleanup campaign (2026-07-10)
+
+LLM-assisted removal of clearly history-irrelevant anchors from the raw markup
+(modern brands/websites, genetics/chemistry vocabulary, generic everyday words,
+language template tags, abstract navigational phrases), later re-verified by a
+human. `audit_prompt_v11.md` is the auditor instruction; `removals-wave1/` holds
+per-article removal lists for articles 001-010; `overrides_wave1.json` is the
+orchestrator verification layer on top of them (restores + added removals +
+open questions). `gt.jsonl` itself is never modified by this campaign — the
+owner APPROVED the final 750-entry exclusion list 2026-07-10 (see
+`anchor_exclusions.json`); exclusions are applied at scoring time only.
+`tools/` holds the campaign scripts (see headers).

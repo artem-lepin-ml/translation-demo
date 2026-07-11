@@ -1,0 +1,85 @@
+% Section 3.1, Wikipedia dataset. Revision round 2 (owner feedback 2026-07-08): encyclopedic->Wikipedia, stats sentence removed (single shared sentence after all three datasets), appendix ref instead of table ref, variant 2 restructured.
+
+% ===== VARIANT 1 (main) =====
+\textit{Wikipedia} is a corpus of 100 Wikipedia articles on ancient history
+that we assemble for terminology-oriented evaluation. The articles are drawn
+from the Russian edition across ten thematic sections (Sumer and Mesopotamia,
+Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia, Achaemenid Iran,
+Ancient India, Ancient China, Ancient Greece, and Ancient Rome). Within each
+section, candidates from the corresponding category subtree are shuffled
+with a fixed seed. From each section we select ten articles whose subject
+predates 500~CE and whose body contains at least 30 internal links, yielding
+100 articles in total (Appendix~\ref{app:wiki-corpus}). We use this corpus
+primarily to evaluate terminology extraction and Wikidata grounding. The
+hyperlinks that editors place in article bodies act as human annotation:
+each link target resolves deterministically to a Wikidata item, so every
+in-text link yields a gold mention grounded to a QID at no additional
+labeling cost. The raw annotation yields 7\,658 gold mentions resolving to
+5\,879 gold entities. The annotation is refined in two passes. A
+deterministic filter removes entities from generic lexical classes that a
+terminology task should not reward, such as languages and scripts, taxa,
+materials, and units. A manual review then removes gold mentions that are
+unrelated to the historical domain or mislinked. The refined gold standard
+contains 6\,573 gold mentions resolving to 5\,061 gold entities
+(Appendix~\ref{app:wiki-corpus}). This annotation is precise but incomplete,
+since editorial convention is to link an entity only at its first
+mention~\citep{damuel2023}, and our evaluation protocol accounts for this
+(Section~\ref{sec:eval-metrics}). The same articles also serve as source
+texts for the reference-free evaluation of translation and refinement
+quality.
+
+% ===== VARIANT 2 (problem->resource framing) =====
+% Evaluating terminology extraction and Wikidata grounding requires gold
+% mentions that are both located in text and resolved to entities, an annotation
+% that is expensive to produce from scratch. Wikipedia already contains it.
+% Editors link salient terms in article bodies by hand, and each link target
+% maps deterministically to a Wikidata item, so a linked article is a text with
+% human-annotated, entity-grounded terminology. Our \textit{Wikipedia} corpus
+% exploits this resource. It comprises 100 articles on ancient history from the
+% Russian edition, ten from each of ten thematic sections (Sumer and
+% Mesopotamia, Ancient Egypt, Assyria, the Hittite Kingdom, Phoenicia,
+% Achaemenid Iran, Ancient India, Ancient China, Ancient Greece, and Ancient
+% Rome). The selection is deterministic: candidates from each section's category
+% subtree are shuffled with a fixed seed and pass a gate that bounds the
+% article's period to before 500~CE, with no manual curation involved
+% (Appendix~\ref{app:wiki-corpus}). The annotation these links provide is
+% precise but incomplete, as editors typically link an entity only at its first
+% mention~\citep{damuel2023}, which our evaluation protocol takes into account
+% (Section~\ref{sec:eval-metrics}). The same articles additionally serve as
+% source texts for the reference-free evaluation of translation and refinement
+% quality.
+
+% ===== SHARED CLOSING SENTENCE (after all three dataset paragraphs) =====
+% Data statistics for the three corpora are summarized in
+% Table~\ref{tab:data-statistics}.
+
+% ===== APPENDIX SNIPPET =====
+% \paragraph{Wikipedia corpus construction details.}\label{app:wiki-corpus}
+% Candidate pools are the article-namespace category subtrees of the ten section
+% root categories. An article reachable from several sections is assigned to the
+% first in a fixed order and used once. The selection gate requires at least 30
+% unique in-text links to other articles, which serves as a proxy for
+% substantive content. For the chronological criterion we take the earliest
+% value among the Wikidata properties inception (P571), start time (P580), point
+% in time (P585), date of birth (P569), and publication date (P577). Articles
+% with no recorded date are retained. Articles typed as films, paintings, or
+% museums are excluded. Shuffling uses seed 42. Article HTML was collected in
+% July 2026. Because the Wikipedia category graph is noisy, roughly three of the
+% 100 articles fall outside the target period. They are disclosed and retained
+% to avoid manual curation.
+%
+% A subsequent manual review of all 100 articles (2026-07-10) flagged five
+% additional articles as out of scope despite passing the automated gate: two
+% fictional-universe topics (Marvel's Heliopolitans and Conan's Stygia), one
+% modern-geography article, one modern historiographic concept, and one city
+% article with roughly 72\% post-cutoff content. The root cause is that the
+% P31 chronology gate's blacklist covers only films, paintings, and museums
+% and does not catch fictional-universe entities, whose Wikidata items often
+% carry no inception date and so pass under the ``undated kept'' rule. Each
+% flagged article was replaced by the next seed-42 walk survivor from the same
+% section -- re-running the selection reproduced the original candidate pools
+% exactly -- and each replacement was individually verified as genuinely
+% ancient via lead-paragraph and P31 inspection. One substitution was a
+% reviewer decision: the rank-11 candidate was rejected as chronologically
+% borderline (terminal event 537~CE), and the rank-14 candidate was taken
+% instead.

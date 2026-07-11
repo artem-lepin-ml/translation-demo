@@ -1,0 +1,104 @@
+{
+  "auto": {
+    "catalog_reasoning_supported": false,
+    "call_reasoning_effort_flat": {
+      "ok": true,
+      "latency_s": 6.16,
+      "prompt_tokens": 1858,
+      "completion_tokens": 175,
+      "reasoning_tokens": 0,
+      "cost_usd": null,
+      "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+    }
+  },
+  "provider-2": {
+    "catalog_reasoning_supported": true,
+    "call_reasoning_effort_flat": {
+      "ok": true,
+      "latency_s": 7.69,
+      "prompt_tokens": 1859,
+      "completion_tokens": 391,
+      "reasoning_tokens": 0,
+      "cost_usd": null,
+      "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+    },
+    "call_thinking_native": {
+      "ok": false,
+      "latency_s": 1.26,
+      "error": "BadRequestError: Error code: 400 - {'error': {'code': 'invalid_request', 'message': 'Invalid request: `temperature` is deprecated for this model.', 'status': 400, 'metadata': {'provider_name': 'Anthropic', 'upstream_s"
+    }
+  },
+  "provider-4": {
+    "catalog_reasoning_supported": false,
+    "call_reasoning_effort_flat": {
+      "ok": true,
+      "latency_s": 3.73,
+      "prompt_tokens": 1858,
+      "completion_tokens": 175,
+      "reasoning_tokens": 0,
+      "cost_usd": null,
+      "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+    }
+  },
+  "provider-5": {
+    "catalog_reasoning_supported": true,
+    "call_reasoning_effort_flat": {
+      "ok": false,
+      "latency_s": 3.29,
+      "error": "BadRequestError: Error code: 400 - {'error': {'code': 'invalid_request', 'message': '请求失败 [up_bad_request; g=0; c=562; r=20260709004151655693144DU3WxLuD] (request id: 202607090041499922635888268d9d6aZrKwLbh)', 'status"
+    }
+  },
+  "provider-8": {
+    "catalog_reasoning_supported": true,
+    "call_reasoning_effort_flat": {
+      "ok": false,
+      "latency_s": 0.62,
+      "error": "InternalServerError: Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models"
+    }
+  },
+  "provider-9": {
+    "catalog_reasoning_supported": false,
+    "call_reasoning_effort_flat": {
+      "ok": false,
+      "latency_s": 30.45,
+      "error": "APITimeoutError: Request timed out."
+    }
+  },
+  "provider-10": {
+    "catalog_reasoning_supported": true,
+    "call_reasoning_effort_flat": {
+      "ok": true,
+      "latency_s": 6.79,
+      "prompt_tokens": 8766,
+      "completion_tokens": 165,
+      "reasoning_tokens": 0,
+      "cost_usd": null,
+      "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+    },
+    "call_thinking_native": {
+      "ok": true,
+      "latency_s": 7.4,
+      "prompt_tokens": 8673,
+      "completion_tokens": 165,
+      "reasoning_tokens": 0,
+      "cost_usd": null,
+      "content_preview": "[{\"surface\":\"Сьюзен Джеймс\",\"lemma\":\"Сьюзен Джеймс\",\"category\":\"person\"},{\"surface\":\"Джоан Флетчер\",\"lemma\":\"Джоан Флетч"
+    }
+  },
+  "provider-3": {
+    "negative_control": true,
+    "call": {
+      "ok": false,
+      "latency_s": 0.65,
+      "error": "InternalServerError: Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models"
+    }
+  },
+  "provider-6": {
+    "negative_control": true,
+    "call": {
+      "ok": false,
+      "latency_s": 0.55,
+      "error": "InternalServerError: Error code: 503 - {'error': {'code': 'no_available_provider', 'message': 'No available upstream endpoint for requested model(s)', 'status': 503, 'metadata': {'endpoint_type': 'chat', 'requested_models"
+    }
+  }
+}

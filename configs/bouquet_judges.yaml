@@ -1,0 +1,207 @@
+# Judge registry for scripts/bouquet_judge_rerun.py -- BOUQUET ru2en multi-judge
+# re-scoring of Danil's 4 vendored translation systems (external/gse-translation),
+# comparable-by-construction with his own judge pipeline (same prompts, same
+# response parsing -- see the runner's module docstring for the exact mirror).
+#
+# All judges talk to the OpenAI-compatible gateway: env OPENROUTER_BASE_URL
+# (falls back to https://api.closerouter.dev/v1, the repo-wide convention --
+# see scripts/probe_providers.py, scripts/wiki_eval.py, scripts/rebuild_demo.py)
+# + OPENROUTER_API_KEY. The key is read from the environment only, never
+# written here and never logged by the runner.
+#
+# `regime` selects the request-shaping recipe (`build_payload()` in the
+# runner). Grounded on three live sessions:
+#   - 2026-07-07 deepseek smoke: docs/reports/2026-07-07-deepseek-closerouter-smoke.md
+#   - 2026-07-08 4-judge route probe: docs/experiments/2026-07-08-judge-probe/probe-results.md
+#   - 2026-07-08 reasoning-suppression follow-up (this judge run,
+#     docs/reports/python-pro-judge-run-deepseek.md): omitting `reasoning`
+#     entirely, and `reasoning.effort="none"`, both STILL reasoned (53-100%
+#     of completion tokens across 4 real-paragraph test calls) -- confirms
+#     nothing suppresses it on this route. Owner decision (2026-07-08,
+#     docs/paper/paper-state.md "Table A protocol"): make the config disclose
+#     the true behavior instead of a misleading `enabled=false`.
+#
+#   t0_no_reasoning   -- temperature=0 (deterministic scoring) + explicit
+#                        `reasoning: {enabled: false}`. For deepseek-v4-flash,
+#                        which reasons by default and can return EMPTY content
+#                        at a tight max_tokens otherwise. Judge-role calls use
+#                        route `auto` (no provider pin): response_format=
+#                        json_object + a provider pin (e.g. provider-9) -> 400.
+#                        2026-07-08 finding (known_issues.md addendum): on
+#                        `auto`, `reasoning.enabled=false` does NOT actually
+#                        suppress reasoning tokens (~45% of completion tokens
+#                        still went to reasoning across 15 validation calls) --
+#                        harmless for correctness (0/15 parse failures) but
+#                        budget for it as a cost quirk, not a config bug.
+#                        SUPERSEDED for deepseek-v4-flash 2026-07-08 -- see
+#                        t0_reasoning_on below. Kept in the runner for any
+#                        future judge that genuinely honors reasoning=false.
+#   t0_reasoning_on    -- temperature=0 + explicit `reasoning: {enabled: true}`.
+#                        Locked protocol for deepseek-v4-flash as of 2026-07-08:
+#                        reasoning cannot be suppressed on this route (see
+#                        above), so this regime discloses it honestly instead
+#                        of requesting an off switch that silently no-ops.
+#   frontier_default  -- no `temperature` key at all, `reasoning: {enabled:
+#                        true}` sent explicitly at default effort. Probe
+#                        results per model:
+#                          * claude-opus-4.8: the flag is a silent no-op on
+#                            this OpenAI-compat bridge (0 reasoning_tokens in
+#                            all 3 tested param forms -- matches the existing
+#                            claude-opus-4.7 comment in
+#                            external/gse-translation/configs/models.yaml);
+#                            response_format=json_object works fine regardless.
+#                          * gpt-5.5: reasoning engages normally (110-292
+#                            reasoning tokens/call observed), response_format
+#                            compatible with reasoning ON.
+#                          * gemini-3.1-pro: reasoning is always on regardless
+#                            of the parameter, but response_format=json_object
+#                            -> 400 Bad Request (Google-side) -- MUST be
+#                            omitted; the judge relies on the prompt's own
+#                            "Respond with a valid JSON object and nothing
+#                            else" instruction instead. Modeled here via
+#                            `supports_structured_output: false`.
+#
+# `router_id` is the literal OpenRouter-style model slug sent as `"model"` in
+# the chat/completions body -- probe-confirmed exact IDs from `GET /v1/models`
+# (not guesses; the pre-probe placeholders these replaced are recorded in git
+# history for comparison).
+#
+# `enabled: false` is a hard run-gate enforced by the runner (`run` refuses a
+# disabled judge unless --allow-disabled is passed). The 3 frontier judges
+# below are probe-CONFIRMED reachable and priced, but this task explicitly
+# does not run them (requirement 7) -- flipping `enabled: true` is an owner/
+# orchestrator decision for a follow-up task, informed by the probe's full
+# per-system cost estimate (~$1.3-$14 for a complete 2 376-call BOUQUET run,
+# depending on judge and prompt variant -- see probe-results.md "Токены,
+# латентность, оценка стоимости").
+
+judges:
+  - slug: deepseek-v4-flash
+    router_id: deepseek/deepseek-v4-flash
+    regime: t0_reasoning_on
+    # 4096 was the pre-2026-07-08 budget under the (incorrect) assumption
+    # reasoning was suppressed. Direct evidence it wasn't enough: a real
+    # accuracy-criterion probe call hit the 4096 cap at 100% reasoning share
+    # and failed to parse (docs/reports/python-pro-judge-run-deepseek.md).
+    # 8192 matches the frontier judges' budget and gives headroom for the
+    # actual JSON payload after reasoning.
+    max_tokens: 8192
+    enabled: true
+
+  # ---- Frontier judges: router ids + regimes PROBE-CONFIRMED 2026-07-08
+  # (docs/experiments/2026-07-08-judge-probe/probe-results.md), but NOT run
+  # by this task (requirement 7). enabled: false is deliberate and durable
+  # until an owner/orchestrator decision to spend the ~$1.3-$14/judge full-run
+  # budget the probe estimated.
+  - slug: gpt-5.5
+    router_id: openai/gpt-5.5
+    regime: frontier_default
+    max_tokens: 8192
+    enabled: true
+  - slug: claude-opus-4.8
+    router_id: anthropic/claude-opus-4.8
+    regime: frontier_default
+    max_tokens: 8192
+    enabled: true
+  - slug: gemini-3.1-pro
+    router_id: google/gemini-3.1-pro-preview
+    regime: frontier_default
+    max_tokens: 8192
+    enabled: false  # 2026-07-08 owner decision: replaced by gemini-3.1-flash-lite
+    # below (cheaper, faster, no response_format quirk). Pilot had already
+    # started (12/240 calls, $0.0403 real cost, reports/bouquet/judges/
+    # gemini-3.1-pro/scores.jsonl kept per append-only invariant but not
+    # committed) when the owner stopped it -- see
+    # docs/reports/python-pro-judge-run-gemini-flash-lite.md.
+    supports_structured_output: false  # response_format=json_object -> 400 (probe finding)
+
+  # 2026-07-08 owner swap-in for gemini-3.1-pro (see note above). Exact router
+  # ID confirmed via live `GET {OPENROUTER_BASE_URL}/models` (not in the
+  # 2026-07-08 probe's cached catalog subset, which only covered the 4
+  # originally-probed models) -- `google/gemini-3.1-flash-lite` (alias
+  # `google/gemini-3.1-flash-lite-preview`), pricing $0.15/$0.45 per Mtok
+  # in/out (vs $0.825/$2.475 for gemini-3.1-pro-preview).
+  #
+  # Smoke (2 realistic calls, docs/reports/python-pro-judge-run-gemini-flash-lite.md):
+  # unlike gemini-3.1-pro-preview, this model accepts response_format=
+  # json_object cleanly (200 OK, clean JSON both times) -- so
+  # supports_structured_output stays at its true/default value. And unlike
+  # every "frontier_default" judge above, it does NOT reason unless asked:
+  # reasoning_tokens=0 in both smoke calls with no `reasoning` key sent
+  # (latency 2.8-4.8s vs 13.7s when `reasoning: {enabled: true}` was forced
+  # on in a 3rd diagnostic call). `vendor_default` (new regime, additive-only
+  # in the runner's build_payload -- sends neither `temperature` nor
+  # `reasoning`, true provider defaults) models this honestly.
+  - slug: gemini-3.1-flash-lite
+    router_id: google/gemini-3.1-flash-lite
+    regime: vendor_default
+    max_tokens: 8192
+    enabled: true
+
+  # 2026-07-08 owner protocol fix: the locked protocol for frontier judges is
+  # thinking ENABLED at default effort, not vendor default -- the
+  # `gemini-3.1-flash-lite` entry above (reasoning OFF) stays as-is and is
+  # kept as a sensitivity row; this is a second, separate full run of the
+  # SAME model with reasoning forced on via `frontier_default`. Router ID is
+  # the `-preview` alias per the owner's explicit instruction (same
+  # underlying model as `google/gemini-3.1-flash-lite` above -- see that
+  # entry's comment for the alias confirmation).
+  #
+  # Smoke (2 realistic calls, docs/reports/python-pro-judge-run-gemini-flash-lite.md
+  # "reasoning-on run"): `reasoning: {enabled: true}` + response_format=
+  # json_object together -- 200 OK both times, JSON parses cleanly,
+  # reasoning_tokens=738 and 1695 (>0, confirms it actually engages, unlike
+  # the vendor-default run above), latency 11.6s/14.3s (~13s, matches the
+  # owner's expectation).
+  - slug: gemini-3.1-flash-lite-think
+    router_id: google/gemini-3.1-flash-lite-preview
+    regime: frontier_default
+    max_tokens: 8192
+    enabled: true
+
+  # ---- Local judges (sr004, 4xA100): owner-locked Table A lineup
+  # (docs/paper/paper-state.md "Table A -- LLM-as-a-judge, 7-judge lineup"),
+  # protocol = T=0, thinking OFF for every local/open judge. Not reachable
+  # from this cloud session (no GPU) -- run via a local vLLM OpenAI-compat
+  # server per model, `OPENROUTER_BASE_URL` pointed at localhost, full
+  # bring-up + `run`/`stats` recipe in
+  # docs/runbooks/sr004-local-eval-runbook.md. `enabled: false` is the same
+  # hard run-gate the frontier judges above used before their sr004
+  # counterpart ran -- flip to true (or pass --allow-disabled) only on sr004,
+  # once the corresponding vLLM server is confirmed up (Ф0 probe in the
+  # runbook). `regime: t0_local` (added alongside this block, sr004
+  # local-judge patch 2026-07-09): temperature=0, no `reasoning` key --
+  # unlike the CloseRouter judges above, a raw vLLM server doesn't implement
+  # that OpenRouter-specific field.
+  - slug: qwen3-4b-instruct
+    router_id: Qwen/Qwen3-4B-Instruct-2507
+    regime: t0_local
+    max_tokens: 8192
+    enabled: false  # enable on sr004
+    # Non-thinking by construction (the "-Instruct-2507" variant, not
+    # "-Thinking-2507") -- no chat_template_kwargs toggle needed.
+
+  - slug: gemma-3-27b-it
+    router_id: google/gemma-3-27b-it
+    regime: t0_local
+    max_tokens: 8192
+    enabled: false  # enable on sr004
+    # Not a reasoning/thinking model at all -- "thinking OFF" is a no-op for
+    # this family, no extra_body needed. Distinct from TranslateGemma
+    # (Infomaniak-AI/vllm-translategemma-27b-it, the Table B/translation-eval
+    # translation system) -- same base size, different fine-tune, different
+    # role (judge here, not translator).
+
+  - slug: qwen3.6-27b
+    router_id: Qwen/Qwen3.6-27B
+    regime: t0_local
+    max_tokens: 8192
+    enabled: false  # enable on sr004
+    # Hybrid thinking model, thinking ON by default in its chat template --
+    # `chat_template_kwargs.enable_thinking: false` is the vLLM-native way to
+    # force it off per request (same mechanism Danil's models.yaml already
+    # uses for this exact model, docs/stages/translation-eval.md). Same
+    # server as the fixed-J judge role in the Table B runbook -- if that
+    # server is already up for a concurrent Table B run, reuse it instead of
+    # starting a second one (one vLLM process per model, not per table).
+    extra_body: {chat_template_kwargs: {enable_thinking: false}}

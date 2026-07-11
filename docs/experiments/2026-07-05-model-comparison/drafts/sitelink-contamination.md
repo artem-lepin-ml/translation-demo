@@ -1,3 +1,8 @@
+> ⚠️ **SUPERSEDED** by [docs/paper/sections/](../../../paper/sections/) (protocol v3, 2026-07-10). The offline
+> replay script this doc describes (`scripts/sitelink_contamination.py`) is **deleted** (spec
+> [2026-07-10-wiki-eval-experiment-v2.md](../../../superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md) §7)
+> — all v3 runs use `--no-sitelink` at run time instead of an offline replay. Kept for historical reference only.
+
 # Sitelink-rung contamination — quantification (offline replay)
 
 Method: for every grounded prediction (`qid != null`) in each run's `pred.jsonl`,

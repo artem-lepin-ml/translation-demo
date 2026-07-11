@@ -1,0 +1,177 @@
+{
+  "anthropic/claude-opus-4.8": {
+    "id": "anthropic/claude-opus-4.8",
+    "name": "Claude Opus 4.8",
+    "description": "Route via provider-2 upstream model claude-opus-4-8.",
+    "context_length": 1000000,
+    "max_output_tokens": 128000,
+    "pricing": {
+      "prompt": "0.40000000",
+      "completion": "0.40000000",
+      "unit": "usd_per_million_tokens"
+    },
+    "supported_parameters": [
+      "container",
+      "max_output_tokens",
+      "max_tokens",
+      "messages",
+      "metadata",
+      "model",
+      "output_config",
+      "reasoning_effort",
+      "service_tier",
+      "stop_sequences",
+      "stream",
+      "system",
+      "temperature",
+      "thinking",
+      "tool_choice",
+      "tools",
+      "top_k",
+      "top_p"
+    ],
+    "endpoints": [
+      "chat",
+      "responses",
+      "messages",
+      "messages_count_tokens"
+    ],
+    "architecture": {
+      "thinking": true,
+      "upstream_owner": "anthropic",
+      "extended_thinking": {
+        "max": 128000,
+        "min": 1024,
+        "supported": true,
+        "zero_allowed": true,
+        "dynamic_allowed": false
+      },
+      "upstream_display_name": "Claude Opus 4.8",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ]
+    }
+  },
+  "openai/gpt-5.5": {
+    "id": "openai/gpt-5.5",
+    "name": "GPT 5.5",
+    "description": null,
+    "context_length": 400000,
+    "max_output_tokens": 31000,
+    "pricing": {
+      "prompt": "0.30000000",
+      "completion": "0.30000000",
+      "unit": "usd_per_million_tokens"
+    },
+    "supported_parameters": [
+      "input",
+      "instructions",
+      "max_completion_tokens",
+      "max_output_tokens",
+      "max_tokens",
+      "messages",
+      "reasoning",
+      "reasoning_effort",
+      "response_format",
+      "seed",
+      "stop",
+      "stream",
+      "temperature",
+      "text",
+      "tool_choice",
+      "tools",
+      "top_p",
+      "user"
+    ],
+    "endpoints": [
+      "chat",
+      "responses",
+      "messages",
+      "messages_count_tokens"
+    ],
+    "architecture": {
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ]
+    }
+  },
+  "google/gemini-3.1-pro-preview": {
+    "id": "google/gemini-3.1-pro-preview",
+    "name": "Google: Gemini 3.1 Pro Preview",
+    "description": "google/gemini-3.1-pro-preview",
+    "context_length": 1000000,
+    "max_output_tokens": null,
+    "pricing": {
+      "prompt": "0.82500000",
+      "completion": "2.47500000",
+      "cache_write_5m": "1.03125000",
+      "cache_read": "0.08250000",
+      "pricing_tiers": [
+        {
+          "threshold_context_tokens": 200000,
+          "input_price_per_million_tokens": "1.65000000",
+          "output_price_per_million_tokens": "3.71250000",
+          "cache_write_5m_price_per_million_tokens": "1.87500000",
+          "cache_read_price_per_million_tokens": "0.30000000"
+        }
+      ],
+      "unit": "usd_per_million_tokens"
+    },
+    "supported_parameters": [
+      "max_output_tokens",
+      "max_tokens",
+      "stream"
+    ],
+    "endpoints": [
+      "chat",
+      "responses",
+      "messages"
+    ],
+    "architecture": {
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ]
+    }
+  },
+  "deepseek/deepseek-v4-flash": {
+    "id": "deepseek/deepseek-v4-flash",
+    "name": "DeepSeek V4 Flash",
+    "description": null,
+    "context_length": 1000000,
+    "max_output_tokens": null,
+    "pricing": {
+      "prompt": "0.07005000",
+      "completion": "0.13995000",
+      "cache_write_5m": "0.07005000",
+      "cache_read": "0.00135000",
+      "unit": "usd_per_million_tokens"
+    },
+    "supported_parameters": [
+      "max_output_tokens",
+      "max_tokens",
+      "stream"
+    ],
+    "endpoints": [
+      "chat",
+      "responses",
+      "messages"
+    ],
+    "architecture": {
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ]
+    }
+  }
+}

@@ -1,0 +1,183 @@
+{
+ "protocol": "v3",
+ "n_ambiguous_gold_units": 112,
+ "n_gold_mentions_dropped_by_tier": 764,
+ "classes": {
+  "named": {
+   "tp": 3094,
+   "fn": 791,
+   "fp": 1901,
+   "gold_units": 3885,
+   "R_doc": {
+    "matched": 3094,
+    "total": 3885,
+    "value": 0.7963963963963964,
+    "ci_lo": 0.7834,
+    "ci_hi": 0.8088,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 3094,
+    "total": 4995,
+    "value": 0.6194194194194195,
+    "ci_lo": 0.6059,
+    "ci_hi": 0.6328,
+    "underpowered": false
+   }
+  },
+  "term": {
+   "tp": 662,
+   "fn": 804,
+   "fp": 1817,
+   "gold_units": 1466,
+   "R_doc": {
+    "matched": 662,
+    "total": 1466,
+    "value": 0.451568894952251,
+    "ci_lo": 0.4263,
+    "ci_hi": 0.4771,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 662,
+    "total": 2479,
+    "value": 0.2670431625655506,
+    "ci_lo": 0.25,
+    "ci_hi": 0.2848,
+    "underpowered": false
+   }
+  }
+ },
+ "survival": {
+  "n_gold_entities": 5061,
+  "n_gold_mentions_dropped_by_tier": 764,
+  "n_gold_mentions_dropped_by_exclusion": 321,
+  "n_pred_linked_entities": 7474,
+  "n_resolved_correct_search_miss": 0,
+  "R_NER": {
+   "matched": 4535,
+   "total": 5061,
+   "value": 0.8960679707567675,
+   "ci_lo": 0.8874,
+   "ci_hi": 0.9042,
+   "underpowered": false
+  },
+  "R_search": {
+   "matched": 3728,
+   "total": 4535,
+   "value": 0.8220507166482911,
+   "ci_lo": 0.8106,
+   "ci_hi": 0.8329,
+   "underpowered": false
+  },
+  "A_disamb": {
+   "matched": 3519,
+   "total": 3728,
+   "value": 0.9439377682403434,
+   "ci_lo": 0.9361,
+   "ci_hi": 0.9509,
+   "underpowered": false
+  },
+  "R": {
+   "matched": 3519,
+   "total": 5061,
+   "value": 0.6953171310017783,
+   "ci_lo": 0.6825,
+   "ci_hi": 0.7078,
+   "underpowered": false
+  },
+  "R_direct": {
+   "matched": 3519,
+   "total": 5061,
+   "value": 0.6953171310017783,
+   "ci_lo": 0.6825,
+   "ci_hi": 0.7078,
+   "underpowered": false
+  },
+  "P": {
+   "matched": 3713,
+   "total": 7474,
+   "value": 0.4967888680759968,
+   "ci_lo": 0.4855,
+   "ci_hi": 0.5081,
+   "underpowered": false
+  }
+ },
+ "meta": {
+  "article_workers": 6,
+  "calls": {
+   "extract": 0,
+   "judge": 6468,
+   "label_guess": 0
+  },
+  "config": "111",
+  "failed_paragraphs": [],
+  "finished_at": "2026-07-11T06:06:02.490100+00:00",
+  "generation_params": {
+   "base_url": "https://openrouter.ai/api/v1",
+   "extra_body_effective": {
+    "provider": {
+     "allow_fallbacks": false,
+     "order": [
+      "Parasail"
+     ]
+    },
+    "top_k": 64,
+    "usage": {
+     "include": true
+    }
+   },
+   "max_tokens": 20000,
+   "model": "google/gemma-3-27b-it",
+   "provider_pin": "Parasail",
+   "reasoning": null,
+   "temperature": 1.0,
+   "top_k": 64,
+   "top_p": 0.95
+  },
+  "grounding_config": {
+   "match_aliases": true,
+   "use_cirrus": true,
+   "use_lemma": true,
+   "use_sitelink": false
+  },
+  "llm_max_in_flight_observed": 6,
+  "llm_semaphore": 6,
+  "max_judge_calls": 25000,
+  "max_usd": 3.0,
+  "model": "google/gemma-3-27b-it",
+  "n_articles": 100,
+  "n_extraction_parse_failures": 0,
+  "n_failed_judge_calls": 1,
+  "n_failed_paragraphs": 0,
+  "n_paragraphs": 1866,
+  "n_pred_mentions": 20436,
+  "n_reuse_extraction_unmatched": 0,
+  "no_judge": false,
+  "parse_failed_paragraphs": [],
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "Parasail",
+  "resumed_from_n_articles": 32,
+  "reuse_extraction_from": "reports/terminology/wiki-eval/google--gemma-3-27b-it--Parasail/111/2026-07-10T18-22-43Z",
+  "run_id": "2026-07-10T23-40-53Z",
+  "search_mode": "baseline",
+  "spend": {
+   "extract": 0.0,
+   "judge": 0.299112260000034,
+   "label_guess": 0.0,
+   "total": 0.299112260000034
+  },
+  "started_at": "2026-07-11T04:55:27.791320+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 4234.69878,
+  "wikidata": {
+   "cache_hits": 43532,
+   "calls": 1231,
+   "seconds": 367.297
+  },
+  "wikidata_workers": 2,
+  "n_gt_tuples": 7658,
+  "generated_at": "2026-07-11T06:06:24.367580+00:00"
+ }
+}

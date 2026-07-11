@@ -1,0 +1,457 @@
+<title>Разбор промахов NER — пилот gemini (10 статей)</title>
+<style>
+  :root {
+    --bg: #1a1b26;
+    --bg2: #1f2335;
+    --panel: #24283b;
+    --line: #2f334d;
+    --tx: #c0caf5;
+    --blue: #7aa2f7;
+    --green: #9ece6a;
+    --yel: #e0af68;
+    --red: #f7768e;
+    --purple: #bb9af7;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--tx);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    margin: 0;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  a { color: var(--blue); }
+  .num, td.num, .metric-value, .card .big { font-variant-numeric: tabular-nums; }
+  .prose { max-width: 65ch; }
+
+  header.hdr { border-bottom: 1px solid var(--line); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+  header.hdr h1 { margin: 0 0 .4rem; font-size: 1.65rem; }
+  header.hdr .subtitle { margin: 0; color: var(--tx); opacity: .65; font-size: .92rem; }
+
+  .section {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: .6rem;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section h2 { margin: 0 0 1rem; font-size: 1.1rem; color: var(--blue); }
+  .section h3 { margin: 1.1rem 0 .6rem; font-size: .95rem; color: var(--tx); opacity: .85; }
+
+  .lead { font-size: 1.03rem; margin: 0 0 .9rem; }
+  .stat-chips { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .stat-chip {
+    display: inline-flex; align-items: center; gap: .35rem;
+    border: 1px solid currentColor; border-radius: 999px;
+    padding: .25rem .7rem; font-size: .82rem; font-weight: 600;
+  }
+  .stat-chip--red { color: var(--red); }
+  .stat-chip--green { color: var(--green); }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .card { background: var(--bg2); border: 1px solid var(--line); border-radius: .5rem; padding: 1rem 1.1rem; }
+  .card .card-head { font-weight: 700; color: var(--blue); margin-bottom: .55rem; font-size: .95rem; }
+  .card .metric { display: flex; justify-content: space-between; gap: .5rem; margin-bottom: .5rem; font-size: .9rem; }
+  .card .metric-label { opacity: .7; }
+  .card .metric-value { font-weight: 700; }
+  .verdict-mini { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .65rem; }
+  .mini {
+    font-size: .74rem; font-weight: 600; padding: .12rem .45rem; border-radius: .3rem;
+    border: 1px solid currentColor;
+  }
+  .mini--red { color: var(--red); }
+  .mini--green { color: var(--green); }
+  .mini--blue { color: var(--blue); }
+  .mini--yellow { color: var(--yel); }
+  .formula {
+    font-size: .78rem; color: var(--tx); opacity: .8; background: var(--bg);
+    border: 1px solid var(--line); border-radius: .3rem; padding: .4rem .55rem; margin-top: .35rem;
+  }
+  .formula strong { color: var(--tx); opacity: 1; }
+  .formula--alt { opacity: .65; }
+
+  .bar-row { margin-bottom: .9rem; }
+  .bar-row:last-child { margin-bottom: 0; }
+  .bar-row-label { font-size: .85rem; margin-bottom: .3rem; }
+  .bar-row-label .dim { opacity: .6; font-weight: 400; }
+  .bar-track {
+    display: flex; height: 1.6rem; border-radius: .3rem; overflow: hidden;
+    border: 1px solid var(--line); background: var(--bg);
+  }
+  .bar-seg { height: 100%; }
+  .bar-seg--red { background: var(--red); }
+  .bar-seg--green { background: var(--green); }
+  .bar-seg--blue { background: var(--blue); }
+  .bar-seg--yellow { background: var(--yel); }
+  .bar-legend { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: .8rem; font-size: .8rem; opacity: .85; }
+  .bar-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+  .swatch { width: .7rem; height: .7rem; border-radius: .15rem; display: inline-block; }
+  .swatch--red { background: var(--red); }
+  .swatch--green { background: var(--green); }
+  .swatch--blue { background: var(--blue); }
+  .swatch--yellow { background: var(--yel); }
+
+  .patterns-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-top: .5rem; }
+  .patterns-grid ul { margin: 0; padding-left: 1.1rem; font-size: .88rem; }
+  .patterns-grid li { margin-bottom: .4rem; }
+  .patterns-grid .ptitle { font-weight: 700; margin-bottom: .5rem; color: var(--tx); }
+
+  .chipbar { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .6rem; }
+  .chip {
+    font: inherit; cursor: pointer; background: var(--bg2); color: var(--tx);
+    border: 1px solid var(--line); border-radius: 999px; padding: .3rem .8rem; font-size: .82rem;
+  }
+  .chip.active { border-color: var(--blue); color: var(--blue); background: color-mix(in srgb, var(--blue) 14%, var(--bg2)); font-weight: 600; }
+  .filter-status { font-size: .82rem; opacity: .7; margin-bottom: 1rem; }
+
+  .table-container { overflow-x: auto; border: 1px solid var(--line); border-radius: .4rem; }
+  table { width: 100%; border-collapse: collapse; min-width: 1080px; }
+  th, td { text-align: left; padding: .55rem .65rem; border-bottom: 1px solid var(--line); vertical-align: top; font-size: .84rem; }
+  th { color: var(--tx); opacity: .7; font-weight: 600; font-size: .74rem; text-transform: uppercase; letter-spacing: .03em; position: sticky; top: 0; background: var(--panel); }
+  td.sentence { max-width: 380px; }
+  td.explain { max-width: 300px; opacity: .9; }
+  mark {
+    background: color-mix(in srgb, var(--purple) 38%, transparent);
+    color: var(--tx); border-radius: .2rem; padding: .02rem .15rem; font-weight: 600;
+  }
+  .tag-class { font-size: .72rem; padding: .08rem .4rem; border-radius: .25rem; border: 1px solid var(--line); opacity: .9; white-space: nowrap; }
+  .flag { font-size: .74rem; padding: .1rem .4rem; border-radius: .25rem; border: 1px solid var(--line); white-space: nowrap; }
+  .flag--yes { color: var(--green); border-color: var(--green); }
+  .flag--no { color: var(--tx); opacity: .55; }
+  .pill { font-size: .74rem; font-weight: 700; padding: .15rem .5rem; border-radius: .3rem; border: 1px solid currentColor; white-space: nowrap; }
+  .pill--red { color: var(--red); background: color-mix(in srgb, var(--red) 16%, transparent); }
+  .pill--green { color: var(--green); background: color-mix(in srgb, var(--green) 16%, transparent); }
+  .pill--blue { color: var(--blue); background: color-mix(in srgb, var(--blue) 16%, transparent); }
+  .pill--yellow { color: var(--yel); background: color-mix(in srgb, var(--yel) 16%, transparent); }
+
+  .footer-note { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .82rem; color: var(--tx); opacity: .75; }
+  .footer-note p { margin: 0 0 .6rem; }
+  .footer-note .join-ok { color: var(--green); font-weight: 600; }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .section { padding: 1.1rem 1.2rem; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="hdr">
+    <h1>Разбор промахов NER — пилот gemini (10 статей)</h1>
+    <p class="subtitle">Span-level непопадания NER в gold-якоря; 64 случая = 28 named + 36 term; пилот gemini-3.1-flash-lite, 2026-07-10.</p>
+  </header>
+
+  <section class="section" id="glavnoe">
+    <h2>Главное</h2>
+    <p class="lead prose">
+      Сырой recall на пилоте gemini-3.1-flash-lite (10 статей, 2026-07-10) занижен структурой gold-разметки и правилами промпта NER: 93.5% для named-сущностей и всего 62.1% для терминов.
+      После разбора всех 64 промахов судьями-LLM настоящих ошибок модели оказалось 24 из 64 (12 named + 12 term) — с их учётом скорректированный recall поднимается до ≈96.9% (named) и ≈77.6% (term).
+    </p>
+    <div class="stat-chips">
+      <span class="stat-chip stat-chip--red">24 / 64 — реальные промахи модели</span>
+      <span class="stat-chip stat-chip--green">Скорр. recall: named 96.9% · term 77.6%</span>
+    </div>
+  </section>
+
+  <section class="section" id="summary">
+    <h2>Итоги: recall и вердикты</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="card-head">Named (28 промахов)</div>
+        <div class="metric"><span class="metric-label">Сырой recall</span><span class="metric-value num">400/428 = 93.5%</span></div>
+        <div class="verdict-mini">
+          <span class="mini mini--red">wrong 12</span>
+          <span class="mini mini--green">justified 14</span>
+          <span class="mini mini--blue">noise 1</span>
+          <span class="mini mini--yellow">borderline 1</span>
+        </div>
+        <div class="formula">Скорр. recall = recovered / (gold − justified − noise) = 400 / (428 − 14 − 1) = 400/413 = <strong>96.9%</strong></div>
+        <div class="formula formula--alt">Оптимистично (borderline тоже исключён): 400/(413−1) = 400/412 = <strong>97.1%</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-head">Term (36 промахов)</div>
+        <div class="metric"><span class="metric-label">Сырой recall</span><span class="metric-value num">59/95 = 62.1%</span></div>
+        <div class="verdict-mini">
+          <span class="mini mini--red">wrong 12</span>
+          <span class="mini mini--green">justified 14</span>
+          <span class="mini mini--blue">noise 5</span>
+          <span class="mini mini--yellow">borderline 5</span>
+        </div>
+        <div class="formula">Скорр. recall = 59 / (95 − 14 − 5) = 59/76 = <strong>77.6%</strong></div>
+        <div class="formula formula--alt">Оптимистично (borderline тоже исключён): 59/(76−5) = 59/71 = <strong>83.1%</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-head">Итого (64 промаха)</div>
+        <div class="metric"><span class="metric-label">Сырой recall</span><span class="metric-value num">459/523 = 87.8%</span></div>
+        <div class="verdict-mini">
+          <span class="mini mini--red">wrong 24</span>
+          <span class="mini mini--green">justified 28</span>
+          <span class="mini mini--blue">noise 6</span>
+          <span class="mini mini--yellow">borderline 6</span>
+        </div>
+        <div class="formula">Скорр. recall = 459 / (523 − 28 − 6) = 459/489 = <strong>93.9%</strong></div>
+        <div class="formula formula--alt">Оптимистично: 459/(489−6) = 459/483 = <strong>95.0%</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="breakdown">
+    <h2>Разбор по вердиктам</h2>
+    <div class="bar-row">
+      <div class="bar-row-label">named <span class="dim">(28 промахов)</span></div>
+      <div class="bar-track">
+        <div class="bar-seg bar-seg--red" style="width:42.9%" title="wrong_miss: 12 (42.9%)"></div>
+        <div class="bar-seg bar-seg--green" style="width:50%" title="justified_skip: 14 (50.0%)"></div>
+        <div class="bar-seg bar-seg--blue" style="width:3.6%" title="gold_noise: 1 (3.6%)"></div>
+        <div class="bar-seg bar-seg--yellow" style="width:3.6%" title="borderline: 1 (3.6%)"></div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-row-label">term <span class="dim">(36 промахов)</span></div>
+      <div class="bar-track">
+        <div class="bar-seg bar-seg--red" style="width:33.3%" title="wrong_miss: 12 (33.3%)"></div>
+        <div class="bar-seg bar-seg--green" style="width:38.9%" title="justified_skip: 14 (38.9%)"></div>
+        <div class="bar-seg bar-seg--blue" style="width:13.9%" title="gold_noise: 5 (13.9%)"></div>
+        <div class="bar-seg bar-seg--yellow" style="width:13.9%" title="borderline: 5 (13.9%)"></div>
+      </div>
+    </div>
+    <div class="bar-legend">
+      <span><span class="swatch swatch--red"></span>wrong_miss — настоящий промах</span>
+      <span><span class="swatch swatch--green"></span>justified_skip — правильно пропущено</span>
+      <span><span class="swatch swatch--blue"></span>gold_noise — спорный gold</span>
+      <span><span class="swatch swatch--yellow"></span>borderline — граница правил</span>
+    </div>
+
+    <h3>Системные паттерны (агрегировано из subcause)</h3>
+    <div class="patterns-grid">
+      <div>
+        <div class="ptitle">named — wrong_miss (12)</div>
+        <ul>
+          <li>Падежные формы топонима «Ассирия» в перечислениях (Ассирией, Ассирию×2) — 3 случая</li>
+          <li>«Армянское нагорье» / «Армянского нагорья» / «Армянскому нагорью» — 3 случая</li>
+          <li>Отдельные пропущенные топонимы: «Малой Азии», «Фригии» — по 1 случаю</li>
+          <li>Падежные/заглавные формы имён: Мугаллу, Камбисом — по 1 случаю</li>
+          <li>Латиница/аббревиатуры среди кириллицы: Dior, ЖЖ — по 1 случаю</li>
+        </ul>
+      </div>
+      <div>
+        <div class="ptitle">term — wrong_miss (12)</div>
+        <ul>
+          <li>Этнонимы-существительные в нижнем регистре: ассирийцев / ассирийцами / киммерийцев — 5 случаев</li>
+          <li>Термины-артефакты искусствоведения: геммы, рельефы, цилиндрические печати — 3 случая</li>
+          <li>Гаплогруппа как термин-классификация (митохондриальная гаплогруппа K) — 1 случай</li>
+          <li>Исторический институт «дань» — 1 случай</li>
+          <li>Эпитет священного быка Аписа («быку») — 1 случай</li>
+          <li>Этнофраза «иранские племена» — 1 случай</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="table-section">
+    <h2>Полный список промахов (64)</h2>
+    <div class="chipbar" id="filter-class">
+      <button class="chip active" data-group="class" data-value="all">Все</button>
+      <button class="chip" data-group="class" data-value="named">named</button>
+      <button class="chip" data-group="class" data-value="term">term</button>
+    </div>
+    <div class="chipbar" id="filter-verdict">
+      <button class="chip active" data-group="verdict" data-value="all">Все вердикты</button>
+      <button class="chip" data-group="verdict" data-value="wrong_miss">wrong_miss</button>
+      <button class="chip" data-group="verdict" data-value="justified_skip">justified_skip</button>
+      <button class="chip" data-group="verdict" data-value="gold_noise">gold_noise</button>
+      <button class="chip" data-group="verdict" data-value="borderline">borderline</button>
+    </div>
+    <div class="filter-status">Показано: <span id="shown-count" class="num">64</span> из 64. Порядок: wrong_miss → borderline → gold_noise → justified_skip; внутри — named, затем term, по порядку статей.</div>
+
+    <div class="table-container">
+      <table id="miss-table">
+        <thead>
+          <tr>
+            <th>№</th><th>Класс</th><th>Статья</th><th>Якорь</th><th>Предложение</th><th>QID</th><th>Юнит спасён?</th><th>Вердикт</th><th>Объяснение</th>
+          </tr>
+        </thead>
+        <tbody>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">1</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/KV35YL" target="_blank" rel="noopener">KV35YL</a></td><td>Dior</td><td class="sentence">Представленный макет дополнен широко известным головным убором Нефертити и украшениями от <mark>Dior.</mark></td><td><a href="https://www.wikidata.org/wiki/Q542767" target="_blank" rel="noopener">Q542767</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">Dior — валидное имя (аналог institution), рядом извлечена «Нефертити» — NER был активен. Похоже на сбой из-за латиницы в кириллице.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">2</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/KV35YL" target="_blank" rel="noopener">KV35YL</a></td><td>ЖЖ</td><td class="sentence">В своей записи, опубликованном в блоге в <mark>ЖЖ</mark> 9 февраля того же года, Солкин отмечает, что реконструкция «ужасна», поскольку выполнена низкокачественно, а черты лица не соответствуют таковым у оригинальной мумии (что, на взгляд Солкина, может заметить человек, даже «не являющийся профессиональным антропологом или египтологом»), кроме того, реконструкции был придан явный европеоидный облик, которым настоящие древние египтяне не обладали; в свою очередь, ожерелье, по словам Солкина, выполнено «кошмарно и грубо», а «уродливое подобие высокого парика Нефертити» было добавлено в реконструкцию мумии, поскольку «так публика, извините, быстрее „схавает“».</td><td><a href="https://www.wikidata.org/wiki/Q219523" target="_blank" rel="noopener">Q219523</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«ЖЖ» — название блог-платформы (LiveJournal), должно извлекаться как work. Рядом извлечён «Солкин» — короткую аббревиатуру пропустили зря.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">3</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/XXVII_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F" target="_blank" rel="noopener">XXVII династия</a></td><td>Камбисом</td><td class="sentence">Камбис покинул Египет в начале 522 года до нашей эры, умирая по пути в Персию, и номинально ему на короткое время наследовал его младший брат Бардия, хотя современные историки предполагают, что на самом деле Бардия был Гауматой, самозванцем, и что настоящий Бардия был убит несколько лет назад <mark>Камбисом,</mark> якобы из ревности.</td><td><a href="https://www.wikidata.org/wiki/Q182483" target="_blank" rel="noopener">Q182483</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Камбисом» — падежная форма имени персоны (Камбис), фигурирующего в этом же предложении. Обе формы пропущены — явный сбой.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">4</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Армянского нагорья</td><td class="sentence">Мелид или «Царство Хатти» было одним из важнейших культурных и политических центров <mark>Армянского нагорья.</mark></td><td><a href="https://www.wikidata.org/wiki/Q211263" target="_blank" rel="noopener">Q211263</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Армянского нагорья» — устойчивое географическое название (place); рядом извлечены «Мелид» и «Хатти» — явный пропуск.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">5</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Фригии</td><td class="sentence">Мелид возвращает себе независимость — на это определённо указывают данные ассирийских текстов, где встречаются упоминания о военных действиях ассирийцев против киликийцев, табальцев, Мелида и «Митты» — Мидаса, последнего царя <mark>Фригии.</mark></td><td><a href="https://www.wikidata.org/wiki/Q32579" target="_blank" rel="noopener">Q32579</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Фригии» — падежная форма названия царства (place); рядом извлечены «Мидаса», «Митты» — необъяснимый пропуск существительного.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">6</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Мугаллу</td><td class="sentence">Между 669 и 652 гг. Мелид уже признается ассирийцами за самостоятельное царство, а в 650-х годах Мелид расширяет свои пределы за счет Ассирии, так как царь <mark>Мугаллу</mark> стал уже и царем Табала (который с 713 г. был ассирийской провинцией) и ведет переговоры с Ассирией о помощи против киммерийцев, владычеству которых в Малой Азии вскоре действительно был положен конец с помощью союзников Ассирии — скифов.</td><td><a href="https://www.wikidata.org/wiki/Q120278963" target="_blank" rel="noopener">Q120278963</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Мугаллу» — заглавное имя царя, классический person; рядом извлечены «Ассирии», «Мелид», «Табала» — явный сбой.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">7</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Ассирией</td><td class="sentence">Между 669 и 652 гг. Мелид уже признается ассирийцами за самостоятельное царство, а в 650-х годах Мелид расширяет свои пределы за счет Ассирии, так как царь Мугаллу стал уже и царем Табала (который с 713 г. был ассирийской провинцией) и ведет переговоры с <mark>Ассирией</mark> о помощи против киммерийцев, владычеству которых в Малой Азии вскоре действительно был положен конец с помощью союзников Ассирии — скифов.</td><td><a href="https://www.wikidata.org/wiki/Q41137" target="_blank" rel="noopener">Q41137</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Ассирией» — падежная форма названия страны; форма «Ассирии» уже извлечена в этом же предложении — пропущен лишь вариант.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">8</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Малой Азии</td><td class="sentence">Между 669 и 652 гг. Мелид уже признается ассирийцами за самостоятельное царство, а в 650-х годах Мелид расширяет свои пределы за счет Ассирии, так как царь Мугаллу стал уже и царем Табала (который с 713 г. был ассирийской провинцией) и ведет переговоры с Ассирией о помощи против киммерийцев, владычеству которых в <mark>Малой Азии</mark> вскоре действительно был положен конец с помощью союзников Ассирии — скифов.</td><td><a href="https://www.wikidata.org/wiki/Q51614" target="_blank" rel="noopener">Q51614</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Малой Азии» — устойчивое географическое имя (place); рядом извлечены «Ассирии», «Мелид», «Табала» — явный пропуск.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">9</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Ассирию</td><td class="sentence">К моменту войны Вавилонии и Мидии против ассирийцев (626—605 гг. до н. э.), которая привела к гибели <mark>Ассирию,</mark> а затем Ману и Урарту, царство Мелид не только существовало, но значительно усилилось.</td><td><a href="https://www.wikidata.org/wiki/Q41137" target="_blank" rel="noopener">Q41137</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Ассирию» — название страны; в предложении извлечены Вавилония, Ману, Мидия, Урарту — только «Ассирию» из этого же ряда пропустили.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">10</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Ассирию</td><td class="sentence">Царство Мелид пережило и <mark>Ассирию</mark> и Урарту.</td><td><a href="https://www.wikidata.org/wiki/Q41137" target="_blank" rel="noopener">Q41137</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«пережило Ассирию и Урарту» — извлечён только Урарту, «Ассирию» из той же симметричной конструкции пропустили без причины.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">11</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Армянскому нагорью</td><td class="sentence">В VI в. до н. э. впервые в древнеперсидских и греческих источниках начинает упоминаться «Армения» как целое (Бехистунская надпись Дария I, Гекатей, Геродот, Ксенофонт), и термин применяется ко всему <mark>Армянскому нагорью</mark> в целом.</td><td><a href="https://www.wikidata.org/wiki/Q211263" target="_blank" rel="noopener">Q211263</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Армянскому нагорью» — географический термин, отдельный от упомянутой рядом «Армении»; корректный термин места пропущен.</td></tr>
+
+<tr data-class="named" data-verdict="wrong_miss"><td class="num">12</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Армянскому нагорью</td><td class="sentence">Обозначение всего нагорья термином «Армения» указывает на то, что армянский язык распространялся по всему <mark>Армянскому нагорью</mark> в целом.</td><td><a href="https://www.wikidata.org/wiki/Q211263" target="_blank" rel="noopener">Q211263</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">То же название «Армянское нагорье» повторно пропущено в соседнем предложении — систематический недосмотр именно для этого термина.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">13</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/KV35YL" target="_blank" rel="noopener">KV35YL</a></td><td>митохондриальная гаплогруппа K</td><td class="sentence">По материнской линии <mark>митохондриальная гаплогруппа K</mark> передалась от Туи к Тие, к младшей леди КВ35YL, к Тутанхамону.</td><td><a href="https://www.wikidata.org/wiki/Q1544376" target="_blank" rel="noopener">Q1544376</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">Конкретное название гаплогруппы — явный термин-классификация; в том же предложении NER извлёк «младшей леди», но пропустил это.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">14</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/XXVII_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F" target="_blank" rel="noopener">XXVII династия</a></td><td>быку</td><td class="sentence">Далее историк пишет, что Дарий отправился в Египет, прибыв туда во время траура по погибшему священному герольду Птаха <mark>быку.</mark></td><td><a href="https://www.wikidata.org/wiki/Q208150" target="_blank" rel="noopener">Q208150</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Быку» здесь — эпитет священного быка Аписа (божество), а не обычное животное; промпт требует извлекать божества независимо от регистра.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">15</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4" target="_blank" rel="noopener">Амударьинский клад</a></td><td>геммы</td><td class="sentence">Содержит 1300 монет, сосуды, статуэтки, браслеты, медальоны, плакетки, великолепные <mark>геммы.</mark></td><td><a href="https://www.wikidata.org/wiki/Q1501187" target="_blank" rel="noopener">Q1501187</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Геммы» — специфический искусствоведческий термин (резной камень), не бытовое слово; должен был извлекаться как тип артефакта.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">16</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4" target="_blank" rel="noopener">Амударьинский клад</a></td><td>рельефах</td><td class="sentence">Браслеты с головами грифонов являются типичными для придворного стиля Ахеменидского Ирана V—IV вв. до н. э. Браслеты похожей формы можно увидеть на <mark>рельефах</mark> Персеполя среди предметов, которые посылались в качестве дани.</td><td><a href="https://www.wikidata.org/wiki/Q245117" target="_blank" rel="noopener">Q245117</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Рельефах» — художественно-технический термин (барельеф), конкретное понятие жанра, а не общее слово; пропуск немотивирован.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">17</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4" target="_blank" rel="noopener">Амударьинский клад</a></td><td>дани</td><td class="sentence">Браслеты с головами грифонов являются типичными для придворного стиля Ахеменидского Ирана V—IV вв. до н. э. Браслеты похожей формы можно увидеть на рельефах Персеполя среди предметов, которые посылались в качестве <mark>дани.</mark></td><td><a href="https://www.wikidata.org/wiki/Q748289" target="_blank" rel="noopener">Q748289</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Дани» обозначает конкретный исторический институт — выплату дани империи, по аналогии с категорией «институт»; пропущено ошибочно.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">18</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%B0%D1%85%D0%BE%D0%B7%D0%B8%D1%8F" target="_blank" rel="noopener">Арахозия</a></td><td>иранские племена</td><td class="sentence">Первоначально эту территорию населяли индоиранские и <mark>иранские племена,</mark> создавшие в VI веке до н. э. царство Камбоджа, история которого неизвестна.</td><td><a href="https://www.wikidata.org/wiki/Q1672477" target="_blank" rel="noopener">Q1672477</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Иранские племена» — полноценный этнонимический термин по образцу категории «народы» («амореи, кутии»); пропуск немотивирован.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">19</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>цилиндрические печати</td><td class="sentence">Здесь была представлена «халафоподобная» культура, напоминавшая более позднюю культуру минойского Крита — в частности, здесь возникли столь характерные для минойской культуры <mark>цилиндрические печати.</mark></td><td><a href="https://www.wikidata.org/wiki/Q1123756" target="_blank" rel="noopener">Q1123756</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Цилиндрические печати» — устоявшийся археологический термин (тип артефакта), конкретное понятие; пропуск — ошибка модели.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">20</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>киммерийцев</td><td class="sentence">Мелид и Фригия в свою очередь объединяются в союз против Урарту и <mark>киммерийцев.</mark></td><td><a href="https://www.wikidata.org/wiki/Q192730" target="_blank" rel="noopener">Q192730</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Киммерийцев» — существительное-этноним, прямой пример категории «народы»; явный пропуск, это не прилагательное.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">21</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>ассирийцев</td><td class="sentence">Мелид возвращает себе независимость — на это определённо указывают данные ассирийских текстов, где встречаются упоминания о военных действиях <mark>ассирийцев</mark> против киликийцев, табальцев, Мелида и «Митты» — Мидаса, последнего царя Фригии.</td><td><a href="https://www.wikidata.org/wiki/Q377085" target="_blank" rel="noopener">Q377085</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Ассирийцев» — этноним-существительное; в том же предложении извлечены аналогичные «киликийцев» и «табальцев» — непоследовательный пропуск.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">22</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>ассирийцами</td><td class="sentence">Между 669 и 652 гг. Мелид уже признается <mark>ассирийцами</mark> за самостоятельное царство, а в 650-х годах Мелид расширяет свои пределы за счет Ассирии, так как царь Мугаллу стал уже и царем Табала (который с 713 г. был ассирийской провинцией) и ведет переговоры с Ассирией о помощи против киммерийцев, владычеству которых в Малой Азии вскоре действительно был положен конец с помощью союзников Ассирии — скифов.</td><td><a href="https://www.wikidata.org/wiki/Q377085" target="_blank" rel="noopener">Q377085</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">«Ассирийцами» — существительное-этноним в творительном падеже; явный пример пропущенного этнонима.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">23</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>киммерийцев</td><td class="sentence">Между 669 и 652 гг. Мелид уже признается ассирийцами за самостоятельное царство, а в 650-х годах Мелид расширяет свои пределы за счет Ассирии, так как царь Мугаллу стал уже и царем Табала (который с 713 г. был ассирийской провинцией) и ведет переговоры с Ассирией о помощи против <mark>киммерийцев,</mark> владычеству которых в Малой Азии вскоре действительно был положен конец с помощью союзников Ассирии — скифов.</td><td><a href="https://www.wikidata.org/wiki/Q192730" target="_blank" rel="noopener">Q192730</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">Повторное упоминание «киммерийцев» в другом предложении — тот же устойчивый пропуск этнонима-существительного.</td></tr>
+
+<tr data-class="term" data-verdict="wrong_miss"><td class="num">24</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>ассирийцев</td><td class="sentence">К моменту войны Вавилонии и Мидии против <mark>ассирийцев</mark> (626—605 гг. до н. э.), которая привела к гибели Ассирию, а затем Ману и Урарту, царство Мелид не только существовало, но значительно усилилось.</td><td><a href="https://www.wikidata.org/wiki/Q377085" target="_blank" rel="noopener">Q377085</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--red">wrong_miss</span></td><td class="explain">Ещё одно вхождение «ассирийцев» подтверждает системный пропуск этнонимов-существительных по всей статье.</td></tr>
+
+<tr data-class="named" data-verdict="borderline"><td class="num">25</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>хеттскому</td><td class="sentence">Древнееврейское Тогарма соответствует <mark>хеттскому</mark> Тегарама.</td><td><a href="https://www.wikidata.org/wiki/Q4496560" target="_blank" rel="noopener">Q4496560</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--yellow">borderline</span></td><td class="explain">«хеттскому Тегарама» — прилагательное здесь фактически называет язык/народ (глосса топонима), а не просто описывает; грань с standalone-adjective спорна.</td></tr>
+
+<tr data-class="term" data-verdict="borderline"><td class="num">26</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/KV35YL" target="_blank" rel="noopener">KV35YL</a></td><td>мумия</td><td class="sentence">Younger Lady — Младшая дама; она же <mark>мумия</mark> № 61072) — мумия, обнаруженная в гробнице KV35 в Долине Царей археологом Виктором Лоре в 1898 году.</td><td><a href="https://www.wikidata.org/wiki/Q43616" target="_blank" rel="noopener">Q43616</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--yellow">borderline</span></td><td class="explain">«Мумия» — на грани: узнаваемое бытовое слово, но здесь используется как археологическое обозначение находки («мумия № 61072»).</td></tr>
+
+<tr data-class="term" data-verdict="borderline"><td class="num">27</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%B7%D0%B8%D0%B0%D1%82%D1%81%D0%BA%D0%B0%D1%8F_%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D0%B4%D0%B8%D1%86%D0%B8%D1%8F_%28336%E2%80%94334_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29" target="_blank" rel="noopener">Азиатская экспедиция (336—334 до н. э.)</a></td><td>оратора</td><td class="sentence">В частности, Аттал на словах начал выражать преданность Александру, а также переслал царю письмо от афинского <mark>оратора</mark> Демосфена, что не спасло его от возмездия.</td><td><a href="https://www.wikidata.org/wiki/Q12859263" target="_blank" rel="noopener">Q12859263</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--yellow">borderline</span></td><td class="explain">«Оратор» может быть и обычной профессией, и формальным статусом ритора в афинской политике — граница неочевидна.</td></tr>
+
+<tr data-class="term" data-verdict="borderline"><td class="num">28</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%B0%D1%85%D0%BE%D0%B7%D0%B8%D1%8F" target="_blank" rel="noopener">Арахозия</a></td><td>индоиранские</td><td class="sentence">Первоначально эту территорию населяли <mark>индоиранские</mark> и иранские племена, создавшие в VI веке до н. э. царство Камбоджа, история которого неизвестна.</td><td><a href="https://www.wikidata.org/wiki/Q2453813" target="_blank" rel="noopener">Q2453813</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--yellow">borderline</span></td><td class="explain">«Индоиранские» — прилагательное с опущенным общим «племена» (с соседним «иранские племена»); граница со standalone-исключением спорна.</td></tr>
+
+<tr data-class="term" data-verdict="borderline"><td class="num">29</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%BC%D0%B8%D1%8F_%D0%B8%D0%BC%D0%BF%D0%B5%D1%80%D0%B8%D0%B8_%D0%A5%D0%B0%D0%BD%D1%8C" target="_blank" rel="noopener">Армия империи Хань</a></td><td>частных войск</td><td class="sentence">По этой причине она не счиется профессиональным воинским соединением В 188 г. из <mark>частных войск</mark> группы полевых военачальников в качестве противовеса Северной армии была создана Армия западного сада.</td><td><a href="https://www.wikidata.org/wiki/Q1057214" target="_blank" rel="noopener">Q1057214</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--yellow">borderline</span></td><td class="explain">«Частных войск» — на грани между описательным словосочетанием и устоявшимся историческим институтом ханьской эпохи.</td></tr>
+
+<tr data-class="term" data-verdict="borderline"><td class="num">30</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%BC%D0%B8%D1%8F_%D0%B8%D0%BC%D0%BF%D0%B5%D1%80%D0%B8%D0%B8_%D0%A5%D0%B0%D0%BD%D1%8C" target="_blank" rel="noopener">Армия империи Хань</a></td><td>латуни</td><td class="sentence">Арбалеты производились серийно из тутового дереа и <mark>латуни;</mark> оружие 1068 года выпуска со 140 шагов пробивало дерево.</td><td><a href="https://www.wikidata.org/wiki/Q39782" target="_blank" rel="noopener">Q39782</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--yellow">borderline</span></td><td class="explain">«Латуни» — название материала; промпт не выделяет материалы отдельной категорией, а слово при этом бытовое — граница нечёткая.</td></tr>
+
+<tr data-class="named" data-verdict="gold_noise"><td class="num">31</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%B7%D0%B8%D0%B0%D1%82%D1%81%D0%BA%D0%B0%D1%8F_%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D0%B4%D0%B8%D1%86%D0%B8%D1%8F_%28336%E2%80%94334_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29" target="_blank" rel="noopener">Азиатская экспедиция (336—334 до н. э.)</a></td><td>Новая эпоха</td><td class="sentence"><mark>Новая эпоха</mark> мировой истории началась.</td><td><a href="https://www.wikidata.org/wiki/Q428995" target="_blank" rel="noopener">Q428995</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--blue">gold_noise</span></td><td class="explain">«Новая эпоха» — риторическая обобщающая фраза в конце статьи, не конкретный термин периода; спорная gold-разметка, а не реальный термин.</td></tr>
+
+<tr data-class="term" data-verdict="gold_noise"><td class="num">32</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%B1%D0%B4%D0%BC%D0%B8%D0%BB%D1%8C%D0%BA%D0%B0%D1%82" target="_blank" rel="noopener">Абдмилькат</a></td><td>историческим источником</td><td class="sentence">Основным <mark>историческим источником</mark> о Абдмилькате являются «Анналы» ассирийского царя Асархаддона.</td><td><a href="https://www.wikidata.org/wiki/Q3750478" target="_blank" rel="noopener">Q3750478</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--blue">gold_noise</span></td><td class="explain">«Историческим источником» — общее методологическое понятие, ссылка вставлена для навигации, а не как термин эпохи.</td></tr>
+
+<tr data-class="term" data-verdict="gold_noise"><td class="num">33</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4" target="_blank" rel="noopener">Амударьинский клад</a></td><td>личность которого</td><td class="sentence">Клад содержал и большое количество золотых и серебряных монет, в частности, монеты Андрагора, <mark>личность которого</mark> до сих пор является предметом оживлённой научной дискуссии.</td><td><a href="https://www.wikidata.org/wiki/Q456935" target="_blank" rel="noopener">Q456935</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--blue">gold_noise</span></td><td class="explain">«Личность которого» — грамматический фрагмент, а не термин; это навигационная wiki-ссылка, не объект для NER.</td></tr>
+
+<tr data-class="term" data-verdict="gold_noise"><td class="num">34</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%B0%D1%85%D0%BE%D0%B7%D0%B8%D1%8F" target="_blank" rel="noopener">Арахозия</a></td><td>история</td><td class="sentence">Первоначально эту территорию населяли индоиранские и иранские племена, создавшие в VI веке до н. э. царство Камбоджа, <mark>история</mark> которого неизвестна.</td><td><a href="https://www.wikidata.org/wiki/Q309" target="_blank" rel="noopener">Q309</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--blue">gold_noise</span></td><td class="explain">«История» ссылается на общую статью-концепт Wikidata — стандартная навигационная ссылка, а не предметный термин эпохи.</td></tr>
+
+<tr data-class="term" data-verdict="gold_noise"><td class="num">35</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>армянской государственности</td><td class="sentence">И. М. Дьяконов считает что Мелид-Камману и Арме-Шубрия, несомненно, сыграли большую роль в возникновении <mark>армянской государственности.</mark></td><td><a href="https://www.wikidata.org/wiki/Q4501782" target="_blank" rel="noopener">Q4501782</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--blue">gold_noise</span></td><td class="explain">«Армянской государственности» — абстрактная историографическая фраза, ссылка на общую тему, а не конкретный термин.</td></tr>
+
+<tr data-class="term" data-verdict="gold_noise"><td class="num">36</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>древнеперсидск</td><td class="sentence">При Ахеменидах в VI—IV вв. до н.э, XIII сатрапия называлась «Армения» <mark>(древнеперсидск.</mark></td><td><a href="https://www.wikidata.org/wiki/Q1471822" target="_blank" rel="noopener">Q1471822</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--blue">gold_noise</span></td><td class="explain">«(древнеперсидск.» — обрезанная языковая пометка-аббревиатура по образцу «англ.»/«нем.», служебная wiki-ссылка, не термин.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">37</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/KV35YL" target="_blank" rel="noopener">KV35YL</a></td><td>Тестом ДНК</td><td class="sentence"><mark>Тестом ДНК</mark> определено, что мумия Старшей дамы (Тия) является матерью своей пока неидентифицированной дочери KV35YL, которая приходится матерью Тутанхамону.</td><td><a href="https://www.wikidata.org/wiki/Q476697" target="_blank" rel="noopener">Q476697</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Тестом ДНК» — общая методологическая процедура, не подпадает ни под одну из 12 категорий промпта (person/place/institution и т.д.).</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">38</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%B1%D0%B4%D0%BC%D0%B8%D0%BB%D1%8C%D0%BA%D0%B0%D1%82" target="_blank" rel="noopener">Абдмилькат</a></td><td>ассирийское войско</td><td class="sentence">Однако после того как Асархаддон победил своих братьев, он направил <mark>ассирийское войско</mark> против восставших финикийцев.</td><td><a href="https://www.wikidata.org/wiki/Q41137" target="_blank" rel="noopener">Q41137</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«ассирийское войско» структурно совпадает с примером промпта «военное дело» — descriptive-фраза с общим словом «войско», законно не извлекается.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">39</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%B7%D0%B8%D0%B0%D1%82%D1%81%D0%BA%D0%B0%D1%8F_%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D0%B4%D0%B8%D1%86%D0%B8%D1%8F_%28336%E2%80%94334_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29" target="_blank" rel="noopener">Азиатская экспедиция (336—334 до н. э.)</a></td><td>афинских</td><td class="sentence">Азиатская экспедиция — действия войск Филиппа II Македонского в Малой Азии в 336—334 до н. э. Решение о начале общегреческой войны с Персией было принято на сессии Коринфского конгресса в 337 до н. э. Формальным поводом было стремление освободить греческие города Малой Азии, а также возмездие за осквернение персами <mark>афинских</mark> храмов в 480 до н. э. При всей надуманности последнего предлога следует учитывать то, что греки очень серьёзно воспринимали святотатство, и за такое преступление можно было мстить и через несколько поколений.</td><td><a href="https://www.wikidata.org/wiki/Q844930" target="_blank" rel="noopener">Q844930</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«афинских» — одиночное прилагательное при общем «храмов»; промпт явно исключает standalone-прилагательные вне опорного термина.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">40</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%B7%D0%B8%D0%B0%D1%82%D1%81%D0%BA%D0%B0%D1%8F_%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D0%B4%D0%B8%D1%86%D0%B8%D1%8F_%28336%E2%80%94334_%D0%B4%D0%BE_%D0%BD._%D1%8D.%29" target="_blank" rel="noopener">Азиатская экспедиция (336—334 до н. э.)</a></td><td>персидских</td><td class="sentence">Однако его руководство нельзя назвать успешным: в Троаде он потерпел поражение от <mark>персидских</mark> войск под командованием Мемнона Родосского, был вынужден оставить Кизик и отступил в Ретейон[англ.].</td><td><a href="https://www.wikidata.org/wiki/Q389688" target="_blank" rel="noopener">Q389688</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«персидских» — одиночное прилагательное при общем «войск»; попадает под правило-исключение «standalone adjectives».</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">41</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4" target="_blank" rel="noopener">Амударьинский клад</a></td><td>Браслеты</td><td class="sentence"><mark>Браслеты</mark> с головами грифонов являются типичными для придворного стиля Ахеменидского Ирана V—IV вв. до н. э. Браслеты похожей формы можно увидеть на рельефах Персеполя среди предметов, которые посылались в качестве дани.</td><td><a href="https://www.wikidata.org/wiki/Q201664" target="_blank" rel="noopener">Q201664</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Браслеты» — бытовое существительное (украшение); категории «artifact» в промпте нет, ближе к явно исключённым «вещи».</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">42</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>урартский</td><td class="sentence">В 676—675 г. до н. э. <mark>урартский</mark> царь Руса II, заключил союз с киммерийцами, возглавленными Лигдамисом (ассирийск.</td><td><a href="https://www.wikidata.org/wiki/Q185068" target="_blank" rel="noopener">Q185068</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«урартский» — прилагательное при слове «царь», которое сам промпт прямо включает в список исключённых ordinary words.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">43</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>ассирийских</td><td class="sentence">Мелид возвращает себе независимость — на это определённо указывают данные <mark>ассирийских</mark> текстов, где встречаются упоминания о военных действиях ассирийцев против киликийцев, табальцев, Мелида и «Митты» — Мидаса, последнего царя Фригии.</td><td><a href="https://www.wikidata.org/wiki/Q41137" target="_blank" rel="noopener">Q41137</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«ассирийских» — одиночное прилагательное при общем «текстов», без опорного термина; попадает под запрет standalone-прилагательных.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">44</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>ассирийским</td><td class="sentence">Независимы остались только две страны по окраинам территории, занятой мушками, — Арме-Шубрия, ненадолго завоеванная в 673 г. до н. э. <mark>ассирийским</mark> царем Асархаддоном, а в конце VII в. до н. э. снова добившаяся независимости, и Мелид-Камману на противоположном Алзи берегу Евфрата, подчинявшаяся Ассирии только в течение около 30 лет.</td><td><a href="https://www.wikidata.org/wiki/Q41137" target="_blank" rel="noopener">Q41137</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«ассирийским» — прилагательное при слове «царём», прямо исключённом промптом; отдельно оно законно не извлечено.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">45</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>ассирийской</td><td class="sentence">Между 669 и 652 гг. Мелид уже признается ассирийцами за самостоятельное царство, а в 650-х годах Мелид расширяет свои пределы за счет Ассирии, так как царь Мугаллу стал уже и царем Табала (который с 713 г. был <mark>ассирийской</mark> провинцией) и ведет переговоры с Ассирией о помощи против киммерийцев, владычеству которых в Малой Азии вскоре действительно был положен конец с помощью союзников Ассирии — скифов.</td><td><a href="https://www.wikidata.org/wiki/Q41137" target="_blank" rel="noopener">Q41137</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«ассирийской» — прилагательное при общем «провинцией»; standalone-прилагательное вне установленного термина, законный пропуск.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">46</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Вавилонские</td><td class="sentence"><mark>Вавилонские</mark> названия сатрапий, иной раз отличались от названий, которые упоминаются в царских надписях Ахеменидов и обозначали более общие, скорее географические, чем административные области.</td><td><a href="https://www.wikidata.org/wiki/Q5684" target="_blank" rel="noopener">Q5684</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Вавилонские» — прилагательное при общем «названия»; standalone-прилагательное без опорного термина, законно не извлечено.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">47</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Y-хромосомную гаплогруппу R1b1a2-V1636</td><td class="sentence">У энеолитического образца ART038 (3356—3121 лет до н. э.) из Арслантепе определили <mark>Y-хромосомную гаплогруппу R1b1a2-V1636</mark> (ISOGG2019-2020), у образца ART004 — Y-хромосомную гаплогруппу G1a-CTS11562, у образцов ART014 и ART024 — Y-хромосомную гаплогруппу G2a2b1a-M3317, у образца ART042 — Y-хромосомную гаплогруппу H2-Y28140*.</td><td><a href="https://www.wikidata.org/wiki/Q674896" target="_blank" rel="noopener">Q674896</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">Y-ДНК гаплогруппа — генетический классификационный код; ни одна из 12 категорий промпта не покрывает популяционную генетику.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">48</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>G1a-CTS11562</td><td class="sentence">У энеолитического образца ART038 (3356—3121 лет до н. э.) из Арслантепе определили Y-хромосомную гаплогруппу R1b1a2-V1636 (ISOGG2019-2020), у образца ART004 — Y-хромосомную гаплогруппу <mark>G1a-CTS11562,</mark> у образцов ART014 и ART024 — Y-хромосомную гаплогруппу G2a2b1a-M3317, у образца ART042 — Y-хромосомную гаплогруппу H2-Y28140*.</td><td><a href="https://www.wikidata.org/wiki/Q5651801" target="_blank" rel="noopener">Q5651801</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«G1a-CTS11562» — буквенно-цифровой код субклады, технический идентификатор вне категорий промпта; законно не извлечён.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">49</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Y-хромосомную гаплогруппу G2a2b1a-M3317</td><td class="sentence">У энеолитического образца ART038 (3356—3121 лет до н. э.) из Арслантепе определили Y-хромосомную гаплогруппу R1b1a2-V1636 (ISOGG2019-2020), у образца ART004 — Y-хромосомную гаплогруппу G1a-CTS11562, у образцов ART014 и ART024 — <mark>Y-хромосомную гаплогруппу G2a2b1a-M3317,</mark> у образца ART042 — Y-хромосомную гаплогруппу H2-Y28140*.</td><td><a href="https://www.wikidata.org/wiki/Q5651799" target="_blank" rel="noopener">Q5651799</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">Аналогичный случай: генетический классификационный код, категория «популяционная генетика» в промпте отсутствует.</td></tr>
+
+<tr data-class="named" data-verdict="justified_skip"><td class="num">50</td><td><span class="tag-class">named</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>Y-хромосомную гаплогруппу H2-Y28140*</td><td class="sentence">У энеолитического образца ART038 (3356—3121 лет до н. э.) из Арслантепе определили Y-хромосомную гаплогруппу R1b1a2-V1636 (ISOGG2019-2020), у образца ART004 — Y-хромосомную гаплогруппу G1a-CTS11562, у образцов ART014 и ART024 — Y-хромосомную гаплогруппу G2a2b1a-M3317, у образца ART042 — <mark>Y-хромосомную гаплогруппу H2-Y28140*.</mark></td><td><a href="https://www.wikidata.org/wiki/Q186432" target="_blank" rel="noopener">Q186432</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">Тот же класс: генетическая классификация вне таксономии промпта (person/place/people/…/religion) — законный пропуск.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">51</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/XXVII_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F" target="_blank" rel="noopener">XXVII династия</a></td><td>зороастрийского</td><td class="sentence">Кроме того, Ксеркс продвигал <mark>зороастрийского</mark> бога АхураМазду за счет традиционных египетских божеств и навсегда прекратил финансирование египетских памятников.</td><td><a href="https://www.wikidata.org/wiki/Q9601" target="_blank" rel="noopener">Q9601</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">Прилагательное «зороастрийского» при «бога» стоит отдельно от существительного; промпт прямо запрещает извлекать одиночные прилагательные.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">52</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/XXX_%D0%B4%D0%B8%D0%BD%D0%B0%D1%81%D1%82%D0%B8%D1%8F" target="_blank" rel="noopener">XXX династия</a></td><td>древнеегипетских</td><td class="sentence">XXX династия Древнего Египта — последняя из династий <mark>древнеегипетских</mark> фараонов местного происхождения.</td><td><a href="https://www.wikidata.org/wiki/Q11768" target="_blank" rel="noopener">Q11768</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">Одиночное прилагательное «древнеегипетских» при «фараонов»; понятие уже покрыто извлечённым «Древнего Египта» рядом.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">53</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4" target="_blank" rel="noopener">Амударьинский клад</a></td><td>артефактов</td><td class="sentence">Oxus Treasure, букв. сокро́вища О́кса) — коллекция из 170 золотых и серебряных <mark>артефактов</mark> времён Ахеменидов, найденная в 1877 г. в городище Тахти-Сангин на берегу реки Амударья (древний Окс), в Бухарском эмирате (современный Таджикистан).</td><td><a href="https://www.wikidata.org/wiki/Q220659" target="_blank" rel="noopener">Q220659</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Артефактов» — обобщающее бытовое слово для предметов, прямой аналог явно исключённого промптом «вещи».</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">54</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4" target="_blank" rel="noopener">Амударьинский клад</a></td><td>греко-бактрийского</td><td class="sentence">В них можно проследить традиции персидского и <mark>греко-бактрийского</mark> искусства, а также скифского «звериного стиля».</td><td><a href="https://www.wikidata.org/wiki/Q488880" target="_blank" rel="noopener">Q488880</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">Одиночное прилагательное без «искусства»; параллельная фраза «звериного стиля» в том же предложении извлечена целиком — правило соблюдено.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">55</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BC%D1%83%D0%B4%D0%B0%D1%80%D1%8C%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B9_%D0%BA%D0%BB%D0%B0%D0%B4" target="_blank" rel="noopener">Амударьинский клад</a></td><td>дарами</td><td class="sentence">Ксенофонт писал, что браслеты, которые носили на предплечьях, были <mark>дарами</mark> персидскому двору.</td><td><a href="https://www.wikidata.org/wiki/Q707482" target="_blank" rel="noopener">Q707482</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Дарами» — обычное бытовое слово «подарки», не специализированный термин; корректно не извлечено.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">56</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%B0%D1%85%D0%BE%D0%B7%D0%B8%D1%8F" target="_blank" rel="noopener">Арахозия</a></td><td>авестийская</td><td class="sentence">Ἀραχωσία) — эллинистическое название территории современного юго-восточного Афганистана и северного Пакистана — <mark>авестийская</mark> Харахвати.</td><td><a href="https://www.wikidata.org/wiki/Q83426" target="_blank" rel="noopener">Q83426</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">Прилагательное «авестийская» при топониме «Харахвати» — одиночное прилагательное, исключённое правилами промпта.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">57</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%B0%D1%85%D0%BE%D0%B7%D0%B8%D1%8F" target="_blank" rel="noopener">Арахозия</a></td><td>государство</td><td class="sentence">В I веке до н. э. — отдельное <mark>государство.</mark></td><td><a href="https://www.wikidata.org/wiki/Q7275" target="_blank" rel="noopener">Q7275</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Государство» — общеупотребимое слово, прямой аналог явно исключённого примера «страна».</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">58</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D0%BC%D0%B8%D1%8F_%D0%B8%D0%BC%D0%BF%D0%B5%D1%80%D0%B8%D0%B8_%D0%A5%D0%B0%D0%BD%D1%8C" target="_blank" rel="noopener">Армия империи Хань</a></td><td>варварского</td><td class="sentence">Самыми важными из этих изменений были создание зависимой наследственной военной касты, четко отличавшейся от населения в целом, растущая опора на кавалерийские силы некитайского, <mark>«варварского»</mark> происхождения и развитие командных структур, которые оставили колоссальные властные преимущества в руках местных и региональных военачальников.</td><td><a href="https://www.wikidata.org/wiki/Q134313" target="_blank" rel="noopener">Q134313</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Варварского» — одиночное прилагательное при «происхождения», к тому же в кавычках; правило исключает одиночные прилагательные.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">59</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>халафоподобная</td><td class="sentence">Здесь была представлена <mark>«халафоподобная»</mark> культура, напоминавшая более позднюю культуру минойского Крита — в частности, здесь возникли столь характерные для минойской культуры цилиндрические печати.</td><td><a href="https://www.wikidata.org/wiki/Q904998" target="_blank" rel="noopener">Q904998</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">Прилагательное «халафоподобная» без существительного «культура» в спане — одиночные прилагательные не извлекаются по правилам.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">60</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>минойского</td><td class="sentence">Здесь была представлена «халафоподобная» культура, напоминавшая более позднюю культуру <mark>минойского</mark> Крита — в частности, здесь возникли столь характерные для минойской культуры цилиндрические печати.</td><td><a href="https://www.wikidata.org/wiki/Q134178" target="_blank" rel="noopener">Q134178</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Минойского» — прилагательное при «Крита», отдельно от существительного; попадает под запрет одиночных прилагательных.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">61</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>хурритский</td><td class="sentence">Население Мелид-Камману было смешанным уже во времена Хеттской державы, основную часть его составляли в то время лувийцы, однако и <mark>хурритский</mark> элемент был достаточно силен.</td><td><a href="https://www.wikidata.org/wiki/Q190394" target="_blank" rel="noopener">Q190394</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Хурритский» — одиночное прилагательное при «элемент», без опорного существительного-этнонима; исключение по правилам промпта.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">62</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>лувийскими</td><td class="sentence">Вообще все династии на правобережье верхнего Евфрата, в том числе и в Мелиде, вплоть до VIII в. до н. э. были <mark>лувийскими.</mark></td><td><a href="https://www.wikidata.org/wiki/Q726807" target="_blank" rel="noopener">Q726807</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Лувийскими» — предикативное прилагательное («были лувийскими»), а не существительное-этноним; одиночные прилагательные не извлекаются.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">63</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>лувийской</td><td class="sentence">Официальная, придворная культура в Мелиде, как и в других «позднехеттских» царствах восточной Малой Азии и Северной Сирии, была <mark>лувийской;</mark> несомненно лувийскими являются такие царские имена, как Хиларундас[нем.] и Тархунази из династии Туате.</td><td><a href="https://www.wikidata.org/wiki/Q726807" target="_blank" rel="noopener">Q726807</a></td><td><span class="flag flag--yes">да</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Лувийской» — предикативное прилагательное при «культура»; аналогичный случай стандартного исключения одиночных прилагательных.</td></tr>
+
+<tr data-class="term" data-verdict="justified_skip"><td class="num">64</td><td><span class="tag-class">term</span></td><td><a href="https://ru.wikipedia.org/wiki/%D0%90%D1%80%D1%81%D0%BB%D0%B0%D0%BD%D1%82%D0%B5%D0%BF%D0%B5_%28%D0%9C%D0%B5%D0%BB%D0%B8%D0%B4%29" target="_blank" rel="noopener">Арслантепе (Мелид)</a></td><td>греческих</td><td class="sentence">В VI в. до н. э. впервые в древнеперсидских и <mark>греческих</mark> источниках начинает упоминаться «Армения» как целое (Бехистунская надпись Дария I, Гекатей, Геродот, Ксенофонт), и термин применяется ко всему Армянскому нагорью в целом.</td><td><a href="https://www.wikidata.org/wiki/Q11772" target="_blank" rel="noopener">Q11772</a></td><td><span class="flag flag--no">нет</span></td><td><span class="pill pill--green">justified_skip</span></td><td class="explain">«Греческих» — прилагательное при «источниках», без опорного существительного-этнонима; стандартное исключение прилагательных.</td></tr>
+
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="footer-note">
+    <p><strong>Метод и оговорки.</strong> Данные — из пилотного прогона NER на 10 статьях (gemini-3.1-flash-lite), 2026-07-10. Предложения реконструированы из токенов gt.jsonl пробельной склейкой (extract.py::_sentence_spans verbatim) — возможны артефакты пунктуации: обрезанные скобки и языковые пометки («(древнеперсидск.» — строка 36 таблицы) читаются как в исходном токенизированном тексте.</p>
+    <p>Вердикты вынесены LLM-судьями против правил промпта NER (<code>extract.py::NER_SYSTEM_PROMPT</code>) и могут быть спорными — все 6 случаев borderline помечены отдельным цветом и не растворены в основных категориях wrong_miss/justified_skip.</p>
+    <p class="join-ok">Джойн misses.json ↔ verdicts_named.json/verdicts_term.json: 64/64 успешно, 0 несопоставленных записей.</p>
+    <p>При дублирующихся ключах (article_title, anchor_text, gold_qid) — «Армянскому нагорью» ×2, «Ассирию» ×2, «ассирийцев» ×2, «киммерийцев» ×2 в статье «Арслантепе (Мелид)» — сопоставление велось по порядку записей в исходных файлах (первое вхождение в misses.json ↔ первая по порядку запись в verdicts_*.json для того же ключа).</p>
+    <p>Источники: docs/reports/wiki-eval-v2-pilot-ner-vs-disambig.md (секция D), scratchpad ner_miss_review/misses.json, verdicts_named.json, verdicts_term.json.</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  function applyFilters() {
+    var clsBtn = document.querySelector('#filter-class .chip.active');
+    var vdBtn = document.querySelector('#filter-verdict .chip.active');
+    var cls = clsBtn ? clsBtn.getAttribute('data-value') : 'all';
+    var vd = vdBtn ? vdBtn.getAttribute('data-value') : 'all';
+    var rows = document.querySelectorAll('#miss-table tbody tr');
+    var shown = 0;
+    rows.forEach(function (tr) {
+      var okClass = (cls === 'all' || tr.getAttribute('data-class') === cls);
+      var okVerdict = (vd === 'all' || tr.getAttribute('data-verdict') === vd);
+      if (okClass && okVerdict) {
+        tr.style.display = '';
+        shown++;
+      } else {
+        tr.style.display = 'none';
+      }
+    });
+    var counter = document.getElementById('shown-count');
+    if (counter) { counter.textContent = shown; }
+  }
+
+  document.querySelectorAll('.chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var group = chip.getAttribute('data-group');
+      document.querySelectorAll('.chip[data-group="' + group + '"]').forEach(function (c) {
+        c.classList.remove('active');
+      });
+      chip.classList.add('active');
+      applyFilters();
+    });
+  });
+
+  applyFilters();
+})();
+</script>

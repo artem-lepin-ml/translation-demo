@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ночная миссия 2026-07-09 — Palimpsest</title>
+<style>
+  /* Tokyo Night tokens — single source of truth is .claude/rules/tokyo-night.css.
+     Inlined here (self-contained report, no external assets). Do not add new
+     tokens or rename these; the report-generator agent fills content only. */
+  :root {
+    --bg: #1a1b26;
+    --bg2: #1f2335;
+    --panel: #24283b;
+    --line: #2f334d;
+    --tx: #c0caf5;
+    --blue: #7aa2f7;   /* data */
+    --green: #9ece6a;  /* pass */
+    --yel: #e0af68;    /* open/warn */
+    --red: #f7768e;    /* fail */
+    --purple: #bb9af7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--tx);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  a { color: var(--blue); }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: .3rem;
+  }
+  code { padding: .1rem .35rem; }
+  pre { padding: .85rem 1rem; overflow-x: auto; }
+
+  .report-header { border-bottom: 1px solid var(--line); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+  .report-header h1 { margin: 0 0 .35rem; font-size: 1.7rem; }
+  .report-header .meta { margin: 0; color: var(--tx); opacity: .65; font-size: .9rem; }
+
+  .section {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: .6rem;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section h2 {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .section h2 .idx { color: var(--tx); opacity: .4; font-weight: 400; }
+  .section h3 { margin: 1.5rem 0 .6rem; font-size: 1rem; color: var(--tx); opacity: .9; }
+  .section h3:first-child { margin-top: 0; }
+
+  .lead { font-size: 1.05rem; margin: 0 0 1rem; }
+
+  .badge {
+    display: inline-block;
+    padding: .2rem .65rem;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    border: 1px solid currentColor;
+  }
+  .badge--pass { color: var(--green); }
+  .badge--warn { color: var(--yel); }
+  .badge--fail { color: var(--red); }
+  .badge--data { color: var(--blue); }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: .5rem; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--line); font-size: .92rem; }
+  th { color: var(--tx); opacity: .7; font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+  td code { font-size: .82rem; }
+
+  .radar-wrap { display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; }
+  .radar-wrap svg { flex: 0 0 auto; }
+  .radar-wrap .radar-legend { flex: 1 1 260px; min-width: 220px; }
+  svg text { fill: var(--tx); font-size: 11px; }
+  svg .grid { stroke: var(--line); fill: none; }
+  svg .axis { stroke: var(--line); }
+  svg .plot { fill: var(--blue); fill-opacity: .28; stroke: var(--blue); stroke-width: 2; }
+
+  .finding {
+    border-left: 4px solid var(--line);
+    background: var(--bg2);
+    border-radius: .3rem;
+    padding: .65rem 1rem;
+    margin-bottom: .75rem;
+  }
+  .finding:last-child { margin-bottom: 0; }
+  .finding .tag { font-weight: 700; letter-spacing: .03em; font-size: .8rem; }
+  .finding--critical { border-color: var(--red); }
+  .finding--critical .tag { color: var(--red); }
+  .finding--high { border-color: var(--yel); }
+  .finding--high .tag { color: var(--yel); }
+  .finding--info { border-color: var(--blue); }
+  .finding--info .tag { color: var(--blue); }
+
+  .evidence-item {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: .4rem;
+    padding: .85rem 1rem;
+    margin-bottom: .75rem;
+  }
+  .evidence-item:last-child { margin-bottom: 0; }
+  .evidence-item img { max-width: 100%; display: block; border-radius: .3rem; border: 1px solid var(--line); margin-top: .5rem; }
+  .evidence-item .claim { font-weight: 600; }
+
+  ul.next-steps { margin: 0; padding-left: 1.2rem; }
+  ul.next-steps li { margin-bottom: .4rem; }
+
+  .report-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-size: .8rem;
+    color: var(--tx);
+    opacity: .55;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .section { padding: 1.1rem 1.2rem; }
+    .radar-wrap { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="report-header">
+    <h1>Ночная миссия 2026-07-09 — судьи BOUQUET (Table A) и заземление NER+Wikidata (Table C)</h1>
+    <p class="meta">ветка <code>claude/ner-translation-config-b0ozsc</code> · Scenario B, автономная ночная сессия · шаг 8 (Finish) процесса CLAUDE.md</p>
+  </header>
+
+  <!-- 1. Главное -->
+  <section class="section" id="glavnoe">
+    <h2><span class="idx">1</span> Главное</h2>
+    <p class="lead">
+      За ~10 часов ночного аутеджа добиты 4 из 5 облачных судей Table A (gemini-3.1-flash-lite, claude-opus-4.8,
+      gpt-5.5, и теперь <strong>gemini-3.1-flash-lite-think</strong> — 2375&ndash;2376/2376 вызовов) и полностью
+      закрыты все три готовые строки Table C (gemini, deepseek, gpt-5.4: R_doc + P_label, sitelink-clean); gpt-5.4
+      P_label добит отдельным ретраем после расчистки Wikidata maxlag (0.536 [.525&ndash;.548], коммит
+      <code>19c7389</code>). Пара flash-lite/flash-lite-think теперь полная по обеим сторонам и даёт готовую
+      методологическую находку про чувствительность судьи к reasoning (см. раздел 3). Один судья Table A
+      (deepseek-v4-flash) терминально припаркован на 290/2376 — маршрут не подавал признаков жизни 2ч45м подряд,
+      резидентный поллер остановлен по решению координатора, состояние резюма закоммичено.
+    </p>
+    <span class="badge badge--warn">ЧАСТИЧНЫЙ УСПЕХ — 1 нить терминально припаркована (маршрут down), 3 нити ждут владельца (sr004)</span>
+  </section>
+
+  <!-- 2. 360 diagram -->
+  <section class="section" id="radar-360">
+    <h2><span class="idx">2</span> 360&deg; статус-панель</h2>
+    <div class="radar-wrap">
+      <svg viewBox="0 0 300 300" width="280" height="280" role="img" aria-label="Статус 8 нитей ночной миссии">
+        <circle class="grid" cx="150" cy="150" r="120" />
+        <circle class="grid" cx="150" cy="150" r="80" />
+        <circle class="grid" cx="150" cy="150" r="40" />
+        <line class="axis" x1="150" y1="150" x2="150" y2="30" />
+        <line class="axis" x1="150" y1="150" x2="234.85" y2="65.15" />
+        <line class="axis" x1="150" y1="150" x2="270" y2="150" />
+        <line class="axis" x1="150" y1="150" x2="234.85" y2="234.85" />
+        <line class="axis" x1="150" y1="150" x2="150" y2="270" />
+        <line class="axis" x1="150" y1="150" x2="65.15" y2="234.85" />
+        <line class="axis" x1="150" y1="150" x2="30" y2="150" />
+        <line class="axis" x1="150" y1="150" x2="65.15" y2="65.15" />
+        <polygon class="plot" points="150.00,30.00 234.85,65.15 269.96,150.00 234.85,234.85 150.00,164.64 65.15,234.85 31.10,150.00 142.93,142.93" />
+        <text x="150" y="16" text-anchor="middle">Gemini-FL</text>
+        <text x="244.75" y="55.25" text-anchor="start">Opus-4.8</text>
+        <text x="284" y="154" text-anchor="start">GPT-5.5</text>
+        <text x="244.75" y="244.75" text-anchor="start">FL-Think</text>
+        <text x="150" y="288" text-anchor="middle">DeepSeek</text>
+        <text x="55.25" y="244.75" text-anchor="end">C: Gem+DS</text>
+        <text x="16" y="154" text-anchor="end">C: GPT-5.4</text>
+        <text x="55.25" y="55.25" text-anchor="end">Локал. sr004</text>
+      </svg>
+      <table class="radar-legend">
+        <thead><tr><th>Нить</th><th>Прогресс</th><th>Статус</th></tr></thead>
+        <tbody>
+          <tr><td>Table A · gemini-3.1-flash-lite</td><td>2376/2376 (100%)</td><td><span class="badge badge--pass">DONE</span></td></tr>
+          <tr><td>Table A · claude-opus-4.8</td><td>2376/2376 (100%)</td><td><span class="badge badge--pass">DONE</span></td></tr>
+          <tr><td>Table A · gpt-5.5</td><td>2375/2376 (99.96%)</td><td><span class="badge badge--pass">DONE</span></td></tr>
+          <tr><td>Table A · flash-lite-think</td><td>2376/2376 (100%)</td><td><span class="badge badge--pass">DONE</span></td></tr>
+          <tr><td>Table A · deepseek-v4-flash</td><td>290/2376 (12.2%)</td><td><span class="badge badge--warn">ПАРКОВАН ТЕРМИНАЛЬНО</span></td></tr>
+          <tr><td>Table C · gemini + deepseek (R_doc+P_label)</td><td>2/2 строки</td><td><span class="badge badge--pass">DONE</span></td></tr>
+          <tr><td>Table C · gpt-5.4 (R_doc+P_label)</td><td>99/100 статей, P_label 0.536</td><td><span class="badge badge--pass">DONE</span></td></tr>
+          <tr><td>Локальная тройка (sr004, Table A + C)</td><td>0% — раннбук готов</td><td><span class="badge badge--data">ОЖИДАЕТ ВЛАДЕЛЬЦА</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3. Что сделано -->
+  <section class="section" id="overview">
+    <h2><span class="idx">3</span> Что сделано</h2>
+    <p>
+      Цель ночи (Scenario B, владелец спит): добить Table A (LLM-as-a-judge, BOUQUET) и Table C (NER+Wikidata
+      заземление) каждой достижимой строкой, честно раскрыв всё, что упало или было заменено —
+      якорь состояния зафиксирован в
+      <code>docs/reports/overnight-mission-2026-07-09.md</code>. Политика владельца на отказы: если модель
+      не работает — переключиться или отбросить и честно раскрыть; отдельно — если gpt-5.5 не поднимается,
+      ставить <code>openai/gpt-5.4</code> на роль OpenAI-строки.
+    </p>
+
+    <h3>Table A — LLM-as-a-judge (BOUQUET, 198 параграфов × 4 системы × 3 критерия = 2376 вызовов/судья, промпты <code>v1_core3</code>)</h3>
+    <table>
+      <thead><tr><th>Судья</th><th>Статус</th><th>Прогресс</th><th>Коммит</th><th>Примечание</th></tr></thead>
+      <tbody>
+        <tr><td>gemini-3.1-flash-lite (reasoning off)</td><td><span class="badge badge--pass">DONE</span></td><td>2376/2376</td><td><code>ced45c3</code></td><td>0 parse-fail, $0.4985</td></tr>
+        <tr><td>claude-opus-4.8 (thinking недоступен на гейтвее)</td><td><span class="badge badge--pass">DONE</span></td><td>2376/2376</td><td><code>6a90dec</code></td><td>reasoning_tokens=0 везде, задисклозено, $2.52</td></tr>
+        <tr><td>gpt-5.5 (default effort, auto)</td><td><span class="badge badge--pass">DONE</span></td><td>2375/2376 (99.96%)</td><td><code>336f272</code></td><td>$1.32/$4 кап; пилот-гейт 1.25% parse-fail</td></tr>
+        <tr><td>gemini-3.1-flash-lite-think (reasoning on)</td><td><span class="badge badge--pass">DONE</span></td><td>2376/2376</td><td><code>f901210</code></td><td>0 parse-fail, $0.47; пережил ~11ч аутеджа Gemini-семьи + 2 гибели детач-процесса (session teardown, container recycle) — резиденный поллинг добил остаток</td></tr>
+        <tr><td>deepseek-v4-flash (reasoning on)</td><td><span class="badge badge--warn">ПАРКОВАН ТЕРМИНАЛЬНО</span></td><td>290/2376</td><td><code>501c394</code>, <code>85e5435</code>, <code>02e4f25</code>, <code>70e9ba5</code>, <code>fa46091</code></td><td>маршрут down непрерывно 11:20&ndash;14:05Z (180+ реальных проб, 0 успехов, ни одной вспышки) после 4 циклов аутеджа; координатор остановил резидентный поллинг, состояние резюма закоммичено</td></tr>
+        <tr><td>Локальная тройка (qwen3-4b, gemma-3-27b-it, qwen3.6-27b, T=0, thinking off)</td><td><span class="badge badge--data">PENDING</span></td><td>0% — раннбук готов</td><td><code>0c48124</code></td><td>ждёт запуска владельцем на sr004</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Сравнение судей по средним оценкам и tie-rate (n=198/ячейка, усреднено по 4 системам, из <code>reports/bouquet/judges/*/stats.json</code>)</h3>
+    <table>
+      <thead><tr><th>Судья</th><th>Acc&#772;</th><th>Flu&#772;</th><th>Sty&#772;</th><th>Tie{9,10} Acc</th><th>Tie{9,10} Flu</th><th>Tie{9,10} Sty</th></tr></thead>
+      <tbody>
+        <tr><td>gemini-3.1-flash-lite</td><td>9.48</td><td>9.52</td><td>8.67</td><td>96.7%</td><td>95.6%</td><td>71.1%</td></tr>
+        <tr><td>gemini-3.1-flash-lite-think</td><td>9.68</td><td>9.87</td><td>9.03</td><td>97.7%</td><td>98.2%</td><td>85.4%</td></tr>
+        <tr><td>claude-opus-4.8</td><td>9.36</td><td>9.71</td><td>8.80</td><td>93.3%</td><td>98.0%</td><td>75.0%</td></tr>
+        <tr><td>gpt-5.5</td><td>9.24</td><td>9.40</td><td>8.36</td><td>87.8%</td><td>90.3%</td><td>38.9%</td></tr>
+      </tbody>
+    </table>
+    <p>
+      Пример на базовой системе qwen-27b-bouquet (без refine): gpt-5.5 Acc 9.19 / Flu 9.59 / Sty 8.29, tie-rate Acc
+      0.86; gemini Acc 9.46, tie 0.95; opus Acc 9.29, tie 0.92. У всех трёх судей высокие tie-rate по Accuracy и
+      Fluency (потолочный эффект — модели почти всегда получают 9 или 10) — у gpt-5.5 разрыв особенно нагляден:
+      Flu tie 90.3% против Sty tie 38.9%, т.е. Style единственный критерий, где judge реально дифференцирует
+      переводы. Refined-системы стабильно чуть выше base у gpt-5.5 (Acc qwen 9.19&rarr;9.28, gemma 9.18&rarr;9.32) и
+      у opus (Acc qwen 9.29&rarr;9.38, gemma 9.32&rarr;9.44). Корреляция со всеми тремя судьями и вендоренными
+      автометриками слабая и разнонаправленная на MetricX (&rho; от &minus;0.34 до +0.09), стабильно положительная
+      на COMET (&rho; от +0.09 до +0.32) — все три судьи сходятся в знаке.
+    </p>
+    <p>
+      <strong>Находка: чувствительность судьи к reasoning.</strong> Пара flash-lite / flash-lite-think — одна и та же
+      базовая модель, единственная переменная &mdash; <code>reasoning.enabled</code>. Включение reasoning делает
+      судью равномерно щедрее (Acc +0.20, Flu +0.35, Sty +0.35 по средним; tie-rate{9,10} растёт на всех трёх
+      критериях, сильнее всего на Style: 71.1%&rarr;85.4%, +14.3 п.п.), но <strong>не</strong> улучшает согласие с
+      вендоренными автометриками &mdash; корреляция с COMET/MetricX практически не меняется, кроме Style rho vs.
+      CometKiwi (0.149&rarr;0.198). Иначе говоря, reasoning делает судью более уверенным в уже высоких оценках, а не
+      более различающим &mdash; методологический аргумент для раздела статьи про судейский протокол: "судья с
+      thinking" не автоматически "лучший судья". Полная разбивка &mdash;
+      <code>docs/reports/python-pro-judge-run-gemini-flash-lite.md</code>, Part 2.
+    </p>
+
+    <h3>Table C — NER+Wikidata заземление (100 статей ru-wiki, R_term тир n=7174, sitelink-clean)</h3>
+    <table>
+      <thead><tr><th>Модель</th><th>R_doc [95% CI] (matched/total)</th><th>P_label [95% CI] (matched/total)</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td>Qwen3-4B-Instruct</td><td colspan="2">ждёт sr004</td><td><span class="badge badge--data">PENDING</span></td></tr>
+        <tr><td>Gemma-3-27B-it</td><td colspan="2">ждёт sr004</td><td><span class="badge badge--data">PENDING</span></td></tr>
+        <tr><td>Qwen3.6-27B</td><td colspan="2">ждёт sr004</td><td><span class="badge badge--data">PENDING</span></td></tr>
+        <tr><td>Gemini-3.1-Flash-Lite</td><td>0.735 [.724&ndash;.745] (5269/7174)</td><td>0.530 [.521&ndash;.540] (5340/10068)</td><td><span class="badge badge--pass">DONE</span></td></tr>
+        <tr><td>DeepSeek-V4-Flash</td><td>0.657 [.646&ndash;.668] (4716/7174)</td><td>0.535 [.524&ndash;.545] (4409/8248)</td><td><span class="badge badge--pass">DONE</span></td></tr>
+        <tr><td>GPT-5.4 (честная замена gpt-5.5)</td><td>0.583 [.572&ndash;.594] (4183/7174)</td><td>0.536 [.525&ndash;.548] (3773/7037)</td><td><span class="badge badge--pass">DONE</span></td></tr>
+      </tbody>
+    </table>
+    <p>
+      Trade-off по трём моделям: gemini выше всех по recall (R_doc 0.735), deepseek — 0.657, gpt-5.4 — 0.583,
+      при этом P_label почти константен (0.530 / 0.535 / 0.536) во всём диапазоне recall 0.583&ndash;0.735 —
+      то есть точность на уровне «предсказание существует как метка Wikidata» определяется лестницей кандидатов
+      Wikidata, а не выбором модели-извлекателя. Коммиты: формат таблицы
+      <code>4975317</code>, P_label данные gemini/deepseek <code>4770157</code>, заполнение ячеек <code>88c3e93</code>,
+      P_label gpt-5.4 <code>19c7389</code>.
+    </p>
+    <p>
+      gpt-5.4 честные оговорки: покрытие 99/100 статей (не завершена "Яффа" — 347 GT-упоминаний, 3-я по плотности
+      в корпусе, Wikidata maxlag не дал добить финальную статью несмотря на 4 попытки resume), поэтому R_doc —
+      строгая нижняя граница, не точечная оценка. P_label (P3\exact) добит отдельным ретраем в 08:18Z, когда
+      реплики Wikidata восстановились (лаг спал с 5.3&ndash;10.4с до 4.27с): 3773/7037 = 0.5362, Wilson 95% CI
+      [.5245, .5478], 1771 сетевых вызовов, 3 транзиентных сбоя (0.19%) консервативно засчитаны как False.
+      Стоимость $5.95&ndash;6.3 (подтверждённый пол $5.948 на 99/100 + оценка
+      статьи "Яффа"), в рамках $15 капа. Коммиты <code>5546459</code> (R_doc), <code>19c7389</code> (P_label).
+    </p>
+
+    <h3>Ключевые решения ночи</h3>
+    <ul>
+      <li><strong>GPT-5.4 вместо gpt-5.5 в Table C</strong> (по политике владельца) — <code>openai/gpt-5.5</code>
+        заблокирован дважды (padding провайдера-6 ~4670 скрытых токенов/вызов, затем 429-насыщение
+        provider-8/auto от параллельного судейского прогона); честная замена, отдельная строка, собственные
+        smoke-тесты и pilot-гейт.</li>
+      <li><strong>Opus 4.8 исключён из Table C</strong> решением владельца — reasoning недостижим на всех 7
+        провайдерах CloseRouter для этой модели (свип-матрица 17 вызовов, см. артефакты); в Table A остаётся как
+        no-thinking строка, задисклозенная.</li>
+      <li><strong>Effort-правило владельца enforced на gpt-5.4</strong>: пробник low=205 vs high=1702
+        reasoning-токенов (8.3x, диапазоны не пересекаются) &rarr; effort settable, gpt-5.4 разрешён; запинован
+        <code>reasoning_effort=medium</code> явно.</li>
+      <li><strong>Раннбук sr004 подготовлен overnight</strong> (коммит <code>0c48124</code>) для локальной тройки
+        (Table A + Table C), включая патч <code>extra_body</code>/regime <code>t0_local</code> для отключения
+        thinking у Qwen3.6-27B через <code>chat_template_kwargs.enable_thinking=false</code>; 582 зелёных теста
+        (81 новых + 501 существующих, 0 регрессий).</li>
+    </ul>
+  </section>
+
+  <!-- 4. Критичные находки -->
+  <section class="section" id="findings">
+    <h2><span class="idx">4</span> Критичные находки и честные отказы</h2>
+    <div class="finding finding--info"><span class="tag">INFO — РЕШЕНО</span> — Аутедж всей Gemini-семьи на
+      гейтвее с 01:21Z (~11ч: HTTP 503 <code>no_available_provider</code>-шторм + два цикла гибели детач-процесса —
+      session teardown в 05:41Z, затем полный ресайкл контейнера в 09:13:49Z) больше не блокирует
+      <code>gemini-3.1-flash-lite-think</code>: резидентный поллинг с реальными judge-пейлоадами (не лёгкие пинги)
+      с 11:20Z поймал 3 подряд чистых успеха и добил прогон до 2376/2376 к 12:26Z. Коммит <code>f901210</code>,
+      $0.47. Структурный урок: ни один детач-процесс не переживает ресайкл контейнера — только резидентный,
+      реально исполняющийся ход агента.</div>
+    <div class="finding finding--high"><span class="tag">HIGH</span> — Маршрут <code>deepseek-v4-flash</code>
+      терминально припаркован на 290/2376 (12.2%): после четырёх циклов аутеджа резидентный поллинг с 11:20 по
+      14:05Z (2ч45м, 60+ гейт-циклов, 180+ проб на реальной нагрузке) не дал ни одного успеха и ни одной вспышки
+      &mdash; качественно иной, более устойчивый отказ, чем предыдущие четыре цикла. Координатор остановил
+      поллинг и зафиксировал честный частичный результат вместо бесконечного цикла проб.
+      <code>stats.json</code> сознательно не считался &mdash; 290/2376 слишком неполная и неравномерная выборка
+      для отчёта. Состояние резюма (append-only) закоммичено в <code>fa46091</code>, точные команды резюма &mdash;
+      в <code>docs/reports/python-pro-judge-run-deepseek.md</code>.</div>
+    <div class="finding finding--info"><span class="tag">INFO</span> — Методологическая находка: пара
+      flash-lite/flash-lite-think (одна модель, единственная переменная — reasoning) показывает, что включение
+      reasoning делает судью равномерно щедрее (Acc +0.20, Flu +0.35, Sty +0.35; tie-rate style 71.1%&rarr;85.4%),
+      но не улучшает согласие с COMET/MetricX (кроме Style rho 0.149&rarr;0.198). Кандидат в раздел статьи про
+      судейский протокол &mdash; "thinking" не равно "лучший judge".</div>
+    <div class="finding finding--high"><span class="tag">HIGH</span> — <code>gpt-5.5</code> капал всю ночь
+      из-за апстрим-429 OpenAI (7ч50м вместо ожидаемых 2&ndash;3ч; изолированные последовательные пробы 429-лись
+      с растущим интервалом 0/60/180/300/550с, при этом claude-opus-4.8 на том же ключе/гейтвее в это же время
+      возвращал 200 OK). Повторяет задокументированный прецедент <code>docs/known_issues.md:56</code>
+      (2026-07-06, тот же маршрут, "no stable gateway route for &gt;16h") — системный риск гейтвея, а не разовый
+      сбой; в итоге дошло до 99.96% (2375/2376).</div>
+    <div class="finding finding--info"><span class="tag">INFO</span> — 1 ячейка gpt-5.5 (0.04%,
+      <code>translate-gemma-bouquet-refined</code>/параграф 169/fluency) не добита: детерминированный баг
+      парсера — модель стабильно выдаёт trailing comma перед закрывающей скобкой на этом конкретном входе (30
+      идентичных попыток). <code>scripts/bouquet_judge_rerun.py</code>'s <code>parse_judge_response</code> не
+      содержит trailing-comma фикс, который уже есть в vendored копии с 2026-07-02
+      (<code>docs/known_issues.md</code>). Нужен точечный порт фикса, не ещё один многочасовой прогон.</div>
+    <div class="finding finding--info"><span class="tag">INFO</span> — Claude Opus 4.8 исключён из Table C
+      решением владельца: reasoning недостижим ни на одном из 7 провайдеров CloseRouter для этой модели (свип
+      17 вызовов, обе формы параметров, обе настройки temperature — везде <code>reasoning_tokens=0</code>).
+      Полная матрица в <code>docs/reports/ml-engineer-grounding-run-opus48.md</code>.</div>
+    <div class="finding finding--info"><span class="tag">INFO</span> — Effort-правило владельца enforced на
+      gpt-5.4: пробник low=205 vs high=1702 reasoning-токенов (8.3x, без перекрытия диапазонов 178&ndash;233 vs
+      1232&ndash;2122) &rarr; effort settable, разрешён. Находка: implicit default (без параметра) даёт 204
+      токена — ведёт себя как <em>low</em>, не как документированный OpenAI "medium" — поэтому эффорт запинован
+      явно, а не оставлен на дефолте.</div>
+    <div class="finding finding--info"><span class="tag">INFO</span> — <code>gemini-3.1-pro</code> был заменён
+      владельцем на flash-lite ранее по ходу сессии (после 12/240 вызовов пилота, $0.04 потрачено); частичный
+      каталог (12 строк) сохранён на диске append-only, но намеренно не закоммичен — ждёт решения владельца,
+      commit или scratch-only.</div>
+    <div class="finding finding--info"><span class="tag">INFO</span> — Судейский агент gpt-5.5 из осторожности
+      отклонил несколько координационных сообщений, которые пришли в паттерне, похожем на инъекцию (просьбы
+      запинать провайдера и стартовать неавторизованный gpt-5.4 fallback под другим сообщением) — исход не
+      пострадал, gpt-5.5 добился сам на исходном конфиге (99.96%). Разумная защитная реакция, зафиксирована как
+      находка, не как проблема.</div>
+  </section>
+
+  <!-- 5. Артефакты запуска -->
+  <section class="section" id="evidence">
+    <h2><span class="idx">5</span> Артефакты запуска</h2>
+    <div class="evidence-item"><span class="claim">gemini-3.1-flash-lite — 2376/2376, 0 parse-fail.</span>
+      Коммит <code>ced45c3</code>; <code>reports/bouquet/judges/gemini-3.1-flash-lite/scores.jsonl</code> (2376
+      строк) + <code>stats.json</code>.</div>
+    <div class="evidence-item"><span class="claim">claude-opus-4.8 — 2376/2376, 0 parse-fail, 0 дублей ключей.</span>
+      Коммит <code>6a90dec</code>; <code>reports/bouquet/judges/claude-opus-4.8/{scores.jsonl,stats.json}</code>.</div>
+    <div class="evidence-item"><span class="claim">gpt-5.5 — 2375/2376 (99.96%), $1.3243 факт vs $4.00 кап.</span>
+      Коммит <code>336f272</code>; <code>reports/bouquet/judges/gpt-5.5/{scores.jsonl (2375), parse_failures.jsonl
+      (10699), stats.json}</code>; отчёт <code>docs/reports/python-pro-judge-run-gpt55.md</code>.</div>
+    <div class="evidence-item"><span class="claim">deepseek-v4-flash — 290/2376 (12.2%), терминально
+      припаркован.</span> Коммиты <code>501c394</code> (park #1), <code>85e5435</code> (park #2),
+      <code>02e4f25</code> (park #3), <code>70e9ba5</code> (park #4, 290/2376 через ресайкл контейнера),
+      <code>fa46091</code> (терминальная парковка после 2ч45м, 180+ проб, 0 успехов, 11:20&ndash;14:05Z);
+      стоимость &asymp;$0.128, <code>stats.json</code> сознательно не считался; отчёт
+      <code>docs/reports/python-pro-judge-run-deepseek.md</code>.</div>
+    <div class="evidence-item"><span class="claim">gemini-3.1-flash-lite-think — 2376/2376, $0.4749, 0 parse-fail;
+      2 826 990 reasoning-токенов (avg 1190/вызов).</span> Коммит <code>f901210</code>;
+      <code>reports/bouquet/judges/gemini-3.1-flash-lite-think/{scores.jsonl (2376),stats.json}</code>; полный
+      таймлайн аутеджа и сенситивити-таблица &mdash;
+      <code>docs/reports/python-pro-judge-run-gemini-flash-lite.md</code>, Part 2.</div>
+    <div class="evidence-item"><span class="claim">Table C P_label (sitelink-clean) для gemini/deepseek —
+      точные числа проверены исходным JSON.</span>
+      <code>docs/experiments/2026-07-05-model-comparison/sitelink-clean-full-metrics.json</code>: gemini
+      <code>p_label_p3ex</code> 0.5304 [.5206&ndash;.5401] 5340/10068; deepseek 0.5346 [.5238&ndash;.5453]
+      4409/8248 — совпадает с числами в отчёте <code>docs-keeper-table-c-p-label-fill.md</code>. Коммиты
+      <code>4975317</code>, <code>4770157</code>, <code>88c3e93</code>.</div>
+    <div class="evidence-item"><span class="claim">Table C R_doc (R_term тир, sitelink-clean) — согласуется с
+      T2-тиром деривации.</span> <code>docs/experiments/2026-07-05-model-comparison/drafts/recall-tiers-analysis.md</code>
+      даёт T2 raw recall gemini 0.741 / deepseek 0.663 (n=7174); применяя sitelink-clean дельту из
+      <code>sitelink-clean-full-metrics.json</code> (&minus;0.62pp / &minus;0.52pp) получаем 0.735 / 0.658 —
+      совпадает с заявленными 0.735/0.657.</div>
+    <div class="evidence-item"><span class="claim">Opus 4.8 provider sweep — reasoning недостижим на всех 7
+      провайдерах.</span> <code>docs/reports/ml-engineer-grounding-run-opus48.md</code> (17-вызовая матрица);
+      сырые JSON в <code>docs/experiments/2026-07-09-opus-provider-sweep/raw/</code>; итог зафиксирован
+      <code>docs/reports/docs-keeper-table-c-drop-opus.md</code>.</div>
+    <div class="evidence-item"><span class="claim">gpt-5.4 grounding run — закоммичен, финализирован на 99/100,
+      R_doc 0.583 [.572&ndash;.594] (4183/7174, R_term тир), P_label 0.536 [.525&ndash;.548] (3773/7037), стоимость
+      $5.95&ndash;6.3.</span>
+      <code>docs/reports/ml-engineer-grounding-run-gpt54.md</code>, коммит <code>5546459</code>
+      (effort-settability пробник, watchdog-парковка после исчерпания <code>max_judge_calls</code>, ручной resume
+      с <code>--max-judge-calls 30000</code>); P_label/P3 добит отдельным ретраем после расчистки Wikidata
+      <code>maxlag</code>, <code>docs/reports/python-pro-p-label-gpt54-grounding-run.md</code>, коммит
+      <code>19c7389</code>.</div>
+    <div class="evidence-item"><span class="claim">sr004-раннбук готов и верифицирован без GPU.</span> Коммит
+      <code>0c48124</code>; <code>docs/runbooks/sr004-local-eval-runbook.md</code>;
+      <code>uv run pytest tests/test_wiki_eval_runner.py tests/test_bouquet_judge_rerun.py -q</code> &rarr; 81
+      passed, <code>uv run pytest tests/ -q</code> &rarr; 501 passed &mdash; 582 зелёных теста суммарно, 0
+      регрессий (отчёт <code>docs/reports/ml-engineer-sr004-runbook.md</code>).</div>
+    <div class="evidence-item"><span class="claim">429-прецедент на маршруте gpt-5.5 задокументирован заранее.</span>
+      <code>docs/known_issues.md:56</code> — "Provider-outage windows silently corrupt wiki-eval runs", инцидент
+      2026-07-06 на этом же маршруте.</div>
+    <div class="evidence-item"><span class="claim">PR-состояние ветки.</span> PR #13 собирает все ночные
+      изменения на ветке <code>claude/ner-translation-config-b0ozsc</code>; PR #14 ждёт отдельного ревью
+      владельца.</div>
+  </section>
+
+  <!-- 6. Дальнейшие шаги -->
+  <section class="section" id="next-steps">
+    <h2><span class="idx">6</span> Дальнейшие шаги / решения владельца</h2>
+    <ul class="next-steps">
+      <li><strong>Запустить локальную тройку на sr004</strong> (qwen3-4b, gemma-3-27b-it, qwen3.6-27b) по готовому
+        раннбуку <code>docs/runbooks/sr004-local-eval-runbook.md</code> — одним проходом закрывает 3 судьи Table A
+        и 3 строки Table C; раннбук верифицирован 582 тестами, но реальная работа <code>chat_template_kwargs.
+        enable_thinking=false</code> на конкретной сборке vLLM sr004 не проверена (GPU недоступен в этой сессии) —
+        первый живой прогон должен это подтвердить.</li>
+      <li><strong>Решение владельца по deepseek-v4-flash</strong> — прогон терминально припаркован на 290/2376
+        (12.2%), резидентный поллинг остановлен после 2ч45м без единого признака жизни маршрута; добавить
+        возможный ре-ран владельцем или следующей сессией, когда маршрут восстановится (точные команды резюма
+        и гейт на 3/3 реальных пробы &mdash; в <code>docs/reports/python-pro-judge-run-deepseek.md</code>);
+        flash-lite-think уже закрыт (2376/2376, коммит <code>f901210</code>).</li>
+      <li><strong>Использовать пару flash-lite/flash-lite-think в статье</strong> как готовую reasoning-sensitivity
+        находку (раздел про судейский протокол) — обе стороны пары теперь закрыты, число сравнимо и не требует
+        дополнительных прогонов.</li>
+      <li><strong>Resume статьи "Яффа"</strong> для gpt-5.4 (единственная недостающая из 100) — R_doc и P_label
+        уже добиты (0.583 [.572&ndash;.594], 0.536 [.525&ndash;.548], коммиты <code>5546459</code>,
+        <code>19c7389</code>), но фигура остаётся строгой нижней границей на 99/100 покрытии; полный 100/100
+        сделал бы строку Table C точечной оценкой, а не нижней границей.</li>
+      <li><strong>Портировать trailing-comma fix</strong> в <code>scripts/bouquet_judge_rerun.py::
+        parse_judge_response</code>, чтобы добить последнюю ячейку gpt-5.5 (0.04%) точечным ретраем, а не полным
+        прогоном.</li>
+      <li><strong>Владельцу — решение по веткам</strong>: список из 12 веток + <code>zzz-проба</code> +
+        <code>bqa4l2</code>/<code>ky2bp8</code> к локальному удалению после мержа PR #14.</li>
+      <li><strong>PR #13</strong> (собирает все ночные изменения) готов к ревью; <strong>PR #14</strong> ждёт
+        отдельного решения владельца.</li>
+    </ul>
+  </section>
+
+  <footer class="report-footer">
+    Собрано агентом report-generator (report-gen skill) на основе
+    <code>docs/reports/overnight-mission-2026-07-09.md</code> и связанных отчётов на ветке
+    <code>claude/ner-translation-config-b0ozsc</code>, 2026-07-09. Шаг 8 (Finish) процесса CLAUDE.md.
+  </footer>
+
+</div>
+</body>
+</html>

@@ -50,7 +50,7 @@ Seed data manifest and canonical user journeys: [docs/testing/e2e-data.md](docs/
 ## Layout
 
 ```
-configs/              YAML: pipeline.yaml, models.yaml
+configs/              YAML: bouquet_judges.yaml
 data/
 ├── seed/             seed_paragraphs.jsonl — demo seed data (the only heavy data mirrored)
 ├── processed/        per-chapter pipeline artifacts (placeholder; corpora live in GitLab)

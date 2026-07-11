@@ -1,0 +1,75 @@
+{
+ "article_workers": 6,
+ "calls": {
+  "extract": 0,
+  "judge": 6468,
+  "label_guess": 0
+ },
+ "config": "111",
+ "failed_paragraphs": [],
+ "finished_at": "2026-07-11T06:06:02.490100+00:00",
+ "generation_params": {
+  "base_url": "https://openrouter.ai/api/v1",
+  "extra_body_effective": {
+   "provider": {
+    "allow_fallbacks": false,
+    "order": [
+     "Parasail"
+    ]
+   },
+   "top_k": 64,
+   "usage": {
+    "include": true
+   }
+  },
+  "max_tokens": 20000,
+  "model": "google/gemma-3-27b-it",
+  "provider_pin": "Parasail",
+  "reasoning": null,
+  "temperature": 1.0,
+  "top_k": 64,
+  "top_p": 0.95
+ },
+ "grounding_config": {
+  "match_aliases": true,
+  "use_cirrus": true,
+  "use_lemma": true,
+  "use_sitelink": false
+ },
+ "llm_max_in_flight_observed": 6,
+ "llm_semaphore": 6,
+ "max_judge_calls": 25000,
+ "max_usd": 3.0,
+ "model": "google/gemma-3-27b-it",
+ "n_articles": 100,
+ "n_extraction_parse_failures": 0,
+ "n_failed_judge_calls": 1,
+ "n_failed_paragraphs": 0,
+ "n_paragraphs": 1866,
+ "n_pred_mentions": 20436,
+ "n_reuse_extraction_unmatched": 0,
+ "no_judge": false,
+ "parse_failed_paragraphs": [],
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "Parasail",
+ "resumed_from_n_articles": 32,
+ "reuse_extraction_from": "reports/terminology/wiki-eval/google--gemma-3-27b-it--Parasail/111/2026-07-10T18-22-43Z",
+ "run_id": "2026-07-10T23-40-53Z",
+ "search_mode": "baseline",
+ "spend": {
+  "extract": 0.0,
+  "judge": 0.299112260000034,
+  "label_guess": 0.0,
+  "total": 0.299112260000034
+ },
+ "started_at": "2026-07-11T04:55:27.791320+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 4234.69878,
+ "wikidata": {
+  "cache_hits": 43532,
+  "calls": 1231,
+  "seconds": 367.297
+ },
+ "wikidata_workers": 2
+}

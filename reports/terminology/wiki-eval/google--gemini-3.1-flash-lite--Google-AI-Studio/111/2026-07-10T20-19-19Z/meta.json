@@ -1,0 +1,77 @@
+{
+ "article_workers": 3,
+ "calls": {
+  "extract": 4034,
+  "judge": 0,
+  "label_guess": 0
+ },
+ "config": "111",
+ "failed_paragraphs": [],
+ "finished_at": "2026-07-11T07:36:08.014460+00:00",
+ "generation_params": {
+  "base_url": "https://openrouter.ai/api/v1",
+  "extra_body_effective": {
+   "provider": {
+    "allow_fallbacks": false,
+    "order": [
+     "Google AI Studio"
+    ]
+   },
+   "reasoning": {
+    "effort": "medium"
+   },
+   "usage": {
+    "include": true
+   }
+  },
+  "max_tokens": 20000,
+  "model": "google/gemini-3.1-flash-lite",
+  "provider_pin": "Google AI Studio",
+  "reasoning": {
+   "effort": "medium"
+  },
+  "temperature": 1.0,
+  "top_k": null,
+  "top_p": null
+ },
+ "grounding_config": {
+  "match_aliases": true,
+  "use_cirrus": true,
+  "use_lemma": true,
+  "use_sitelink": false
+ },
+ "llm_max_in_flight_observed": 4,
+ "llm_semaphore": 4,
+ "max_judge_calls": 1,
+ "max_usd": 8.0,
+ "model": "google/gemini-3.1-flash-lite",
+ "n_articles": 100,
+ "n_extraction_parse_failures": 0,
+ "n_failed_judge_calls": 0,
+ "n_failed_paragraphs": 0,
+ "n_paragraphs": 290,
+ "n_pred_mentions": 22649,
+ "no_judge": true,
+ "parse_failed_paragraphs": [],
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "Google AI Studio",
+ "resumed_from_n_articles": 88,
+ "run_id": "2026-07-10T20-19-19Z",
+ "search_mode": "baseline",
+ "spend": {
+  "extract": 7.257585000000316,
+  "judge": 0.0,
+  "label_guess": 0.0,
+  "total": 7.257585000000316
+ },
+ "started_at": "2026-07-11T07:08:16.521659+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 1671.492801,
+ "wikidata": {
+  "cache_hits": 6708,
+  "calls": 1897,
+  "seconds": 519.647
+ },
+ "wikidata_workers": 2
+}

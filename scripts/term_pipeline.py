@@ -21,10 +21,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from palimpsest.terminology import pipeline
 from palimpsest.terminology.extract import (
-    DEFAULT_NER_PROMPT,
+    NER_SYSTEM_PROMPT,
+    ExtractionParseError,
     deterministic_surfaces,
     load_mentions,
     mentions_from_surfaces,
+    ner_user,
     parse_surfaces,
     validate_surfaces,
 )
@@ -170,8 +172,7 @@ def cmd_extract(args) -> int:
     if args.dry_run:
         print(f"[dry-run] model={model}  paragraphs={len(pairs)}  max_usd={args.max_usd}")
         for pid, source in pairs:
-            preview = DEFAULT_NER_PROMPT.replace("{{source}}", source[:80] + ("…" if len(source) > 80 else ""))
-            preview = preview.splitlines()[-2] if preview.splitlines() else preview
+            preview = ner_user(source[:80] + ("…" if len(source) > 80 else ""))
             print(f"  pid={pid:<5} prompt_preview={preview[:100]!r}")
         print("[dry-run] estimate: 16 calls ~ 24k in / 6k out tokens, < $0.01 on gpt-4o-mini (no spend, nothing written)")
         return 0
@@ -207,15 +208,21 @@ def cmd_extract(args) -> int:
             print(f"abort: N_CALLS={n_calls} reached cap {MAX_CALLS}", file=sys.stderr)
             return 1
 
-        user_prompt = DEFAULT_NER_PROMPT.replace("{{source}}", source)
+        user_prompt = ner_user(source)
         t0 = time.perf_counter()
         n_calls += 1
-        reply = client.complete(system="", user=user_prompt)
-        surfaces = parse_surfaces(reply.content)
+        reply = client.complete(system=NER_SYSTEM_PROMPT, user=user_prompt)
+        try:
+            surfaces = parse_surfaces(reply.content)
+        except ExtractionParseError:
+            surfaces = []
         if not surfaces and n_retries < n_calls:
             n_retries += 1
-            reply = client.complete(system="", user=user_prompt)
-            surfaces = parse_surfaces(reply.content)
+            reply = client.complete(system=NER_SYSTEM_PROMPT, user=user_prompt)
+            try:
+                surfaces = parse_surfaces(reply.content)
+            except ExtractionParseError:
+                surfaces = []
         latency_ms = (time.perf_counter() - t0) * 1000
 
         valid, dropped = validate_surfaces(source, surfaces)

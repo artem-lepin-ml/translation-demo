@@ -1,0 +1,187 @@
+{
+ "protocol": "v3",
+ "n_ambiguous_gold_units": 112,
+ "n_gold_mentions_dropped_by_tier": 764,
+ "classes": {
+  "named": {
+   "tp": 3101,
+   "fn": 784,
+   "fp": 1586,
+   "gold_units": 3885,
+   "R_doc": {
+    "matched": 3101,
+    "total": 3885,
+    "value": 0.7981981981981981,
+    "ci_lo": 0.7853,
+    "ci_hi": 0.8105,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 3101,
+    "total": 4687,
+    "value": 0.6616172391721784,
+    "ci_lo": 0.6479,
+    "ci_hi": 0.675,
+    "underpowered": false
+   }
+  },
+  "term": {
+   "tp": 651,
+   "fn": 815,
+   "fp": 1249,
+   "gold_units": 1466,
+   "R_doc": {
+    "matched": 651,
+    "total": 1466,
+    "value": 0.4440654843110505,
+    "ci_lo": 0.4188,
+    "ci_hi": 0.4696,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 651,
+    "total": 1900,
+    "value": 0.3426315789473684,
+    "ci_lo": 0.3216,
+    "ci_hi": 0.3643,
+    "underpowered": false
+   }
+  }
+ },
+ "survival": {
+  "n_gold_entities": 5061,
+  "n_gold_mentions_dropped_by_tier": 764,
+  "n_gold_mentions_dropped_by_exclusion": 321,
+  "n_pred_linked_entities": 6587,
+  "n_resolved_correct_search_miss": 0,
+  "R_NER": {
+   "matched": 4653,
+   "total": 5061,
+   "value": 0.919383521043272,
+   "ci_lo": 0.9116,
+   "ci_hi": 0.9266,
+   "underpowered": false
+  },
+  "R_search": {
+   "matched": 3785,
+   "total": 4653,
+   "value": 0.8134536857941114,
+   "ci_lo": 0.802,
+   "ci_hi": 0.8244,
+   "underpowered": false
+  },
+  "A_disamb": {
+   "matched": 3564,
+   "total": 3785,
+   "value": 0.9416116248348745,
+   "ci_lo": 0.9337,
+   "ci_hi": 0.9486,
+   "underpowered": false
+  },
+  "R": {
+   "matched": 3564,
+   "total": 5061,
+   "value": 0.7042086544161233,
+   "ci_lo": 0.6915,
+   "ci_hi": 0.7166,
+   "underpowered": false
+  },
+  "R_direct": {
+   "matched": 3564,
+   "total": 5061,
+   "value": 0.7042086544161233,
+   "ci_lo": 0.6915,
+   "ci_hi": 0.7166,
+   "underpowered": false
+  },
+  "P": {
+   "matched": 3726,
+   "total": 6587,
+   "value": 0.5656596326096858,
+   "ci_lo": 0.5537,
+   "ci_hi": 0.5776,
+   "underpowered": false
+  }
+ },
+ "meta": {
+  "article_workers": 6,
+  "calls": {
+   "extract": 0,
+   "judge": 5793,
+   "label_guess": 0
+  },
+  "config": "111",
+  "failed_paragraphs": [],
+  "finished_at": "2026-07-11T08:47:34.684947+00:00",
+  "generation_params": {
+   "base_url": "https://openrouter.ai/api/v1",
+   "extra_body_effective": {
+    "provider": {
+     "allow_fallbacks": false,
+     "order": [
+      "Io Net"
+     ]
+    },
+    "reasoning": {
+     "enabled": false
+    },
+    "usage": {
+     "include": true
+    }
+   },
+   "max_tokens": 20000,
+   "model": "qwen/qwen3.6-27b",
+   "provider_pin": "Io Net",
+   "reasoning": {
+    "enabled": false
+   },
+   "temperature": 1.0,
+   "top_k": null,
+   "top_p": null
+  },
+  "grounding_config": {
+   "match_aliases": true,
+   "use_cirrus": true,
+   "use_lemma": true,
+   "use_sitelink": false
+  },
+  "llm_max_in_flight_observed": 6,
+  "llm_semaphore": 6,
+  "max_judge_calls": 25000,
+  "max_usd": 8.0,
+  "model": "qwen/qwen3.6-27b",
+  "n_articles": 100,
+  "n_extraction_parse_failures": 0,
+  "n_failed_judge_calls": 0,
+  "n_failed_paragraphs": 0,
+  "n_paragraphs": 1102,
+  "n_pred_mentions": 21862,
+  "n_reuse_extraction_unmatched": 0,
+  "no_judge": false,
+  "parse_failed_paragraphs": [],
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "Io Net",
+  "resumed_from_n_articles": 62,
+  "reuse_extraction_from": "reports/terminology/wiki-eval/qwen--qwen3.6-27b--Io-Net/111/2026-07-10T20-19-44Z",
+  "run_id": "2026-07-11T05-26-05Z",
+  "search_mode": "baseline",
+  "spend": {
+   "extract": 0.0,
+   "judge": 1.3265869200000535,
+   "label_guess": 0.0,
+   "total": 1.3265869200000535
+  },
+  "started_at": "2026-07-11T08:32:00.350776+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 934.334171,
+  "wikidata": {
+   "cache_hits": 26713,
+   "calls": 661,
+   "seconds": 205.537
+  },
+  "wikidata_workers": 2,
+  "n_gt_tuples": 7658,
+  "generated_at": "2026-07-11T08:48:16.066212+00:00"
+ }
+}

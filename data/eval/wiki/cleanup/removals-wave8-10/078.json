@@ -1,0 +1,20 @@
+{
+  "remove": [1, 2, 3, 4, 9, 16, 34, 35, 47, 48, 73, 89, 100, 108, 113],
+  "reasons": {
+    "1": "abbreviated language tag (араб.)",
+    "2": "abbreviated language tag (финик.)",
+    "3": "abbreviated language tag (греч.)",
+    "4": "generic word 'city', no proper name",
+    "9": "generic verb 'named', not a term",
+    "16": "generic flora (olive tree)",
+    "34": "generic everyday word (water)",
+    "35": "generic infra noun (harbor), no name",
+    "47": "Bible citation reference abbreviation",
+    "48": "Bible citation reference abbreviation",
+    "73": "generic verb 'besieged', not a term",
+    "89": "Bible citation reference abbreviation",
+    "100": "generic verb phrase, not term-worthy",
+    "108": "generic food/flora (tobacco)",
+    "113": "generic everyday word (earthquake)"
+  }
+}

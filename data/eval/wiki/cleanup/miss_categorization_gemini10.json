@@ -1,0 +1,983 @@
+{
+  "provenance": {
+    "generated": "2026-07-10",
+    "source_run_dir": "/home/user/translation-demo/reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--Google-AI-Studio/111/2026-07-10T20-19-19Z",
+    "source_pred_path": "/home/user/translation-demo/reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--Google-AI-Studio/111/2026-07-10T20-19-19Z/pred.partial.jsonl",
+    "harness_tool": "data/eval/wiki/cleanup/tools/search_miss_analysis.py",
+    "harness_output": "gemini_misses_10.json (scratchpad, not committed -- regenerable from the run dir above via the harness tool)",
+    "model_run": "google--gemini-3.1-flash-lite--Google-AI-Studio, run 111, 2026-07-10T20-19-19Z",
+    "slice": "first 10 articles of the gemini run (KV35YL, XXVII династия, XXX династия, Абдмилькат, Азиатская экспедиция (336—334 до н. э.), Академия Цзися, Амударьинский клад, Арахозия, Армия империи Хань, Арслантепе (Мелид))",
+    "n_gold_entities_slice": 358,
+    "n_misses": 74,
+    "categorization_method": "5-agent parallel wave (Sonnet, 14-15 misses/chunk each), each agent independently verified against the live Wikidata wbsearchentities API (checked_wikidata=true on all 74 entries) by empirically replaying the surface/lemma/canonical-label searches referenced in gemini_misses_10.json",
+    "aggregation_method": "orchestrator merge of 5 chunk files, validated 1:1 against gemini_misses_10.json's 74 misses by (gold_qid, article) key and cross-checked surface against gold_mentions[*].anchor_text; 0 discrepancies found; 3 rescue_by values normalized for semantic drift (see tables.2b.normalization_note)"
+  },
+  "entries": [
+    {
+      "gold_qid": "Q140575",
+      "article": "KV35YL",
+      "surface": "Захи Хавасса",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Surface is genitive inflection of canonical ru label 'Захи Хавасс' (alias 'Хавасс, Захи'); real full-name mention the NER simply never marked.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1633253",
+      "article": "KV35YL",
+      "surface": "гробнице KV35",
+      "outcome_class": "no_candidates",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Canonical label is bare 'KV35' (Q1633253). search=KV35 -> Q1633253 rank #1; search='гробница KV35' -> 0 results empirically. The descriptive qualifier noun 'гробница' (tomb) breaks prefix matching against the bare label.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q225845",
+      "article": "KV35YL",
+      "surface": "Кийей",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Wikidata ru label is 'Кийа', not 'Кийя' (я/а single-letter transliteration variant). search=Кийя reproduces exactly the given wrong candidates (unrelated Kiya-surname people); search=Кийа -> Q225845 rank #1 ('жена фараона Эхнатона').",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q274473",
+      "article": "KV35YL",
+      "surface": "Джоан Флетчер",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Surface is a registered ru alias of Q274473 (canonical label 'Джоанн Флетчер'); exact-alias match, span simply never marked by NER.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q4427740",
+      "article": "KV35YL",
+      "surface": "Виктор Солкин",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Surface is a registered ru alias of Q4427740 (canonical 'Солкин, Виктор Викторович'); NER missed the span.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q459506",
+      "article": "KV35YL",
+      "surface": "Бристольского университета",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Genitive inflection of canonical ru label 'Бристольский университет'; institution-name span NER missed.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q469955",
+      "article": "KV35YL",
+      "surface": "Изидой",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Sentence spells the name with 'З' (Изида = alias of goddess Q79876, an unrelated entity); gold princess Q469955's actual ru label spells it with 'С' (Исида, с/з transliteration variant). search=Изида reproduces the given wrong candidates exactly (goddess, asteroid, porn actress, first name, magazine); search=Исида -> Q469955 rank #3/20, well within a normal candidate limit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q47443191",
+      "article": "KV35YL",
+      "surface": "София Багдасарова",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Exact registered ru alias of Q47443191 (canonical 'София Андреевна Багдасарова'); NER missed the span.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q208150",
+      "article": "XXVII династия",
+      "surface": "быку",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface is the generic common noun 'бык' (bull); the entity's real proper name 'Апис' never appears in the sentence, only inferable from context ('священный герольд Птаха' = sacred bull of Ptah = Apis). search=бык reproduces the given wrong candidates (unrelated бык-named rivers/villages/zodiac sign); search=Апис -> Q208150 rank #1 exactly.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q373521",
+      "article": "XXVII династия",
+      "surface": "Псамметих III",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "gold-noise",
+      "rescue_by": "already-hit-in-reality",
+      "evidence": "gold_qid Q373521 is CURRENTLY labelled 'Псамметих II' on Wikidata (ruwiki sitelink 'Псамметих II'), a different pharaoh than the sentence describes ('последний фараон 26-й династии... побеждён Камбисом II при Пелузии, 525 г. до н.э.' = Псамметих III). The single returned candidate Q316278 IS labelled 'Псамметих III' and matches the sentence exactly; search='Псамметих III' also returns Q316278 rank #1. Retrieval already found the correct real-world entity -- the gold annotation itself is wrong.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q526440",
+      "article": "XXVII династия",
+      "surface": "Горьких озёр",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Canonical label is 'Большое Горькое озеро' (Great Bitter Lake, singular + qualifier). My replication of search='Горькие озёра'/'Горьких озёр' (with or without ё) returns 0 hits (search-index drift vs. the 3 wrong homonym candidates in the given data -- one, Q37787130, carries coordinates 52.61N/81.40E, i.e. an unrelated same-name lake in Siberia, not Egypt). search='Большое Горькое озеро' -> Q526440 rank #1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q544239",
+      "article": "XXVII династия",
+      "surface": "битвы при Пелузии",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Canonical ru label is 'Сражение при Пелузии' (uses 'Сражение', not 'битва'; no ru/en aliases registered). search='битва при Пелузии' -> 0 hits; search='Сражение при Пелузии' -> Q544239 rank #1. The one wrong candidate returned, Q20987758, is a genuinely DIFFERENT historical battle (343 BC, ru label 'Битва при Пелусии (343 до н. э.)') sharing the 'Битва' prefix plus a с/з toponym-spelling collision (Пелусии vs Пелузии) -- a lexical collision with an unrelated real event, not a duplicate of gold.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q844930",
+      "article": "XXVII династия",
+      "surface": "афиняне",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "search='афиняне' (the exact surface) returns exactly ONE hit total, Q120096553 (generic 'Афиняне'/people-from-Athens item) -- matches the given wrong candidate exactly. Gold Q844930 ('Древние Афины'/Classical Athens, the polis) is indexed only under the base place-name 'Афины', where it ranks #7/20 -- a demonym-to-placename derivational gap, not a plain inflection.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q9601",
+      "article": "XXVII династия",
+      "surface": "зороастрийского",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Adjectival genitive form of 'зороастризм' (Zoroastrianism) modifying 'бога АхураМазду'; legitimate concept-link span NER failed to mark.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q11768",
+      "article": "XXX династия",
+      "surface": "древнеегипетских",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Adjectival genitive-plural form of 'Древний Египет' (Ancient Egypt) modifying 'фараонов'; common ru-wiki adjectival-anchor link pattern NER failed to mark.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q130650",
+      "article": "XXX династия",
+      "surface": "Филиппа",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Search 'Филипп' (lemma) top-50 does NOT include Q130650 (Филипп II Македонский) — dozens of more-prominent 'Филипп'-named royals/saints outrank it by sitelink count. Search 'Филипп II Македонский' (canonical label) returns Q130650 as the sole/top hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q389688",
+      "article": "XXX династия",
+      "surface": "Персидской империей",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface 'Персидской империей' returns 0 hits. Exact-alias text 'Персидская империя' returns only Q83311/Q103174344 (unrelated disambig items), never Q389688, even at limit 50 — the alias is not surfaced by wbsearchentities despite being a listed WD alias. Canonical label 'Держава Ахеменидов' finds Q389688 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q844930",
+      "article": "XXX династия",
+      "surface": "Афин",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "search-truncation",
+      "rescue_by": "label-guess",
+      "evidence": "Lemma 'Афины' search reproduces the 5 returned candidates exactly at ranks 0-4; Q844930 (Древние Афины) appears at rank 6 of the same query, just past the apparent limit-5 cutoff. Canonical label 'Древние Афины' (or alias 'Афины (Древняя Греция)') finds it top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q11768",
+      "article": "Абдмилькат",
+      "surface": "Египтом",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Lemma 'Египет' returns 50 results (Q79 modern Egypt, Roman Egypt, etc.) with none being Q11768 even at limit 50 — 'Древний Египет' doesn't share 'Египет' as a literal label prefix. Canonical label 'Древний Египет' finds Q11768 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q135028",
+      "article": "Абдмилькат",
+      "surface": "нубийцев",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface 'нубийцев' (inflected) returns 0 hits; lemma 'нубийцы' returns only Q15140604 ('Нубийцы', the real ethnic-group item — a correct entity but not gold). Gold Q135028 'Нубия' (the region) is this corpus's convention target for demonyms, matching the спартанцам->Спарта pattern below. Canonical label 'Нубия' finds Q135028 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q2967764",
+      "article": "Абдмилькат",
+      "surface": "Китр",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface 'Китр' is genitive plural of nominative 'Китры'; the returned candidates (pembrolizumab, Kythrea, Kitros metropolis, etc.) are unrelated noise for that inflected string. Canonical label 'Китры' finds Q2967764 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q48685",
+      "article": "Абдмилькат",
+      "surface": "Иудеи",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "search-truncation",
+      "rescue_by": "label-guess",
+      "evidence": "Lemma 'Иудея' search reproduces the 5 returned candidates at ranks 0-4; Q48685 (Иудейское царство) appears at rank 7 of the same 9-result query, past the limit-5 cutoff. Canonical label 'Иудейское царство' finds it top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q620864",
+      "article": "Абдмилькат",
+      "surface": "киликиец",
+      "outcome_class": "no_candidates",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface 'киликиец' (singular demonym) returns 0 hits. Canonical label 'Киликия' finds Q620864 top-1; even alias 'Киликийцы' (plural demonym) finds it top-1 — only the specific singular inflected demonym form fails.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1127771",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "Иды",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface 'Иды' matches unrelated items (Roman calendar Ides, rivers, villages). Lemma 'горы Ида' matches only Q6421270, a broader dual-mountain (Crete+Turkey) grouping item, not gold's specific Turkish Kaz Dağı. Canonical label 'Каздаг' finds Q1127771 top-1; alias 'Ида' finds it at rank 3.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q12859263",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "оратора",
+      "outcome_class": "not_extracted",
+      "primary_category": "gold-noise",
+      "rescue_by": "none",
+      "evidence": "Gold QID Q12859263 labels the generic profession concept 'orator/public speaker' (ru: оратор), not a named entity — 'оратора' is a common-noun apposition to the real named entity Демосфен in the same sentence. A named-entity extractor is not expected to tag a bare common noun; not a search/candidate problem.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1432674",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "Магнесии-на-Меандре",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface 'Магнесии-на-Меандре' (prepositional case) and stored lemma 'битва при Магнесии-на-Меандре' both return 0 hits. Canonical nominative 'Магнесия-на-Меандре' finds Q1432674 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q255325",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "Эолии",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface 'Эолии' and lemma 'Эолия' both search to unrelated items (asteroid (396) Эолия, mythological figure, Aeolian Islands) — 'Эолия' is not a registered alias of gold. Canonical label 'Эолида' finds Q255325 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q389688",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "Персией",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface 'Персией' returns 0 hits; lemma 'Персия' returns 29 results at limit 50 (Iran, Persis, a pornographic actress, etc.), never Q389688, despite 'Персия' being a listed WD alias of gold. Canonical label 'Держава Ахеменидов' finds it top-1 — same underlying alias-indexing gap as the 'Персидской империей' entry above.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q482107",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "Аминты",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "search-truncation",
+      "rescue_by": "label-guess",
+      "evidence": "Lemma 'Аминта' search reproduces the 5 returned candidates exactly at ranks 0-4; Q482107 (Аминта, сын Арравея) appears at rank 14 of the same query — present but past the limit-5 cutoff among ~15 Amyntas homonyms. Canonical label 'Аминта (сын Арравея)' finds it top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q5690",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "спартанцам",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Lemma 'спартанцы' search reproduces the 5 candidates exactly (Спартиаты, etc.), only 5 total results, gold Q5690 absent entirely — demonym mapped to the polity per this corpus's convention (cf. нубийцев->Нубия). Canonical label 'Спарта' finds Q5690 at rank 1 (2nd position).",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q622602",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "македонского царя",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Q622602 = 'king of Macedonia' (ru: Македонские цари) — a genuine role-reference entity; NER never marked 'македонского царя' at all (candidates empty), so no candidate-search fix applies.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q844930",
+      "article": "Азиатская экспедиция (336—334 до н. э.)",
+      "surface": "афинских",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "search-truncation",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru label = 'Древние Афины'. Search on lemma 'Афины' does surface Q844930 at rank 7/20 (past the ~5-item production cutoff); searching the precise label 'Древние Афины' returns Q844930 as the sole/top hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q12087706",
+      "article": "Академия Цзися",
+      "surface": "ванов",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "search-truncation",
+      "rescue_by": "none",
+      "evidence": "Gold ru label = 'Ван' (title), a literal string shared by several unrelated homographs (Vannes, Van/Turkey, etc.). Search 'ван' ranks Q12087706 17th/20, well past the ~5 cutoff; since multiple entities carry the identical label 'Ван', label-guess produces the same query and can't reorder it.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q678928",
+      "article": "Академия Цзися",
+      "surface": "сяньшэн",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold Q678928 ru label = 'сэнсэй' (Japanese transliteration of 先生); the sentence uses 'сяньшэн', the Chinese pinyin transliteration of the same characters. Search 'сэнсэй' returns Q678928 as sole top hit; the surface-based search only matched an unrelated building 'Xianshen Lou'.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q720866",
+      "article": "Академия Цзися",
+      "surface": "моистов",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru label = 'Моизм' (doctrine); surface is the adherents' plural 'моистов'/'моист'. RU-wiki page 'Моисты' (Q4299807) is a redirect stub confirming it points to the Моизм article. Search 'моизм' returns Q720866 top-1; search 'моисты' only surfaces an unrelated Chechen village (Q4299809, homograph) and the empty redirect item (Q4299807).",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q837855",
+      "article": "Академия Цзися",
+      "surface": "Ци",
+      "outcome_class": "no_candidates",
+      "primary_category": "search-truncation",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru label = 'Ци (Шаньдун)'. Bare-prefix search 'Ци' returns 50 results (homographic 'Ци' surnames, Qi/Henan Q1207032, Qi/Five-Dynasties Q1319681, unrelated 'Ц'-words) with gold nowhere in the top 50; searching the full disambiguated label 'Ци (Шаньдун)' returns Q837855 as the sole hit. Q1207032/Q1319681 verified as genuinely different historical Qi states (different sitelinks/lineages), not duplicates of gold.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q129072",
+      "article": "Амударьинский клад",
+      "surface": "Персеполя",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface is genitive case 'Персеполя' of canonical 'Персеполь'; searching the canonical nominative returns Q129072 as the sole top hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q130223",
+      "article": "Амударьинский клад",
+      "surface": "грифонов",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface is inflected genitive plural 'грифонов'; searching the nominative lemma 'грифон' returns gold Q130223 (ru label 'грифоны') as top-1 of 20.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q131802",
+      "article": "Амударьинский клад",
+      "surface": "скифского «звериного стиля»",
+      "outcome_class": "no_candidates",
+      "primary_category": "gold-noise",
+      "rescue_by": "none",
+      "evidence": "The phrase names a distinct art-history concept: 'скифский звериный стиль' is a verified ru ALIAS of Q1092377 ('скифо-сибирский звериный стиль' / Scythian art), not of Q131802 ('скифы'/Scythians, the ethnic group) assigned as gold. Searching the exact phrase returns only Q1092377 — gold_qid looks mis-annotated for this anchor.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q245117",
+      "article": "Амударьинский клад",
+      "surface": "рельефах",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "'рельефах' (reliefs) is a genuine generic-concept mention, parallel to 'грифонов'/'скифского' elsewhere in the same article which ARE treated as entity anchors; NER never marked it (candidates empty).",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q488880",
+      "article": "Амударьинский клад",
+      "surface": "греко-бактрийского",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface is genitive singular adjective 'греко-бактрийского'; searching the canonical noun phrase 'греко-бактрийское царство' returns Q488880 as the sole top hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q55977623",
+      "article": "Амударьинский клад",
+      "surface": "монеты Андрагора",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "The single returned candidate (Q456935, person 'Андрагор') matches only the bare lemma 'Андрагор', which drops the head noun 'монеты' (coins) — search never ran on the fuller surface. Searching the verbatim string 'монеты андрагора' returns gold Q55977623 ('Монеты Андрагора') as the sole hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1672477",
+      "article": "Арахозия",
+      "surface": "иранские племена",
+      "outcome_class": "no_candidates",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface uses synonym 'племена' (tribes), not the canonical noun 'народы' (peoples) — a lexical, not inflectional, mismatch (no shared stem). Search 'иранские народы' returns gold Q1672477 as the sole top hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q240123",
+      "article": "Арахозия",
+      "surface": "индо-сакский",
+      "outcome_class": "no_candidates",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface/lemma 'индо-сакский'/'индо-саки' uses 'саки' (Sakas); canonical ru label is 'Индо-скифское царство' (Indo-Scythian), and the item has no ru alias for 'саки'. Search 'индо-саки' returns 0 results; search 'индо-скифское царство' returns gold Q240123 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q2453813",
+      "article": "Арахозия",
+      "surface": "индоиранские",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface is the adjectival form 'индоиранские'; canonical ru label is the noun 'индоиранцы' (same root). Search 'индоиранцы' returns gold Q2453813 at rank 2/2 (behind 'арии'), within a typical top-5 window.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q2586782",
+      "article": "Арахозия",
+      "surface": "Камбоджа",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Canonical ru label is \"Камбоджи\" (Kambojas, Indo-Iranian tribe), not \"Камбоджа\". Search on bare surface \"Камбоджа\" misses Q2586782 (top hits: modern Cambodia Q424, name-article Q13553725); search on canonical \"Камбоджи\" finds Q2586782 as exact top hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q389688",
+      "article": "Арахозия",
+      "surface": "персы",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Gold is the specific polity \"Держава Ахеменидов\" (Achaemenid Empire), not the ethnonym. Search \"персы\" surfaces the ethnic-group entity Q484206 \"персы\" (which was itself a returned candidate) but never Q389688 whose label shares no substring with the surface. Search on canonical label \"Держава Ахеменидов\" finds Q389688 as the sole hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q83426",
+      "article": "Арахозия",
+      "surface": "авестийская",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface is the adjective \"авестийская\" (Avestan, derived from Avesta); canonical ru label is the noun \"Авеста\". Search on bare surface returns zero; search \"Авеста\" finds Q83426 at rank 3 (behind two homonymous Swedish places named Avesta), well inside a 20-item window.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1057214",
+      "article": "Армия империи Хань",
+      "surface": "частных войск",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Gold Q1057214 label \"частная военная компания\" (private military company) matches the concept behind \"частных войск\" (private troops of a warlord); NER never marked the span, so candidates list is empty. Concept mapping is a semantic stretch (ancient warlord levies vs modern PMC) but is the closest existing Wikidata concept.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q134313",
+      "article": "Армия империи Хань",
+      "surface": "варварского",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Gold Q134313 label \"варвары\" (barbarian) directly matches the quoted adjective «варварского» in the sentence; NER never flagged the mention.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q185043",
+      "article": "Армия империи Хань",
+      "surface": "Троецарствия",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Canonical ru label is the multi-word phrase \"эпоха Троецарствия\" (era of the Three Kingdoms); bare surface \"Троецарствия\" is only the tail noun and yields zero hits via prefix search (it's not a label prefix). Searching the full canonical label \"эпоха Троецарствия\" finds Q185043 as the sole hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q39782",
+      "article": "Армия империи Хань",
+      "surface": "латуни",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Gold Q39782 label \"латунь\" (brass) directly matches inflected noun \"латуни\" in the sentence; NER never marked the span.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q4495612",
+      "article": "Армия империи Хань",
+      "surface": "Кореи в 109 г. до н. э.",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Gold is the specific campaign \"Ханьско-кочосонская война\" (Han conquest of Gojoseon), not the country Korea; surface \"Кореи\" shares no substring with the campaign's label so no limit setting would retrieve it. Search on the canonical campaign label finds Q4495612 as the sole hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q7209",
+      "article": "Армия империи Хань",
+      "surface": "Западной Хань",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "gold-noise",
+      "rescue_by": "already-hit-in-reality",
+      "evidence": "A precise, correctly-labelled entity for \"Западная Хань\" already exists (Q1072949, ru label \"династия Западная Хань\") and was itself among the returned candidates. Recorded gold Q7209 is the broader parent \"империя Хань\" (whole Han dynasty) – an imprecise gold pick, not a retrieval failure; the right candidate was already surfaced.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1023301",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Куммух",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "gold-noise",
+      "rescue_by": "already-hit-in-reality",
+      "evidence": "Search on exact surface \"Куммух\" finds Q1792017 (ru label \"Куммух\", Neo-Hittite kingdom, ruwiki sitelink literally titled \"Куммух\") – the obviously correct entity, and it was already a returned candidate. Recorded gold Q1023301 is \"Кемах\", a modern town in Erzincan ~200km away with only a Wikidata-flagged-uncertain alias \"Kummaha?\"; real-world referents differ.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1149666",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Вашуканни",
+      "outcome_class": "no_candidates",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Surface \"Вашуканни\" (ancient Mitanni capital name) empirically returns zero wbsearchentities hits at any reasonable limit. Gold's canonical label is \"Телль-Фехерия\" (Tell Fekheriye), the modern Syrian archaeological-site name for the same location – an entirely different toponym, not present as a parenthetical alt-name in the sentence, so alt-names would not help; requires outside identification knowledge for label-guess.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q11772",
+      "article": "Арслантепе (Мелид)",
+      "surface": "греческих",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Gold Q11772 \"Древняя Греция\" (Ancient Greece) matches the adjective \"греческих\" in \"древнеперсидских и греческих источниках\"; NER never flagged the mention.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1303676",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Цупа",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface \"Цупа\" is a transliteration variant of the canonical ru label \"Цопк\" (Sophene). Search \"Цупа\" returns unrelated false matches (a plant genus, a mineral, a mountain in Lesotho); search \"Цопк\" finds Q1303676 as top hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q134178",
+      "article": "Арслантепе (Мелид)",
+      "surface": "минойского",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface \"минойского\" (genitive/masc. adjective) yields zero hits by prefix search; canonical ru label \"Минойская цивилизация\" finds Q134178 as top hit. The original candidate Q1669994 is a genuinely different entity (\"минойский язык\", Minoan language), not a duplicate of Q134178.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q176458",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Тил Барсип",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Surface \"Тил Барсип\" (unhyphenated, two words) yields zero hits; canonical ru label \"Тиль-Барсип\" (hyphenated, with soft sign) finds Q176458 as the sole hit.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q1790257",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Кумме",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "gold-noise",
+      "rescue_by": "already-hit-in-reality",
+      "evidence": "Gold ru-label is 'Кумми' (Kummanni, Kizzuwatna's cult capital in Cilicia). Search 'Кумме' top-1 is Q1792004 'Kumme' (ru alias 'Кумме'), a distinct Urartu-border holy city; enwiki explicitly states Kummanni 'should not be confused with Kumme'. Sentence lists 'Кумме' among Nairi/Urartu-region polities (Хубушкиа, Айаис, Сангибуту), matching Kumme's geography, not Kummanni's — gold QID looks mismatched, and the arguably-correct entity is already the top candidate.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q20565568",
+      "article": "Арслантепе (Мелид)",
+      "surface": "турками-сельджуками",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Сельджуки'. Search 'сельджуки'/'Сельджуки' -> Q20565568 top-1. Surface is instrumental-case with attached compound prefix 'турками-', so prefix search on the raw surface never matches; canonical label rescues it.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q2062419",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Айраратское царство",
+      "outcome_class": "no_candidates",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Ервандидское царство' (alias 'Ервандидская Армения'); 'Айраратское царство' is NOT a Wikidata alias but IS the actual synonym used in the lead of ru.wikipedia's own 'Ервандидская Армения' article. Search 'Айраратское царство' -> []; search 'Ервандидское царство' -> gold top-1. No usable alternate is present in the sentence itself (the parenthetical is just the adjective 'Урартское'), so only a knowledgeable label-guess (not alt-names) could bridge this.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q2074363",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Шубрия",
+      "outcome_class": "no_candidates",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Шубрия'. Search on the recorded lemma 'Арме-Шубрия' (a fused compound of two co-mentioned polities) -> []; search on the recorded surface 'Шубрия' alone -> Q2074363 top-1. Root cause is a lemmatizer bug that merged two distinct entity names into one query string.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q2142541",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Гузана",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Тель-Халаф' (the Iron-age city, historically = Biblical Gozan/Guzana per enwiki). Search 'Гузана' returns only Q904998 'халафская культура' — a genuinely distinct ~6100-5100BC prehistoric culture that nonetheless carries a mis-attached ru alias 'Гузана' in Wikidata. Search 'Тель-Халаф' surfaces gold alongside Q904998, so a correct label-guess would rescue it; alt-names does not apply (no parenthetical near this mention).",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q336087",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Араме",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Арама' (Arame of Urartu). Surface 'Араме' is the Russian prepositional-case inflection ('при царе Араме'). Search 'Арама' -> Q336087 at rank 3/20; search 'Араме' returns only unrelated Aramaic-language/Aramengo items.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q34374",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Крита",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Крит'. Surface 'Крита' (genitive) returns only unrelated Sanskrit terms ('Критархия', 'Сатья-юга' etc.); recorded lemma 'минойский Крит' (adjective fused onto the noun) returns []. Search 'Крит' -> Q34374 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q552328",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Ману",
+      "outcome_class": "retrieval_miss",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Манна' (Mannaea, historically fell alongside Urartu shortly after Assyria — matches the sentence exactly). Surface 'Ману' (likely a dropped-letter corruption of accusative 'Манну') returns only unrelated 'Manu'/Hindu-mythology items; search 'Манна' -> Q552328 top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q56306234",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Арме",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Армэ' (thin stub item, no description/aliases). Surface/lemma spelling 'Арме' instead prefix-matches an unrelated Q28950661 'Арме' (confirmed via wbgetentities to be a Bashkir folk song, NOT a Wikidata duplicate of gold). Search 'Армэ' -> gold top-1; the failure is a single-letter е/э transliteration mismatch.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q5684",
+      "article": "Арслантепе (Мелид)",
+      "surface": "Вавилонские",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Gold ru-label 'Вавилон'. Sentence 'Вавилонские названия сатрапий' contains a genuine adjectival Babylon/Babylonia reference the NER model never tagged; no candidate search was attempted (stage never reached). Note: gold QID is the city (Вавилон) rather than the state (Вавилония, Q47690), a minor granularity looseness but not disqualifying.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q620765",
+      "article": "Арслантепе (Мелид)",
+      "surface": "лидийско",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Лидия'. Surface 'лидийско' plus recorded lemma 'лидийско-мидийская война' (a fused two-combatant war-name compound) both return []. Search 'Лидия' -> Q620765 at rank 2/20.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q770281",
+      "article": "Арслантепе (Мелид)",
+      "surface": "позднехетских царств",
+      "outcome_class": "no_candidates",
+      "primary_category": "morphology-gap",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Сиро-хеттские царства', ru alias 'Позднехеттские царства' (double-т). Surface 'позднехетских царств' uses single-т ('хетских'), a spelling variant, and returns []. Searching the exact alias 'Позднехеттские царства' (double-т) or the canonical label 'Сиро-хеттские царства' both hit gold top-1.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q904998",
+      "article": "Арслантепе (Мелид)",
+      "surface": "халафоподобная",
+      "outcome_class": "not_extracted",
+      "primary_category": "honest-ner-miss",
+      "rescue_by": "none",
+      "evidence": "Gold ru-label 'халафская культура'. Sentence explicitly quotes «халафоподобная» (Halaf-culture-like) as a deliberate archaeological term the NER model never extracted; no search was attempted (stage never reached). Grounding a '-like' adjective to the named parent culture is a reasonable, if slightly loose, gold choice.",
+      "checked_wikidata": true
+    },
+    {
+      "gold_qid": "Q938608",
+      "article": "Арслантепе (Мелид)",
+      "surface": "халибов",
+      "outcome_class": "no_candidates",
+      "primary_category": "other",
+      "rescue_by": "label-guess",
+      "evidence": "Gold ru-label 'Халибы'. Recorded lemma 'халдайцы' is a wrong/unrelated ethnonym (Chaldeans), apparently mis-picked from the hyphenated compound 'халибов-халдайцев' by the lemmatizer; the genitive surface 'халибов' alone also fails prefix match (returns only an unrelated surname item). Canonical nominative 'Халибы' -> Q938608 top-1.",
+      "checked_wikidata": true
+    }
+  ],
+  "tables": {
+    "2a": {
+      "overall": {
+        "other": {
+          "count": 24,
+          "pct": 32.4
+        },
+        "morphology-gap": {
+          "count": 23,
+          "pct": 31.1
+        },
+        "honest-ner-miss": {
+          "count": 15,
+          "pct": 20.3
+        },
+        "gold-noise": {
+          "count": 6,
+          "pct": 8.1
+        },
+        "search-truncation": {
+          "count": 6,
+          "pct": 8.1
+        }
+      },
+      "by_outcome_class": {
+        "not_extracted": {
+          "honest-ner-miss": {
+            "count": 15,
+            "pct": 93.8
+          },
+          "gold-noise": {
+            "count": 1,
+            "pct": 6.2
+          }
+        },
+        "no_candidates": {
+          "other": {
+            "count": 8,
+            "pct": 42.1
+          },
+          "morphology-gap": {
+            "count": 9,
+            "pct": 47.4
+          },
+          "search-truncation": {
+            "count": 1,
+            "pct": 5.3
+          },
+          "gold-noise": {
+            "count": 1,
+            "pct": 5.3
+          }
+        },
+        "retrieval_miss": {
+          "morphology-gap": {
+            "count": 14,
+            "pct": 35.9
+          },
+          "other": {
+            "count": 16,
+            "pct": 41.0
+          },
+          "gold-noise": {
+            "count": 4,
+            "pct": 10.3
+          },
+          "search-truncation": {
+            "count": 5,
+            "pct": 12.8
+          }
+        }
+      }
+    },
+    "2b": {
+      "overall": {
+        "label-guess": {
+          "count": 52,
+          "pct": 70.3
+        },
+        "none": {
+          "count": 18,
+          "pct": 24.3
+        },
+        "already-hit-in-reality": {
+          "count": 4,
+          "pct": 5.4
+        }
+      },
+      "by_outcome_class": {
+        "not_extracted": {
+          "none": {
+            "count": 16,
+            "pct": 100.0
+          }
+        },
+        "no_candidates": {
+          "label-guess": {
+            "count": 18,
+            "pct": 94.7
+          },
+          "none": {
+            "count": 1,
+            "pct": 5.3
+          }
+        },
+        "retrieval_miss": {
+          "label-guess": {
+            "count": 34,
+            "pct": 87.2
+          },
+          "already-hit-in-reality": {
+            "count": 4,
+            "pct": 10.3
+          },
+          "none": {
+            "count": 1,
+            "pct": 2.6
+          }
+        }
+      },
+      "normalization_note": "3 entries (Q7209/Армия империи Хань, Q1023301/Арслантепе (Мелид), Q1790257/Арслантепе (Мелид)) were relabeled from rescue_by='none' to rescue_by='already-hit-in-reality' during aggregation: their per-agent evidence text states the correct real-world entity was already present among overlapping_pred_mentions candidates (verified against gemini_misses_10.json), matching the same situation as the Q373521 Псамметих III case which the originating agent already labelled 'already-hit-in-reality'. This is a semantic-consistency fix, not a spelling fix; no other primary_category/outcome_class/rescue_by spellings drifted across the 5 chunks (each field uses a single clean value set across all 74 entries)."
+    },
+    "2c": {
+      "no_candidates": {
+        "place": 7,
+        "people": 6,
+        "event": 2,
+        "deity": 1,
+        "culture": 3,
+        "institution": 2
+      },
+      "retrieval_miss": {
+        "person": 7,
+        "realia": 1,
+        "place": 16,
+        "event": 1,
+        "people": 8,
+        "institution": 1,
+        "title": 2,
+        "language": 1,
+        "culture": 3,
+        "dynasty": 1
+      },
+      "not_extracted": "n/a (no overlapping_pred_mentions by construction -- NER never produced a span to categorize)",
+      "multi_category_entities_note": "4 entities have >1 distinct NER category across their overlapping_pred_mentions; each distinct category counted once per entity (search-stage category-instance sum = 62 = 58 search-stage misses + 4 extra category credits)",
+      "multi_category_entities": [
+        {
+          "gold_qid": "Q389688",
+          "article": "XXX династия",
+          "surface": "Персидской империей",
+          "categories": [
+            "institution",
+            "people"
+          ]
+        },
+        {
+          "gold_qid": "Q389688",
+          "article": "Азиатская экспедиция (336—334 до н. э.)",
+          "surface": "Персией",
+          "categories": [
+            "people",
+            "place"
+          ]
+        },
+        {
+          "gold_qid": "Q131802",
+          "article": "Амударьинский клад",
+          "surface": "скифского «звериного стиля»",
+          "categories": [
+            "culture",
+            "people"
+          ]
+        },
+        {
+          "gold_qid": "Q770281",
+          "article": "Арслантепе (Мелид)",
+          "surface": "позднехетских царств",
+          "categories": [
+            "culture",
+            "institution"
+          ]
+        }
+      ]
+    },
+    "2d": {
+      "search_stage_misses_total": 58,
+      "search_stage_breakdown": {
+        "no_candidates": 19,
+        "retrieval_miss": 39
+      },
+      "rescued_alt_names": 0,
+      "rescued_label_guess_cumulative": 52,
+      "rescued_label_guess_incremental": 52,
+      "metric_artifacts_gold_noise_or_already_hit": 5,
+      "metric_artifacts_detail": {
+        "already_hit_in_reality": 4,
+        "gold_mislabeled_no_hit": 1
+      },
+      "irreducible_after_label_guess": 1,
+      "irreducible_detail": [
+        {
+          "gold_qid": "Q12087706",
+          "article": "Академия Цзися",
+          "surface": "ванов",
+          "primary_category": "search-truncation"
+        }
+      ],
+      "sum_check": 58,
+      "candidates_hit_rate": {
+        "n_gold_entities_10_article_slice": 358,
+        "baseline": {
+          "hits": 284,
+          "rate_pct": 79.3
+        },
+        "plus_alt_names": {
+          "hits": 284,
+          "rate_pct": 79.3
+        },
+        "plus_label_guess_cumulative": {
+          "hits": 336,
+          "rate_pct": 93.9
+        }
+      },
+      "note": "0 of the 58 search-stage misses were categorized rescue_by='alt-names' -- no miss in this slice was fixable purely by searching an in-sentence parenthetical alternate name; every rescuable miss required the stronger label-guess mode (oracle knowledge of the canonical Wikidata ru-label, e.g. Апис for surface 'быку', Держава Ахеменидов for 'Персией'). 5 misses are metric artifacts, not real search failures: 4 are gold_qid pointing at the wrong real-world referent while the correct entity was already returned as a candidate ('already-hit-in-reality'), 1 (скифского «звериного стиля», Q131802) is a mis-annotated gold pointing to the wrong QID (Q1092377 is the correct target and is the sole hit for the exact phrase, but no candidates were returned under Q131802). If gold were corrected for all 5, the ceiling candidates_hit would be 284+52+5=341/358 (95.3%). Exactly 1 search-stage miss remains genuinely irreducible even under oracle label-guess: Q12087706 'ванов' (Академия Цзися) -- gold ru label is the bare title 'Ван', a literal homograph shared by several unrelated Wikidata items (Vannes, Van/Turkey, etc.); label-guess reproduces the identical query as the original surface search and still ranks gold 17th/20, past any reasonable candidate cutoff."
+    }
+  }
+}

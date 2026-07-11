@@ -72,6 +72,15 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/experiment-approval-gate.py\""
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-new-version-suffix.py\""
+          }
+        ]
       }
     ],
     "SubagentStop": [

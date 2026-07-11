@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 
 from palimpsest.terminology.base import GroundingResult, TermMention, WikidataRef
-from palimpsest.terminology.evaluation.predict import predict_tuples
+from palimpsest.terminology.evaluation.predict import predict_tuples, predict_tuples_from_mentions
 
 
 def _mention(surface, char_start, char_end, lemma=None):
@@ -20,13 +20,18 @@ def _mention(surface, char_start, char_end, lemma=None):
     )
 
 
-def _grounded(qid, label="label"):
+def _grounded(qid, label="label", *, trace_candidates=None, search_source=None):
     ref = WikidataRef.from_qid(qid, label, "") if qid else None
+    trace = {"resolved_by": "exact_label" if qid else "no_candidates"}
+    if trace_candidates is not None:
+        trace["candidates"] = trace_candidates
+    if search_source is not None:
+        trace["search_source"] = search_source
     return GroundingResult(
         difficulty="green" if qid else "red",
         grounded=ref,
         candidates=[ref] if ref else [],
-        trace={"resolved_by": "exact_label" if qid else "no_candidates"},
+        trace=trace,
     )
 
 
@@ -123,6 +128,123 @@ def test_mention_grounded_to_none_is_skipped():
     assert record["resolved_by"] == "no_candidates"
 
 
+def test_record_carries_compact_candidate_list_and_search_source():
+    """R_search patch (2026-07-10): the record's `candidates` field mirrors
+    the grounding trace's full candidate list, compacted to {qid, label},
+    plus `search_source` -- independent of whether the mention was resolved
+    (qid may still be None/ambiguous while candidates were found)."""
+    paragraphs = ["Царь Саргон правил Аккадом."]
+    article_text = paragraphs[0]
+    local_start = article_text.index("Саргон")
+    local_end = local_start + len("Саргон")
+
+    def extract_fn(paragraph: str):
+        return [_mention("Саргон", local_start, local_end)]
+
+    trace_candidates = [
+        {"qid": "Q1", "label_ru": "Саргон Древний", "label_en": "Sargon of Akkad",
+         "description": "", "aliases_ru": [], "aliases_en": []},
+        {"qid": "Q2", "label_ru": "Саргон II", "label_en": None,
+         "description": "", "aliases_ru": [], "aliases_en": []},
+    ]
+
+    def ground_fn(mention, *, judge=None, scope_id=None, judge_cache=None):
+        return _grounded("Q1", trace_candidates=trace_candidates, search_source="wbsearchentities")
+
+    result = predict_tuples(article_text, paragraphs, extract_fn, ground_fn)
+    record = result["records"][0]
+
+    assert record["search_source"] == "wbsearchentities"
+    assert record["candidates"] == [
+        {"qid": "Q1", "label": "Sargon of Akkad"},  # label_en preferred
+        {"qid": "Q2", "label": "Саргон II"},  # falls back to label_ru when label_en is None
+    ]
+
+
+def test_record_candidate_list_empty_when_trace_has_no_candidates_key():
+    """wikidata_unavailable trace shape (`{"error": ...}`, no "candidates" key
+    at all) must not crash -- degrades to an empty list, not None/KeyError."""
+    paragraphs = ["Некий термин здесь."]
+    article_text = paragraphs[0]
+    local_start = article_text.index("термин")
+    local_end = local_start + len("термин")
+
+    def extract_fn(paragraph: str):
+        return [_mention("термин", local_start, local_end)]
+
+    def ground_fn(mention, *, judge=None, scope_id=None, judge_cache=None):
+        return GroundingResult(
+            difficulty="red", grounded=None, candidates=[],
+            trace={"error": "wikidata unavailable"},  # no "resolved_by"/"candidates" keys
+        )
+
+    result = predict_tuples(article_text, paragraphs, extract_fn, ground_fn)
+    record = result["records"][0]
+
+    assert record["candidates"] == []
+    assert record["search_source"] is None
+    assert record["resolved_by"] is None
+
+
+def test_no_judge_none_still_yields_populated_candidates_via_real_grounding():
+    """Integration-level guard for the --no-judge protocol: judge=None must
+    not skip candidate search. Exercises the REAL LabelFirstGrounding.ground()
+    (not a predict.py-level fake) end to end through predict_tuples, mirroring
+    what `run --no-judge` actually wires up."""
+    from palimpsest.terminology.base import GroundingConfig
+    from palimpsest.terminology.grounding.label_first import LabelFirstGrounding
+
+    class _FakeWD:
+        def __init__(self):
+            self.n_calls = 0
+
+        def search_entities(self, term, lang="ru", limit=7):
+            if term == "Саргон":
+                return [{"id": "Q1"}, {"id": "Q2"}]
+            return []
+
+        def search_cirrus(self, term, limit=7):
+            return []
+
+        def wikipedia_wikibase_item(self, title, lang="ru"):
+            return None
+
+        def get_entities(self, qids, **kw):
+            entities = {
+                "Q1": {"id": "Q1", "labels": {"en": {"value": "Sargon of Akkad"}},
+                       "aliases": {}, "descriptions": {}, "claims": {}, "sitelinks": {}},
+                "Q2": {"id": "Q2", "labels": {"en": {"value": "Sargon II"}},
+                       "aliases": {}, "descriptions": {}, "claims": {}, "sitelinks": {}},
+            }
+            return {q: entities[q] for q in qids if q in entities}
+
+    paragraphs = ["Царь Саргон правил Аккадом."]
+    article_text = paragraphs[0]
+    local_start = article_text.index("Саргон")
+    local_end = local_start + len("Саргон")
+
+    def extract_fn(paragraph: str):
+        return [_mention("Саргон", local_start, local_end)]
+
+    grounder = LabelFirstGrounding(_FakeWD(), GroundingConfig())
+
+    def ground_fn(mention, *, judge=None, scope_id=None, judge_cache=None):
+        return grounder.ground(mention, judge=judge, scope_id=scope_id, judge_cache=judge_cache)
+
+    # judge=None end to end, same as `run --no-judge`.
+    result = predict_tuples(article_text, paragraphs, extract_fn, ground_fn, judge=None)
+    record = result["records"][0]
+
+    # 2 exact matches ("Саргон" surface has no exact-label match to either
+    # entity's label here since labels are English -- candidates still found
+    # via search, escalation with judge=None -> judge_unavailable, but the
+    # free-search candidate list is populated regardless.
+    assert record["resolved_by"] == "judge_unavailable"
+    assert record["qid"] is None  # no judge -> unresolved, but...
+    assert {c["qid"] for c in record["candidates"]} == {"Q1", "Q2"}  # ...candidates ARE there
+    assert record["search_source"] == "wbsearchentities"
+
+
 def test_canonicalize_remaps_predicted_qid():
     paragraphs = ["Империя простиралась широко."]
     article_text = paragraphs[0]
@@ -192,3 +314,127 @@ def test_predict_tuples_raises_on_paragraph_article_text_mismatch():
 
     with pytest.raises(ValueError):
         predict_tuples(wrong_article_text, paragraphs, extract_fn, ground_fn)
+
+
+# ── candidate "source" passthrough (2026-07-10, search-mode widening patch) ──
+
+
+def test_predict_tuples_candidates_omit_source_key_when_trace_lacks_it():
+    """Baseline-mode regression guard: a trace candidate dict with no
+    "source" key (baseline search) must not gain one in pred.jsonl's compact
+    candidates -- byte-for-byte wire identity."""
+    paragraphs = ["Текст с Римом."]
+    article_text = paragraphs[0]
+    local_start = article_text.index("Римом")
+    local_end = local_start + len("Римом")
+
+    def extract_fn(paragraph: str):
+        return [_mention("Римом", local_start, local_end)]
+
+    def ground_fn(mention, *, judge=None, scope_id=None, judge_cache=None):
+        return _grounded("Q220", trace_candidates=[{"qid": "Q220", "label_en": "Rome"}])
+
+    result = predict_tuples(article_text, paragraphs, extract_fn, ground_fn)
+    assert result["records"][0]["candidates"] == [{"qid": "Q220", "label": "Rome"}]
+    assert "source" not in result["records"][0]["candidates"][0]
+
+
+def test_predict_tuples_candidates_pass_through_source_key_when_trace_has_it():
+    paragraphs = ["Унку (Unqi) жил в Сирии."]
+    article_text = paragraphs[0]
+    local_start = article_text.index("Унку")
+    local_end = local_start + len("Унку")
+
+    def extract_fn(paragraph: str):
+        return [_mention("Унку", local_start, local_end)]
+
+    def ground_fn(mention, *, judge=None, scope_id=None, judge_cache=None):
+        return _grounded(
+            "Q99", label="Unqi",
+            trace_candidates=[{"qid": "Q99", "label_en": "Unqi", "source": "alt"}],
+            search_source="alt",
+        )
+
+    result = predict_tuples(article_text, paragraphs, extract_fn, ground_fn)
+    assert result["records"][0]["candidates"] == [{"qid": "Q99", "label": "Unqi", "source": "alt"}]
+    assert result["records"][0]["search_source"] == "alt"
+
+
+# ── predict_tuples_from_mentions (--reuse-extraction, Deliverable 2) ────────
+
+
+def test_predict_tuples_from_mentions_grounds_directly_without_extraction():
+    """No extract_fn/paragraphs at all -- mentions already carry their
+    whole-article token index, ground_fn is called directly."""
+    mention = _mention("Рим", 10, 13)
+    calls: list[str] = []
+
+    def ground_fn(m, *, judge=None, scope_id=None, judge_cache=None):
+        calls.append(m.surface)
+        return _grounded("Q220")
+
+    result = predict_tuples_from_mentions([(mention, 5)], ground_fn)
+
+    assert calls == ["Рим"]
+    assert result["tuples"] == [(5, "Рим", "Q220", 1)]
+    assert result["records"][0]["index"] == 5
+    assert result["records"][0]["surface"] == "Рим"
+
+
+def test_predict_tuples_from_mentions_ungrounded_mention_skipped_from_tuples_kept_in_records():
+    mention = _mention("Неизвестное", 0, 11)
+
+    def ground_fn(m, *, judge=None, scope_id=None, judge_cache=None):
+        return _grounded(None)
+
+    result = predict_tuples_from_mentions([(mention, 0)], ground_fn)
+    assert result["tuples"] == []
+    assert len(result["records"]) == 1
+    assert result["records"][0]["qid"] is None
+
+
+def test_predict_tuples_from_mentions_multiple_mentions_preserve_order():
+    mentions = [
+        (_mention("Первое", 0, 6), 0),
+        (_mention("Второе", 10, 16), 3),
+    ]
+    order: list[str] = []
+
+    def ground_fn(m, *, judge=None, scope_id=None, judge_cache=None):
+        order.append(m.surface)
+        return _grounded("Q" + m.surface)
+
+    result = predict_tuples_from_mentions(mentions, ground_fn)
+    assert order == ["Первое", "Второе"]
+    assert result["tuples"] == [(0, "Первое", "QПервое", 1), (3, "Второе", "QВторое", 1)]
+
+
+def test_predict_tuples_from_mentions_forwards_judge_scope_and_cache():
+    mention = _mention("Термин", 0, 6)
+    captured = {}
+
+    def ground_fn(m, *, judge=None, scope_id=None, judge_cache=None):
+        captured["judge"] = judge
+        captured["scope_id"] = scope_id
+        captured["judge_cache"] = judge_cache
+        return _grounded("Q1")
+
+    sentinel_judge = object()
+    sentinel_cache = {}
+    predict_tuples_from_mentions(
+        [(mention, 0)], ground_fn, judge=sentinel_judge, scope_id="article-42", judge_cache=sentinel_cache,
+    )
+    assert captured["judge"] is sentinel_judge
+    assert captured["scope_id"] == "article-42"
+    assert captured["judge_cache"] is sentinel_cache
+
+
+def test_predict_tuples_from_mentions_canonicalizes_qid():
+    mention = _mention("Рим", 0, 3)
+
+    def ground_fn(m, *, judge=None, scope_id=None, judge_cache=None):
+        return _grounded("Q_OLD")
+
+    result = predict_tuples_from_mentions([(mention, 0)], ground_fn, canonicalize=lambda q: q + "_CANON")
+    assert result["tuples"][0][2] == "Q_OLD_CANON"
+    assert result["records"][0]["qid"] == "Q_OLD_CANON"

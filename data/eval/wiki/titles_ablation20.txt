@@ -1,0 +1,21 @@
+# Preserved from gt_v2_sub20.jsonl (deleted 2026-07-10, spec 2026-07-10-deversioning-cleanup.md C5) for byte-rebuild via: python scripts/wiki_eval.py build-gt --titles data/eval/wiki/titles_ablation20.txt --out <out.jsonl>
+Арслантепе (Мелид)	hittite
+Ашшур-этель-илани	assyria
+Восстания в державе Ахеменидов (521—516 до н. э.)	achaemenid_iran
+Гай Сосий (консул)	rome
+Гандхара	achaemenid_iran
+Древнегреческая религия	greece
+Завоевание царства Шу царством Вэй	china
+Зимрида (правитель Сидона)	egypt
+Ибби-Суэн	sumer
+Калан (мудрец)	india
+Мурсили II	hittite
+Осада Тира (314—313 до н. э.)	phoenicia
+Первая династия Ура	sumer
+Пергамский алтарь	greece
+Поздняя Цинь	china
+Пушьямитра Шунга	india
+Римляне	rome
+Стигия	egypt
+Сур (город)	phoenicia
+Элулай	assyria

@@ -1,0 +1,96 @@
+[
+ {
+  "flagged_title": "Гелиополиты",
+  "section": "egypt",
+  "replacement_title": "Розеттский камень",
+  "replacement_qid": "Q48584",
+  "n_anchor_links": 65,
+  "earliest_date_ce": -196,
+  "p31_check_passed": true,
+  "p31_values": [
+   "Q139591219",
+   "Q178743",
+   "Q333109",
+   "Q861809"
+  ],
+  "why_ancient": "196 BCE granodiorite trilingual stele — canonical Ancient Egypt artifact (P31 stele/bilingual inscription).",
+  "already_in_corpus": false,
+  "rejected_before_it": []
+ },
+ {
+  "flagged_title": "Стигия",
+  "section": "egypt",
+  "replacement_title": "Древнеегипетский календарь",
+  "replacement_qid": "Q254101",
+  "n_anchor_links": 43,
+  "earliest_date_ce": -2800,
+  "p31_check_passed": true,
+  "p31_values": [
+   "Q12132"
+  ],
+  "why_ancient": "Calendar system of the ancient Egyptian civilization, in use from ~2800 BCE (P31 calendar system; earliest date 2800 BCE).",
+  "already_in_corpus": false,
+  "rejected_before_it": [
+   {
+    "title": "Упадок древнеегипетской религии",
+    "rank": 11,
+    "reason": "rejected: borderline chronology (terminal event 537 CE > cutoff)"
+   },
+   {
+    "title": "Стела голода",
+    "rank": 13,
+    "reason": "skipped: corpus balance (avoid a second stele artifact next to Розеттский камень)"
+   }
+  ],
+  "note": "owner substitution: rank-11 pick «Упадок древнеегипетской религии» rejected as borderline (terminal event 537 CE > cutoff); rank 13 «Стела голода» skipped to avoid a second stele artifact next to Розеттский камень; rank-14 taken"
+ },
+ {
+  "flagged_title": "Яффа",
+  "section": "phoenicia",
+  "replacement_title": "Библ",
+  "replacement_qid": "Q173532",
+  "n_anchor_links": 90,
+  "earliest_date_ce": -8000,
+  "p31_check_passed": true,
+  "p31_values": [
+   "Q133442",
+   "Q486972",
+   "Q515",
+   "Q839954"
+  ],
+  "why_ancient": "Byblos — one of the oldest Canaanite-Phoenician city-states (settled ~8000 BCE); article is majority ancient Phoenician history.",
+  "already_in_corpus": false,
+  "rejected_before_it": []
+ },
+ {
+  "flagged_title": "Кесарево безумие",
+  "section": "rome",
+  "replacement_title": "Триумф",
+  "replacement_qid": "Q657438",
+  "n_anchor_links": 50,
+  "earliest_date_ce": null,
+  "p31_check_passed": true,
+  "p31_values": [
+   "Q2627975",
+   "Q618779"
+  ],
+  "why_ancient": "The Roman triumph — an institution/ceremony of the Roman Republic/Empire (P31 ancient Roman ceremony).",
+  "already_in_corpus": false,
+  "rejected_before_it": []
+ },
+ {
+  "flagged_title": "Керченский пролив",
+  "section": "rome",
+  "replacement_title": "Публий Корнелий Лентул Кавдин (консул)",
+  "replacement_qid": "Q2005427",
+  "n_anchor_links": 31,
+  "earliest_date_ce": -200,
+  "p31_check_passed": true,
+  "p31_values": [
+   "Q5"
+  ],
+  "why_ancient": "Roman patrician, consul 236 BCE — same class as the corpus's existing Republican-consul articles.",
+  "already_in_corpus": false,
+  "rejected_before_it": []
+ }
+]

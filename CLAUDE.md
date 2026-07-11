@@ -143,6 +143,7 @@ Concurrency: rule R6 in § Model routing & dispatch (parallel means parallel; mi
 - **No extra functionality without need.** A bug fix doesn't need surrounding cleanup; a one-shot doesn't need a helper; don't add fallbacks for scenarios that can't happen.
 - **One stage = one module** under [src/palimpsest/](src/palimpsest/) (e.g. [terminology/](src/palimpsest/terminology/), [webapp/](src/palimpsest/webapp/), [evaluation/](src/palimpsest/evaluation/)). No `Stage` protocol — keep modules plain until two of them actually need a shared interface.
 - **One module = one responsibility.** If a file grows two unrelated concerns, split it.
+- **No new `vN` suffix on our own artifacts** (files, identifiers, schema names) unless 2+ versions run simultaneously in the live demo/pipeline; dotted model names, external-API `/vN`, `rev-N` contract revisions and serialized schema tags are exempt. Allowlist: [.claude/allowlist-versioned.txt](.claude/allowlist-versioned.txt).
 
 ### Python
 

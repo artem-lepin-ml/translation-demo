@@ -3,7 +3,7 @@
 pipeline input format, plus a sidecar index and a stratified pilot selection.
 
 Spec: docs/superpowers/specs/2026-07-07-wiki-llm-judge-eval.md Sec.2/4 (Ph-1
-item 1). Reads data/eval/wiki/titles_v2.txt + the cached Parsoid HTML under
+item 1). Reads data/eval/wiki/titles.txt + the cached Parsoid HTML under
 data/eval/wiki/pages/ the same way the wiki-eval harness does (`_safe_filename`
 + `flatten()`, see docs/reports/python-pro-wiki-corpus-cleanliness-check.md for
 the prior read-only audit that established the 2 553-paragraph baseline this
@@ -34,7 +34,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from palimpsest.terminology.evaluation.tokenize import flatten, tokens  # noqa: E402
 from palimpsest.terminology.evaluation.wiki_gt import _safe_filename  # noqa: E402
 
-DEFAULT_TITLES = ROOT / "data/eval/wiki/titles_v2.txt"
+DEFAULT_TITLES = ROOT / "data/eval/wiki/titles.txt"
 DEFAULT_CACHE = ROOT / "data/eval/wiki/pages"
 DEFAULT_OUT_DIR = ROOT / "data/eval/wiki"
 DEFAULT_BOUQUET = ROOT / "external/gse-translation/data/bouquet/bouquet_original.json"

@@ -1,0 +1,117 @@
+{
+ "note": "Owner rulings 2026-07-10 (post-approval): uniform ancient-language tag removal + modern-political exclusions in 072/073",
+ "reverse_restores": [
+  {
+   "article": "010",
+   "n": 169,
+   "anchor": "древнеперсидск",
+   "reason": "owner ruling 2026-07-10: uniform tag-position removal supersedes the earlier restore"
+  }
+ ],
+ "add_removals": [
+  {
+   "article": "072",
+   "token_index": 1533,
+   "anchor_text": "Ленинабадская область",
+   "qid": "Q241582",
+   "span_len": 2,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit"
+  },
+  {
+   "article": "072",
+   "token_index": 1541,
+   "anchor_text": "Таджикской ССР",
+   "qid": "Q199711",
+   "span_len": 2,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet republic (SSR)"
+  },
+  {
+   "article": "072",
+   "token_index": 1545,
+   "anchor_text": "Сталинабадской",
+   "qid": "Q4439196",
+   "span_len": 1,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit"
+  },
+  {
+   "article": "072",
+   "token_index": 1546,
+   "anchor_text": "Кулябской",
+   "qid": "Q1999787",
+   "span_len": 1,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit"
+  },
+  {
+   "article": "072",
+   "token_index": 1548,
+   "anchor_text": "Гармской",
+   "qid": "Q4133843",
+   "span_len": 1,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit"
+  },
+  {
+   "article": "072",
+   "token_index": 1552,
+   "anchor_text": "Президиума Верховного Совета СССР",
+   "qid": "Q1643162",
+   "span_len": 4,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet governing institution"
+  },
+  {
+   "article": "072",
+   "token_index": 1571,
+   "anchor_text": "Ура-Тюбинская область",
+   "qid": "Q4476477",
+   "span_len": 2,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- Soviet-era admin unit"
+  },
+  {
+   "article": "073",
+   "token_index": 105,
+   "anchor_text": "Венгрии",
+   "qid": "Q28",
+   "span_len": 1,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- state government asserting ownership claim"
+  },
+  {
+   "article": "073",
+   "token_index": 106,
+   "anchor_text": "Югославии",
+   "qid": "Q36704",
+   "span_len": 1,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- state government asserting ownership claim"
+  },
+  {
+   "article": "073",
+   "token_index": 108,
+   "anchor_text": "Ливана",
+   "qid": "Q822",
+   "span_len": 1,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- state government asserting ownership claim"
+  },
+  {
+   "article": "073",
+   "token_index": 640,
+   "anchor_text": "Палате лордов",
+   "qid": "Q11007",
+   "span_len": 2,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- UK legislative institution deliberating the case"
+  },
+  {
+   "article": "073",
+   "token_index": 801,
+   "anchor_text": "Виктор Орбан",
+   "qid": "Q57641",
+   "span_len": 2,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- named modern politician"
+  },
+  {
+   "article": "073",
+   "token_index": 658,
+   "anchor_text": "Европейский Союз",
+   "qid": "Q458",
+   "span_len": 2,
+   "reason": "owner ruling 2026-07-10: modern political entity (precedent c) -- supranational political union"
+  }
+ ]
+}

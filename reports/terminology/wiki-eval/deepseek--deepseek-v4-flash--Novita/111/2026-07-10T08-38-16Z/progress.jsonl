@@ -1,0 +1,2 @@
+{"article": "XXX династия", "done": 1, "of": 3, "spent": 0.028261976000000015, "spent_by_kind": {"extract": 0.021002996000000006, "judge": 0.007258980000000003}, "calls_by_kind": {"extract": 33, "judge": 53}}
+{"article": "XXVII династия", "done": 2, "of": 3, "spent": 0.02832289600000002, "spent_by_kind": {"extract": 0.021002996000000006, "judge": 0.007319900000000004}, "calls_by_kind": {"extract": 33, "judge": 58}}

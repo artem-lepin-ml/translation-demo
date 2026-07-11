@@ -22,7 +22,7 @@ The [terminology module](stages/terminology.md) is real (extract → ground → 
 - **Difficulty macro-F1 is low (~0.56) and misleading.** It is a macro over green/yellow/red on a golden that is 83% green with only 9 yellow, so the rare-class F1 dominates. The meaningful grounding number is **QID accuracy on groundable terms (G3 0.78)**, not difficulty-F1.
 - **Ancient-vs-modern sense.** The judge sometimes grounds an ancient place to its modern-city QID (Тадмор → Tadmur Q938457, the modern town, not ancient Palmyra Q5788). Flagged 🟡 in the UI, so honest, but the primary QID can be the wrong era. Context-era scoring is future work.
 - **Extraction (E1) is now implemented and measured, not a stub.** LLM-NER via an injected `Extractor` (`anthropic/claude-haiku-4.5` via OpenRouter, temperature 0 — winner of the 2026-07-02 7-model tournament; ⚠️ the tournament's HTML report was never committed to any branch in this repo, see [terminology stage doc](stages/terminology.md) for the surviving evidence), with a gazetteer-backed deterministic fallback — see [terminology stage doc](stages/terminology.md). Recall and precision are measured **by case** against the unified non-circular gold: lowercase recall **0.906**, all-case recall **0.909**, precision **0.437** (`reports/terminology/extraction_metrics.json`). The residual gap to 100% is dominated by (a) **inflection-form mismatch** — the gold sometimes annotates a different case/inflected form of a surface than what the extractor returns, so an exact-substring match misses a semantically-correct hit, and (b) the gold annotating some **borderline common nouns** that the precision-first default prompt intentionally skips (e.g. "царь"/king-in-general sense) to keep precision from collapsing further.
-- **Homonym mislinks on lowercase terms — resolved in the demo by G3 + a homonym audit.** Richer lowercase recall sent more lowercase surfaces to grounding, and G1 (`api_first`) had resolved some to unrelated modern places (`номов` → "Nome Census Area, Alaska" Q503023; `марту` → a modern place). The 2026-07-02 demo rebuild grounds every new lemma through **G3 (llm-judge) with an opus homonym/generic-noun audit**: `ном` now → the Egyptian nome (Q223706), `архэ` correctly stays red (its only candidate was the Presocratic-philosophy homonym, not the Athenian empire), and generic nouns (`царя`, `титулов`, `полисов`, `сенаторов`) fall to red rather than mislinking. Residual: a handful of real entities Wikidata's search did not return stay 🟡/🔴 with `qid=null` (беотийцы, марту/амурру) — honest, not silently wrong. Over-capture noise (`царя` extracted despite the prompt rule) is tunable via `DEFAULT_NER_PROMPT`, not a code fix, and is what keeps the demo red-rate near the SC7 ceiling (0.346 < 0.35).
+- **Homonym mislinks on lowercase terms — resolved in the demo by G3 + a homonym audit.** Richer lowercase recall sent more lowercase surfaces to grounding, and G1 (`api_first`) had resolved some to unrelated modern places (`номов` → "Nome Census Area, Alaska" Q503023; `марту` → a modern place). The 2026-07-02 demo rebuild grounds every new lemma through **G3 (llm-judge) with an opus homonym/generic-noun audit**: `ном` now → the Egyptian nome (Q223706), `архэ` correctly stays red (its only candidate was the Presocratic-philosophy homonym, not the Athenian empire), and generic nouns (`царя`, `титулов`, `полисов`, `сенаторов`) fall to red rather than mislinking. Residual: a handful of real entities Wikidata's search did not return stay 🟡/🔴 with `qid=null` (беотийцы, марту/амурру) — honest, not silently wrong. Over-capture noise (`царя` extracted despite the prompt rule) is tunable via `NER_SYSTEM_PROMPT` (2026-07-10: renamed from `DEFAULT_NER_PROMPT`, split system/user — see [terminology.md](stages/terminology.md)), not a code fix, and is what keeps the demo red-rate near the SC7 ceiling (0.346 < 0.35).
 - **Pairing span can over-capture.** P1's fuzzy locate occasionally grabs a slightly wider EN span (`Заиорданье` → `Transjordan. Driven`). Cosmetic; verdict still correct.
 - **NerConfig / extract endpoint contract — RESOLVED 2026-07-02.** Кросс-сверка после мержей `feat/terminology-extract` и `feat/model-registry` в `dev-demo` выполнена: эндпоинтов `POST /api/paragraphs/{id}/extract` и `GET/PUT /api/ner-config` в живом API **нет и не планируется для демо** — термины загружаются в БД офлайн (`scripts/load_terms.py` / `scripts/term_pipeline.py`), веб-приложение читает готовую таблицу `term`. `NerConfig{modelName, prompt, params}` остаётся контрактом уровня скриптов (см. [terminology stage doc](stages/terminology.md)); если живой re-extract понадобится, потребуется новая спека с budget-guard'ом.
 
@@ -140,3 +140,194 @@ Same smoke run: `response_format={"type":"json_object"}` works on route `auto` a
 orthogonal, but combining the `provider-9` pin with json_object yields a deterministic 400 Bad Request from the
 upstream. Judge-style calls (strict JSON) to deepseek must use `auto` (10/10 success in the 2026-07-05 triage,
 ~equal cost); keep the pin only for plain-text roles (translation).
+
+### deepseek-v4-flash still reasons on route `auto` even with `reasoning.enabled=false` (2026-07-08)
+The 2026-07-07 smoke's fix (`extra_body: {reasoning: {enabled: false}}` → `reasoning_tokens=0`) was verified on
+the pinned `provider-9` route. On route `auto` — the route judge-role calls are forced onto by the 400 above —
+the same flag does NOT suppress reasoning: `scripts/bouquet_judge_rerun.py run --judge deepseek-v4-flash
+--pilot 5 --system translate-gemma-bouquet` sent `"reasoning": {"enabled": false}` on all 15 calls and every
+single one still returned `reasoning_tokens > 0` (262–3443, mean ≈1330, ~45% of `completion_tokens`). Output was
+never empty at `max_tokens=4096` (0/15 parse failures, all `final_score` in [8,10]) — this is a *cost* quirk,
+not a correctness one — but it means judge-role token/cost budgets for this model on `auto` should assume
+reasoning fires regardless of the flag, roughly doubling completion-token spend versus the provider-9 smoke
+numbers. Neither `usage.cost` nor `usage.cost_usd` was present in any of the 15 raw responses either (unlike
+provider-9, which the wiki-eval doc says surfaces `cost_usd`) — `scripts/bouquet_judge_rerun.py`'s
+`PRICE_TABLE_USD_PER_MTOK` catalog-price fallback covers this gap for cost reporting. Real spend for the pilot:
+$0.0049 estimated (0.07/0.14 $ per Mtok in/out), well under the $0.50 validation cap.
+
+### Background pollers launched with plain `nohup ... & disown` die when the cloud session's shell is torn down (2026-07-09)
+Job-control detach (`nohup`/`disown`) is not the same as session detach. Two independent recovery pollers for the judge-run tracked in [python-pro-judge-run-deepseek.md](reports/python-pro-judge-run-deepseek.md) and [python-pro-judge-run-gemini-flash-lite.md](reports/python-pro-judge-run-gemini-flash-lite.md) were reaped silently — one at ~04:17Z, one at ~05:41Z — with 0-byte stdout logs and no traceback, meaning something external killed the process group, not a crash inside the script. `nohup` only blocks `SIGHUP` and `disown` only removes the job from the shell's job table; neither moves the process to a new session, so when the invoking cloud-session shell's session is torn down, the process still goes with it. Durable pattern: `setsid nohup <cmd> < /dev/null > <fresh-log> 2>&1 &`, then verify with `ps -o pid,ppid,pgid,sid` that the process is a session leader reparented to init (`PPID=1`, `PID=SID=PGID`). Also give each relaunch attempt a **fresh** log file, so liveness is checkable by the log's mtime rather than by re-reading a stale file, and don't rely on harness task-completion notifications for OS-detached processes — self-verify liveness (process alive + log mtime advancing) periodically instead.
+
+**Amendment (2026-07-09):** `setsid` only protects against tool-call/shell session teardown. It does NOT survive a cloud-container recycle. On 2026-07-09 the whole firecracker microVM was reclaimed and rebooted at 09:13:49Z after an inactivity window; the entire process table was wiped, taking down two independent `setsid`-detached session-leader pollers (PIDs 6778 and 26112, both `PPID=1`) with it, while the disk/scratchpad survived intact. Evidence in [debugger-poller-silence-diagnosis.md](reports/debugger-poller-silence-diagnosis.md): `uptime -s` and `/proc/uptime` (~191s uptime), `PID 1 = /process_api --firecracker-init`, no OOM traces, and all scratchpad files' last writes clustered 08:51:27–46Z, just before the recycle. Conclusion: no local daemon is immortal in a cloud session. Long-running work must be (a) resume-safe on disk — append-only, keyed rows, not in-memory state — and (b) driven by externally re-armed checks (scheduled wake-ups, agent check-ins), never by a background process assumed to keep running unattended.
+
+### RESOLVED 2026-07-10: wiki-eval silent 4k/512-token truncation + ±40-char judge context
+Diagnosed by [debugger-wiki-eval-llm-truncation-audit.md](reports/debugger-wiki-eval-llm-truncation-audit.md)
+and [code-reviewer-wiki-eval-harness.md](reports/code-reviewer-wiki-eval-harness.md), fixed by the wiki-eval
+experiment-v2 rework (spec [2026-07-10-wiki-eval-experiment-v2.md](superpowers/specs/2026-07-10-wiki-eval-experiment-v2.md)):
+
+- **Silent truncation.** Extraction calls ran at a hardcoded `max_tokens=4096` ([client.py](../src/palimpsest/llm/client.py)
+  default) and the judge at `max_tokens=512` ([wiki_eval.py](../scripts/wiki_eval.py), pre-rework); `finish_reason`
+  was never read anywhere, so a truncated extraction reply silently became `[]` via `parse_surfaces` — a quiet
+  recall loss, not a visible error. Fixed (`7e7ddfd`): `max_tokens=20000` for both roles
+  (`DEFAULT_MAX_TOKENS`), and every call is gated (`_gate_reply`) on `finish_reason == "length"` (or empty
+  content with `reasoning_tokens > 0`) — this is now a hard `LengthOverflowError`, never tolerated (spec Р15).
+- **`parse_surfaces` silently returning `[]` on malformed replies is fixed** (`421c99d`): it now raises
+  `ExtractionParseError` on a genuinely unparseable reply, distinct from an honest empty `[]`; the runner
+  (`7e7ddfd`) catches and counts it per-paragraph (`n_extraction_parse_failures`/`parse_failed_paragraphs` in
+  `meta.json`, pilot gate <1% of paragraphs) instead of a downstream metrics artifact silently under-counting.
+- **±40-char judge context.** The judge saw a fixed `CONTEXT_PAD=40` character window around the mention
+  (e.g. «…Малатья, Мальдия, Милидия, М»), not the sentence. Fixed (`421c99d`): `extract.sentence_context()`
+  returns the full sentence(s) overlapping the mention span, via a deterministic stdlib splitter with
+  RU-abbreviation/initials guards; `CONTEXT_PAD` is removed from code entirely. See
+  [wiki-eval.md](stages/wiki-eval.md) "Prompts".
+
+### `finish_reason=length` is now a hard error, not tolerated (spec Р15, 2026-07-10)
+A deliberate policy reversal from the earlier "length → retry as transient" stance: any wiki-eval extractor
+or judge call that comes back `finish_reason=="length"` (or empty content with `reasoning_tokens>0`, i.e. the
+model spent its whole budget reasoning) now raises `LengthOverflowError`
+([wiki_eval.py](../scripts/wiki_eval.py) `_gate_reply`) and **halts the run** with full diagnostics (model,
+role, article/paragraph, usage) rather than being silently retried or degraded. Rationale: a length overflow
+under the old policy corrupted the affected slice's numbers invisibly (see the RESOLVED entry above); a loud
+halt means the operator raises the cap and `--resume`s from the intact checkpoint instead of shipping a
+silently-truncated run. Not a bug — an explicit, owner-locked tradeoff (spec Р15): expect wiki-eval runs to
+stop mid-flight on a genuine overflow, and treat that as a signal to inspect `calls.jsonl`, not as a crash to
+route around.
+
+### `gpt-5.4` leftover-resume completed a run after the model was already excluded (2026-07-10)
+A stray `wiki_eval.py run --resume` process (launched before the owner's exclusion decision, spec
+2026-07-10-wiki-eval-experiment-v2.md Р1) kept running unattended and finished the run's last article ("Яффа",
+100/100, $6.05 total) after `gpt-5.4` had already been dropped from the v2 experiment scope (no run, no Table C
+row). Per the invariant that predictions are never deleted, the merged `pred.jsonl`/`meta.json` were committed
+as-is and archived (commit `275f8c7`) rather than discarded; the model stays excluded from Table C and from
+the v2 experiment. Lesson: a background `--resume` loop started under an old scope must be killed, not just
+ignored, once the scope changes — nothing currently guards against a stray resume process outliving an
+owner's exclusion decision.
+
+### RESOLVED 2026-07-10: `data/eval/wiki/gt.jsonl` silently drifted to 20/100 articles; `gt_v2.jsonl` was the real reference
+Caught during the deepseek backfill pre-flight (see
+[ml-engineer-deepseek-backfill.md](reports/ml-engineer-deepseek-backfill.md)): the file the wiki-eval CLI uses
+as its `--gt` default, `data/eval/wiki/gt.jsonl`, contained only 20 of the 100 corpus articles, while the full
+100-article reference lived in `data/eval/wiki/gt_v2.jsonl`. The v2 file was verified to reproduce the
+committed deepseek metrics (4716/7174 = 0.6574) bit-identically; any run that trusted the CLI default after
+the drift would silently evaluate on a 20-article subset and produce non-comparable numbers. Root cause (git
+forensics, not drift): `gt.jsonl` was never touched after its 2026-07-03 pilot commit — a retired-pilot
+fragment left in place after the v2 GT build (`dfd835c`/`b730db3`, 2026-07-05) landed under a different,
+explicit `--out` path instead of overwriting the canonical default, and the script's own `DEFAULT_GT` was
+never updated to point at it.
+
+**Resolution (2026-07-10 gt-canonicalization, branch `claude/ner-translation-config-b0ozsc`, spec
+[2026-07-10-gt-canonicalization.md](superpowers/specs/2026-07-10-gt-canonicalization.md)):**
+`gt.jsonl` was overwritten with `gt_v2.jsonl`'s content (100 articles / 7 959 tuples, sha256
+`5c6f407ed443bf0283f040eab0f6f560ee9165c7b5ba446944e4b0ba8cdb94c3`), becoming the sole canonical ground truth;
+all live docs and script defaults now name only `gt.jsonl`. A coverage guard was added to
+`scripts/wiki_eval.py`'s `run`/`ablate`/`report` commands: any prediction title absent from the loaded GT now
+fails loudly (naming the mismatch count and both paths) instead of silently under-scoring, closing the
+recurrence path. `gt_v2.jsonl` remains on disk as a byte-identical duplicate only until the in-flight deepseek
+backfill's driver (which still reads it) lands — deferred deletion, not part of this fix.
+
+### RESOLVED 2026-07-10: ru-wiki IPA-transcription templates linked every phoneme, inflating gold anchors
+Ru-wiki's IPA/transcription template (and, separately, a section-nav arrow gadget and a cuneiform
+determinative gloss) hyperlinks **every phonetic symbol/glyph to its own article**, e.g. the token
+`[nijˈsiːwat` in «Тронное имя фараона» carried a separate `<a>` for each of `n`, `i`, `j`, `ˈ`, `s`, `ː`, `w`,
+`a`, `t`. `extract_gt` (`wiki_gt.py`) treated every main-namespace `<a>` as a gold mention, so each glyph's
+single-char `find()` aliased it onto whatever host token contained it, piling up to 9 spurious gold tuples on
+one token. Root-cause diagnosis:
+[debugger-ipa-parser-gold-anchors.md](reports/debugger-ipa-parser-gold-anchors.md). Blast radius: 56 spurious
+tuples across 4 of the 100 corpus articles («Тронное имя фараона» 52, «Веды» 2, «Микенская цивилизация» 1,
+«Нур-Адад» 1) — none of the 4 is in the 20-article gemini pilot corpus.
+
+**Resolution.** `extract_gt` now drops a single-character anchor whose neighbour in the flattened text is a
+letter/digit/combining-mark or bracket (`_is_symbol_fragment`, counted in the new `counters.n_excluded_symbol`,
+never in `n_anchors`) — this catches per-glyph IPA/transliteration/nav-arrow links while keeping legit
+standalone single-char anchors (a whole whitespace token, e.g. «У», or «V» in «V век»/em-dash Roman-numeral
+ranges «X—XII»). `data/eval/wiki/gt.jsonl` was re-derived via an offline post-filter (same predicate, no
+network) — 100 articles / **7 903** GT tuples (was 7 959); only the 4 affected articles' records changed byte-
+for-byte, the other 96 are untouched. **Gotcha for future corpus additions:** any new ru-wiki article using an
+IPA/transcription template will hit the same per-glyph link pattern — the guard handles it automatically, but
+a corpus-wide re-derivation after adding articles should still spot-check `n_excluded_symbol` counts for
+unexpectedly high per-article piles (Тронное's 52 was the tell before the fix existed).
+
+### WikiHist corpus selection P31 gate does not exclude fictional-universe entities
+**Discovered 2026-07-10**, during a full manual review of all 100 corpus articles. 5 articles passed the
+automated selection gate (§Corpus in [wiki-eval.md](stages/wiki-eval.md)) despite being out of scope for an
+ancient-history corpus: two fictional-universe topics («Гелиополиты» — Marvel's Heliopolitans, «Стигия» —
+Conan's Stygia), one modern-geography article («Керченский пролив»), one modern historiographic concept
+(«Кесарево безумие»), and one article whose body is roughly 72% post-cutoff content («Яффа»).
+
+**Root cause.** The chronology gate's P31 blacklist covers only `{film, painting, museum}` (see
+[wiki-eval.md](stages/wiki-eval.md) §Corpus). It has no entry for fictional-universe entities
+(Wikidata P31 values like "comics location" or "fictional location"), and such items frequently carry no
+`inception`/`start time`/`point in time` date at all, so they pass the gate's "undated pages kept" rule instead
+of being caught by the date cutoff.
+
+**Mitigation applied.** The owner approved replacing all 5 with the next seed-42 walk survivor from the same
+section (re-running the selection reproduced the original candidate pools exactly); each replacement was
+individually verified ancient via lead-paragraph + P31 inspection before being accepted. Provenance:
+[data/eval/wiki/cleanup/replacements_2026-07-10.json](../data/eval/wiki/cleanup/replacements_2026-07-10.json).
+This was a one-off manual fix, not a gate change — **the underlying gate gap is still open**: any future corpus
+build (new sections, a re-run at a larger N) can reintroduce the same failure mode. Consider extending the P31
+blacklist with fictional/comics/mythos-adjacent types, or adding a lightweight "is this a real historical
+topic" LLM pre-check before an article enters the candidate pool.
+
+### RESOLVED 2026-07-10: malformed provider response body killed a wiki-eval run
+
+**Symptom.** During the 2026-07-10 wiki-eval deepseek mini-pilot (Phase 3a, run dir
+`reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--Novita/111/2026-07-10T08-38-16Z`), an extraction
+call on article 3 crashed the entire process with a raw `json.decoder.JSONDecodeError: Expecting value: line
+169 column 1 (char 924)`, raised from httpx's `response.json()` inside the `openai` SDK — i.e. OpenRouter/Novita
+returned an HTTP response body that was not valid JSON for a chat-completions call. `pred.jsonl`/`meta.json`
+were never written (only `calls.jsonl`/`pred.partial.jsonl`/`progress.jsonl` survive); full incident writeup in
+[docs/reports/wiki-eval-v2-pilot-2026-07-10.md](reports/wiki-eval-v2-pilot-2026-07-10.md) ("Phase 3a").
+
+**Root cause.** `palimpsest.llm.client.is_transient_error` had no category for a malformed transport-layer
+response body — it matched none of the recognized transient exceptions (`TimeoutError`/`APITimeoutError`/
+`APIConnectionError`/`RateLimitError`/`InternalServerError`/`APIStatusError` with `status>=500`) — so it was
+classified deterministic and **not retried at all**, killing the run on the very first occurrence. Every call
+that DID complete around it was clean (0/90 `finish_reason=="length"`, 100% `reasoning_tokens>0`, 100% served
+by the pinned provider on the captured calls) — this was an infra/transport reliability blip, not a
+prompt/parameter/pin defect.
+
+**Fix.** A safety analysis (before implementing) found that a naive "treat every `json.JSONDecodeError` as
+transient" widening would have silently made content-level parse failures retryable too — specifically webapp
+`judge_one`'s `_parse_json(result.content)` (`src/palimpsest/webapp/judge.py`), which parses the MODEL's own
+reply text and runs entirely inside `_judge_live`'s `is_transient_error`-gated retry loop
+(`src/palimpsest/webapp/app.py`). Retrying a genuinely malformed judge answer would contradict the documented
+policy that malformed judge output is terminal (`judge_unavailable`, no retry —
+[label_first.py](../src/palimpsest/terminology/grounding/label_first.py)).
+
+Resolved instead by disambiguating at the transport boundary: `LLMClient.complete()`
+([client.py](../src/palimpsest/llm/client.py)) now wraps ONLY its own transport call
+(`self._client.chat.completions.create(**kwargs)`) — `except json.JSONDecodeError as exc: raise
+MalformedProviderResponseError(str(exc)) from exc`. `is_transient_error` classifies
+`MalformedProviderResponseError` and `openai.APIResponseValidationError` as transient. Because the wrapping
+happens only around the transport call and `complete()` already returns before any caller parses
+`result.content`, a bare `json.JSONDecodeError` — as raised by `judge_one`'s content parse, or by
+`scripts/wiki_eval.py`'s own extraction/judge content parsers — never reaches this classifier and stays
+terminal exactly as before; the fix is safe by construction rather than by convention. Covered by
+`tests/test_llm_transient.py` (transient: `MalformedProviderResponseError`, `APIResponseValidationError`;
+still-terminal regression pin: bare `json.JSONDecodeError`; transport-wrapping: a fake `chat.completions.create`
+that raises `json.JSONDecodeError` makes `LLMClient.complete` raise `MalformedProviderResponseError`).
+
+### `data/seed/terminology_gold.jsonl` not reproducible from `merge_goldens.py`
+
+Discovered 2026-07-10 during the de-versioning cleanup Lane B verify (C6): a fresh
+`python scripts/merge_goldens.py` run yields only **16 rows**, not the **99 rows** committed
+at `data/seed/terminology_gold.jsonl`. Root cause: [merge_goldens.py](../scripts/merge_goldens.py)'s
+own docstring claims the three gold sources sit "over the same 16-paragraph pilot corpus", but
+[data/seed/seed_paragraphs.jsonl](../data/seed/seed_paragraphs.jsonl) — the seed corpus the merge
+keys rows against via `paragraph_id` lookup — has only **15 paragraphs**. The drift predates every
+2026-07-10 change (this repo's own de-versioning work never touched `merge_goldens.py`'s logic,
+only a filename/comment/`_metrics_v1`→`_metrics` rename in C6); `git log` shows the seed corpus and
+the docstring's paragraph count already disagreed at the initial import (`2493ec4`), so this is not
+a regression introduced by any recent commit.
+
+**Impact.** The committed 99-row `terminology_gold.jsonl` cannot be regenerated from its own
+documented build recipe — anyone who reruns `merge_goldens.py` expecting to reproduce or refresh
+the committed file gets a 16-row file instead, silently losing 83 rows.
+
+**Mitigation.** None applied. Fixing the corpus/docstring mismatch is a data-regeneration task, out
+of scope for the de-versioning cleanup that found it (naming/identifier cleanup only, no data
+regeneration). Needs an owner decision: reconcile the docstring to 15 paragraphs (if 16 was always
+wrong), or investigate whether a 16th paragraph existed and was dropped from
+`seed_paragraphs.jsonl` at some point (if the committed 99-row gold is the one that's actually
+correct and the corpus is missing data).
