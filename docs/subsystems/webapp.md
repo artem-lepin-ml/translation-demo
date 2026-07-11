@@ -32,6 +32,7 @@ for academic and industry audiences.
 | [`seed.py`](../../src/palimpsest/webapp/seed.py) | One-shot DB seeder. Drops and recreates the schema, inserts the default model, four criteria (Cultural Adaptation dropped wave-4), one document, 15 paragraphs (rebuilt by [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md)) with `kind='seed'` baseline scores/issues, `kind='cache'` uplift scores, mock terms, and three glossary entries. `_seed_terms` still writes a placeholder `VERDICTS[i % 3]` rotation for `difficulty`/`pairAccuracy` regardless of seed content — real term verdicts only reach the `term` table via the separate `scripts/load_terms.py` step (or `make reseed`, which chains both) run after seeding; current difficulty distribution (single source of truth) is in [e2e-data.md](../testing/e2e-data.md) (see also [terminology stage doc](../stages/terminology.md)). |
 | [`precompute.py`](../../src/palimpsest/webapp/precompute.py) | Background first-pass scoring for uploaded documents (spec §5.6). Sequential, budget-guarded judge pass over the first 12 paragraphs; writes `kind='seed'`+`kind='cache'` atomically per paragraph. |
 | [`translate.py`](../../src/palimpsest/webapp/translate.py) | Background first-pass AI translation for a source-only uploaded document (2026-07-05-translator). Mirrors `precompute.py`'s status-registry/cancellation pattern; writes `paragraph.target`/`seed_target` + an `origin='translate'` revision per paragraph, rolling 2-paragraph context, budget-guarded, one retry on a transient error. See "Translate" below. |
+| [`terminology_live.py`](../../src/palimpsest/webapp/terminology_live.py) | Background live terminology pipeline (2026-07-11 EMNLP sprint): NER → Wikidata grounding → disambiguation judge → target pairing, run automatically once a document has both source and target text. Reuses the frozen [terminology module](../stages/terminology.md) unmodified — this file is LLM/DB wiring only. Persists progress on `document.terms_status` (a DB column, unlike precompute/translate's in-memory registries). See "Live terminology" below. |
 | [`migrate.py`](../../src/palimpsest/webapp/migrate.py) | Additive, idempotent schema migration for an existing (already-populated) prod DB — `CREATE TABLE IF NOT EXISTS`/guarded `ALTER TABLE`/backfill, one step per table/column: `target_revision`, `translator_config`, `grounding_config`, `glossary`, `term.trace_json`, `score.revision_id`. Runs on every app startup (FastAPI lifespan) and via `python -m palimpsest.webapp.migrate`. `db.py::SCHEMA` is still the source of truth for fresh DBs; this module exists because there is no other migration framework in the project — **every table/column added to `SCHEMA` needs a matching step here, or an already-populated prod DB never gets it** (2026-07-06: `grounding_config` shipped in `SCHEMA` without one, causing a prod 500 on `GET /api/grounding-config` — see [known_issues.md](../known_issues.md)). |
 | [`export.py`](../../src/palimpsest/webapp/export.py) | Renders a document as a parallel-text file — `.xlsx` (openpyxl, paragraph-aligned, score-colored) or `.md` (a table). No DB writes. See "Export" below. |
 | [`model_matrix.py`](../../src/palimpsest/webapp/model_matrix.py) | Single source of truth for the 8 demo models' capabilities and seed default params (`MATRIX`). Pricing is never hardcoded — fetched live from OpenRouter at runtime by `budget.py`. |
@@ -56,24 +57,25 @@ written; historical pre-rev-5 rows stay `NULL` (never backfilled — honest, not
 
 | Component | Role |
 |---|---|
-| [`VariantA.tsx`](../../frontend/src/demo/variant-a/VariantA.tsx) | Root layout. Tabs: Document / Glossary / Ranking / Settings. Document switcher + upload/delete controls + precompute badge polling in the top bar. Wires Zustand store. UI-convention labels are `Source` / `Translation`; column headers read `Source · <Language>` / `Translation · <Language>` via `langLabel`; code/API stay `source_*`/`target_*`. |
+| [`VariantA.tsx`](../../frontend/src/demo/variant-a/VariantA.tsx) | Root layout. Renders `DocumentPicker` when `store.document === null` (EMNLP sprint: `init()` no longer auto-opens the first document — the picker is the landing view); once a document is loaded, renders the workspace chrome — Tabs: Document / Glossary / Ranking / Settings, document switcher + upload/delete controls + precompute/translation/terms-status badge polling in the top bar. The brand (`Glossa-MT`, was `Palimpsest`) is a button in the workspace chrome that calls `backToPicker()` (clears `document`, returns to the picker); on the picker itself it is a plain non-interactive heading. Wires Zustand store. UI-convention labels are `Source` / `Translation`; column headers read `Source · <Language>` / `Translation · <Language>` via `langLabel`; code/API stay `source_*`/`target_*`. |
+| [`DocumentPicker.tsx`](../../frontend/src/demo/variant-a/DocumentPicker.tsx) | Landing view (EMNLP sprint) — one card per `DocumentSummary` (title, lang pair, paragraph count, a `termsStatus`-derived status dot/line via `termsStatusPresentation`) plus a trailing dashed "Blank document" card that opens `UploadModal` with AI-translate pre-selected (`openUploadModal({aiTranslateDefault: true})`). Card meta is derived from real `DocumentSummary` fields only — the DTO carries no per-document judge-score/finding counts, so the status line reflects `termsStatus`, not a fabricated count. Zero documents renders just the blank card (not an error — see "Subtleties"). |
 | [`lang.ts`](../../frontend/src/demo/lang.ts) | `langLabel`: dictionary → `Intl.DisplayNames` for BCP-47-like codes → free text passed through capitalized; `isBcp47Like` is the shared shape detector. |
 | [`EditorParagraph.tsx`](../../frontend/src/demo/variant-a/EditorParagraph.tsx) | Aligned paragraph row: read-only source text (`dir="auto"`) with term highlights; TipTap-editable translation (`dir="auto"`) with underline decorations from `review-extension`. Column language is per-document, not hardcoded. Source and translation use unified typography (15px / line-height 1.85) — shared baseline for the first line. Meta-strip with a compact horizontal chip (`§N + score + Δ + cached`, testid `para-meta`/`score-chip`) above the paragraph body — the left gutter is gone; chip band colours green/yellow/red are styled. Hovering the chip (native `title` tooltip, `buildScoreChipTooltip`) reveals the aggregate plus a per-enabled-criterion breakdown and cached/stale provenance notes; any criterion without a value yet shows `…` while a rescore is in flight or `—` once genuinely absent, never a blank/undefined line. |
-| [`InspectorPanel.tsx`](../../frontend/src/demo/variant-a/InspectorPanel.tsx) | Right-side panel for the selected paragraph — Issues / Scores tabs, Accept All, per-criterion cards and score bars with prev/baseline deltas. |
+| [`InspectorPanel.tsx`](../../frontend/src/demo/variant-a/InspectorPanel.tsx) | Right-side panel for the selected paragraph — Issues / Scores tabs, per-criterion cards and score bars with prev/baseline deltas. Header carries "Refine paragraph ✦" (EMNLP sprint, `data-testid="refine-paragraph"`; replaces the old per-paragraph "Accept all" batch-splice button — the doc-level "Accept all across all paragraphs" chrome button is unchanged and still uses `acceptAllIssues`): disabled with tooltip "No open findings" when the paragraph has no open issues; otherwise calls `store.refineParagraph`, which shows "Refining…" then "Re-scoring…" (`evalState.refineStage`) and disables Accept/Dismiss/Evaluate/Retry-failed for the duration. |
 | [`IssuePopover.tsx`](../../frontend/src/demo/variant-a/IssuePopover.tsx) | Floating popover on an underlined segment — shows issues for that span, Accept / Dismiss actions. |
 | [`IssuesPanel.tsx`](../../frontend/src/demo/variant-a/IssuesPanel.tsx) | Full-document issue list grouped by paragraph, filtered by active criteria. |
 | [`TermPopover.tsx`](../../frontend/src/demo/variant-a/TermPopover.tsx) | Floating popover for a hovered term — Wikidata grounding, difficulty signal, pair accuracy. |
-| [`GlossaryTab.tsx`](../../frontend/src/demo/variant-a/GlossaryTab.tsx) | Grouped glossary (wave-5 redesign, [spec](../superpowers/specs/2026-07-05-glossary-redesign-impl.md)): terms grouped by `(lemma, entity)` via [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts), 7 data columns + chevron (Difficulty/Pair/Source/Translation/Wikidata/Grounding/Mentions), accordion row expansion into Context RU/EN, a 4-step grounding-path stepper (QUERY→SEARCH→LABEL MATCH→DECISION, fed by the `Term.traceJson` wire field — [contracts spec §1](../superpowers/specs/2026-06-30-demo-contracts.md), degrades gracefully to a no-trace render when a term's `trace_json` is `{}`, e.g. rows never touched by `scripts/enrich_seed_terms.py`), candidates table, judge-decision card, and an all-mentions list with click-to-navigate to the paragraph. |
+| [`GlossaryTab.tsx`](../../frontend/src/demo/variant-a/GlossaryTab.tsx) | Grouped glossary (wave-5 redesign, [spec](../superpowers/specs/2026-07-05-glossary-redesign-impl.md)): terms grouped by `(lemma, entity)` via [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts), 7 data columns + chevron (Difficulty/Pair/Source/Translation/Wikidata/Grounding/Mentions), accordion row expansion into Context RU/EN, a 4-step grounding-path stepper (QUERY→SEARCH→LABEL MATCH→DECISION, fed by the `Term.traceJson` wire field — [contracts spec §1](../superpowers/specs/2026-06-30-demo-contracts.md), degrades gracefully to a no-trace render when a term's `trace_json` is `{}`, e.g. rows never touched by `scripts/enrich_seed_terms.py`), candidates table, judge-decision card, and an all-mentions list with click-to-navigate to the paragraph. Empty state (zero terms) is `termsStatus`-aware (EMNLP sprint, `termsStatusEmptyMessage`, also reused for the top-chrome Terms chip tooltip — single source of truth): `running` → "Terminology pipeline is running — terms appear as paragraphs complete."; `failed` → "Terminology extraction failed for this document."; `none`/absent/zero-terms-on-`done` → "No terminology extracted for this document." (was an unconditional "precomputed offline… seeded pilot document" string). |
 | [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts) | Pure grouping/badge-resolution logic for `GlossaryTab`: `groupTerms` (lemma/stem-fallback grouping, worst-of difficulty/pair aggregation) and `resolveBadge` (strict rule-priority grounding badge: label-match / LLM / LLM-rejected / no-candidates). See [known_issues.md](../known_issues.md) "Glossary grouping's Russian stemmer fallback". |
 | [`RankingTab.tsx`](../../frontend/src/demo/variant-a/RankingTab.tsx) | Sortable table of paragraphs by aggregate score, issue count, or per-criterion score. Click navigates to the paragraph. Column header `Translation snippet` (was `Target snippet`). |
-| [`SettingsTab.tsx`](../../frontend/src/demo/variant-a/SettingsTab.tsx) | Criterion editor (prompt preview, scale, weight, color, enabled toggle) and model registry manager — fully open to every caller, no lock state. "+ Add evaluator" and "+ Add model" open dedicated modals (see "Add Evaluator / Add Model modals" above) instead of a phantom row or `window.prompt`. A 409 from Remove (criterion has score/issue history) is caught and rendered inline in the expanded editor via `va-inspector-warning`, suggesting disable instead. A compact budget line (`data-testid="budget-line"`, e.g. "Budget: $0.18 / $2.00 · 51/200 calls") fetches `GET /api/budget` locally on mount and renders above the Evaluators table — muted normally, yellow past 50% of either the $ cap or the call cap, red past 80% (`budgetBand`, `Math.max` of both shares so a call-cap-heavy or spend-heavy run is flagged either way). |
+| [`SettingsTab.tsx`](../../frontend/src/demo/variant-a/SettingsTab.tsx) | Five titled sections — **1. Model Registry, 2. Translator, 3. Judges, 4. Grounding, 5. Refiner** — under a sticky left mini-nav (anchor links; collapses to a horizontal bar above the content under 900px). `BudgetLine` renders as a slim unnumbered status strip above the sections (`data-testid="budget-line"`, e.g. "Budget: $0.18 / $2.00 · 51/200 calls"; fetches `GET /api/budget` on mount; muted normally, yellow past 50% of either the $ cap or the call cap, red past 80% — `budgetBand`, `Math.max` of both shares). Criterion editor (prompt preview, scale, weight, color, enabled toggle) — section 3's user-visible copy reads "Judges" (was "Evaluators"; `data-testid`s and internal identifiers such as `EvaluatorEditor`/`AddEvaluatorModal` keep the old `evaluator*` names, so other tests referencing them are unaffected) — and model registry manager, both fully open to every caller, no lock state. "+ Add judge" and "+ Add model" open dedicated modals (see "Add Evaluator / Add Model modals" above) instead of a phantom row or `window.prompt`. Model Registry table adds a **Host** column (`deriveHost`: "openrouter" / "local vLLM" / raw hostname, derived from `baseUrl`, never hardcoded per model) and a **Roles** badge column (`modelRoleUsage`, computed live from criteria + translator/grounding/refiner config — "default · all roles" when a model backs all 4, else the referencing subset, else a dash). The new **Refiner** section mirrors the Translator card (model select from the registry, prompt via the shared `PromptEditor`, read-only params via `ParamsInline`) via `getRefinerConfig`/`updateRefinerConfig` (`GET`/`PUT /api/refiner-config`, mirrors `translator-config`'s client shape); like Translator/Grounding it degrades to an "unavailable" affordance on a null/failed fetch rather than blanking the tab. A 409 from Remove (criterion has score/issue history) is caught and rendered inline in the expanded editor via `va-inspector-warning`, suggesting disable instead. |
 | [`review-extension.ts`](../../frontend/src/demo/variant-a/review-extension.ts) | TipTap/ProseMirror extension. Computes stacked underline decorations for issues; click handler for segment selection. Renders EN term spans on the `pairAccuracy` traffic-light via `verdict-{color}` class + `data-verdict` attr (null verdict → neutral dotted span, no color, no dot — never coerced to green); the verdict dot itself is a separate `Decoration.widget` anchored at the term's end (not a span pseudo-element), so a judge underline that splits the span into multiple DOM fragments can't render the dot more than once. RU-side difficulty stays on `difficulty-*` in `SourceWithTerms`/`TermPopover` — a separate signal (Wikidata grounding vs. pair accuracy), not unified into one scheme. Repeated `targetSurface` occurrences anchor via a per-paragraph claim registry: terms are processed in array order and each claims the first free EN occurrence of its surface, skipping any occurrence that overlaps a range an earlier term already claimed (prevents a shorter surface, e.g. "York", from matching inside a longer already-decorated term, e.g. "New York"). |
 | [`upload/UploadModal.tsx`](../../frontend/src/demo/variant-a/upload/UploadModal.tsx) | Two-step "upload a custom pair" modal — step 1: paste/file panels per side with language pickers; step 2: paragraph-alignment preview with merge-up and the precompute checkbox. Submits via `createDoc`. Closes on Escape. A multi-file drop shows a "only the first file was loaded" warning that survives the async file-load round-trip (re-applied on success, not shown after a failed load). |
 | [`upload/file-ingest.ts`](../../frontend/src/demo/variant-a/upload/file-ingest.ts) | Client-side file → text ingestion: `.docx` via `POST /api/documents/extract-text`, `.txt`/`.md` via `FileReader` + UTF-8 with a `windows-1251` retry on mis-decode; `splitParagraphs` (blank-line split, SSOT for both the counters and the server payload). After decoding, `decodeText` rejects the result (throws the existing 422 "corrupted file" error) if more than 10% of characters (excluding `\n`/`\t`) are control/non-printable — catches binary files that decode without a `�` but aren't actually text. |
 | [`upload/md-strip.ts`](../../frontend/src/demo/variant-a/upload/md-strip.ts) | Markdown → plain text for `.md` uploads: strips headings/emphasis/links/images/HTML/quotes/rules/code-fence markers, converts table rows to `cell — cell`. |
 
-State management: Zustand store ([`store.ts`](../../frontend/src/demo/store.ts)) with actions including (non-exhaustive) `init`, `evaluateParagraph`, `acceptIssue`, `applyIssueEdit`, `acceptAllIssues`, `dismissIssue`, `saveParagraphTarget`, `resetDoc`, `switchDocument`, `createDoc`, `deleteDoc`, `refreshDocument` (precompute-badge polling), `openUploadModal`/`closeUploadModal`, and CRUD actions for criteria/models (`addCriterion`, `saveCriterion`, `removeCriterion`, `addModel`, `saveModel`, `removeModel`, `testModel`).
-API client functions: `getDocuments`, `getDocument`, `createDocument`, `deleteDocument`, `extractText`, `evaluate`, `applyEdit`, `resetDocument`, and the full CRUD surface for criteria and models.
+State management: Zustand store ([`store.ts`](../../frontend/src/demo/store.ts)) with actions including (non-exhaustive) `init` (documents/criteria/models only — no auto-open), `backToPicker`, `evaluateParagraph`, `refineParagraph` (EMNLP sprint — refiner pass + chained re-score), `acceptIssue`, `applyIssueEdit`, `acceptAllIssues` (now doc-level "Accept all" only), `dismissIssue`, `saveParagraphTarget`, `resetDoc`, `switchDocument`, `createDoc`, `deleteDoc`, `refreshDocument` (precompute/translation/terms-status badge polling), `startTermsPolling`/`stopTermsPolling` (store-owned single interval, idempotent — EMNLP sprint), `openUploadModal` (optional `{aiTranslateDefault}`)/`closeUploadModal`, and CRUD actions for criteria/models (`addCriterion`, `saveCriterion`, `removeCriterion`, `addModel`, `saveModel`, `removeModel`, `testModel`).
+API client functions: `getDocuments`, `getDocument`, `createDocument`, `deleteDocument`, `extractText`, `evaluate`, `applyEdit`, `refineParagraph` (EMNLP sprint), `resetDocument`, and the full CRUD surface for criteria and models.
 
 ## REST surface
 
@@ -102,7 +104,6 @@ Full request/response shapes are in the contracts spec. Compact route table:
 | PUT | `/api/models/{name:path}` | Update model; `params` must be a JSON object → 422 (same rule as POST); omitting `apiKey` preserves existing key |
 | DELETE | `/api/models/{name:path}` | Delete model if not referenced by any criterion |
 | POST | `/api/models/{name:path}/test` | Real term-extraction probe against seed paragraph idx=1; spends real money like other `/api/models` mutations |
-| POST | `/api/paragraphs/{pid}/terms` | Return terms for paragraph (stub — term-agent fills the table externally) |
 | GET | `/api/budget` | Spend snapshot (spent/cap/calls) |
 | POST | `/api/budget/reset` | Reset the in-process spend/call counters |
 | GET | `/api/paragraphs/{pid}/revisions` | Revision history for a paragraph, newest first, with the best-scored one flagged (rev-5) |
@@ -209,6 +210,78 @@ Concurrency: `translate._translating: set[int]` mirrors `app._evaluating` — wh
 
 `app._client_for(conn, model_name, params_override=None)` grew a third parameter for this: `translate.py` and `_grounding_judge_live` pass their own config's `params_json` as `params_override`, which REPLACES the model registry row's own params entirely (the registry-row params are still what `_judge_live`/the Test probe use — no override there). Before this, `_grounding_judge_live` computed its budget estimate from `grounding_config.params_json` but built the actual client from the model row's own params — a no-op-params bug now fixed by the same mechanism (see [known_issues.md](../known_issues.md)).
 
+## Live terminology
+
+2026-07-11 EMNLP sprint: the terminology pipeline (NER → Wikidata grounding → LLM
+disambiguation → target pairing) now runs automatically in the background for a
+newly-created document, instead of only ever existing as seed data. Full pipeline
+internals (extractor prompt, `GroundingConfig`, `LabelFirstGrounding`'s decision
+table, `LinkLocatePairing`) are the [terminology stage doc](../stages/terminology.md)
+— this section covers only the webapp wiring.
+
+**Status column, not an in-memory registry.** Unlike `precompute`/`translate`,
+progress lives on `document.terms_status` (`'none'|'running'|'done'|'failed'`, a
+real DB column added by `migrate.py`/`db.py::SCHEMA`) — a process restart does not
+strand the frontend on a stale `running` the way precompute/translate's in-memory
+status dicts would. Exposed as `document.termsStatus` in the wire DTO (all
+documents, including `origin='seed'`, which the migration backfills to `'done'`
+since it already has precomputed terms). `terminology_live.try_start(conn, doc_id)`
+is the sole 'none' → 'running' transition, atomic under `db._lock` — it returns
+`False` (no-op) when terms already started/finished for that document, guarding
+against a resumed `POST .../translate` re-triggering the pipeline a second time.
+
+**Two launch points, both eventually calling `terminology_live.launch(doc_id,
+client_for, grounding_judge_live)`:**
+1. **Non-translate uploads** (`POST /api/documents`, `translate:false`) already
+   have real targets, so terms launch immediately after paragraphs are stored —
+   `create_document` writes `terms_status='running'` inside the same
+   transaction/lock as the paragraph inserts, so the 201 body already reflects it
+   (same "set status before building the response" rule `precompute`/`translate`
+   follow), then calls `terminology_live.launch` once the lock is released.
+2. **`translate:true` uploads** have empty targets at creation, so terms launch
+   only at the successful end of `translate.py`'s background run (`translate._run`
+   gained an optional `terms_launch` callback — `app._terms_launch_after_translate`
+   — invoked once translation reaches `status='done'`), so pairing sees the FINAL
+   translated text, not empty strings.
+
+The seed document is never touched by either path (it is created by `seed.py`
+directly, outside both routes) and the migration marks it `'done'` up front.
+
+**Sequential, capped, budget-guarded.** Mirrors `precompute.py`'s shape: the
+first `TERMS_PARAS` paragraphs (12, env-overridable via `PALIMPSEST_TERMS_PARAS`,
+like precompute's own call sub-cap), processed one at a time — never `gather`.
+A paragraph that already has term rows is skipped (idempotent resume). Both real
+LLM calls this module makes (NER extraction and, when `LabelFirstGrounding`
+escalates, the disambiguation judge) go through the SAME `budget.reserve()`/
+`settle()` hard-cap guard as every other live call in this app; NER extraction and
+grounding disambiguation share the single `grounding_config` model row — there is
+no separate "NER config" surface. NER's effective `max_tokens` is floored at 2048
+regardless of `grounding_config.params_json` (which is tuned for the judge's short
+`{"qid":...}` reply, not a paragraph's potentially-long `[{surface,lemma,category},
+...]` array). A per-paragraph failure (extraction parse error, no API key, judge
+exhausted) is caught and logged; the run continues to the next paragraph.
+`terms_status` only ends `'failed'` if literally nothing succeeded.
+
+**The sync/async bridge.** `LabelFirstGrounding`/`LinkLocatePairing` (and
+`pipeline.run`, which drives them) are entirely synchronous by design — the same
+strategy code runs unmodified in the offline CLI eval harness
+(`scripts/wiki_eval.py`) and here. The live disambiguation judge, however, must go
+through `_grounding_judge_live` (async — shares `budget`'s asyncio-lock-based
+reserve/settle with every other live call). `terminology_live._run` runs each
+paragraph's whole `pipeline.run()` call inside `asyncio.to_thread` (also keeps
+`WikidataClient`'s blocking `urllib` calls off the event loop); the plain-sync
+`Judge` callable it hands to `LabelFirstGrounding.ground()` schedules
+`_grounding_judge_live` back onto the original event loop via
+`asyncio.run_coroutine_threadsafe(...).result()` and blocks only that worker
+thread until it completes.
+
+`_grounding_judge_live` itself (previously unreachable — its own docstring used
+to read "no caller in the webapp yet") now sends
+`DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT` (imported from
+`terminology.grounding.label_first`) as the system message instead of an empty
+string, so a live disambiguation call actually carries the Role/output-contract
+instructions the frozen module's decision table expects.
+
 ## Revision history & best
 
 Every write to `paragraph.target` — upload, a manual PATCH (only if the text actually changed), apply-edit, translate, reset, and restore — also inserts a `target_revision` row (`{paragraph_id, text, origin, created_at}`; `origin` one of `seed|upload|edit|apply_edit|translate|restore`). `seed.py` writes one at seed time too, so a freshly-seeded DB and a migrated prod DB have the same shape of history. `score.revision_id` is stamped at all three score-INSERT sites (`/evaluate`, `precompute._write_paragraph`, `seed.py`) via `db.latest_revision_id(conn, pid)`.
@@ -284,7 +357,7 @@ When `DEMO_STATIC_DIR` is set (the image sets it to `/app/frontend/dist`), [app.
 
 - **Criterion deletion blocked by history.** `DELETE /api/criteria/{cid}` returns 409 if any `score` or `issue` rows reference that `criterion_id`. Callers must disable the criterion instead of deleting it once it has history.
 
-- **Term stub.** `POST /api/paragraphs/{pid}/terms` is a stub. The term-agent fills the `term` table externally. The frontend renders whatever is in the table; the endpoint itself does no computation.
+- **Term rows are live, not a stub (2026-07-11).** The former `POST /api/paragraphs/{pid}/terms` stub route is removed — it had zero frontend callers (terms have always travelled embedded in `GET /api/documents/{id}`, never via a standalone fetch). Term rows for an uploaded/AI-translated document are now populated automatically by the background [`terminology_live.py`](../../src/palimpsest/webapp/terminology_live.py) pipeline; see "Live terminology" below.
 
 - **Params secret-key guard.** `POST/PUT /api/models` and `/api/criteria` reject any `params`/config dict whose keys look secret-like with HTTP 400, before touching the DB. The check (`_guard_params` in `app.py`) delegates to `secrets_guard.is_secret_key`, which is boundary-aware: strong indicators (`api_key`, `token`, `secret`, `password`, `bearer`, `authorization`, …) match anywhere in the key, while collision-prone short words (`token`, `auth`, `key`) match only as a delimited component — so `max_tokens`/`top_k` are never falsely flagged.
 

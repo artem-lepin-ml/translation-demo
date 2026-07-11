@@ -126,6 +126,8 @@ export interface Revision {
 
 // ─── §1 Document ─────────────────────────────────────────────────────────────
 
+export type TermsStatus = 'none' | 'running' | 'done' | 'failed';
+
 export interface DocumentSummary {
   id: number;
   title: string;
@@ -133,6 +135,11 @@ export interface DocumentSummary {
   targetLang: string;
   nParagraphs: number;
   origin: 'seed' | 'upload';
+  /** Background terminology-extraction status, also present on each summary
+   * row of GET /documents. Optional so pre-existing fixtures/mocks across the
+   * test suite that predate this field don't all need updating — always
+   * present on the real wire response (mirrors the `best?:` precedent below). */
+  termsStatus?: TermsStatus;
 }
 
 export interface PrecomputeStatus {
@@ -366,8 +373,13 @@ export function patchIssueStatus(
   return patch(`/issues/${id}`, { status });
 }
 
-export function postTerms(id: number): Promise<Term[]> {
-  return post(`/paragraphs/${id}/terms`);
+/** Refiner pass (paper's "refiner"): aggregates all open findings and rewrites
+ * the paragraph in one LLM call. Returns the updated paragraph dict (fresh
+ * target + issues flipped to 'accepted', new revision origin='refine');
+ * scores/aggregate on the response are the pre-refine values — the caller
+ * must re-evaluate. 409 when the paragraph has no open issues. */
+export function refineParagraph(id: number): Promise<Paragraph> {
+  return post(`/paragraphs/${id}/refine`);
 }
 
 // ─── §2 criteria CRUD ────────────────────────────────────────────────────────
@@ -449,6 +461,24 @@ export function getTranslatorConfig(): Promise<TranslatorConfig> {
 
 export function updateTranslatorConfig(cfg: TranslatorConfig): Promise<TranslatorConfig> {
   return put('/translator-config', cfg);
+}
+
+// ─── §2 refiner-config endpoint (EMNLP sprint — mirrors translator-config) ────
+// Settings-side singleton (model/prompt/params) for the refiner pass; distinct
+// from the per-paragraph `refineParagraph` action above, which invokes it.
+
+export interface RefinerConfig {
+  modelName: string | null;
+  prompt: string;
+  params: Record<string, unknown>;
+}
+
+export function getRefinerConfig(): Promise<RefinerConfig> {
+  return get('/refiner-config');
+}
+
+export function updateRefinerConfig(cfg: RefinerConfig): Promise<RefinerConfig> {
+  return put('/refiner-config', cfg);
 }
 
 // ─── §2 health endpoint (S3 §2.3 — server-side limits, SSOT) ──────────────────

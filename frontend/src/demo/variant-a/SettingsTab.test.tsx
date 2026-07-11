@@ -2,7 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import SettingsTab from './SettingsTab';
 import * as apiClient from '../api-client';
-import type { BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, TranslatorConfig } from '../api-client';
+import type {
+  BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig, TranslatorConfig,
+} from '../api-client';
 
 afterEach(() => {
   cleanup();
@@ -41,6 +43,12 @@ const translatorConfig: TranslatorConfig = {
   params: { max_tokens: 2048, temperature: 0.3 },
 };
 
+const refinerConfig: RefinerConfig = {
+  modelName: 'openai/gpt-5.4-mini',
+  prompt: 'Rewrite the paragraph addressing every open finding while preserving meaning.',
+  params: { max_tokens: 2048, temperature: 0.2 },
+};
+
 function renderSettings(overrides: Partial<React.ComponentProps<typeof SettingsTab>> = {}) {
   const props = {
     criteria: [criterion],
@@ -56,6 +64,8 @@ function renderSettings(overrides: Partial<React.ComponentProps<typeof SettingsT
     onSaveGroundingConfig: vi.fn(),
     translatorConfig,
     onSaveTranslatorConfig: vi.fn(),
+    refinerConfig,
+    onSaveRefinerConfig: vi.fn(),
     ...overrides,
   };
   render(<SettingsTab {...props} />);
@@ -82,16 +92,16 @@ describe('SettingsTab Remove confirm guard (LOW-b)', () => {
     expect(props.onRemoveModel).toHaveBeenCalledWith(model.name);
   });
 
-  it('does not remove the evaluator when the confirm dialog is declined', () => {
+  it('does not remove the judge when the confirm dialog is declined', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(false);
     const props = renderSettings();
 
-    // Expand the criterion row to reveal its Remove button (the evaluator's
-    // editor renders before the Model Registry table, so it is the first
-    // "Remove" button in the DOM once expanded).
+    // Expand the criterion row to reveal its Remove button, scoped to the
+    // Judges section (settings-section-judges) so it's unambiguous relative
+    // to the Model Registry row's own "Remove" button elsewhere on the page.
     fireEvent.click(screen.getByText('Accuracy'));
-    const [evaluatorRemove] = screen.getAllByText('Remove');
-    fireEvent.click(evaluatorRemove);
+    const judgeRemove = within(screen.getByTestId('settings-section-judges')).getByText('Remove');
+    fireEvent.click(judgeRemove);
 
     expect(window.confirm).toHaveBeenCalledWith(`Delete "${criterion.name}"?`);
     expect(props.onRemoveCriterion).not.toHaveBeenCalled();
@@ -160,7 +170,7 @@ describe('SettingsTab budget line', () => {
 describe('SettingsTab Add Evaluator modal', () => {
   async function openAddEvaluator(overrides: Partial<React.ComponentProps<typeof SettingsTab>> = {}) {
     const props = renderSettings(overrides);
-    fireEvent.click(await screen.findByText('+ Add evaluator'));
+    fireEvent.click(await screen.findByText('+ Add judge'));
     return props;
   }
 
@@ -322,7 +332,7 @@ describe('SettingsTab rapid double-click guards (fix wave commit 2, BUG-4)', () 
     let resolveSave!: () => void;
     const onAddCriterion = vi.fn().mockReturnValue(new Promise<void>((r) => { resolveSave = r; }));
     const props = renderSettings({ onAddCriterion });
-    fireEvent.click(await screen.findByText('+ Add evaluator'));
+    fireEvent.click(await screen.findByText('+ Add judge'));
     fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'New eval' } });
     fireEvent.change(screen.getByTestId('add-evaluator-prompt'), { target: { value: 'Evaluate this.' } });
 
@@ -431,7 +441,7 @@ describe('SettingsTab Test button state (S1 §2.5)', () => {
 });
 
 describe('SettingsTab Remove-model error surfacing (S1 §2.5, wave5 §4.2)', () => {
-  it('shows a friendly "used by evaluator" message on 409, not the raw method/URL/body dump', async () => {
+  it('shows a friendly "used by judge" message on 409, not the raw method/URL/body dump', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     const onRemoveModel = vi.fn().mockRejectedValue(
       new Error(`DELETE /models/${encodeURIComponent(model.name)} → 409: {"detail":"model referenced by a criterion"}`),
@@ -440,13 +450,13 @@ describe('SettingsTab Remove-model error surfacing (S1 §2.5, wave5 §4.2)', () 
     fireEvent.click(screen.getByText('Remove'));
 
     const err = await screen.findByTestId(`model-field-error-${model.name}`);
-    expect(err.textContent).toBe(`Model is used by evaluator "${criterion.name}" — reassign it first`);
+    expect(err.textContent).toBe(`Model is used by judge "${criterion.name}" — reassign it first`);
     expect(err.textContent).not.toContain('DELETE');
     expect(err.textContent).not.toContain('409');
     expect(err.textContent).not.toContain('%2F');
   });
 
-  it('lists multiple referencing evaluators comma-separated', async () => {
+  it('lists multiple referencing judges comma-separated', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     const fluency: Criterion = { ...criterion, id: 'fluency', name: 'Fluency' };
     const onRemoveModel = vi.fn().mockRejectedValue(
@@ -456,7 +466,7 @@ describe('SettingsTab Remove-model error surfacing (S1 §2.5, wave5 §4.2)', () 
     fireEvent.click(screen.getByText('Remove'));
 
     const err = await screen.findByTestId(`model-field-error-${model.name}`);
-    expect(err.textContent).toBe('Model is used by evaluators "Accuracy", "Fluency" — reassign it first');
+    expect(err.textContent).toBe('Model is used by judges "Accuracy", "Fluency" — reassign it first');
   });
 
   it('shows a short human message (status + detail) for any other error, never the raw dump', async () => {
@@ -543,7 +553,9 @@ describe('SettingsTab Translator card (S4 §3.4)', () => {
 
   it('does not render the Translator card when translatorConfig is null, showing the unavailable affordance instead (2026-07-06 prod incident)', () => {
     renderSettings({ translatorConfig: null });
-    expect(screen.getByText('Translator')).toBeTruthy();
+    // Numbered heading now shares text with its nav link ("2. Translator"),
+    // so assert on the section landmark instead of bare getByText.
+    expect(screen.getByTestId('settings-section-translator')).toBeTruthy();
     expect(screen.queryByTestId('translator-card')).toBeNull();
     expect(screen.getByTestId('translator-config-unavailable')).toBeTruthy();
   });
@@ -658,7 +670,9 @@ describe('SettingsTab Grounding card', () => {
   it('renders the Grounding section with the model select populated', async () => {
     renderSettings();
 
-    expect(await screen.findByText('Grounding')).toBeTruthy();
+    // Numbered heading now shares text with its nav link ("4. Grounding"),
+    // so assert on the section landmark instead of bare getByText.
+    expect(await screen.findByTestId('settings-section-grounding')).toBeTruthy();
     const editor = await screen.findByTestId('grounding-editor');
     const select = editor.querySelector('select') as HTMLSelectElement;
     expect(select.value).toBe(model.name);
@@ -668,7 +682,7 @@ describe('SettingsTab Grounding card', () => {
   it('does not render the Grounding editor when groundingConfig is null, showing the unavailable affordance instead (2026-07-06 prod incident)', () => {
     renderSettings({ groundingConfig: null });
 
-    expect(screen.getByText('Grounding')).toBeTruthy();
+    expect(screen.getByTestId('settings-section-grounding')).toBeTruthy();
     expect(screen.queryByTestId('grounding-editor')).toBeNull();
     expect(screen.getByTestId('grounding-config-unavailable')).toBeTruthy();
   });
@@ -724,5 +738,153 @@ describe('SettingsTab Grounding card', () => {
     fireEvent.blur(promptInput);
 
     expect((await screen.findByTestId('grounding-field-error')).textContent).toContain('500');
+  });
+});
+
+describe('SettingsTab 5-section layout with mini-nav (EMNLP sprint)', () => {
+  it('renders all 5 sections in order: Model Registry, Translator, Judges, Grounding, Refiner', async () => {
+    renderSettings();
+    const titles = (await screen.findAllByTestId('settings-section-title')).map((el) => el.textContent);
+    expect(titles).toEqual([
+      '1. Model Registry',
+      '2. Translator',
+      '3. Judges',
+      '4. Grounding',
+      '5. Refiner',
+    ]);
+  });
+
+  it('renders a sticky mini-nav with one anchor link per section, in the same order', async () => {
+    renderSettings();
+    const nav = await screen.findByTestId('settings-nav');
+    const links = within(nav).getAllByRole('link');
+    expect(links.map((a) => a.textContent)).toEqual([
+      '1. Model Registry',
+      '2. Translator',
+      '3. Judges',
+      '4. Grounding',
+      '5. Refiner',
+    ]);
+    expect(links.map((a) => a.getAttribute('href'))).toEqual([
+      '#settings-model-registry',
+      '#settings-translator',
+      '#settings-judges',
+      '#settings-grounding',
+      '#settings-refiner',
+    ]);
+  });
+
+  it('keeps BudgetLine above the sections as an unnumbered strip (not one of the 5 titled sections)', async () => {
+    vi.spyOn(apiClient, 'getBudget').mockResolvedValue(
+      { spentUsd: 0.1, capUsd: 2.0, calls: 1, callCap: 200 },
+    );
+    renderSettings();
+    const budget = await screen.findByTestId('budget-line');
+    const layout = (await screen.findByTestId('settings-nav')).closest('.va-settings-layout');
+
+    // BudgetLine sits as a sibling before .va-settings-layout, not nested
+    // inside it — i.e. it is not one of the 5 numbered sections.
+    expect(layout?.contains(budget)).toBe(false);
+    expect(screen.getAllByTestId('settings-section-title')).toHaveLength(5);
+  });
+});
+
+describe('SettingsTab Refiner card (EMNLP sprint)', () => {
+  it('renders with model/params/prompt from refinerConfig', async () => {
+    renderSettings();
+    const card = await screen.findByTestId('refiner-card');
+    expect(within(card).getByText(model.name, { selector: 'option' })).toBeTruthy();
+    expect(within(card).getByTestId('refiner-params').textContent).toContain('max_tokens');
+    expect(within(card).getByTestId('refiner-prompt-preview')).toBeTruthy();
+  });
+
+  it('does not render the Refiner card when refinerConfig is null, showing the unavailable affordance instead', () => {
+    renderSettings({ refinerConfig: null });
+    expect(screen.getByTestId('settings-section-refiner')).toBeTruthy();
+    expect(screen.queryByTestId('refiner-card')).toBeNull();
+    expect(screen.getByTestId('refiner-config-unavailable')).toBeTruthy();
+  });
+
+  it('changing the model select calls onSaveRefinerConfig immediately', async () => {
+    const onSaveRefinerConfig = vi.fn().mockResolvedValue(undefined);
+    const otherModel: ModelRegistryEntryPublic = { ...model, name: 'anthropic/claude' };
+    renderSettings({ models: [model, otherModel], onSaveRefinerConfig });
+
+    const card = await screen.findByTestId('refiner-card');
+    const select = within(card).getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: otherModel.name } });
+
+    await waitFor(() => expect(onSaveRefinerConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ modelName: otherModel.name }),
+    ));
+  });
+
+  it('saving the prompt calls onSaveRefinerConfig with the full body', async () => {
+    const onSaveRefinerConfig = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onSaveRefinerConfig });
+    const card = await screen.findByTestId('refiner-card');
+
+    fireEvent.click(within(within(card).getByTestId('refiner-prompt-toggle')).getByText('Edit'));
+    const textarea = within(card).getByTestId('refiner-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'Rewrite addressing all findings.' } });
+    fireEvent.click(within(card).getByTestId('refiner-prompt-save'));
+
+    await waitFor(() => expect(onSaveRefinerConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ prompt: 'Rewrite addressing all findings.' }),
+    ));
+  });
+
+  it('shows an inline error when the save is rejected', async () => {
+    const onSaveRefinerConfig = vi.fn().mockRejectedValue(new Error('PUT /refiner-config → 500'));
+    renderSettings({ onSaveRefinerConfig });
+    const card = await screen.findByTestId('refiner-card');
+
+    fireEvent.click(within(within(card).getByTestId('refiner-prompt-toggle')).getByText('Edit'));
+    const textarea = within(card).getByTestId('refiner-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'New refiner prompt.' } });
+    fireEvent.click(within(card).getByTestId('refiner-prompt-save'));
+
+    expect((await screen.findByTestId('refiner-field-error')).textContent).toContain('500');
+  });
+});
+
+describe('SettingsTab Model Registry — Host + Roles columns (EMNLP sprint)', () => {
+  it('derives a friendly host label from baseUrl (openrouter / local vLLM / raw hostname fallback)', async () => {
+    const openrouterModel: ModelRegistryEntryPublic = { ...model, name: 'a/a', baseUrl: 'https://openrouter.ai/api/v1' };
+    const localModel: ModelRegistryEntryPublic = { ...model, name: 'b/b', baseUrl: 'http://localhost:8001/v1' };
+    const otherHostModel: ModelRegistryEntryPublic = { ...model, name: 'c/c', baseUrl: 'https://api.example.com/v1' };
+    renderSettings({ models: [openrouterModel, localModel, otherHostModel] });
+
+    const registry = await screen.findByTestId('settings-section-model-registry');
+    expect(within(registry).getByText('openrouter')).toBeTruthy();
+    expect(within(registry).getByText('local vLLM')).toBeTruthy();
+    expect(within(registry).getByText('api.example.com')).toBeTruthy();
+  });
+
+  it('badges a model referenced by all 4 roles (criteria + translator + grounding + refiner) as "default · all roles"', async () => {
+    // Default fixtures already point criteria/translatorConfig/groundingConfig/refinerConfig at model.name.
+    renderSettings();
+
+    const badge = await screen.findByTestId(`role-badge-${model.name}`);
+    expect(badge.textContent).toBe('default · all roles');
+  });
+
+  it('badges a model referenced by only a subset of roles with the comma-separated list', async () => {
+    const other: ModelRegistryEntryPublic = { ...model, name: 'anthropic/claude' };
+    renderSettings({
+      models: [model, other],
+      translatorConfig: { ...translatorConfig, modelName: other.name },
+    });
+
+    const badge = await screen.findByTestId(`role-badge-${other.name}`);
+    expect(badge.textContent).toBe('translator');
+  });
+
+  it('shows a dash for a model referenced by no role at all', async () => {
+    const unused: ModelRegistryEntryPublic = { ...model, name: 'unused/model' };
+    renderSettings({ models: [model, unused] });
+
+    const badge = await screen.findByTestId(`role-badge-${unused.name}`);
+    expect(badge.textContent).toBe('—');
   });
 });

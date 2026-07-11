@@ -1,8 +1,8 @@
 /**
- * store.ts — Zustand store for Palimpsest demo.
+ * store.ts — Zustand store for the Glossa-MT demo.
  *
  * Replaces mock data.ts as the data source for VariantA and sub-components.
- * On mount, fetches documents → loads the first document.
+ * On mount, fetches the document list (no auto-open — see DocumentPicker).
  * All mutations call the backend and update state in place.
  */
 
@@ -14,12 +14,12 @@ import type {
   Criterion,
   ModelRegistryEntryPublic,
   Issue,
-  Score,
   EvaluateResponse,
   TestModelResult,
   CreateDocumentBody,
   GroundingConfig,
   TranslatorConfig,
+  RefinerConfig,
 } from './api-client';
 import {
   getDocuments,
@@ -40,10 +40,13 @@ import {
   createDocument as apiCreateDocument,
   deleteDocument as apiDeleteDocument,
   patchIssueStatus,
+  refineParagraph as apiRefineParagraph,
   getGroundingConfig,
   updateGroundingConfig,
   getTranslatorConfig,
   updateTranslatorConfig,
+  getRefinerConfig,
+  updateRefinerConfig,
   getHealth,
   translateDocument as apiTranslateDocument,
   restoreRevision as apiRestoreRevision,
@@ -62,6 +65,10 @@ export interface ParaEvalState {
   error: string | null;
   /** true when the paragraph text changed since these scores were computed */
   stale: boolean;
+  /** Refine-in-flight phase (InspectorPanel's "Refine paragraph ✦" button);
+   *  undefined outside a refine flow. Optional so existing literals across the
+   *  test suite that predate this field don't all need updating. */
+  refineStage?: 'refining' | 'rescoring';
 }
 
 export interface DemoStore {
@@ -72,6 +79,7 @@ export interface DemoStore {
   models: ModelRegistryEntryPublic[];
   groundingConfig: GroundingConfig | null;
   translatorConfig: TranslatorConfig | null;
+  refinerConfig: RefinerConfig | null;
 
   // ── loading states ──────────────────────────────────────────────────────────
   documentLoading: boolean;
@@ -88,10 +96,15 @@ export interface DemoStore {
   showTerms: boolean;
   hoveredTermId: string | null;
   uploadModalOpen: boolean;
+  /** Read once by UploadModal on mount to pre-select AI-translate mode
+   *  (picker's "Blank document" card, S? landing picker). */
+  uploadModalAiTranslateDefault: boolean;
 
   // ─── actions ────────────────────────────────────────────────────────────────
 
-  /** Load first document + criteria + models on mount */
+  /** Load documents + criteria + models on mount. Does NOT auto-open a
+   *  document — the landing picker (docId=null) is the initial view; the user
+   *  explicitly picks a document or starts a blank one. */
   init: () => Promise<void>;
 
   /** UI selection / navigation */
@@ -101,8 +114,11 @@ export interface DemoStore {
   toggleCriterion: (id: CriterionId) => void;
   setShowTerms: (v: boolean) => void;
   setHoveredTermId: (id: string | null) => void;
-  openUploadModal: () => void;
+  openUploadModal: (opts?: { aiTranslateDefault?: boolean }) => void;
   closeUploadModal: () => void;
+
+  /** Clear the loaded document and return to the landing picker (brand click). */
+  backToPicker: () => void;
 
   /** Refresh the document summary list (after create/delete) */
   refreshDocuments: () => Promise<void>;
@@ -145,6 +161,11 @@ export interface DemoStore {
   /** Re-evaluate a paragraph (without apply-edit first) */
   evaluateParagraph: (paraId: number, paraIdx: number, criterionIds?: CriterionId[]) => Promise<void>;
 
+  /** Refiner pass (paper's "refiner"): aggregate all open findings into one
+   *  LLM rewrite, apply the returned paragraph, then re-score it. Replaces
+   *  the old per-paragraph "Accept all" batch-splice flow (InspectorPanel). */
+  refineParagraph: (paraId: number, paraIdx: number) => Promise<void>;
+
   /** Persist a target edit (on blur / text change) */
   saveParagraphTarget: (paraId: number, target: string) => Promise<void>;
 
@@ -168,6 +189,9 @@ export interface DemoStore {
   // ─── translator config (S4 §3.4) ─────────────────────────────────────────────
   saveTranslatorConfig: (cfg: TranslatorConfig) => Promise<void>;
 
+  // ─── refiner config (EMNLP sprint — mirrors translator/grounding config) ────
+  saveRefinerConfig: (cfg: RefinerConfig) => Promise<void>;
+
   /** Re-POST /translate for the current document (S4 §3.3 Retry after a failed run). */
   retryTranslate: () => Promise<void>;
 
@@ -182,6 +206,13 @@ export interface DemoStore {
   /** Restore a paragraph to a past revision's text (S5 §3.3), then replace it
    * in the loaded document with the server's fresh paragraph DTO. */
   restoreParagraphRevision: (paraId: number, paraIdx: number, revisionId: number) => Promise<void>;
+
+  /** Start polling GET /documents/{id} every 2.5s while terminology is being
+   *  extracted (or while translation is still filling targets, since terms
+   *  extraction follows it). Idempotent — at most one interval ever runs.
+   *  Stop is called by the owning effect on done/failed/unmount/doc-switch. */
+  startTermsPolling: () => void;
+  stopTermsPolling: () => void;
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -239,6 +270,11 @@ function computeDocAggregate(paragraphs: Paragraph[]): number | null {
 // ─── store ────────────────────────────────────────────────────────────────────
 
 export const useDemoStore = create<DemoStore>((set, get) => {
+  // Single-flight interval handle for the terms-status poll — module-closure
+  // scoped (one store instance app-wide), guarded by start/stop below so a
+  // re-render or a second effect firing never stacks a duplicate interval.
+  let termsPollTimer: ReturnType<typeof setInterval> | null = null;
+
   const markStale = (paraIdx: number) =>
     set((s) => ({
       paraEvalState: {
@@ -265,6 +301,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   models: [],
   groundingConfig: null,
   translatorConfig: null,
+  refinerConfig: null,
   documentLoading: false,
   documentError: null,
   paraEvalState: {},
@@ -275,6 +312,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   showTerms: true,
   hoveredTermId: null,
   uploadModalOpen: false,
+  uploadModalAiTranslateDefault: false,
 
   // ── init ──────────────────────────────────────────────────────────────────
 
@@ -301,44 +339,41 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       console.warn('init: getTranslatorConfig failed, falling back to null', e);
       return null;
     });
+    // Refiner config — same best-effort, degrade-to-null pattern (EMNLP sprint).
+    const refinerConfigPromise = getRefinerConfig().catch((e) => {
+      console.warn('init: getRefinerConfig failed, falling back to null', e);
+      return null;
+    });
 
     try {
-      // Boot-critical: without these there is no document to render at all.
+      // Boot-critical: without these there is nothing to show at all (not even
+      // the picker). No per-document GET here — the landing picker (docId=null)
+      // is the initial view; zero documents is a valid picker state (just the
+      // blank-document card), not an error.
       const [summaries, criteria, models] = await Promise.all([
         getDocuments(),
         getCriteria(),
         getModels(),
       ]);
-      const [groundingConfig, translatorConfig] = await Promise.all([
+      const [groundingConfig, translatorConfig, refinerConfig] = await Promise.all([
         groundingConfigPromise,
         translatorConfigPromise,
+        refinerConfigPromise,
       ]);
-      const firstId = summaries[0]?.id;
-      if (firstId === undefined) {
-        set({
-          documentLoading: false,
-          documentError: 'No documents available',
-          documents: summaries,
-          groundingConfig,
-          translatorConfig,
-        });
-        return;
-      }
-      const doc = await getDocument(firstId);
 
       // Initialise active criteria to all enabled
       const activeCriteria = new Set(criteria.filter((c) => c.enabled).map((c) => c.id));
 
       set({
-        document: doc,
+        document: null,
         documents: summaries,
         criteria,
         models,
         groundingConfig,
         translatorConfig,
+        refinerConfig,
         activeCriteria,
         documentLoading: false,
-        paraEvalState: Object.fromEntries(doc.paragraphs.map((_, i) => [i, defaultParaEval()])),
       });
     } catch (e) {
       set({ documentLoading: false, documentError: String(e) });
@@ -352,8 +387,14 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   setInspectorCollapsed: (v) => set({ inspectorCollapsed: v }),
   setShowTerms: (v) => set({ showTerms: v }),
   setHoveredTermId: (id) => set({ hoveredTermId: id }),
-  openUploadModal: () => set({ uploadModalOpen: true }),
+  openUploadModal: (opts) =>
+    set({ uploadModalOpen: true, uploadModalAiTranslateDefault: !!opts?.aiTranslateDefault }),
   closeUploadModal: () => set({ uploadModalOpen: false }),
+
+  backToPicker: () => {
+    set({ document: null });
+    void get().refreshDocuments();   // picker cards reflect fresh termsStatus on return
+  },
 
   toggleCriterion: (id) =>
     set((s) => {
@@ -415,10 +456,14 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   // ── evaluate helpers ──────────────────────────────────────────────────────
 
   evaluateParagraph: async (paraId, paraIdx, criterionIds) => {
+    // Spreads the previous per-paragraph state (not a fresh literal) so a
+    // refineStage set by refineParagraph's chained call survives this pass —
+    // otherwise "Re-scoring…" would flash back to the idle label instantly.
     set((s) => ({
       paraEvalState: {
         ...s.paraEvalState,
         [paraIdx]: {
+          ...(s.paraEvalState[paraIdx] ?? defaultParaEval()),
           loading: true,
           cached: false,
           cachedAt: null,
@@ -440,6 +485,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
           paraEvalState: {
             ...s.paraEvalState,
             [paraIdx]: {
+              ...(s.paraEvalState[paraIdx] ?? defaultParaEval()),
               loading: false,
               cached: ev.cached,
               cachedAt: ev.cachedAt,
@@ -461,6 +507,48 @@ export const useDemoStore = create<DemoStore>((set, get) => {
           },
         },
       }));
+    }
+  },
+
+  // ── refine (paper's "refiner") ────────────────────────────────────────────
+
+  refineParagraph: async (paraId, paraIdx) => {
+    const setStage = (stage: 'refining' | 'rescoring' | undefined) =>
+      set((s) => ({
+        paraEvalState: {
+          ...s.paraEvalState,
+          [paraIdx]: { ...(s.paraEvalState[paraIdx] ?? defaultParaEval()), refineStage: stage },
+        },
+      }));
+
+    setStage('refining');
+    try {
+      // Server returns the full updated paragraph dict (fresh target + issues
+      // flipped to 'accepted', new revision origin='refine') — same merge
+      // pattern as restoreParagraphRevision/saveParagraphTarget below.
+      const updated = await apiRefineParagraph(paraId);
+      set((s) => {
+        const doc = s.document;
+        if (!doc) return {};
+        const paragraphs = doc.paragraphs.map((p) => (p.id === paraId ? { ...p, ...updated } : p));
+        return { document: { ...doc, paragraphs } };
+      });
+      setStage('rescoring');
+      await get().evaluateParagraph(paraId, paraIdx);   // scores/aggregate on `updated` are pre-refine
+    } catch (e) {
+      // 409 = no open issues. The button is already client-gated on this
+      // (activeIssueCount === 0), so this only fires on a genuine race —
+      // nothing to refine, no error banner needed.
+      if (!String(e).includes('→ 409')) {
+        set((s) => ({
+          paraEvalState: {
+            ...s.paraEvalState,
+            [paraIdx]: { ...(s.paraEvalState[paraIdx] ?? defaultParaEval()), error: String(e) },
+          },
+        }));
+      }
+    } finally {
+      setStage(undefined);
     }
   },
 
@@ -678,6 +766,13 @@ export const useDemoStore = create<DemoStore>((set, get) => {
     set({ translatorConfig: updated });
   },
 
+  // ── refiner config ────────────────────────────────────────────────────────
+
+  saveRefinerConfig: async (cfg) => {
+    const updated = await updateRefinerConfig(cfg);
+    set({ refinerConfig: updated });
+  },
+
   retryTranslate: async () => {
     const doc = get().document;
     if (!doc) return;
@@ -707,6 +802,19 @@ export const useDemoStore = create<DemoStore>((set, get) => {
     });
     markStale(paraIdx);   // restored text has no fresh score yet — Evaluate ↻ will re-judge it honestly
   },
+
+  // ── terms-status polling (S? live terminology UX) ────────────────────────
+
+  startTermsPolling: () => {
+    if (termsPollTimer !== null) return;   // single-interval invariant
+    termsPollTimer = setInterval(() => void get().refreshDocument(), 2500);
+  },
+
+  stopTermsPolling: () => {
+    if (termsPollTimer === null) return;
+    clearInterval(termsPollTimer);
+    termsPollTimer = null;
+  },
   };
 });
 
@@ -720,28 +828,6 @@ export function selectParagraphs(s: DemoStore): Paragraph[] {
 /** All issues across all paragraphs */
 export function selectAllIssues(s: DemoStore): Issue[] {
   return s.document?.paragraphs.flatMap((p) => p.issues) ?? [];
-}
-
-/** Score lookup: score value by criterionId for a given paragraph */
-export function scoreValue(scores: Score[], criterionId: CriterionId): number | null {
-  return scores.find((s) => s.criterionId === criterionId)?.value ?? null;
-}
-
-/** Weighted aggregate from scores array + criteria definitions */
-export function computeAggregate(scores: Score[], criteria: Criterion[]): number | null {
-  const enabled = criteria.filter((c) => c.enabled);
-  if (enabled.length === 0) return null;
-  let totalWeight = 0;
-  let weighted = 0;
-  for (const c of enabled) {
-    const s = scores.find((sc) => sc.criterionId === c.id);
-    if (s === undefined) continue;
-    const norm = (s.value - c.scaleMin) / (c.scaleMax - c.scaleMin);
-    weighted += norm * c.weight;
-    totalWeight += c.weight;
-  }
-  if (totalWeight === 0) return null;
-  return Math.round((weighted / totalWeight) * 10 * 10) / 10;
 }
 
 export function scoreBand(v: number): 'green' | 'yellow' | 'red' {

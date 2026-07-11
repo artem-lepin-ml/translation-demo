@@ -3,8 +3,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getBudget } from '../api-client';
 import type {
-  BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, TestModelResult,
-  TranslatorConfig,
+  BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig,
+  TestModelResult, TranslatorConfig,
 } from '../api-client';
 import type { DemoStore } from '../store';
 
@@ -22,6 +22,8 @@ interface Props {
   onSaveGroundingConfig: DemoStore['saveGroundingConfig'];
   translatorConfig: TranslatorConfig | null;
   onSaveTranslatorConfig: DemoStore['saveTranslatorConfig'];
+  refinerConfig: RefinerConfig | null;
+  onSaveRefinerConfig: DemoStore['saveRefinerConfig'];
 }
 
 // Evaluator palette already in use by the seed criteria (seed.py CRITERIA) —
@@ -73,7 +75,7 @@ function parseApiError(e: unknown): { status: number; detail: string } | null {
 }
 
 /** Friendly Remove-model error text (spec 2026-07-05-settings-fixes.md §2.5):
- *  a 409 "model referenced by a criterion" names the evaluator(s) still
+ *  a 409 "model referenced by a criterion" names the judge(s) still
  *  pointing at the model instead of dumping `DELETE /models/... → 409: {...}`
  *  at the owner; any other failure gets a short human message (status +
  *  detail), never the raw method/URL. */
@@ -82,11 +84,11 @@ function friendlyRemoveModelError(e: unknown, modelName: string, criteria: Crite
   if (parsed?.status === 409 && parsed.detail === 'model referenced by a criterion') {
     const names = criteria.filter((c) => c.modelName === modelName).map((c) => c.name);
     if (names.length > 0) {
-      const label = names.length > 1 ? 'evaluators' : 'evaluator';
+      const label = names.length > 1 ? 'judges' : 'judge';
       const quoted = names.map((n) => `"${n}"`).join(', ');
       return `Model is used by ${label} ${quoted} — reassign it first`;
     }
-    return 'Model is used by an evaluator — reassign it first';
+    return 'Model is used by a judge — reassign it first';
   }
   if (parsed) {
     return `Could not remove the model (${parsed.status}): ${parsed.detail}`;
@@ -108,6 +110,8 @@ export default function SettingsTab({
   onSaveGroundingConfig,
   translatorConfig,
   onSaveTranslatorConfig,
+  refinerConfig,
+  onSaveRefinerConfig,
 }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null); // collapsed by default
   // Per-criterion error surfaced inline in EvaluatorEditor — covers both a
@@ -117,6 +121,8 @@ export default function SettingsTab({
   const [groundingError, setGroundingError] = useState<string | null>(null);
   // Translator card error — same pattern (S4 §3.4).
   const [translatorError, setTranslatorError] = useState<string | null>(null);
+  // Refiner card error — same pattern as translator/grounding.
+  const [refinerError, setRefinerError] = useState<string | null>(null);
   // Per-model Remove error (S1 §2.5) — a 409 (model referenced by a
   // criterion) used to vanish silently; now surfaced next to the row.
   const [modelError, setModelError] = useState<{ name: string; message: string } | null>(null);
@@ -181,7 +187,7 @@ export default function SettingsTab({
       await onRemoveModel(name);
     } catch (e) {
       // Surface the backend's own reason (e.g. "model referenced by a
-      // criterion") as a human message naming the evaluator(s), instead of
+      // criterion") as a human message naming the judge(s), instead of
       // the raw `DELETE /models/... → 409: {...}` dump (S1 §2.5).
       setModelError({ name, message: friendlyRemoveModelError(e, name, criteria) });
     }
@@ -195,231 +201,316 @@ export default function SettingsTab({
     }
   }
 
+  const roleUsage = modelRoleUsage(criteria, translatorConfig, groundingConfig, refinerConfig);
+
   return (
     <div className="va-tab-content">
       {budget && <BudgetLine budget={budget} />}
 
-      {/* ─── Translator (S4 §3.4) — above Evaluators; single config, no add/remove ── */}
-      <div className="va-settings-section-title">Translator</div>
-      {translatorConfig ? (
-        <TranslatorCard
-          config={translatorConfig}
-          models={models}
-          onSave={async (next) => {
-            try {
-              await onSaveTranslatorConfig(next);
-              setTranslatorError(null);
-            } catch (e) {
-              setTranslatorError(String(e));
-              throw e;
-            }
-          }}
-          error={translatorError}
-        />
-      ) : (
-        // Config failed to load at boot (2026-07-06 prod incident) — the app
-        // still renders the document; only this card degrades.
-        <div className="va-inspector-warning" data-testid="translator-config-unavailable">
-          Translator config unavailable — reload the page to retry.
-        </div>
-      )}
+      <div className="va-settings-layout">
+        <nav className="va-settings-nav" aria-label="Settings sections" data-testid="settings-nav">
+          <a href="#settings-model-registry" className="va-settings-nav-link">1. Model Registry</a>
+          <a href="#settings-translator" className="va-settings-nav-link">2. Translator</a>
+          <a href="#settings-judges" className="va-settings-nav-link">3. Judges</a>
+          <a href="#settings-grounding" className="va-settings-nav-link">4. Grounding</a>
+          <a href="#settings-refiner" className="va-settings-nav-link">5. Refiner</a>
+        </nav>
 
-      {/* ─── Criteria (Evaluators) — full-width rows, Model Registry pattern ── */}
-      <div className="va-settings-section-title" style={{ marginTop: 32 }}>Evaluators</div>
-      <table className="va-table">
-        <thead>
-          <tr>
-            <th style={{ width: 24 }} />
-            <th>Name</th>
-            <th>Model</th>
-            <th>Weight</th>
-            <th>Enabled</th>
-            <th style={{ width: 24 }} />
-          </tr>
-        </thead>
-        <tbody>
-          {criteria.map((c) => {
-            const isOpen = expandedId === c.id;
-            return (
-              <Fragment key={c.id}>
-                <tr
-                  className={`va-eval-row${!c.enabled ? ' disabled' : ''}`}
-                  onClick={() => setExpandedId(isOpen ? null : c.id)}
-                >
-                  <td>
-                    <span className="va-evaluator-color-swatch" style={{ background: c.color }} />
-                  </td>
-                  <td style={{ fontWeight: 600 }}>{c.name}</td>
-                  <td style={{ fontFamily: 'var(--va-font-mono)', fontSize: 12, color: 'var(--va-text-dim)' }}>
-                    {c.modelName}
-                  </td>
-                  <td>{c.weight}</td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      checked={c.enabled}
-                      onChange={(e) => void handleEnabledToggle(c, e.target.checked)}
-                    />
-                  </td>
-                  <td>
-                    <span className={`va-eval-chevron${isOpen ? ' open' : ''}`}>▶</span>
-                  </td>
+        <div className="va-settings-sections">
+          {/* ─── 1. Model Registry ─────────────────────────────────────────── */}
+          <section
+            id="settings-model-registry"
+            className="va-settings-section-block"
+            data-testid="settings-section-model-registry"
+          >
+            <div className="va-settings-section-title" data-testid="settings-section-title">1. Model Registry</div>
+            <table className="va-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Host</th>
+                  <th>API Key</th>
+                  <th>Params</th>
+                  <th>Roles</th>
+                  <th>Actions</th>
                 </tr>
-                {isOpen && (
-                  <tr>
-                    <td colSpan={6} style={{ padding: 0, borderBottom: '1px solid var(--va-border)' }}>
-                      <EvaluatorEditor
-                        criterion={c}
-                        models={models}
-                        onUpdate={async (next) => {
-                          try {
-                            await onUpdateCriterion(next);
-                            setFieldError(null);
-                          } catch (e) {
-                            setFieldError({ id: c.id, message: String(e) });
-                            throw e;
-                          }
-                        }}
-                        fieldError={fieldError?.id === c.id ? fieldError.message : null}
-                        onRemove={async () => {
-                          if (!window.confirm(`Delete "${c.name}"?`)) return;
-                          setFieldError(null);
-                          try {
-                            await onRemoveCriterion(c.id);
-                            setExpandedId(null);
-                          } catch (e) {
-                            setFieldError({ id: c.id, message: `Could not remove — disable the evaluator instead. ${String(e)}` });
-                          }
-                        }}
-                      />
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-      <button
-        className="va-add-eval-btn"
-        data-testid="add-evaluator-btn"
-        onClick={() => setShowAddEvaluator(true)}
-      >
-        + Add evaluator
-      </button>
-
-      {/* ─── Model Registry ─────────────────────────────────────────────────── */}
-      <div className="va-model-registry-section">
-        <div className="va-settings-section-title" style={{ marginTop: 32 }}>Model Registry</div>
-        <table className="va-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Base URL</th>
-              <th>API Key</th>
-              <th>Params</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {models.map((m) => {
-              const ts = stateFor(m.name);
-              const paramsOpen = !!expandedParams[m.name];
-              return (
-                <Fragment key={m.name}>
-                  <tr>
-                    <td style={{ fontWeight: 600, fontFamily: 'var(--va-font-mono)', fontSize: 12 }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                        {ts.result && (
-                          <span className={`va-verdict-dot ${ts.result.ok ? 'green' : 'red'}`} />
-                        )}
-                        {m.name}
-                      </span>
-                    </td>
-                    <td style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, color: 'var(--va-text-dim)' }}>{m.baseUrl}</td>
-                    <td style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, color: 'var(--va-text-dim)' }}>
-                      {m.apiKeyMasked}
-                    </td>
-                    <td>
-                      <span
-                        data-testid={`params-inline-${m.name}`}
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => setExpandedParams((s) => ({ ...s, [m.name]: !s[m.name] }))}
-                      >
-                        <ParamsInline params={m.params} />
-                      </span>
-                      {paramsOpen && (
-                        <div className="va-params-expanded" data-testid={`params-expanded-${m.name}`}>
-                          {Object.entries(m.params).map(([k, v]) => (
-                            <div key={k}><span className="k">{k}:</span><span className="v">{JSON.stringify(v)}</span></div>
-                          ))}
-                        </div>
+              </thead>
+              <tbody>
+                {models.map((m) => {
+                  const ts = stateFor(m.name);
+                  const paramsOpen = !!expandedParams[m.name];
+                  const roleLabel = roleUsage[m.name];
+                  return (
+                    <Fragment key={m.name}>
+                      <tr>
+                        <td style={{ fontWeight: 600, fontFamily: 'var(--va-font-mono)', fontSize: 12 }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                            {ts.result && (
+                              <span className={`va-verdict-dot ${ts.result.ok ? 'green' : 'red'}`} />
+                            )}
+                            {m.name}
+                          </span>
+                        </td>
+                        <td
+                          title={m.baseUrl || undefined}
+                          style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, color: 'var(--va-text-dim)' }}
+                        >
+                          {deriveHost(m.baseUrl)}
+                        </td>
+                        <td style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, color: 'var(--va-text-dim)' }}>
+                          {m.apiKeyMasked}
+                        </td>
+                        <td>
+                          <span
+                            data-testid={`params-inline-${m.name}`}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setExpandedParams((s) => ({ ...s, [m.name]: !s[m.name] }))}
+                          >
+                            <ParamsInline params={m.params} />
+                          </span>
+                          {paramsOpen && (
+                            <div className="va-params-expanded" data-testid={`params-expanded-${m.name}`}>
+                              {Object.entries(m.params).map(([k, v]) => (
+                                <div key={k}><span className="k">{k}:</span><span className="v">{JSON.stringify(v)}</span></div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <span className="va-role-badge" data-testid={`role-badge-${m.name}`}>
+                            {roleLabel ?? '—'}
+                          </span>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: 4 }}>
+                            <button className="va-btn-secondary" onClick={() => handleTest(m.name)} disabled={ts.loading}>
+                              {ts.loading ? 'Testing…' : 'Test'}
+                            </button>
+                            <button className="va-btn-secondary" data-testid={`edit-model-btn-${m.name}`} onClick={() => setEditing(m)}>Edit</button>
+                            <button className="va-btn-secondary" onClick={() => void handleRemoveModel(m.name)}>
+                              Remove
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      {modelError?.name === m.name && (
+                        <tr>
+                          <td colSpan={6} style={{ padding: 0, borderBottom: '1px solid var(--va-border)' }}>
+                            <div className="va-inspector-warning" data-testid={`model-field-error-${m.name}`}>
+                              {modelError.message}
+                            </div>
+                          </td>
+                        </tr>
                       )}
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: 4 }}>
-                        <button className="va-btn-secondary" onClick={() => handleTest(m.name)} disabled={ts.loading}>
-                          {ts.loading ? 'Testing…' : 'Test'}
-                        </button>
-                        <button className="va-btn-secondary" data-testid={`edit-model-btn-${m.name}`} onClick={() => setEditing(m)}>Edit</button>
-                        <button className="va-btn-secondary" onClick={() => void handleRemoveModel(m.name)}>
-                          Remove
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {modelError?.name === m.name && (
-                    <tr>
-                      <td colSpan={5} style={{ padding: 0, borderBottom: '1px solid var(--va-border)' }}>
-                        <div className="va-inspector-warning" data-testid={`model-field-error-${m.name}`}>
-                          {modelError.message}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  {ts.expanded && ts.result && (
-                    <tr>
-                      <td colSpan={5} style={{ padding: 0, borderBottom: '1px solid var(--va-border)' }}>
-                        <TestResultCard result={ts.result} />
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              );
-            })}
-          </tbody>
-        </table>
-        <div className="va-model-registry-actions">
-          <button className="va-btn-secondary" data-testid="add-model-btn" onClick={() => setShowAddModel(true)}>
-            + Add model
-          </button>
+                      {ts.expanded && ts.result && (
+                        <tr>
+                          <td colSpan={6} style={{ padding: 0, borderBottom: '1px solid var(--va-border)' }}>
+                            <TestResultCard result={ts.result} />
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div className="va-model-registry-actions">
+              <button className="va-btn-secondary" data-testid="add-model-btn" onClick={() => setShowAddModel(true)}>
+                + Add model
+              </button>
+            </div>
+          </section>
+
+          {/* ─── 2. Translator (S4 §3.4) — single config, no add/remove ──────── */}
+          <section
+            id="settings-translator"
+            className="va-settings-section-block"
+            data-testid="settings-section-translator"
+          >
+            <div className="va-settings-section-title" data-testid="settings-section-title">2. Translator</div>
+            {translatorConfig ? (
+              <TranslatorCard
+                config={translatorConfig}
+                models={models}
+                onSave={async (next) => {
+                  try {
+                    await onSaveTranslatorConfig(next);
+                    setTranslatorError(null);
+                  } catch (e) {
+                    setTranslatorError(String(e));
+                    throw e;
+                  }
+                }}
+                error={translatorError}
+              />
+            ) : (
+              // Config failed to load at boot (2026-07-06 prod incident) — the app
+              // still renders the document; only this card degrades.
+              <div className="va-inspector-warning" data-testid="translator-config-unavailable">
+                Translator config unavailable — reload the page to retry.
+              </div>
+            )}
+          </section>
+
+          {/* ─── 3. Judges (criteria) — full-width rows, Model Registry pattern ── */}
+          <section
+            id="settings-judges"
+            className="va-settings-section-block"
+            data-testid="settings-section-judges"
+          >
+            <div className="va-settings-section-title" data-testid="settings-section-title">3. Judges</div>
+            <table className="va-table">
+              <thead>
+                <tr>
+                  <th style={{ width: 24 }} />
+                  <th>Name</th>
+                  <th>Model</th>
+                  <th>Weight</th>
+                  <th>Enabled</th>
+                  <th style={{ width: 24 }} />
+                </tr>
+              </thead>
+              <tbody>
+                {criteria.map((c) => {
+                  const isOpen = expandedId === c.id;
+                  return (
+                    <Fragment key={c.id}>
+                      <tr
+                        className={`va-eval-row${!c.enabled ? ' disabled' : ''}`}
+                        onClick={() => setExpandedId(isOpen ? null : c.id)}
+                      >
+                        <td>
+                          <span className="va-evaluator-color-swatch" style={{ background: c.color }} />
+                        </td>
+                        <td style={{ fontWeight: 600 }}>{c.name}</td>
+                        <td style={{ fontFamily: 'var(--va-font-mono)', fontSize: 12, color: 'var(--va-text-dim)' }}>
+                          {c.modelName}
+                        </td>
+                        <td>{c.weight}</td>
+                        <td onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={c.enabled}
+                            onChange={(e) => void handleEnabledToggle(c, e.target.checked)}
+                          />
+                        </td>
+                        <td>
+                          <span className={`va-eval-chevron${isOpen ? ' open' : ''}`}>▶</span>
+                        </td>
+                      </tr>
+                      {isOpen && (
+                        <tr>
+                          <td colSpan={6} style={{ padding: 0, borderBottom: '1px solid var(--va-border)' }}>
+                            <EvaluatorEditor
+                              criterion={c}
+                              models={models}
+                              onUpdate={async (next) => {
+                                try {
+                                  await onUpdateCriterion(next);
+                                  setFieldError(null);
+                                } catch (e) {
+                                  setFieldError({ id: c.id, message: String(e) });
+                                  throw e;
+                                }
+                              }}
+                              fieldError={fieldError?.id === c.id ? fieldError.message : null}
+                              onRemove={async () => {
+                                if (!window.confirm(`Delete "${c.name}"?`)) return;
+                                setFieldError(null);
+                                try {
+                                  await onRemoveCriterion(c.id);
+                                  setExpandedId(null);
+                                } catch (e) {
+                                  setFieldError({ id: c.id, message: `Could not remove — disable the judge instead. ${String(e)}` });
+                                }
+                              }}
+                            />
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+            <button
+              className="va-add-eval-btn"
+              data-testid="add-evaluator-btn"
+              onClick={() => setShowAddEvaluator(true)}
+            >
+              + Add judge
+            </button>
+          </section>
+
+          {/* ─── 4. Grounding ───────────────────────────────────────────────── */}
+          <section
+            id="settings-grounding"
+            className="va-settings-section-block"
+            data-testid="settings-section-grounding"
+          >
+            <div className="va-settings-section-title" data-testid="settings-section-title">4. Grounding</div>
+            <div className="va-settings-section-desc">
+              Model and system prompt used by the live terminology pipeline (NER + disambiguation) for newly added documents.
+            </div>
+            {groundingConfig ? (
+              <GroundingEditor
+                config={groundingConfig}
+                models={models}
+                onSave={async (next) => {
+                  try {
+                    await onSaveGroundingConfig(next);
+                    setGroundingError(null);
+                  } catch (e) {
+                    setGroundingError(String(e));
+                    throw e;
+                  }
+                }}
+                error={groundingError}
+              />
+            ) : (
+              // Config failed to load at boot (2026-07-06 prod incident) — the app
+              // still renders the document; only this card degrades.
+              <div className="va-inspector-warning" data-testid="grounding-config-unavailable">
+                Grounding config unavailable — reload the page to retry.
+              </div>
+            )}
+          </section>
+
+          {/* ─── 5. Refiner — aggregates judge findings, rewrites the paragraph ── */}
+          <section
+            id="settings-refiner"
+            className="va-settings-section-block"
+            data-testid="settings-section-refiner"
+          >
+            <div className="va-settings-section-title" data-testid="settings-section-title">5. Refiner</div>
+            <div className="va-settings-section-desc">
+              Aggregates judge findings and rewrites the paragraph in a single pass.
+            </div>
+            {refinerConfig ? (
+              <RefinerCard
+                config={refinerConfig}
+                models={models}
+                onSave={async (next) => {
+                  try {
+                    await onSaveRefinerConfig(next);
+                    setRefinerError(null);
+                  } catch (e) {
+                    setRefinerError(String(e));
+                    throw e;
+                  }
+                }}
+                error={refinerError}
+              />
+            ) : (
+              // Same degrade-to-null pattern as translator/grounding (2026-07-06
+              // prod incident) — a missing/failed config never blanks the tab.
+              <div className="va-inspector-warning" data-testid="refiner-config-unavailable">
+                Refiner config unavailable — reload the page to retry.
+              </div>
+            )}
+          </section>
         </div>
       </div>
-
-      {/* ─── Grounding ───────────────────────────────────────────────────────── */}
-      <div className="va-settings-section-title" style={{ marginTop: 32 }}>Grounding</div>
-      {groundingConfig ? (
-        <GroundingEditor
-          config={groundingConfig}
-          models={models}
-          onSave={async (next) => {
-            try {
-              await onSaveGroundingConfig(next);
-              setGroundingError(null);
-            } catch (e) {
-              setGroundingError(String(e));
-              throw e;
-            }
-          }}
-          error={groundingError}
-        />
-      ) : (
-        // Config failed to load at boot (2026-07-06 prod incident) — the app
-        // still renders the document; only this card degrades.
-        <div className="va-inspector-warning" data-testid="grounding-config-unavailable">
-          Grounding config unavailable — reload the page to retry.
-        </div>
-      )}
 
       {editing && (
         <EditModelModal
@@ -570,8 +661,8 @@ function EvaluatorEditor({ criterion, models, onUpdate, onRemove, fieldError }: 
 }
 
 // ─── PromptEditor — Edit/Preview toggle + explicit Save/Revert (S1 §2.3) ──────
-// Reused by EvaluatorEditor and the Translator card (S4 §3.4) — the only two
-// prompts editable in Settings.
+// Reused by EvaluatorEditor, TranslatorCard (S4 §3.4) and RefinerCard — the
+// three prompts editable in Settings.
 
 interface PromptEditorProps {
   prompt: string;
@@ -676,6 +767,56 @@ function ParamsInline({ params }: { params: Record<string, unknown> }) {
       {more > 0 && ` · +${more}`}
     </span>
   );
+}
+
+// ─── Model Registry — Host + Roles column helpers (EMNLP sprint) ─────────────
+
+/** Human host label for the Model Registry table, derived from baseUrl (never
+ * hardcoded per model name) — OpenRouter and local vLLM are the two hosts the
+ * seed registry uses today; any other baseUrl falls back to its own hostname. */
+function deriveHost(baseUrl: string): string {
+  if (!baseUrl) return '—';
+  try {
+    const { hostname } = new URL(baseUrl);
+    if (hostname.includes('openrouter')) return 'openrouter';
+    if (hostname === 'localhost' || hostname === '127.0.0.1') return 'local vLLM';
+    return hostname;
+  } catch {
+    return baseUrl.includes('openrouter') ? 'openrouter' : baseUrl;
+  }
+}
+
+type ConfigRole = 'criteria' | 'translator' | 'grounding' | 'refiner';
+const ALL_CONFIG_ROLES: ConfigRole[] = ['criteria', 'translator', 'grounding', 'refiner'];
+
+/** Per-model "used by" label for the Model Registry Roles column, computed
+ * live from criteria + translator/grounding/refiner config — never a
+ * hardcoded model→role map. A model referenced by all 4 roles reads
+ * "default · all roles"; a partial match lists the subset; a model
+ * referenced by nothing has no entry (caller renders "—"). */
+function modelRoleUsage(
+  criteria: Criterion[],
+  translatorConfig: TranslatorConfig | null,
+  groundingConfig: GroundingConfig | null,
+  refinerConfig: RefinerConfig | null,
+): Record<string, string> {
+  const rolesByModel: Record<string, Set<ConfigRole>> = {};
+  const add = (modelName: string | null | undefined, role: ConfigRole) => {
+    if (!modelName) return;
+    (rolesByModel[modelName] ??= new Set()).add(role);
+  };
+  criteria.forEach((c) => add(c.modelName, 'criteria'));
+  add(translatorConfig?.modelName, 'translator');
+  add(groundingConfig?.modelName, 'grounding');
+  add(refinerConfig?.modelName, 'refiner');
+
+  const labels: Record<string, string> = {};
+  for (const [modelName, used] of Object.entries(rolesByModel)) {
+    labels[modelName] = used.size === ALL_CONFIG_ROLES.length
+      ? 'default · all roles'
+      : ALL_CONFIG_ROLES.filter((r) => used.has(r)).join(', ');
+  }
+  return labels;
 }
 
 // ─── TranslatorCard — first-pass AI translation config (S4 §3.4, mirrors GroundingEditor) ──
@@ -872,6 +1013,68 @@ function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps
 
       {error && (
         <div className="va-inspector-warning" data-testid="grounding-field-error">
+          {error}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── RefinerCard — aggregates judge findings, rewrites the paragraph (EMNLP sprint) ──
+// Mirrors TranslatorCard: model select + editable prompt (via the shared
+// PromptEditor). Params are display-only here (ParamsInline, read-only) — the
+// refiner endpoint is brand-new this sprint, so the JSON-editing surface
+// TranslatorCard/GroundingEditor expose for params is deliberately deferred.
+
+interface RefinerCardProps {
+  config: RefinerConfig;
+  models: ModelRegistryEntryPublic[];
+  onSave: (cfg: RefinerConfig) => Promise<void>;
+  error: string | null;
+}
+
+function RefinerCard({ config, models, onSave, error }: RefinerCardProps) {
+  const [modelName, setModelName] = useState(config.modelName ?? '');
+
+  function commitField(next: Partial<RefinerConfig>) {
+    void onSave({ modelName, prompt: config.prompt, params: config.params, ...next }).catch(() => {
+      // onSave already recorded the error via the `error` prop.
+    });
+  }
+
+  return (
+    <div className="va-translator-card" data-testid="refiner-card">
+      <div>
+        <div className="va-field-label">Model</div>
+        <select
+          className="va-field-input va-field-select"
+          style={{ maxWidth: 320 }}
+          value={modelName}
+          onChange={(e) => { setModelName(e.target.value); commitField({ modelName: e.target.value }); }}
+        >
+          {models.map((m) => (
+            <option key={m.name} value={m.name}>{m.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <div className="va-field-label">Params</div>
+        <span data-testid="refiner-params">
+          <ParamsInline params={config.params} />
+        </span>
+      </div>
+
+      <PromptEditor
+        prompt={config.prompt}
+        testidPrefix="refiner"
+        onSave={async (next) => {
+          await onSave({ modelName, prompt: next, params: config.params });
+        }}
+      />
+
+      {error && (
+        <div className="va-inspector-warning" data-testid="refiner-field-error">
           {error}
         </div>
       )}
@@ -1135,7 +1338,7 @@ function AddEvaluatorModal({ criteria, models, onClose, onSave }: AddEvaluatorMo
     <div className="va-popover-backdrop va-modal-backdrop" onClick={onClose}>
       <div className="va-popover" data-testid="add-evaluator-modal" onClick={(e) => e.stopPropagation()}>
         <button className="va-popover-close" onClick={onClose}>✕</button>
-        <div className="va-modal-title">Add evaluator</div>
+        <div className="va-modal-title">Add judge</div>
 
         <div>
           <div className="va-field-label">Name</div>
