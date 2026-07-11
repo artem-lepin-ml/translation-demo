@@ -13,7 +13,7 @@
 5. Run the additive schema migration (`python -m palimpsest.webapp.migrate`) against the live DB, via a one-shot container, before the new server starts serving requests.
 6. Smoke-test the frontend's boot-critical GET endpoints inside the new container — `/api/documents`, `/api/criteria`, `/api/models`, `/api/grounding-config`, `/api/translator-config` — each must answer `200`; any other status names the failing endpoint and aborts the deploy (`exit 1`) before it reaches prod (this is the gate that would have caught the `grounding_config` migration gap — see [docs/known_issues.md](../docs/known_issues.md)).
 7. Disable the retired `cultural` (Cultural Adaptation) criterion on prod data — `UPDATE criterion SET enabled=0`, never `DELETE` (score/issue history referencing it is irreproducible — see the repo-root invariants).
-8. Force `temperature: 0` on the 5 demo OpenRouter model rows via the live API (judge determinism for the recorded demo), preserving every other param and the existing API key.
+8. Force `temperature: 0` on the demo OpenRouter model rows (paper registry) via the live API (judge determinism for the recorded demo), preserving every other param and the existing API key.
 
 Every step is idempotent — re-running the script after a partial failure is safe (git pull is a no-op if already up to date, the migration is additive-only, the criterion UPDATE is a no-op if already disabled, and the temperature PUT is a no-op if already 0).
 

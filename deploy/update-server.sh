@@ -165,11 +165,10 @@ PY
 
 log "8/8 force temperature=0 on the demo model rows via the live API"
 MODELS=(
-    "anthropic/claude-haiku-4.5"
-    "anthropic/claude-sonnet-5"
-    "google/gemini-3.5-flash"
-    "openai/gpt-5.4-mini"
-    "qwen/qwen3.6-plus"
+    "qwen/qwen3.6-27b"
+    "google/gemma-3-27b-it"
+    "deepseek/deepseek-v4-flash"
+    "google/gemini-3.1-flash-lite"
 )
 for name in "${MODELS[@]}"; do
     docker exec "$CONTAINER_NAME" python -c "
