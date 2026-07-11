@@ -1,0 +1,54 @@
+{"article": "Академия Цзися", "done": 1, "of": 54, "spent": 0.013624760000000007, "spent_by_kind": {"extract": 0.0, "judge": 0.013624760000000007}, "calls_by_kind": {"extract": 0, "judge": 95}}
+{"article": "KV35YL", "done": 2, "of": 54, "spent": 0.018347040000000012, "spent_by_kind": {"extract": 0.0, "judge": 0.018347040000000012}, "calls_by_kind": {"extract": 0, "judge": 119}}
+{"article": "XXX династия", "done": 3, "of": 54, "spent": 0.020912760000000016, "spent_by_kind": {"extract": 0.0, "judge": 0.020912760000000016}, "calls_by_kind": {"extract": 0, "judge": 153}}
+{"article": "Абдмилькат", "done": 4, "of": 54, "spent": 0.021306300000000018, "spent_by_kind": {"extract": 0.0, "judge": 0.021306300000000018}, "calls_by_kind": {"extract": 0, "judge": 156}}
+{"article": "XXVII династия", "done": 5, "of": 54, "spent": 0.024026420000000017, "spent_by_kind": {"extract": 0.0, "judge": 0.024026420000000017}, "calls_by_kind": {"extract": 0, "judge": 166}}
+{"article": "Арахозия", "done": 6, "of": 54, "spent": 0.025568180000000024, "spent_by_kind": {"extract": 0.0, "judge": 0.025568180000000024}, "calls_by_kind": {"extract": 0, "judge": 188}}
+{"article": "Азиатская экспедиция (336—334 до н. э.)", "done": 7, "of": 54, "spent": 0.03538351999999992, "spent_by_kind": {"extract": 0.0, "judge": 0.03538351999999992}, "calls_by_kind": {"extract": 0, "judge": 256}}
+{"article": "Амударьинский клад", "done": 8, "of": 54, "spent": 0.035081279999999916, "spent_by_kind": {"extract": 0.0, "judge": 0.035081279999999916}, "calls_by_kind": {"extract": 0, "judge": 257}}
+{"article": "Ашшур-этель-илани", "done": 9, "of": 54, "spent": 0.04616307999999962, "spent_by_kind": {"extract": 0.0, "judge": 0.04616307999999962}, "calls_by_kind": {"extract": 0, "judge": 338}}
+{"article": "Ахеменидские сатрапии", "done": 10, "of": 54, "spent": 0.049577119999999524, "spent_by_kind": {"extract": 0.0, "judge": 0.049577119999999524}, "calls_by_kind": {"extract": 0, "judge": 365}}
+{"article": "Арслантепе (Мелид)", "done": 11, "of": 54, "spent": 0.06518319999999912, "spent_by_kind": {"extract": 0.0, "judge": 0.06518319999999912}, "calls_by_kind": {"extract": 0, "judge": 483}}
+{"article": "Армия империи Хань", "done": 12, "of": 54, "spent": 0.06813257999999904, "spent_by_kind": {"extract": 0.0, "judge": 0.06813257999999904}, "calls_by_kind": {"extract": 0, "judge": 507}}
+{"article": "Ашшур (город)", "done": 13, "of": 54, "spent": 0.07276951999999885, "spent_by_kind": {"extract": 0.0, "judge": 0.07276951999999885}, "calls_by_kind": {"extract": 0, "judge": 547}}
+{"article": "Ашока", "done": 14, "of": 54, "spent": 0.08111785999999865, "spent_by_kind": {"extract": 0.0, "judge": 0.08111785999999865}, "calls_by_kind": {"extract": 0, "judge": 612}}
+{"article": "Восстания в державе Ахеменидов (521—516 до н. э.)", "done": 15, "of": 54, "spent": 0.09566945999999821, "spent_by_kind": {"extract": 0.0, "judge": 0.09566945999999821}, "calls_by_kind": {"extract": 0, "judge": 725}}
+{"article": "Библ", "done": 16, "of": 54, "spent": 0.10065037999999803, "spent_by_kind": {"extract": 0.0, "judge": 0.10065037999999803}, "calls_by_kind": {"extract": 0, "judge": 765}}
+{"article": "Второй Афинский морской союз", "done": 17, "of": 54, "spent": 0.10854021999999784, "spent_by_kind": {"extract": 0.0, "judge": 0.10854021999999784}, "calls_by_kind": {"extract": 0, "judge": 826}}
+{"article": "Беотийский союз", "done": 18, "of": 54, "spent": 0.11224713999999773, "spent_by_kind": {"extract": 0.0, "judge": 0.11224713999999773}, "calls_by_kind": {"extract": 0, "judge": 858}}
+{"article": "Гандхара", "done": 19, "of": 54, "spent": 0.11804373999999752, "spent_by_kind": {"extract": 0.0, "judge": 0.11804373999999752}, "calls_by_kind": {"extract": 0, "judge": 910}}
+{"article": "Веды", "done": 20, "of": 54, "spent": 0.12103705999999745, "spent_by_kind": {"extract": 0.0, "judge": 0.12103705999999745}, "calls_by_kind": {"extract": 0, "judge": 930}}
+{"article": "Гай Сосий (консул)", "done": 21, "of": 54, "spent": 0.12869925999999762, "spent_by_kind": {"extract": 0.0, "judge": 0.12869925999999762}, "calls_by_kind": {"extract": 0, "judge": 993}}
+{"article": "Ашшурбанапал", "done": 22, "of": 54, "spent": 0.13195423999999784, "spent_by_kind": {"extract": 0.0, "judge": 0.13195423999999784}, "calls_by_kind": {"extract": 0, "judge": 1015}}
+{"article": "Дауния", "done": 23, "of": 54, "spent": 0.13165957999999792, "spent_by_kind": {"extract": 0.0, "judge": 0.13165957999999792}, "calls_by_kind": {"extract": 0, "judge": 1020}}
+{"article": "Древнехеттское царство", "done": 24, "of": 54, "spent": 0.14141879999999868, "spent_by_kind": {"extract": 0.0, "judge": 0.14141879999999868}, "calls_by_kind": {"extract": 0, "judge": 1092}}
+{"article": "Данайцы", "done": 25, "of": 54, "spent": 0.14240001999999888, "spent_by_kind": {"extract": 0.0, "judge": 0.14240001999999888}, "calls_by_kind": {"extract": 0, "judge": 1116}}
+{"article": "Зимрида (правитель Сидона)", "done": 26, "of": 54, "spent": 0.1470855399999992, "spent_by_kind": {"extract": 0.0, "judge": 0.1470855399999992}, "calls_by_kind": {"extract": 0, "judge": 1156}}
+{"article": "Ибаль-пи-Эль II", "done": 27, "of": 54, "spent": 0.15835296000000018, "spent_by_kind": {"extract": 0.0, "judge": 0.15835296000000018}, "calls_by_kind": {"extract": 0, "judge": 1239}}
+{"article": "Древнеегипетский календарь", "done": 28, "of": 54, "spent": 0.1595475400000002, "spent_by_kind": {"extract": 0.0, "judge": 0.1595475400000002}, "calls_by_kind": {"extract": 0, "judge": 1243}}
+{"article": "Древнегреческая религия", "done": 29, "of": 54, "spent": 0.16072284000000034, "spent_by_kind": {"extract": 0.0, "judge": 0.16072284000000034}, "calls_by_kind": {"extract": 0, "judge": 1253}}
+{"article": "Гаруда", "done": 30, "of": 54, "spent": 0.16015128000000037, "spent_by_kind": {"extract": 0.0, "judge": 0.16015128000000037}, "calls_by_kind": {"extract": 0, "judge": 1257}}
+{"article": "Ибби-Суэн", "done": 31, "of": 54, "spent": 0.17432994000000165, "spent_by_kind": {"extract": 0.0, "judge": 0.17432994000000165}, "calls_by_kind": {"extract": 0, "judge": 1376}}
+{"article": "Калинга (государство)", "done": 32, "of": 54, "spent": 0.1743422800000017, "spent_by_kind": {"extract": 0.0, "judge": 0.1743422800000017}, "calls_by_kind": {"extract": 0, "judge": 1380}}
+{"article": "Калан (мудрец)", "done": 33, "of": 54, "spent": 0.1857553280000024, "spent_by_kind": {"extract": 0.0, "judge": 0.1857553280000024}, "calls_by_kind": {"extract": 0, "judge": 1456}}
+{"article": "Ишува", "done": 34, "of": 54, "spent": 0.1873127880000025, "spent_by_kind": {"extract": 0.0, "judge": 0.1873127880000025}, "calls_by_kind": {"extract": 0, "judge": 1463}}
+{"article": "Завоевание царства Шу царством Вэй", "done": 35, "of": 54, "spent": 0.18772844800000255, "spent_by_kind": {"extract": 0.0, "judge": 0.18772844800000255}, "calls_by_kind": {"extract": 0, "judge": 1466}}
+{"article": "Камарупа", "done": 36, "of": 54, "spent": 0.21682722800000523, "spent_by_kind": {"extract": 0.0, "judge": 0.21682722800000523}, "calls_by_kind": {"extract": 0, "judge": 1707}}
+{"article": "Индо-Греческое царство", "done": 37, "of": 54, "spent": 0.2212281480000056, "spent_by_kind": {"extract": 0.0, "judge": 0.2212281480000056}, "calls_by_kind": {"extract": 0, "judge": 1745}}
+{"article": "Касситская династия", "done": 38, "of": 54, "spent": 0.23447010800000648, "spent_by_kind": {"extract": 0.0, "judge": 0.23447010800000648}, "calls_by_kind": {"extract": 0, "judge": 1832}}
+{"article": "Кипрская война (390—380 до н. э.)", "done": 39, "of": 54, "spent": 0.25640264800000834, "spent_by_kind": {"extract": 0.0, "judge": 0.25640264800000834}, "calls_by_kind": {"extract": 0, "judge": 2000}}
+{"article": "Линейное письмо Б", "done": 40, "of": 54, "spent": 0.26756836800000905, "spent_by_kind": {"extract": 0.0, "judge": 0.26756836800000905}, "calls_by_kind": {"extract": 0, "judge": 2085}}
+{"article": "Кария", "done": 41, "of": 54, "spent": 0.2709560880000092, "spent_by_kind": {"extract": 0.0, "judge": 0.2709560880000092}, "calls_by_kind": {"extract": 0, "judge": 2113}}
+{"article": "Квинт Фульвий Флакк (консул 237 года до н. э.)", "done": 42, "of": 54, "spent": 0.27167384800000927, "spent_by_kind": {"extract": 0.0, "judge": 0.27167384800000927}, "calls_by_kind": {"extract": 0, "judge": 2116}}
+{"article": "Лувийский язык", "done": 43, "of": 54, "spent": 0.27347498800000936, "spent_by_kind": {"extract": 0.0, "judge": 0.27347498800000936}, "calls_by_kind": {"extract": 0, "judge": 2137}}
+{"article": "Кесария Палестинская", "done": 44, "of": 54, "spent": 0.28610672800001063, "spent_by_kind": {"extract": 0.0, "judge": 0.28610672800001063}, "calls_by_kind": {"extract": 0, "judge": 2225}}
+{"article": "Лугальзагеси", "done": 45, "of": 54, "spent": 0.2891709280000109, "spent_by_kind": {"extract": 0.0, "judge": 0.2891709280000109}, "calls_by_kind": {"extract": 0, "judge": 2250}}
+{"article": "Марк Фульвий Флакк (консул 264 года до н. э.)", "done": 46, "of": 54, "spent": 0.29748200800001173, "spent_by_kind": {"extract": 0.0, "judge": 0.29748200800001173}, "calls_by_kind": {"extract": 0, "judge": 2313}}
+{"article": "Македония при Ахеменидах", "done": 47, "of": 54, "spent": 0.30253298800001227, "spent_by_kind": {"extract": 0.0, "judge": 0.30253298800001227}, "calls_by_kind": {"extract": 0, "judge": 2361}}
+{"article": "Луций Марций Цензорин (консул 39 года до н. э.)", "done": 48, "of": 54, "spent": 0.30435306800001233, "spent_by_kind": {"extract": 0.0, "judge": 0.30435306800001233}, "calls_by_kind": {"extract": 0, "judge": 2367}}
+{"article": "Мугаллу", "done": 49, "of": 54, "spent": 0.3107722080000128, "spent_by_kind": {"extract": 0.0, "judge": 0.3107722080000128}, "calls_by_kind": {"extract": 0, "judge": 2418}}
+{"article": "Муваталлис II", "done": 50, "of": 54, "spent": 0.31146088800001304, "spent_by_kind": {"extract": 0.0, "judge": 0.31146088800001304}, "calls_by_kind": {"extract": 0, "judge": 2427}}
+{"article": "Нур-Адад", "done": 51, "of": 54, "spent": 0.31125692800001303, "spent_by_kind": {"extract": 0.0, "judge": 0.31125692800001303}, "calls_by_kind": {"extract": 0, "judge": 2429}}
+{"article": "Мистерии", "done": 52, "of": 54, "spent": 0.32013952800001394, "spent_by_kind": {"extract": 0.0, "judge": 0.32013952800001394}, "calls_by_kind": {"extract": 0, "judge": 2506}}
+{"article": "Мурсили II", "done": 53, "of": 54, "spent": 0.320303348000014, "spent_by_kind": {"extract": 0.0, "judge": 0.320303348000014}, "calls_by_kind": {"extract": 0, "judge": 2511}}
+{"article": "Древняя Греция", "done": 54, "of": 54, "spent": 0.32850302800001485, "spent_by_kind": {"extract": 0.0, "judge": 0.32850302800001485}, "calls_by_kind": {"extract": 0, "judge": 2582}}

@@ -1,0 +1,78 @@
+{
+ "article_workers": 6,
+ "calls": {
+  "extract": 0,
+  "judge": 2582,
+  "label_guess": 0
+ },
+ "config": "111",
+ "failed_paragraphs": [],
+ "finished_at": "2026-07-11T08:12:21.534711+00:00",
+ "generation_params": {
+  "base_url": "https://openrouter.ai/api/v1",
+  "extra_body_effective": {
+   "provider": {
+    "allow_fallbacks": false,
+    "order": [
+     "Novita"
+    ]
+   },
+   "reasoning": {
+    "enabled": true
+   },
+   "usage": {
+    "include": true
+   }
+  },
+  "max_tokens": 20000,
+  "model": "deepseek/deepseek-v4-flash",
+  "provider_pin": "Novita",
+  "reasoning": {
+   "enabled": true
+  },
+  "temperature": 1.0,
+  "top_k": null,
+  "top_p": 1.0
+ },
+ "grounding_config": {
+  "match_aliases": true,
+  "use_cirrus": true,
+  "use_lemma": true,
+  "use_sitelink": false
+ },
+ "llm_max_in_flight_observed": 6,
+ "llm_semaphore": 6,
+ "max_judge_calls": 25000,
+ "max_usd": 3.0,
+ "model": "deepseek/deepseek-v4-flash",
+ "n_articles": 54,
+ "n_extraction_parse_failures": 0,
+ "n_failed_judge_calls": 0,
+ "n_failed_paragraphs": 0,
+ "n_paragraphs": 1242,
+ "n_pred_mentions": 10645,
+ "n_reuse_extraction_unmatched": 0,
+ "no_judge": false,
+ "parse_failed_paragraphs": [],
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "Novita",
+ "reuse_extraction_from": "/tmp/claude-0/-home-user-translation-demo/d94abddc-f105-576c-b81a-a51a1ca3f0ff/scratchpad/endgame/prefix-judge/deepseek-src",
+ "run_id": "2026-07-11T06-18-48Z",
+ "search_mode": "baseline",
+ "spend": {
+  "extract": 0.0,
+  "judge": 0.32850302800001485,
+  "label_guess": 0.0,
+  "total": 0.32850302800001485
+ },
+ "started_at": "2026-07-11T06:18:48.933390+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 6812.601321,
+ "wikidata": {
+  "cache_hits": 28935,
+  "calls": 1949,
+  "seconds": 636.002
+ },
+ "wikidata_workers": 2
+}
