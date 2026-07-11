@@ -5,6 +5,8 @@ cancellation pattern; the actual LLM call is a plain ``LLMClient.complete``
 """
 from __future__ import annotations
 
+import os
+
 import asyncio
 import json
 import logging
@@ -14,7 +16,7 @@ from datetime import datetime, timezone
 from ..llm.client import LLMClient, is_transient_error
 from . import budget, db
 
-TRANSLATE_TIMEOUT = 20.0
+TRANSLATE_TIMEOUT = float(os.environ.get("PALIMPSEST_TRANSLATE_TIMEOUT", "20"))
 RETRY_ONCE_BACKOFF = 1.0
 CONTEXT_CHAR_BUDGET = 2000
 ROLLING_CONTEXT_PARAS = 2
