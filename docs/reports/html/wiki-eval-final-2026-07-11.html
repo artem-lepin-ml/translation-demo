@@ -140,16 +140,16 @@
 
   <header class="report-header">
     <h1>Wiki-eval: марафон экспериментов — финальный отчёт</h1>
-    <p class="meta">wiki-eval grounding · снимок scores.json 2026-07-11T01:44:45Z · трек experiment-runner (research-эксперимент, вне Scenario A/B PR-потока) · dev-demo</p>
+    <p class="meta">wiki-eval grounding · снимок scores.json 2026-07-11T04:23:49Z (REFRESH judge×3, 20/100 статей) · суммарный расход по всем прогонам ≈ $6.90 · трек experiment-runner (research-эксперимент, вне Scenario A/B PR-потока) · dev-demo</p>
   </header>
 
   <!-- 1. Главное -->
   <section class="section" id="glavnoe">
     <h2><span class="idx">1</span> Главное</h2>
     <p class="lead">
-      Финальные precision/recall дисамбигуации получены во всех трёх search-режимах на замороженном пересечении из 11 статей (322 gold-сущности): <strong>baseline</strong> R=0.758 P=0.523, <strong>alt-names</strong> R=0.745 P=0.528, <strong>label-guess</strong> R=0.758 P=0.496; A_disamb ≈ 0.94 во всех трёх режимах одинаково. Полнокорпусные (100-статейные) цифры ещё досчитываются в фоне — прогоны живы, отчёт будет обновлён по их завершении.
+      REFRESH на снимке 2026-07-11T04:23:49Z: precision/recall дисамбигуации во всех трёх search-режимах пересчитаны на выросшем пересечении из <strong>20 статей</strong> (было 11) и <strong>850 gold-сущностей</strong>: <strong>baseline</strong> R=0.693 (589/850) P=0.527 (620/1177), <strong>alt-names</strong> R=0.688 P=0.529, <strong>label-guess</strong> R=0.699 P=0.500; R_NER=0.888 одинаково для всех режимов (общая переиспользуемая экстракция), R_search и A_disamb различаются по режимам (R_search 0.816–0.833; A_disamb 0.944–0.952). Полнокорпусные (100-статейные) цифры ещё досчитываются в фоне — прогоны живы (после микроVM-инцидента 03:48Z воскрешены когортами), отчёт будет обновлён по их завершении.
     </p>
-    <span class="badge badge--warn">PASS · с оговоркой о покрытии (11/100 статей на снимке)</span>
+    <span class="badge badge--warn">PASS · с оговоркой о покрытии (20/100 статей на снимке)</span>
   </section>
 
   <!-- 2. 360 diagram -->
@@ -166,7 +166,7 @@
         <line class="axis" x1="150" y1="150" x2="150" y2="270" />
         <line class="axis" x1="150" y1="150" x2="46" y2="210" />
         <line class="axis" x1="150" y1="150" x2="46" y2="90" />
-        <polygon class="plot" points="150,38 242,97 248,207 150,217 131,161 50,93" />
+        <polygon class="plot" points="150,43 237,100 250,207 150,217 115,170 50,93" />
         <text x="150" y="15" text-anchor="middle">R_NER</text>
         <text x="266" y="84" text-anchor="start">R_search</text>
         <text x="266" y="216" text-anchor="start">A_disamb</text>
@@ -177,11 +177,11 @@
       <table class="radar-legend">
         <thead><tr><th>Ось</th><th>Значение</th><th>Вердикт</th></tr></thead>
         <tbody>
-          <tr><td>R_NER (recall извлечения)</td><td class="mono">0.925 (298/322)</td><td><span class="badge badge--pass">PASS</span></td></tr>
-          <tr><td>R_search (recall поиска)</td><td class="mono">0.869–0.872 (baseline/label-guess); alt-names 0.859 — см. находки</td><td><span class="badge badge--pass">PASS</span></td></tr>
-          <tr><td>A_disamb (точность дизамбигуации)</td><td class="mono">≈0.94 (0.942 / 0.938 / 0.938)</td><td><span class="badge badge--pass">PASS</span></td></tr>
-          <tr><td>P (precision, pooled)</td><td class="mono">0.496–0.528 по режимам</td><td><span class="badge badge--warn">WARN</span></td></tr>
-          <tr><td>Покрытие judge-фазы</td><td class="mono">11/100 статей (11%), пересечение всех 3 режимов</td><td><span class="badge badge--warn">WARN</span></td></tr>
+          <tr><td>R_NER (recall извлечения)</td><td class="mono">0.888 (755/850)</td><td><span class="badge badge--pass">PASS</span></td></tr>
+          <tr><td>R_search (recall поиска)</td><td class="mono">0.816–0.833 по режимам (baseline 0.820, alt-names 0.816, label-guess 0.833)</td><td><span class="badge badge--pass">PASS</span></td></tr>
+          <tr><td>A_disamb (точность дизамбигуации)</td><td class="mono">≈0.95 (0.952 / 0.950 / 0.944)</td><td><span class="badge badge--pass">PASS</span></td></tr>
+          <tr><td>P (precision, pooled)</td><td class="mono">0.500–0.529 по режимам</td><td><span class="badge badge--warn">WARN</span></td></tr>
+          <tr><td>Покрытие judge-фазы</td><td class="mono">20/100 статей (20%), пересечение всех 3 режимов</td><td><span class="badge badge--warn">WARN</span></td></tr>
           <tr><td>Инфраструктура / тесты</td><td class="mono">695 passed, 0 known failures</td><td><span class="badge badge--pass">PASS</span></td></tr>
         </tbody>
       </table>
@@ -202,12 +202,12 @@
         <tr><td>4</td><td>Категоризация 74 промахов, 5 Sonnet-агентов + эмпирическая Wikidata-верификация каждого</td><td><code>6db3107</code></td><td><span class="badge badge--pass">done, 74/74 validated</span></td></tr>
         <tr><td>5</td><td>Реализация 3 search-режимов + <code>--reuse-extraction</code> (682 теста на момент коммита)</td><td><code>8b84226</code> (также восстановил HEAD после инцидента 6f6fce4)</td><td><span class="badge badge--pass">done</span></td></tr>
         <tr><td>6</td><td>Факторизованные метрики (R_NER · R_search · A_disamb) в агрегаторе</td><td><code>0fcc0e6</code></td><td><span class="badge badge--pass">done</span></td></tr>
-        <tr><td>7</td><td>Judge ×3 (baseline / alt-names / label-guess), запущены 23:40Z; extract=$0 благодаря reuse</td><td>снимок 2026-07-11T01:44:45Z</td><td><span class="badge badge--warn">running</span></td></tr>
+        <tr><td>7</td><td>Judge ×3 (baseline / alt-names / label-guess), запущены 23:40Z; extract=$0 благодаря reuse</td><td>снимок 2026-07-11T04:23:49Z (REFRESH, 20/100 статей)</td><td><span class="badge badge--warn">running</span></td></tr>
       </tbody>
     </table>
     <p><strong>Ключевые решения и почему:</strong></p>
     <ul>
-      <li>Для честного сравнения режимов взяли <strong>замороженное пересечение</strong> из 11 статей (одинаковый <code>article_set_hash</code> во всех трёх judge-прогонах) вместо сравнения на разных по размеру частично докаченных наборах.</li>
+      <li>Для честного сравнения режимов взяли <strong>замороженное пересечение</strong> статей (одинаковый набор статей во всех трёх judge-прогонах) вместо сравнения на разных по размеру частично докаченных наборах.</li>
       <li><code>--reuse-extraction</code> добавлен специально, чтобы 3 judge-прохода по одному и тому же извлечению стоили $0 на экстракции — оплачивается только judge/label-guess вызовы.</li>
       <li>3 search-режима выбраны прямо из данных категоризации: baseline — контроль; alt-names — тест гипотезы «спасение через parenthetical-алиас в предложении» (категоризация предсказала 0/74 спасений — предсказание подтвердилось); label-guess — тест гипотезы «спасение через канонический Wikidata-лейбл» (категоризация предсказала 52/74 спасений — наибольший ожидаемый выигрыш).</li>
       <li>Поле <code>category</code> добавлено в NER-промпт для будущей сегментации ошибок по типу сущности (см. таблицу 2c в категоризации: place/people/person доминируют среди промахов).</li>
@@ -220,11 +220,13 @@
 
     <div class="finding finding--critical"><span class="tag">CRITICAL</span> — коммит <code>6f6fce4</code> (broad-staging) временно сломал HEAD ветки во время марафона прогонов. Восстановлен коммитом <code>8b84226</code> без переписывания истории (без force-push/rebase). Инцидент устранён, но отмечаем как критический — trunk был в сломанном состоянии во время активных фоновых прогонов.</div>
 
-    <div class="finding finding--high"><span class="tag">HIGH</span> — <strong>label-guess не реализовал доказанный потенциал.</strong> Категоризация показала: 52 из 58 search-промахов (89.7%) теоретически спасаемы сильным label-guess. На практике gemma-3-27b-гессер сгенерировал 103 label_guess-кандидата, но дал лишь +1 сущность в R_search (259→260 matched из 298) — при этом число верных попаданий (numerator P) не изменилось, 252, а число предсказанных линков выросло 482→508, что просадило precision 0.523→0.496. Рекомендация: взять более сильную модель-гессер для следующего эксперимента.</div>
+    <div class="finding finding--high"><span class="tag">HIGH</span> — <strong>label-guess: на выросшем пересечении (20 статей) появился реальный аплифт, но вывод не меняется.</strong> Категоризация (10-статейный срез) показала: 52 из 58 search-промахов (89.7%) теоретически спасаемы сильным label-guess. На 20 статьях gemma-3-27b-гессер даёт измеримый сдвиг относительно baseline: R_search 619→629 matched (+10 сущностей), R 0.693→0.699 (+0.6 пп) — но ценой precision: P 0.527→0.500 (−2.7 пп), т.к. число предсказанных линков растёт быстрее числа верных попаданий (1177→1254 против 620→627). Рекомендация не изменилась: нужна более сильная модель-гессер для следующего эксперимента — текущий аплифт всё ещё далёк от обещанного категоризацией потенциала.</div>
 
     <div class="finding finding--high"><span class="tag">HIGH</span> — stop-hook деградировал в цикл «No.»-ответов, из-за чего отчёты субагентов не доходили штатным summary-путём; отчёты извлекались напрямую из файлов на диске. Данные не потеряны, но часть штатной наблюдаемости за субагентами на время марафона была нарушена.</div>
 
     <div class="finding finding--high"><span class="tag">HIGH</span> — OOM на 852MB Wikidata-кэше и последующий 429-шторм от API при параллельных прогонах; устранены переходом на per-run кэш и <code>--wikidata-workers 2</code>. Отражает текущие границы инфраструктуры при параллельном масштабировании поисковых запросов.</div>
+
+    <div class="finding finding--high"><span class="tag">HIGH</span> — <strong>microVM reboot в 03:48Z</strong> прибил detached judge ×3 прогоны; процессы воскрешены заново когортами после рестарта, данные не потеряны (см. REFRESH-снимок). Прогоны продолжают добегать — итоговый артефакт будет обновлён полнокорпусными (100/100) цифрами по их завершении.</div>
 
     <div class="finding finding--high"><span class="tag">HIGH</span> — <strong>5 gold-артефактов, решение на владельце.</strong> 5 из 58 search-промахов на 10-статейном срезе gemini — вероятно не реальные ошибки поиска, а проблемы gold-разметки. <code>gt.jsonl</code> и <code>anchor_exclusions.json</code> НЕ тронуты.
       <table>
@@ -239,9 +241,11 @@
       </table>
     </div>
 
-    <div class="finding finding--info"><span class="tag">INFO</span> — <strong>alt-names ≈ нулевой эффект.</strong> Категоризация не подтвердила ни одного (0/74) спасения через alt-names. Просадка R_search 0.869→0.859 на замороженном пересечении — не эффект режима, а артефакт: 39 транзиентных <code>wikidata_unavailable</code> в alt-names прогоне (см. <code>resolved_by_dist</code> в scores.json), которых нет в baseline/label-guess.</div>
+    <div class="finding finding--info"><span class="tag">INFO</span> — <strong>alt-names — по-прежнему ноль (в пределах шума).</strong> На 20 статьях: R_search 619→616 (baseline→alt-names, −3 сущности), R 0.693→0.688 (−0.5 пп) — оба сдвига внутри доверительных интервалов (R: baseline [0.661–0.723] vs alt-names [0.656–0.719], полное перекрытие). Категоризация ранее предсказала 0/74 спасений через alt-names — предсказание подтверждается и на выросшем срезе.</div>
 
-    <div class="finding finding--info"><span class="tag">INFO</span> — судья вырожден на no-judge экстракционных прогонах: R=0.322 у полного 100-статейного gemma-3-27b прогона (только exact-label, без LLM-дизамбигуации) против R=0.758 с судьёй на 11-статейном пересечении. Не аномалия — иллюстрация реального вклада дизамбигуации в итоговый recall; эти R не сравнимы между собой напрямую.</div>
+    <div class="finding finding--info"><span class="tag">INFO</span> — <strong>Различия R между режимами пока внутри CI.</strong> baseline R=0.693 [0.661–0.723], alt-names R=0.688 [0.656–0.719], label-guess R=0.699 [0.667–0.729] — доверительные интервалы всех трёх режимов на 20 статьях широко перекрываются. Устойчивое статистическое различение режимов даст только полный 100-статейный корпус.</div>
+
+    <div class="finding finding--info"><span class="tag">INFO</span> — судья вырожден на no-judge экстракционных прогонах: R=0.322 у полного 100-статейного gemma-3-27b прогона (только exact-label, без LLM-дизамбигуации) против R=0.693 с судьёй (baseline) на 20-статейном пересечении. Не аномалия — иллюстрация реального вклада дизамбигуации в итоговый recall; эти R не сравнимы между собой напрямую.</div>
 
     <div class="finding finding--info"><span class="tag">INFO</span> — qwen, gemma-4 и deepseek прогоны идут медленнее ожидаемого: на снимке покрыто 50/100, 23/100 и 41/100 статей соответственно (gemini — 54/100, только gemma-3-27b завершён 100/100). Таблица в разделе 5 помечает каждую строку как partial/complete явно.</div>
   </section>
@@ -251,16 +255,16 @@
     <h2><span class="idx">5</span> Артефакты запуска</h2>
 
     <div class="evidence-item">
-      <span class="claim">Judge ×3 на замороженном пересечении (11 статей, 322 gold-сущности)</span>
+      <span class="claim">Judge ×3 на пересечении (20 статей, 850 gold-сущностей) — REFRESH-снимок 2026-07-11T04:23:49Z</span>
       <table>
         <thead><tr><th>Режим</th><th>R_NER</th><th>R_search</th><th>A_disamb</th><th>R</th><th>P</th><th>Затраты</th></tr></thead>
         <tbody>
-          <tr><td>baseline</td><td>0.925 (298/322)</td><td>0.869 (259/298)</td><td>0.942 (244/259)</td><td>0.758 (244/322)</td><td>0.523 (252/482)</td><td>$0.0409 (860 calls)</td></tr>
-          <tr><td>alt-names</td><td>0.925 (298/322)</td><td>0.859 (256/298)</td><td>0.938 (240/256)</td><td>0.745 (240/322)</td><td>0.528 (248/470)</td><td>$0.0455 (893 calls)</td></tr>
-          <tr><td>label-guess</td><td>0.925 (298/322)</td><td>0.872 (260/298)</td><td>0.938 (244/260)</td><td>0.758 (244/322)</td><td>0.496 (252/508)</td><td>$0.0430 (759 judge + 253 label_guess calls)</td></tr>
+          <tr><td>baseline</td><td>0.888 (755/850)</td><td>0.820 (619/755)</td><td>0.952 (589/619)</td><td>0.693 (589/850)</td><td>0.527 (620/1177)</td><td>$0.0788 (1662 calls)</td></tr>
+          <tr><td>alt-names</td><td>0.888 (755/850)</td><td>0.816 (616/755)</td><td>0.950 (585/616)</td><td>0.688 (585/850)</td><td>0.529 (616/1165)</td><td>$0.0856 (1770 calls)</td></tr>
+          <tr><td>label-guess</td><td>0.888 (755/850)</td><td>0.833 (629/755)</td><td>0.944 (594/629)</td><td>0.699 (594/850)</td><td>0.500 (627/1254)</td><td>$0.0946 (1577 judge + 600 label_guess calls)</td></tr>
         </tbody>
       </table>
-      <p>Все три прогона делят один <code>article_set_hash = 2625261080804254264</code> — гарантия apples-to-apples сравнения. Собственный прогресс на снимке: baseline 14/100, alt-names 14/100, label-guess 11/100 статей done; пересечение для честного сравнения = 11. Gold-side: 39 mentions dropped by tier + 15 by exclusion → 322 pooled gold entities.</p>
+      <p>Все три прогона сведены на общем пересечении из 20 статей, зафиксированном в <code>scores_refresh.json</code> (поле <code>intersection_articles</code>): KV35YL, XXVII династия, XXX династия, Абдмилькат, Азиатская экспедиция (336—334 до н.э.), Академия Цзися, Амударьинский клад, Арахозия, Армия империи Хань, Арслантепе (Мелид), Ахеменидские сатрапии, Ашока, Ашшур (город), Ашшур-этель-илани, Беотийский союз, Библ, Восстания в державе Ахеменидов (521—516 до н.э.), Второй Афинский морской союз, Гай Сосий (консул), Гандхара — гарантия apples-to-apples сравнения. Собственный прогресс на снимке: baseline 25/100, alt-names 25/100, label-guess 20/100 статей done; пересечение для честного сравнения = 20 (было 11). Gold-side: 91 mentions dropped by tier + 30 by exclusion → 850 pooled gold entities.</p>
     </div>
 
     <div class="evidence-item">
@@ -284,7 +288,7 @@
 
     <div class="evidence-item">
       <span class="claim">Расход бюджета</span>
-      <p>Подытог по scores.json (judge + extraction): judge $0.0409+$0.0455+$0.0430=$0.129; extraction $0.434+$2.863+$1.276+$0.478+$0.870=$5.921; <strong>подытог ≈ $6.05</strong>. Полный леджер марафона (включает категоризацию/харнесс-запросы к Wikidata, не отражённые в scores.json) ≈ <strong>$6.9</strong> на снимке; проекция при завершении всех прогонов — <strong>~$14–15</strong>. Это выше guard $12 — флаг был поставлен владельцу, продолжено по его приоритетам.</p>
+      <p>Подытог по scores.json (judge + extraction) на REFRESH-снимке 2026-07-11T04:23:49Z: judge $0.0788+$0.0856+$0.0946=$0.259; extraction $0.434+$2.863+$1.276+$0.478+$0.870=$5.921 (extraction-прогоны в этом REFRESH-проходе не пересчитывались); <strong>подытог ≈ $6.18</strong>. Полный леджер марафона (включает категоризацию/харнесс-запросы к Wikidata, не отражённые в scores.json) на снимке — <strong>$6.90</strong>; проекция при завершении всех прогонов — <strong>~$14–15</strong>, по-прежнему выше guard $12 — флаг остаётся в силе у владельца.</p>
     </div>
 
     <div class="evidence-item"><span class="claim">Ключевые коммиты</span>
@@ -308,14 +312,14 @@
       <li><strong style="color:var(--red)">Ротация ключа:</strong> ротировать <code>OPENROUTER_API_KEY</code> сразу после этой сессии (использовался интенсивно в параллельных прогонах весь день).</li>
       <li>Полнокорпусные (100-статейные) P/R по трём режимам ещё досчитываются — прогоны живы, этот отчёт/артефакт будет обновлён по их завершении.</li>
       <li>5 gold-артефактов (таблица в разделе 4) — нужно решение владельца: править ли <code>gt.jsonl</code>/<code>anchor_exclusions.json</code> под уточнённые QID.</li>
-      <li>Сильный label-guesser — кандидат на следующий эксперимент (текущий gemma-3-27b-гессер даёт всего +1 сущность при просадке precision, хотя категоризация обещала 52/58 спасений).</li>
+      <li>Сильный label-guesser — кандидат на следующий эксперимент (текущий gemma-3-27b-гессер даёт +10 сущностей R_search ценой −2.7 пп precision на 20 статьях, хотя категоризация обещала 52/58 спасений).</li>
       <li>LaTeX-таблица <code>tab:grounding-results</code> — черновик отдан в чат владельцу; финальные числа пойдут в статью после того, как добегут полнокорпусные прогоны.</li>
       <li>Открытые хвосты: re-sync <code>wiki_original</code> для 5 статей; невоспроизводимый <code>terminology_gold.jsonl</code>; флип C9-guard в blocking-режим.</li>
     </ul>
   </section>
 
   <footer class="report-footer">
-    Собрано агентом report-generator из <code>scores.json</code> (снимок 2026-07-11T01:44:45Z) и <code>docs/reports/wiki-eval-miss-categorization-2026-07-10.md</code>. Публикация (served HTTP / Claude Artifact) — отдельный шаг, у report-generator нет Bash.
+    Собрано агентом report-generator из <code>scores.json</code> + <code>scores_refresh.json</code> (REFRESH-снимок 2026-07-11T04:23:49Z, judge×3 пересчитан на пересечении 20/100 статей) и <code>docs/reports/wiki-eval-miss-categorization-2026-07-10.md</code>. Публикация (served HTTP / Claude Artifact) — отдельный шаг, у report-generator нет Bash.
   </footer>
 
 </div>
