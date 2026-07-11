@@ -1176,6 +1176,165 @@ def update_translator_config(tc: TranslatorConfigBody) -> dict:
         return _translator_config_dict(conn.execute("SELECT * FROM translator_config WHERE id=1").fetchone())
 
 
+# ─────────────────────────── config: refiner ───────────────────────────
+
+def _refiner_config_dict(r) -> dict:
+    if r is None:
+        return {"modelName": None, "prompt": "", "params": {}}
+    return {"modelName": r["model_name"], "prompt": r["prompt"] or "",
+            "params": json.loads(r["params_json"] or "{}")}
+
+
+class RefinerConfigBody(BaseModel):
+    modelName: str | None = None
+    prompt: str = ""
+    params: dict = Field(default_factory=dict)
+
+
+@app.get("/api/refiner-config")
+def get_refiner_config() -> dict:
+    conn = db.connect()
+    row = conn.execute("SELECT * FROM refiner_config WHERE id=1").fetchone()
+    return _refiner_config_dict(row)
+
+
+@app.put("/api/refiner-config")
+def update_refiner_config(rc: RefinerConfigBody) -> dict:
+    if not isinstance(rc.params, dict):
+        raise HTTPException(422, "params must be a JSON object")
+    _guard_params(rc.params)
+    _validate_params_whitelist(rc.params)
+    conn = db.connect()
+    with db._lock:
+        conn.execute(
+            "INSERT INTO refiner_config(id,model_name,prompt,params_json) VALUES(1,?,?,?) "
+            "ON CONFLICT(id) DO UPDATE SET model_name=excluded.model_name, "
+            "prompt=excluded.prompt, params_json=excluded.params_json",
+            (rc.modelName, rc.prompt, json.dumps(rc.params)))
+        conn.commit()
+        return _refiner_config_dict(conn.execute("SELECT * FROM refiner_config WHERE id=1").fetchone())
+
+
+# ─────────────────────────── refine ───────────────────────────
+# Paper: "a dedicated refiner LLM integrates aggregated corrections in a
+# single pass" — one call over ALL of a paragraph's open findings, instead of
+# one apply-edit splice per issue. Response/status-code contract below is
+# dictated by the ALREADY-SHIPPED frontend caller (api-client.ts
+# refineParagraph, store.ts's refineParagraph action) — read before changing
+# this endpoint:
+#   - success -> the plain updated Paragraph dict (_para_dict), no envelope;
+#     scores/aggregate are deliberately the PRE-refine values (the frontend
+#     chains a real /evaluate right after) — refine never touches `score`.
+#   - failure -> a non-2xx status. `post()` (api-client.ts) throws on
+#     `!res.ok`; there is no `{ok:false}` 200 path for this endpoint, unlike
+#     /evaluate or /test.
+#   - 409 is special-cased CLIENT-SIDE as "silent, no error banner" (the
+#     Refine button is already gated on activeIssueCount>0, so a 409 here
+#     only fires on a genuine race) — reserved EXCLUSIVELY for
+#     no_open_issues; every other failure below uses a different code so it
+#     still surfaces a banner instead of silently no-op'ing.
+
+REFINE_TIMEOUT = float(os.environ.get("PALIMPSEST_REFINE_TIMEOUT", "60"))
+_REFINER_FENCE_RE = re.compile(r"^\s*```[a-zA-Z]*\n?|\n?```\s*$")
+_REFINER_WRAP_QUOTES = "\"'“”‘’"
+
+
+def _strip_refiner_wrapping(text: str) -> str:
+    """Defensive cleanup on the refiner's raw completion: strip an accidental
+    ```-fence and one layer of wrapping quotes despite the 'output ONLY the
+    revised translation' instruction (same posture as translate._strip_label
+    for the translator role)."""
+    out = _REFINER_FENCE_RE.sub("", text.strip()).strip()
+    if len(out) >= 2 and out[0] in _REFINER_WRAP_QUOTES and out[-1] in _REFINER_WRAP_QUOTES:
+        out = out[1:-1].strip()
+    return out
+
+
+def _open_findings(conn, pid: int) -> list[dict]:
+    """Open issues across ALL criteria for this paragraph — the exact set
+    `_para_issues` surfaces to the inspector (live-open/seed-open branches),
+    filtered to status=='open' (that helper also returns accepted/dismissed/
+    outdated history, which the refiner must not re-litigate)."""
+    return [i for i in _para_issues(conn, pid) if i["status"] == "open"]
+
+
+@app.post("/api/paragraphs/{pid}/refine")
+async def refine_paragraph(pid: int) -> dict:
+    conn = db.connect()
+    p = _para_or_404(conn, pid)
+    doc_id = p["document_id"]
+    if translate.is_translating(doc_id):
+        raise HTTPException(503, "translation_in_progress")
+    findings = _open_findings(conn, pid)
+    if not findings:
+        raise HTTPException(409, {"detail": "no_open_issues",
+                                   "message": "no open findings to refine — evaluate the paragraph first"})
+
+    cfg = conn.execute("SELECT * FROM refiner_config WHERE id=1").fetchone()
+    if cfg is None or not cfg["model_name"]:
+        raise HTTPException(503, "no_api_key")
+    raw = json.loads(cfg["params_json"] or "{}")
+    client = _client_for(conn, cfg["model_name"], raw)
+    if client is None:
+        raise HTTPException(503, "no_api_key")
+
+    lines = [
+        f"{idx}. [{f['criterionId']}]\n"
+        f"   source fragment: {f['sourceFragment']!r}\n"
+        f"   problematic translation fragment: {f['targetFragment']!r}\n"
+        f"   explanation: {f['explanation']}\n"
+        f"   suggested correction: {f['suggestion'] or '(none — see explanation)'}"
+        for idx, f in enumerate(findings, start=1)
+    ]
+    user = (f"[SOURCE]\n{p['source']}\n\n[CURRENT TRANSLATION]\n{p['target']}\n\n"
+            f"[REVIEWER FINDINGS]\n" + "\n".join(lines))
+    system = cfg["prompt"] or ""
+
+    prompt_tok = budget.count_tokens(system) + budget.count_tokens(user)
+    rmt = additive_reasoning_tokens(cfg["model_name"], raw)
+    est = budget.estimate(cfg["model_name"], prompt_tok, client.config.max_tokens, rmt)
+    try:
+        gen = await budget.reserve(est)
+    except budget.BudgetExceeded:
+        raise HTTPException(429, "budget_exhausted") from None
+
+    attempt = 0
+    while True:
+        try:
+            res = await asyncio.wait_for(
+                asyncio.to_thread(client.complete, system, user), REFINE_TIMEOUT)
+            break
+        except Exception as exc:
+            if is_transient_error(exc) and attempt < 1:
+                await asyncio.sleep(EVAL_BACKOFF)
+                attempt += 1
+                continue
+            await budget.settle(est, 0.0, gen)
+            err = redact_error(f"{type(exc).__name__}: {exc}")
+            budget.log_call({"model": cfg["model_name"], "endpoint": "refine", "params": raw,
+                             "status": "error", "attempts": attempt + 1, "error": err, "costUsd": None})
+            logger.warning("refine failed terminally: paragraph=%s model=%s attempts=%d error=%s",
+                            pid, cfg["model_name"], attempt + 1, err)
+            raise HTTPException(502, {"detail": "refine_failed", "error": err}) from exc
+    await budget.settle(est, res.usage.cost_usd, gen)
+    budget.log_call({"model": cfg["model_name"], "endpoint": "refine", "params": raw, "status": "ok",
+                     "tokens": {"prompt": res.usage.prompt_tokens, "completion": res.usage.completion_tokens,
+                     "reasoning": res.usage.reasoning_tokens}, "costUsd": res.usage.cost_usd})
+
+    revised = _strip_refiner_wrapping(res.content or "")
+    if not revised:
+        raise HTTPException(502, {"detail": "refine_failed", "error": "empty_output"})
+
+    with db._lock:
+        with conn:
+            conn.execute("UPDATE paragraph SET target=? WHERE id=?", (revised, pid))
+            for f in findings:
+                conn.execute("UPDATE issue SET status='accepted' WHERE id=? AND status='open'",
+                             (int(f["id"]),))
+            db.write_revision(conn, pid, revised, "refine", _now())
+        return _para_dict(conn, _para_or_404(conn, pid))
+
+
 async def _grounding_judge_live(conn, prompt: str, endpoint: str = "grounding"):
     """Mirrors ``_judge_live``: budget reserve/settle, retry only on transient
     errors (malformed JSON is terminal — see label_first.py's error policy),

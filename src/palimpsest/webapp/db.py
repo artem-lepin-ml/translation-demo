@@ -83,6 +83,12 @@ CREATE TABLE translator_config (
   prompt TEXT,
   params_json TEXT
 );
+CREATE TABLE refiner_config (   -- singleton, mirrors translator_config (EMNLP sprint 2026-07-11)
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
+);
 """
 
 # `model` is referenced by `criterion` FK but created after it; SQLite resolves
