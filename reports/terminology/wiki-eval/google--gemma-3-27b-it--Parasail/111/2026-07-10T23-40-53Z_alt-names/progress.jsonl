@@ -30,3 +30,4 @@
 {"article": "Ибаль-пи-Эль II", "done": 30, "of": 100, "spent": 0.1037287799999949, "spent_by_kind": {"extract": 0.0, "judge": 0.1037287799999949}, "calls_by_kind": {"extract": 0, "judge": 2142}}
 {"article": "Завоевание царства Шу царством Вэй", "done": 31, "of": 100, "spent": 0.10395011999999478, "spent_by_kind": {"extract": 0.0, "judge": 0.10395011999999478}, "calls_by_kind": {"extract": 0, "judge": 2177}}
 {"article": "Калинга (государство)", "done": 32, "of": 100, "spent": 0.10530929999999465, "spent_by_kind": {"extract": 0.0, "judge": 0.10530929999999465}, "calls_by_kind": {"extract": 0, "judge": 2206}}
+{"article": "Ибби-Суэн", "done": 33, "of": 100, "spent": 0.11580429999999414, "spent_by_kind": {"extract": 0.0, "judge": 0.11580429999999414}, "calls_by_kind": {"extract": 0, "judge": 2391}}

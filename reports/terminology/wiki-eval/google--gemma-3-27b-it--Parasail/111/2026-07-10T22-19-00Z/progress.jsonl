@@ -1,0 +1,5 @@
+{"article": "KV35YL", "done": 1, "of": 5, "spent": 0.0022885500000000033, "spent_by_kind": {"extract": 0.0, "judge": 0.0022885500000000033}, "calls_by_kind": {"extract": 0, "judge": 50}}
+{"article": "XXX династия", "done": 2, "of": 5, "spent": 0.004371460000000006, "spent_by_kind": {"extract": 0.0, "judge": 0.004371460000000006}, "calls_by_kind": {"extract": 0, "judge": 84}}
+{"article": "XXVII династия", "done": 3, "of": 5, "spent": 0.006942450000000009, "spent_by_kind": {"extract": 0.0, "judge": 0.006942450000000009}, "calls_by_kind": {"extract": 0, "judge": 118}}
+{"article": "Абдмилькат", "done": 4, "of": 5, "spent": 0.007348750000000011, "spent_by_kind": {"extract": 0.0, "judge": 0.007348750000000011}, "calls_by_kind": {"extract": 0, "judge": 145}}
+{"article": "Азиатская экспедиция (336—334 до н. э.)", "done": 5, "of": 5, "spent": 0.008265660000000008, "spent_by_kind": {"extract": 0.0, "judge": 0.008265660000000008}, "calls_by_kind": {"extract": 0, "judge": 164}}
