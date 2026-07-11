@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossa-MT — план сайта (спринт EMNLP)</title>
+<style>
+  :root{
+    --va-bg:#1a1b26; --va-surface:#1f2035; --va-surface2:#24253a;
+    --va-border:#2d2e4a; --va-border2:#3b3c5c;
+    --va-text:#c0caf5; --va-text-muted:#6272a4; --va-text-dim:#414868;
+    --va-accent:#7aa2f7; --va-accent2:#bb9af7;
+    --va-green:#3ddc84; --va-yellow:#e0af68; --va-red:#f7768e;
+    --va-radius:8px; --va-radius-sm:4px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--va-bg);color:var(--va-text);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5;padding:24px;max-width:1100px;margin:0 auto}
+  h1{font-size:20px;margin-bottom:4px}
+  h2{font-size:15px;color:var(--va-accent);margin:28px 0 10px;border-bottom:1px solid var(--va-border);padding-bottom:6px}
+  .sub{color:var(--va-text-muted);font-size:12.5px;margin-bottom:8px}
+  .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;vertical-align:middle}
+  .b-new{background:rgba(61,220,132,.15);color:var(--va-green);border:1px solid var(--va-green)}
+  .b-warn{background:rgba(224,175,104,.15);color:var(--va-yellow);border:1px solid var(--va-yellow)}
+  .b-info{background:rgba(122,162,247,.15);color:var(--va-accent);border:1px solid var(--va-accent)}
+  .b-del{background:rgba(247,118,142,.12);color:var(--va-red);border:1px solid var(--va-red)}
+  .frame{background:var(--va-surface);border:1px solid var(--va-border);border-radius:var(--va-radius);padding:14px;margin:10px 0}
+  .browser-bar{display:flex;align-items:center;gap:8px;background:var(--va-surface2);border:1px solid var(--va-border);border-radius:6px 6px 0 0;padding:6px 10px;font-size:12px;color:var(--va-text-muted)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--va-text-dim)}
+  .url{background:var(--va-bg);border:1px solid var(--va-border2);border-radius:4px;padding:2px 10px;font-family:monospace;font-size:11.5px;color:var(--va-green)}
+  .screen{border:1px solid var(--va-border);border-top:none;border-radius:0 0 6px 6px;background:var(--va-bg);padding:16px}
+  .appbar{display:flex;align-items:center;gap:14px;padding-bottom:10px;border-bottom:1px solid var(--va-border);margin-bottom:14px}
+  .logo{font-weight:700;font-size:15px;color:var(--va-accent)}
+  .logo small{color:var(--va-text-muted);font-weight:400}
+  .tabs{display:flex;gap:4px;margin-left:auto}
+  .tab{padding:4px 12px;border-radius:6px;font-size:12.5px;color:var(--va-text-muted)}
+  .tab.on{background:var(--va-surface2);color:var(--va-accent)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+  .card{background:var(--va-surface);border:1px solid var(--va-border2);border-radius:var(--va-radius);padding:14px;position:relative}
+  .card h3{font-size:13.5px;margin-bottom:6px}
+  .card .meta{font-size:11.5px;color:var(--va-text-muted);line-height:1.7}
+  .card.blank{border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--va-text-muted);min-height:120px}
+  .plus{font-size:26px;color:var(--va-accent)}
+  .panes{display:grid;grid-template-columns:1fr 1fr 230px;gap:10px}
+  .pane{background:var(--va-surface);border:1px solid var(--va-border);border-radius:var(--va-radius);padding:12px;font-size:12.5px}
+  .pane h4{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--va-text-muted);margin-bottom:8px}
+  .t{padding:0 2px;border-radius:3px;cursor:default}
+  .t-g{background:rgba(61,220,132,.16);box-shadow:inset 0 -2px 0 var(--va-green)}
+  .t-y{background:rgba(224,175,104,.16);box-shadow:inset 0 -2px 0 var(--va-yellow)}
+  .t-r{background:rgba(247,118,142,.16);box-shadow:inset 0 -2px 0 var(--va-red)}
+  .u-acc{box-shadow:inset 0 -2px 0 var(--va-accent)}
+  .u-flu{box-shadow:inset 0 -2px 0 var(--va-accent2)}
+  .u-both{box-shadow:inset 0 -2px 0 var(--va-accent), inset 0 -4px 0 var(--va-bg), inset 0 -6px 0 var(--va-accent2)}
+  .chip{display:inline-flex;align-items:center;gap:4px;background:var(--va-surface2);border:1px solid var(--va-border2);border-radius:10px;padding:1px 8px;font-size:11px;color:var(--va-yellow);font-weight:600}
+  .issue{background:var(--va-surface2);border:1px solid var(--va-border);border-left:3px solid var(--va-accent);border-radius:4px;padding:8px;margin-bottom:8px;font-size:11.5px}
+  .issue .lbl{color:var(--va-text-muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px}
+  .btn{display:inline-block;background:var(--va-surface2);border:1px solid var(--va-border2);border-radius:6px;padding:5px 12px;font-size:12px;color:var(--va-text)}
+  .btn.primary{border-color:var(--va-green);color:var(--va-green);font-weight:600}
+  .settings{display:grid;grid-template-columns:180px 1fr;gap:12px}
+  .snav{display:flex;flex-direction:column;gap:4px}
+  .snav a{padding:7px 10px;border-radius:6px;color:var(--va-text-muted);font-size:12.5px;text-decoration:none}
+  .snav a.on{background:var(--va-surface2);color:var(--va-accent)}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;color:var(--va-text-muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.3px;padding:6px 8px;border-bottom:1px solid var(--va-border)}
+  td{padding:6px 8px;border-bottom:1px solid var(--va-border)}
+  .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--va-text-muted)}
+  .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px}
+  .fstep{background:var(--va-surface2);border:1px solid var(--va-border2);border-radius:6px;padding:5px 10px}
+  .fstep.llm{border-color:var(--va-accent)}
+  .fstep.kg{border-color:var(--va-accent2)}
+  .arr{color:var(--va-text-dim)}
+  .tl{border-left:2px solid var(--va-border2);margin-left:6px;padding-left:16px}
+  .tl .beat{position:relative;margin-bottom:12px}
+  .tl .beat:before{content:'';position:absolute;left:-21px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--va-accent)}
+  .tl .time{font-family:monospace;font-size:11px;color:var(--va-yellow);font-weight:700}
+  .qa{background:var(--va-surface);border:1px solid var(--va-border);border-radius:var(--va-radius);padding:12px 14px;margin:8px 0}
+  .qa b{color:var(--va-yellow)}
+  ul{margin-left:18px}
+  li{margin:3px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:900px){.panes{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.settings{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<h1>Glossa-MT — целевое состояние сайта <span class="badge b-info">план спринта · к обсуждению</span></h1>
+<div class="sub">Все изменения относительно текущего прода помечены <span class="badge b-new">NEW</span> / <span class="badge b-del">DELETE</span>. Токены и вёрстка — родные <span class="mono">--va-*</span> из variant-a.</div>
+
+<h2>Экран 1 · Главная — выбор документа <span class="badge b-new">NEW: пикер на 3 карточки</span></h2>
+<div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">https://glossa-mt.ru</span><span class="badge b-warn" style="margin-left:8px">домен ждёт DNS</span></div>
+<div class="screen">
+  <div class="appbar"><span class="logo">Glossa-MT <small>· interpretable translation evaluation</small></span><span class="badge b-new">ребрендинг: было Palimpsest</span></div>
+  <div class="cards">
+    <div class="card">
+      <h3>Mesopotamia — Ancient Near East</h3>
+      <div class="meta">RuWH · Всемирная история, т.1 (сер. главы)<br>ru → en · 15 параграфов · <span style="color:var(--va-green)">●</span> 45 <span style="color:var(--va-yellow)">●</span> 90 <span style="color:var(--va-red)">●</span> 69 терминов<br>оценки судей + 127 issues готовы</div>
+    </div>
+    <div class="card">
+      <h3>Документ-2 (выбираем) <span class="badge b-new">NEW</span></h3>
+      <div class="meta">Кандидат: том истории — Древний Китай (кейс Цинь/Цин из статьи) или Александр Македонский<br>ru → en · 6–8 параграфов<br>прогон реальным пайплайном на проде (Qwen3.6-27B)</div>
+    </div>
+    <div class="card blank">
+      <div class="plus">＋</div>
+      <div>Blank document <span class="badge b-new">NEW</span></div>
+      <div class="meta" style="text-align:center">вставь свой текст → перевод → термины и оценка live</div>
+    </div>
+  </div>
+</div>
+
+<h2>Экран 2 · Workspace — Document tab (в основном как сейчас)</h2>
+<div class="frame">
+  <div class="appbar" style="border:none;padding:0 0 8px"><span class="logo">Glossa-MT</span>
+    <div class="tabs"><span class="tab on">Document</span><span class="tab">Glossary</span><span class="tab">Ranking</span><span class="tab">Settings</span></div>
+  </div>
+  <div class="panes">
+    <div class="pane">
+      <h4>Source · Russian</h4>
+      <p>…<span class="t t-y">Гулькишар</span>, царь <span class="t t-r">Приморья</span>, разгромил <span class="t t-g">Вавилон</span>; <span class="t t-y">Хана</span> осталась независимым <span class="t t-y">аморейским</span> царством…</p>
+      <div class="sub" style="margin-top:8px">подсветка = uncertainty: <span style="color:var(--va-green)">unambiguous</span> · <span style="color:var(--va-yellow)">context-resolved</span> · <span style="color:var(--va-red)">unresolved</span> (hover → QID, Wikidata-трейс)</div>
+    </div>
+    <div class="pane">
+      <h4>Translation · English <span class="chip">6.0</span></h4>
+      <p>…<span class="t t-r u-acc">Gulkishar, king of Dilmun</span>, defeated <span class="t t-g">Babylon</span>; <span class="u-both">the Amorite heartland of Amurru remained an independent kingdom</span>…</p>
+      <div class="sub" style="margin-top:8px">pair-accuracy спанов + stacked underlines по критериям (<span style="color:var(--va-accent)">Accuracy</span>/<span style="color:var(--va-accent2)">Fluency</span>/жёлт. Style) · TipTap, редактируемо</div>
+    </div>
+    <div class="pane">
+      <h4>Inspector</h4>
+      <div class="issue">
+        <div class="lbl">Accuracy · источник</div>
+        «царь Приморья» → «king of Dilmun»
+        <div class="lbl" style="margin-top:4px">Suggestion</div>
+        king of the Sealand
+        <div style="margin-top:6px"><span class="btn">Accept</span></div>
+      </div>
+      <div class="issue" style="border-left-color:var(--va-accent2)">
+        <div class="lbl">Accuracy</div>
+        «Хана» → «Amurru» · подмена сущности
+      </div>
+      <div style="margin-top:10px"><span class="btn primary">✦ Accept all → Refine</span> <span class="badge b-new">NEW: LLM-пасс</span></div>
+      <div class="sub" style="margin-top:6px">refiner агрегирует все замечания судей и переписывает параграф одним проходом → новая ревизия → re-score</div>
+    </div>
+  </div>
+</div>
+
+<h2>Экран 3 · Settings — 5 разделов <span class="badge b-new">NEW: Refiner · реестр из статьи · 3 критерия</span></h2>
+<div class="frame">
+  <div class="settings">
+    <div class="snav">
+      <a class="on">Model Registry</a><a>Translator</a><a>Judges · Criteria</a><a>Grounding</a><a>Refiner <span class="badge b-new">NEW</span></a>
+    </div>
+    <div>
+      <table>
+        <tr><th>Model</th><th>Endpoint</th><th>Роли</th></tr>
+        <tr><td>Qwen3.6-27B</td><td class="mono">openrouter · qwen/qwen3.6-27b</td><td><span class="badge b-info">default · все роли</span></td></tr>
+        <tr><td>Gemma-3-27B-it</td><td class="mono">openrouter · google/gemma-3-27b-it</td><td></td></tr>
+        <tr><td>TranslateGemma-27B</td><td class="mono">local vLLM (из статьи)</td><td></td></tr>
+        <tr><td>DeepSeek-V4-Flash</td><td class="mono">openrouter · deepseek/deepseek-v4-flash</td><td></td></tr>
+        <tr><td>Gemini-3.1-Flash-Lite</td><td class="mono">openrouter · google/gemini-3.1-flash-lite</td><td></td></tr>
+      </table>
+      <div class="sub" style="margin-top:8px">Критерии: <b style="color:var(--va-text)">Accuracy 0.40 · Fluency 0.30 · Style 0.30</b> (веса перенормированы — обсудить) · <span class="badge b-del">DELETE: terminology, cultural</span> — строки criterion удаляются из БД, score/issue-история сохраняется (твой инвариант) · кнопки Add/Edit остаются как стабы (в видео не жмём)</div>
+    </div>
+  </div>
+</div>
+
+<h2>Пайплайн под капотом (что реально работает live на проде)</h2>
+<div class="frame">
+  <div class="flow">
+    <span class="fstep">Blank / upload</span><span class="arr">→</span>
+    <span class="fstep llm">Translate · Qwen3.6-27B</span><span class="arr">→</span>
+    <span class="fstep llm">NER (frozen prompt, PR#13)</span><span class="arr">→</span>
+    <span class="fstep kg">Wikidata candidates · G6 baseline</span><span class="arr">→</span>
+    <span class="fstep llm">Disambiguation judge</span><span class="arr">→</span>
+    <span class="fstep">Терм-спаны в UI <span class="badge b-new">NEW: live</span></span>
+  </div>
+  <div class="flow" style="margin-top:8px">
+    <span class="fstep">Evaluate</span><span class="arr">→</span>
+    <span class="fstep llm">3 судьи: Acc / Flu / Sty</span><span class="arr">→</span>
+    <span class="fstep">issues + подчёркивания</span><span class="arr">→</span>
+    <span class="fstep llm">Refiner <span class="badge b-new">NEW</span></span><span class="arr">→</span>
+    <span class="fstep">ревизия → re-score</span>
+  </div>
+  <div class="sub" style="margin-top:8px">Терминологический модуль — пиненный из PR #13 (G6: search_mode=baseline, lemma+surface, CirrusSearch/sitelink-фоллбеки, enrich top-5). Для существующих документов — precomputed термины как есть.</div>
+</div>
+
+<h2>Черновик раскадровки видео · 2:30</h2>
+<div class="frame">
+  <div class="tl">
+    <div class="beat"><span class="time">0:00–0:15</span> — Титул Glossa-MT, тезис: интерпретируемая оценка перевода исторических текстов. Пикер с 3 документами. <b>Приём:</b> сразу запускаем Blank-документ с коротким текстом в фоне — к финалу он «дозреет».</div>
+    <div class="beat"><span class="time">0:15–0:55</span> — Документ-2: панели Source/Translation, 3-цветная подсветка терминов, hover-попап с QID; Glossary tab — трейс диамбигуации (кейс Цинь/Цин, если возьмём Китай).</div>
+    <div class="beat"><span class="time">0:55–1:30</span> — Mesopotamia: Evaluate live (3 судьи), stacked underlines, инспектор: Dilmun→Sealand с объяснением; Ranking — худшие параграфы.</div>
+    <div class="beat"><span class="time">1:30–2:05</span> — <b>Accept all → Refine:</b> LLM-пасс, новая ревизия, re-score: Accuracy 6→9. Revision history.</div>
+    <div class="beat"><span class="time">2:05–2:30</span> — Возврат в Blank-документ: перевод готов, термины подсвечены live. Settings: 5 ролей, реестр моделей. Финал: glossa-mt.ru.</div>
+  </div>
+</div>
+
+<h2>Флаги и открытые вопросы</h2>
+<div class="qa"><b>DNS glossa-mt.ru пуст</b> у публичных резолверов (@ и www без A-записи пока). Caddy настраиваю уже сейчас — сертификат выпустится сам, как только записи доедут. Если на рег.ру зона не активировалась — проверь ЛК.</div>
+<div class="qa"><b>Локальный ключ — прокси closerouter, Qwen3.6 там НЕТ.</b> Поэтому всё живое (перевод дока-2, термины, оценки) гоню на проде с его реальным ключом OpenRouter. Пришлёшь новый ключ — поставлю на сервер одной командой.</div>
+<div class="qa"><b>Документ-2:</b> ищу в корпусе главу тома (Китай/Александр). Приоритет — кейс Цинь/Цин как в статье. Подтверди или скажи свой вариант.</div>
+<div class="qa"><b>Веса критериев</b> после удаления двух: предлагаю Accuracy 0.40 / Fluency 0.30 / Style 0.30.</div>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { langLabel } from '../lang';
-import type { Paragraph, WikidataRef } from '../api-client';
+import type { Paragraph, TermsStatus, WikidataRef } from '../api-client';
 import {
   findMatchSpan,
   findSentenceContaining,
@@ -21,6 +21,27 @@ interface Props {
   /** Optional: jump to the Document tab at a mention's paragraph (wired by the
    *  parent — VariantA's handleRankingRowClick pattern, spec S2 §2.3). */
   onMentionClick?: (paragraphIdx: number) => void;
+  /** Background terminology-extraction status — drives the empty-state copy
+   *  (running/failed/none) instead of the old unconditional "precomputed
+   *  offline" text. Optional so pre-existing callers/tests don't all need
+   *  updating; undefined behaves like 'none'. */
+  termsStatus?: TermsStatus;
+}
+
+/** Single source of truth for "why is there no terminology to show" prose,
+ *  shared by this tab's empty state and the top-chrome Terms chip tooltip
+ *  (VariantA.tsx) — both used to duplicate the same "precomputed offline /
+ *  seeded pilot document" string, which stopped being true once terminology
+ *  became a live, per-document background pipeline. */
+export function termsStatusEmptyMessage(status: TermsStatus | undefined): string {
+  switch (status) {
+    case 'running':
+      return 'Terminology pipeline is running — terms appear as paragraphs complete.';
+    case 'failed':
+      return 'Terminology extraction failed for this document.';
+    default:
+      return 'No terminology extracted for this document.';
+  }
 }
 
 /** A candidate as delivered by `candidates_json` (spec S2 §2.3) — the wire
@@ -349,7 +370,14 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
   );
 }
 
-export default function GlossaryTab({ terms, paragraphs, sourceLang, targetLang, onMentionClick }: Props) {
+export default function GlossaryTab({
+  terms,
+  paragraphs,
+  sourceLang,
+  targetLang,
+  onMentionClick,
+  termsStatus,
+}: Props) {
   const [openKeys, setOpenKeys] = useState<Set<string>>(new Set());
 
   const groups = useMemo(() => groupTerms(terms, paragraphs), [terms, paragraphs]);
@@ -363,9 +391,7 @@ export default function GlossaryTab({ terms, paragraphs, sourceLang, targetLang,
     return (
       <div className="va-tab-content">
         <div className="va-section-title">Terminology Glossary</div>
-        <p className="va-empty-note">
-          Terminology signals are precomputed offline and available for the seeded pilot document.
-        </p>
+        <p className="va-empty-note">{termsStatusEmptyMessage(termsStatus)}</p>
       </div>
     );
   }

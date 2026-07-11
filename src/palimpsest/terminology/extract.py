@@ -4,6 +4,16 @@ The demo pipeline uses mentions extracted once by an LLM subagent and persisted
 to ``data/seed/terminology_terms.jsonl`` (reproducible, no live LLM at demo
 time). ``deterministic_extract`` is a stdlib fallback used when no persisted
 file exists — capitalized tokens and multi-word proper-noun runs.
+
+The LLM extractor's wire schema is ``{surface, lemma, category}`` (2026-07-10
+owner decision, reversing the same-day decision to drop ``category`` -- the
+owner needs the per-category error distribution for the paper's appendix,
+spec 2026-07-10-wiki-eval-experiment-v2.md amendment (3)). ``category`` is
+one of ``NER_CATEGORIES`` or ``"other"``; ``parse_surfaces`` normalizes an
+unrecognized or missing value to ``"other"`` -- it never changes whether an
+item is extracted, only how the result is labelled. ``NER_SYSTEM_PROMPT`` is
+the fixed English system prompt (FROZEN, see the comment above it);
+``ner_user(source)`` wraps the per-call source text.
 """
 from __future__ import annotations
 
@@ -19,82 +29,136 @@ from .gazetteer import gazetteer_surfaces
 if TYPE_CHECKING:
     from .base import Extractor
 
-CATEGORIES = {"person", "place", "people", "title", "social", "institution", "dynasty", "culture", "event"}
 
-DEFAULT_NER_PROMPT = """## Роль
-Ты — историк-источниковед и лингвист. Ты размечаешь русский академический
-исторический текст (Древний мир: Египет, Месопотамия, античность, Древний
-Китай/Индия) и извлекаешь ТЕРМИНЫ и ИМЕНА СОБСТВЕННЫЕ, чей перевод на английский
-стоит проверить.
+class ExtractionParseError(ValueError):
+    """Raised when an LLM NER reply cannot be parsed into a surfaces array:
+    no JSON array found, malformed JSON, or valid JSON that isn't a list. An
+    honest empty ``[]`` reply is NOT a failure — it still returns ``[]``.
+    """
 
-## Задача
-Из <source> извлеки ВСЕ исторические сущности-термины ВНЕ зависимости от регистра.
-Русский пишет СТРОЧНЫМИ целые классы важных терминов (народы, титулы, соц. слои) —
-извлекай их так же тщательно, как имена с заглавной. Это главная цель разметки.
 
-## Категории
+# FROZEN 2026-07-10 for the full evaluation runs (owner decision). Category
+# field is the final edit. Do not modify without an owner-approved spec
+# amendment.
+NER_SYSTEM_PROMPT = """## Role
+You are a source-criticism historian and linguist. You annotate Russian
+academic texts on ancient history and extract TERMS and PROPER NAMES.
+
+## Task
+From <source>, extract ALL historical entities and terms REGARDLESS of
+capitalization. Russian writes entire classes of important terms in
+LOWERCASE (peoples, titles, social strata). Extract them as carefully as
+capitalized names. This is the main goal of the annotation.
+
+## What to extract (examples)
+The classes below define the scope of the task with examples. They are
+not an exhaustive list.
 <categories>
-- person      — лица: Хаммурапи, Саргон, Кадашман-Харбе
-- place       — города/страны/реки/области: Лагаш, Евфрат, Вавилония
-- people      — народы/племена/этносы (ЧАСТО строчные): амореи, кутии, касситы, шумеры
-- title       — титулы/должности/адм. единицы (ЧАСТО строчные): лугаль, энси, претор, ном
-- social      — социальные слои (строчные): авилум, мушкенум, вардум
-- institution — институты/своды законов/объединения: Законы Хаммурапи, принципат, клерухия
-- dynasty     — династии: III династия Ура, Чжоу
-- culture     — культуры/периоды: старовавилонский период
-- event       — битвы/войны/договоры/реформы: битва при Кадеше
+- person      — persons: Хаммурапи, Саргон, Кадашман-Харбе
+- place       — cities/countries/rivers/regions, incl. multiword
+                geographic names, archaeological sites and tombs: Лагаш,
+                Евфрат, Вавилония, Арслантепе, Иранское нагорье,
+                Пиренейский полуостров
+- people      — peoples/tribes/ethnic groups (often lowercase): амореи, кутии, касситы, шумеры
+- title       — titles/offices/administrative units (often lowercase): лугаль, энси, претор, ном
+- social      — social strata (lowercase): авилум, мушкенум, вардум
+- institution — institutions/law codes/associations: Законы Хаммурапи, принципат, клерухия
+- dynasty     — dynasties: III династия Ура, Чжоу
+- culture     — cultures/periods: старовавилонский период
+- language    — languages/scripts/language families, incl. those named by
+                an adjective: аккадский язык, санскрит, клинопись, семитские языки
+- realia      — artifact types/materials/practices with specialized
+                historical translations (often lowercase): стела, электрум,
+                амфора, подать
+- event       — battles/wars/treaties/reforms: битва при Кадеше
+- deity       — deities/mythological beings: Мардук, Осирис, эпимелиды
+- work        — texts/inscriptions/literary works: упанишады, амарнские письма
+- religion    — religions/cults/religious practices: вишну-бхакти, шраута
 </categories>
 
-## Чего НЕ извлекать
+## What NOT to extract
 <do_not_extract>
-- Обычные слова и роли в общем смысле, не являющиеся именем/термином: город, царь, война,
-  страна, знать, люди, вещи, дороги, имущество, гражданство, глава, магистрат, молодцы, бойцы.
-- Описательные и бюрократические словосочетания («государственные поставки продовольствия»,
-  «военное дело», «малая семья») — извлекай только устойчивый термин внутри, если он есть.
-- Отдельные прилагательные и глаголы (докерамический, доземледельческий, завоёванный).
-- Отдельные даты/годы/числа.
-- Принцип: извлекай КОНКРЕТНЫЕ термины (имена, титулы, народы, соц. слои, институты, культуры),
-  а не общие понятия. Если это общее слово в описательном смысле — пропусти.
+- Ordinary words and roles in their generic sense that are not a name or a
+  term: город, царь, война, страна, знать, люди, вещи, дороги, имущество,
+  гражданство, глава, магистрат, молодцы, бойцы.
+- Descriptive and bureaucratic phrases («государственные поставки
+  продовольствия», «военное дело», «малая семья»). Extract only the
+  established term inside, if there is one.
+- Standalone adjectives and verbs (докерамический, доземледельческий,
+  завоёванный). This applies ONLY to an adjective on its own: an adjective
+  that is part of a multiword proper name is extracted with the whole name
+  («Иранское нагорье», «Великая Китайская стена»).
+- Standalone dates, years, numbers.
+- Modern non-historical entities (brands, companies, websites, social
+  media) and natural-science vocabulary (genetics, chemistry): the
+  annotation covers HISTORICAL terminology only.
+- Principle: extract CONCRETE terms (names, titles, peoples, social strata,
+  institutions, cultures), not general concepts. If it is a general word
+  used descriptively, skip it.
 </do_not_extract>
 
-## Правила
-- surface — ТОЧНАЯ подстрока из <source>, в той форме и падеже, как в тексте
-  (например «Лагаше», а не «Лагаш»). НЕ нормализуй, НЕ переводи, НЕ придумывай.
-- lemma — согласованная ИМЕНИТЕЛЬНАЯ форма термина: для одного слова — именительный
-  падеж («Лагаше» → «Лагаш»); для словосочетания — ВСЕ слова согласуются в
-  именительном («династии Цин» → «династия Цин», «авилумов» → «авилум»).
-  Если surface уже стоит в именительном падеже — lemma совпадает с surface
-  («Лагаш» → lemma «Лагаш»).
-- Одна запись на каждый УНИКАЛЬНЫЙ surface (повторы не дублируй).
+## Rules
+- surface is the EXACT substring from <source>, in the form and case it has
+  in the text (for example «Лагаше», not «Лагаш»). Do NOT normalize, do NOT
+  translate, do NOT invent.
+- Grammatical case is NEVER a reason to skip: a name in ANY case is
+  extracted («Ганнибала», «Спартой», «Лидии» are as extractable as
+  «Ганнибал», «Спарта», «Лидия»). The lemma restores the nominative.
+- Extract EVERY name in coordinated lists and comparisons: in «воевал с
+  Лидией, Карией и Ликией» all three are extracted, not just the first or
+  the most prominent one.
+- Do not skip a mention because the same entity already appeared in
+  another form: «Дарий» and «Дария» are different surfaces — output both.
+- Lowercase nouns for historical realia ARE terms when scholarship
+  translates them in a specialized way («стела», «электрум», «подать»);
+  generic everyday nouns used descriptively are not («украшения»,
+  «предметы»).
+- When a language or script is named by an adjective, extract the
+  established phrase («на арамейском языке» → surface «арамейском языке»,
+  lemma «арамейский язык»).
+- lemma is the agreed NOMINATIVE form of the term: for a single word, the
+  nominative case («Лагаше» → «Лагаш»); for a phrase, ALL words agree in
+  the nominative («династии Цин» → «династия Цин», «авилумов» → «авилум»).
+  If surface is already in the nominative, lemma equals surface.
+- category labels each extracted item: use the token before the dash in the
+  <categories> list above (person, place, people, title, social,
+  institution, dynasty, culture, language, realia, event, deity, work,
+  religion), or "other" when none of them fits. category NEVER changes
+  whether an item is extracted -- decide what to extract using the rules
+  above exactly as written, then label the result.
+- One record per UNIQUE surface (deduplicate only literally identical
+  surface strings; different case forms are different surfaces).
 
-## Хороший пример
+## Good examples
 <example>
 <source>В Лагаше, одном из номов, правитель-лугаль опирался на авилумов, тогда как амореи наступали с запада.</source>
 <output>[{"surface":"Лагаше","lemma":"Лагаш","category":"place"},{"surface":"номов","lemma":"ном","category":"title"},{"surface":"лугаль","lemma":"лугаль","category":"title"},{"surface":"авилумов","lemma":"авилум","category":"social"},{"surface":"амореи","lemma":"амореи","category":"people"}]</output>
 </example>
+<example>
+<source>Дарий прошёл через Иранское нагорье и подчинил Лидию, Карию и Ликию; сатрапы Дария собирали подать электрумом и вели записи на арамейском языке.</source>
+<output>[{"surface":"Дарий","lemma":"Дарий","category":"person"},{"surface":"Иранское нагорье","lemma":"Иранское нагорье","category":"place"},{"surface":"Лидию","lemma":"Лидия","category":"place"},{"surface":"Карию","lemma":"Кария","category":"place"},{"surface":"Ликию","lemma":"Ликия","category":"place"},{"surface":"сатрапы","lemma":"сатрап","category":"title"},{"surface":"Дария","lemma":"Дарий","category":"person"},{"surface":"подать","lemma":"подать","category":"realia"},{"surface":"электрумом","lemma":"электрум","category":"realia"},{"surface":"арамейском языке","lemma":"арамейский язык","category":"language"}]</output>
+</example>
 
-## Плохой пример (так НЕ делать)
+## Bad example (do NOT do this)
 <bad_example>
 <source>В Лагаше правитель опирался на воинов.</source>
-<bad_output>[{"surface":"правитель","lemma":"правитель","category":"title"},{"surface":"воинов","lemma":"воин","category":"people"},{"surface":"Lagash","lemma":"Lagash","category":"place"}]</bad_output>
-<why_bad>«правитель»/«воинов» — обычные слова, не термины; «Lagash» — перевод, а surface обязан быть русской подстрокой «Лагаше».</why_bad>
+<bad_output>[{"surface":"правитель","lemma":"правитель"},{"surface":"воинов","lemma":"воин"},{"surface":"Lagash","lemma":"Lagash"}]</bad_output>
+<why_bad>«правитель» and «воинов» are ordinary words, not terms. «Lagash» is a translation, while surface must be the Russian substring «Лагаше».</why_bad>
 </bad_example>
 
-## Формат вывода
-Только JSON-массив объектов {surface, lemma, category}. Без пояснений и без markdown-ограды.
-
-<source>
-{{source}}
-</source>
+## Output format
+A JSON array of {surface, lemma, category} objects only. No explanations and
+no markdown fences.
 """
 
-CONTEXT_PAD = 40
+
+def ner_user(source: str) -> str:
+    """Per-call user message: the source paragraph wrapped in <source> tags."""
+    return f"<source>\n{source}\n</source>"
+
+
 # A run of Capitalised Cyrillic words (optionally hyphenated), e.g. "Кадашман-Харбе".
 _PROPER = re.compile(r"[А-ЯЁ][а-яё]+(?:-[А-ЯЁ]?[а-яё]+)*(?:\s+[А-ЯЁ][а-яё]+(?:-[А-ЯЁ]?[а-яё]+)*)*")
-
-
-def _context(source: str, start: int, end: int) -> str:
-    return source[max(0, start - CONTEXT_PAD): end + CONTEXT_PAD].strip()
 
 
 _LEMMA_MAX_LEN = 80
@@ -107,34 +171,116 @@ def _sane_lemma(lemma: str, surface: str) -> str:
     return surface
 
 
+# The canonical machine-friendly tokens for NER_SYSTEM_PROMPT's <categories>
+# list, in the same order -- each token is literally the word before the dash
+# in the prompt text, so the prompt and the parser can never drift apart.
+NER_CATEGORIES = (
+    "person", "place", "people", "title", "social", "institution", "dynasty",
+    "culture", "language", "realia", "event", "deity", "work", "religion",
+)
+_NER_CATEGORY_TOKENS = frozenset(NER_CATEGORIES) | {"other"}
+
+
+def _normalize_category(raw: object) -> tuple[str, str | None]:
+    """Normalize a raw ``category`` value against ``NER_CATEGORIES`` ∪ {"other"}.
+
+    Returns ``(category, category_raw)``: ``category`` is always a valid
+    non-empty token. ``category_raw`` carries the original value ONLY when it
+    was present but did not match a known token (an unknown value) --
+    missing/empty input normalizes to "other" with no ``category_raw`` (there
+    is nothing to preserve). An otherwise-valid extraction is never rejected
+    or retried over the category value.
+    """
+    value = raw.strip() if isinstance(raw, str) else ""
+    if value in _NER_CATEGORY_TOKENS:
+        return value, None
+    if value:
+        return "other", value
+    return "other", None
+
+
+def _first_balanced_array(text: str) -> str | None:
+    """Return the first balanced top-level ``[...]`` substring in text, or None.
+
+    Bracket-counts from the first ``[``, respecting JSON string quoting and
+    escapes, so brackets inside string values (or trailing commentary once the
+    array has closed) don't confuse the scan. Tolerant of ``` fences and of
+    commentary before/after the array — both are just text the scan skips over.
+    """
+    start = text.find("[")
+    while start != -1:
+        depth = 0
+        in_string = False
+        escape = False
+        for i in range(start, len(text)):
+            ch = text[i]
+            if in_string:
+                if escape:
+                    escape = False
+                elif ch == "\\":
+                    escape = True
+                elif ch == '"':
+                    in_string = False
+                continue
+            if ch == '"':
+                in_string = True
+            elif ch == "[":
+                depth += 1
+            elif ch == "]":
+                depth -= 1
+                if depth == 0:
+                    return text[start:i + 1]
+        start = text.find("[", start + 1)
+    return None
+
+
 def parse_surfaces(raw: str) -> list[dict]:
-    """Parse an LLM JSON reply into [{surface, lemma, category}]; tolerant of ``` fences."""
+    """Parse an LLM JSON reply into [{surface, lemma, category}]; tolerant of
+    ``` fences and of commentary before/after the array.
+
+    ``category`` is normalized against ``NER_CATEGORIES`` ∪ {"other"} (see
+    ``_normalize_category``): an unrecognized or missing value becomes
+    "other", and the original value is preserved as ``category_raw`` only
+    when it was present and differed from the normalized result. category
+    never causes a parse failure -- only the surrounding JSON shape does.
+
+    Raises ExtractionParseError when no JSON array can be recovered (no
+    balanced ``[...]``, malformed JSON, or valid JSON that isn't a list) --
+    an honest empty ``[]`` reply still returns ``[]``.
+    """
     text = (raw or "").strip()
-    m = re.search(r"\[.*\]", text, re.DOTALL)
-    if m:
-        text = m.group(0)
+    array_text = _first_balanced_array(text)
+    if array_text is None:
+        raise ExtractionParseError(f"no JSON array found in reply: {text[:200]!r}")
     try:
-        data = json.loads(text)
-    except (json.JSONDecodeError, ValueError):
-        return []
+        data = json.loads(array_text)
+    except json.JSONDecodeError as exc:
+        raise ExtractionParseError(f"malformed JSON array ({exc}); reply head: {text[:200]!r}") from exc
+    if not isinstance(data, list):
+        raise ExtractionParseError(f"parsed JSON is not a list; reply head: {text[:200]!r}")
     out: list[dict] = []
-    for item in data if isinstance(data, list) else []:
+    for item in data:
         if not isinstance(item, dict):
             continue
         surface = (item.get("surface") or "").strip()
-        category = (item.get("category") or "").strip()
         lemma = (item.get("lemma") or "").strip()
-        if surface:
-            out.append({
-                "surface": surface,
-                "lemma": _sane_lemma(lemma, surface),
-                "category": category if category in CATEGORIES else None,
-            })
+        if not surface:
+            continue
+        category, category_raw = _normalize_category(item.get("category"))
+        rec = {"surface": surface, "lemma": _sane_lemma(lemma, surface), "category": category}
+        if category_raw is not None:
+            rec["category_raw"] = category_raw
+        out.append(rec)
     return out
 
 
 def validate_surfaces(source: str, surfaces: list[dict]) -> tuple[list[dict], int]:
-    """Keep only surfaces that are literal substrings of source; dedup; count drops."""
+    """Keep only surfaces that are literal substrings of source; dedup; count drops.
+
+    Passes ``category``/``category_raw`` through untouched when present (set
+    by ``parse_surfaces`` at parse time) -- this function re-validates only
+    the substring/dedup contract, never the category value.
+    """
     seen: set[str] = set()
     valid: list[dict] = []
     dropped = 0
@@ -148,15 +294,97 @@ def validate_surfaces(source: str, surfaces: list[dict]) -> tuple[list[dict], in
         if s in seen:
             continue
         seen.add(s)
-        valid.append({"surface": s, "lemma": item.get("lemma") or s, "category": item.get("category")})
+        rec = {"surface": s, "lemma": item.get("lemma") or s}
+        if "category" in item:
+            rec["category"] = item["category"]
+        if "category_raw" in item:
+            rec["category_raw"] = item["category_raw"]
+        valid.append(rec)
     return valid, dropped
+
+
+_ABBREV_TOKENS = {"н", "э", "в", "вв", "г", "гг", "др", "т", "д", "п", "см", "ок"}
+_SENTENCE_TERMINATORS = ".!?…"
+
+
+def _is_sentence_boundary(source: str, idx: int) -> bool:
+    """True if the terminator char ``source[idx]`` genuinely ends a sentence.
+
+    A boundary requires whitespace right after the terminator (or end of
+    string). For ``.`` specifically it is guarded against Russian
+    abbreviations/initials: not a boundary when the period is preceded by a
+    single-letter token (initial, or a 1-letter abbreviation like «г.»/«в.»),
+    preceded by a known multi-letter abbreviation token («вв», «гг», «др»,
+    «см», «ок»), or followed by a lowercase letter (covers unlisted
+    abbreviations followed by a lowercase continuation, e.g. «т. д.»-style).
+    """
+    n = len(source)
+    nxt = idx + 1
+    if nxt < n and not source[nxt].isspace():
+        return False
+    if source[idx] != ".":
+        return True  # '!', '?', '…' need no abbreviation guard
+    k = idx
+    while k > 0 and source[k - 1].isalpha():
+        k -= 1
+    token = source[k:idx]
+    if len(token) == 1 or token.lower() in _ABBREV_TOKENS:
+        return False
+    j = nxt
+    while j < n and source[j].isspace():
+        j += 1
+    if j < n and source[j].isalpha() and source[j].islower():
+        return False
+    return True
+
+
+def _sentence_spans(source: str) -> list[tuple[int, int]]:
+    """Split source into consecutive [start, end) sentence spans covering it fully."""
+    spans: list[tuple[int, int]] = []
+    start = 0
+    i = 0
+    n = len(source)
+    while i < n:
+        if source[i] in _SENTENCE_TERMINATORS and _is_sentence_boundary(source, i):
+            spans.append((start, i + 1))
+            j = i + 1
+            while j < n and source[j].isspace():
+                j += 1
+            start = j
+            i = j
+            continue
+        i += 1
+    if start < n:
+        spans.append((start, n))
+    return spans
+
+
+def sentence_context(source: str, start: int, end: int) -> str:
+    """Full sentence(s) containing the mention span [start, end), stripped.
+
+    Deterministic, stdlib-only sentence splitter (see ``_is_sentence_boundary``
+    for the abbreviation/initial guards). If the span crosses a sentence
+    boundary, every sentence it overlaps is returned together.
+    """
+    spans = _sentence_spans(source)
+    overlapping = [(a, b) for a, b in spans if start < b and end > a]
+    if not overlapping:
+        return source[start:end].strip()
+    lo = min(a for a, _ in overlapping)
+    hi = max(b for _, b in overlapping)
+    return source[lo:hi].strip()
 
 
 def mentions_from_surfaces(source: str, surfaces: list[dict]) -> list[TermMention]:
     """Turn extracted surfaces into one mention per occurrence with char spans.
 
-    Each surface dict: ``{surface, lemma?, category?}``. Every non-overlapping
-    occurrence of ``surface`` in ``source`` becomes its own mention.
+    Each surface dict: ``{surface, lemma?, category?}`` -- for the real LLM
+    extractor (E1) ``category`` is now always present, normalized by
+    ``parse_surfaces`` to one of ``NER_CATEGORIES`` or ``"other"``. The
+    deterministic fallback (E0, no model) still emits ``category=None`` for
+    capitalised-run surfaces, since there is no model output to label with.
+    Every non-overlapping occurrence of ``surface`` in ``source`` becomes its
+    own mention.
     """
     mentions: list[TermMention] = []
     taken: list[tuple[int, int]] = []
@@ -171,7 +399,7 @@ def mentions_from_surfaces(source: str, surfaces: list[dict]) -> list[TermMentio
                 continue  # overlaps an already-claimed span
             taken.append((start, end))
             mentions.append(TermMention(
-                surface=surface, context=_context(source, start, end),
+                surface=surface, context=sentence_context(source, start, end),
                 lemma=item.get("lemma") or surface, char_start=start, char_end=end,
                 lang="ru", category=item.get("category"),
             ))

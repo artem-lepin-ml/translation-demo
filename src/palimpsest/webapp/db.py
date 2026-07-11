@@ -24,7 +24,8 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE document (
   id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, source_lang TEXT, target_lang TEXT,
   source_model TEXT, seed_model TEXT, seed_prompt_variant TEXT,
-  version INTEGER DEFAULT 0, origin TEXT DEFAULT 'seed', created_at TEXT
+  version INTEGER DEFAULT 0, origin TEXT DEFAULT 'seed', created_at TEXT,
+  terms_status TEXT NOT NULL DEFAULT 'none'
 );
 CREATE TABLE paragraph (
   id INTEGER PRIMARY KEY AUTOINCREMENT, document_id INTEGER REFERENCES document(id) ON DELETE CASCADE,
@@ -77,6 +78,12 @@ CREATE TABLE target_revision (
 );
 CREATE INDEX idx_target_revision_para ON target_revision(paragraph_id, id);
 CREATE TABLE translator_config (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
+);
+CREATE TABLE refiner_config (   -- singleton, mirrors translator_config (EMNLP sprint 2026-07-11)
   id INTEGER PRIMARY KEY CHECK (id = 1),
   model_name TEXT REFERENCES model(name),
   prompt TEXT,

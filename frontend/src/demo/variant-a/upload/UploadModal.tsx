@@ -160,11 +160,16 @@ export default function UploadModal() {
   const closeUploadModal = useDemoStore((s) => s.closeUploadModal);
   const createDoc = useDemoStore((s) => s.createDoc);
   const translatorModelName = useDemoStore((s) => s.translatorConfig?.modelName ?? null);
+  // Read once on mount: the picker's "Blank document" card opens this modal
+  // with AI-translate pre-selected; the top-chrome "+ Upload pair" chip opens
+  // it with the default false (this store flag is reset by openUploadModal
+  // on every open, so a fresh mount always sees the caller's intent).
+  const aiTranslateDefault = useDemoStore((s) => s.uploadModalAiTranslateDefault);
   const [title, setTitle] = useState('');
   const [src, setSrc] = useState<SideState>({ text: '', lang: '', busy: false, error: null });
   const [tgt, setTgt] = useState<SideState>({ text: '', lang: '', busy: false, error: null });
   const [step, setStep] = useState<1 | 2>(1);
-  const [aiTranslateMode, setAiTranslateMode] = useState(false);
+  const [aiTranslateMode, setAiTranslateMode] = useState(aiTranslateDefault);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   // Synchronous re-entry guard — see Step2's submit comment for why `submitting`

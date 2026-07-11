@@ -113,15 +113,40 @@ def test_migrate_seeds_translator_config_when_model_exists(old_conn):
     assert json.loads(row["params_json"]) == {"max_tokens": 2048, "temperature": 0.3}
 
 
-def test_migrate_skips_translator_config_seed_when_model_absent(tmp_path):
+def test_create_translator_config_skips_seed_when_model_absent(tmp_path):
+    """_create_translator_config's own FK-safety fallback, exercised directly
+    (not through the full migrate() pipeline): since 2026-07-11
+    (_upsert_model_registry_and_remap, run first in migrate()), the full
+    pipeline ALWAYS seeds a default model row before this step ever runs, so
+    the "zero model rows at all" scenario this guards against is no longer
+    reachable via migrate() itself — the underlying fallback logic is still
+    real and still worth its own direct-call regression test."""
     path = tmp_path / "old2.db"
+    conn = sqlite3.connect(str(path))
+    conn.row_factory = sqlite3.Row
+    conn.executescript(OLD_SCHEMA)
+    conn.commit()
+    migrate._create_translator_config(conn)
+    row = conn.execute("SELECT * FROM translator_config WHERE id=1").fetchone()
+    assert row is None                          # no FK target → left unseeded, honestly
+
+
+def test_migrate_seeds_translator_config_even_from_a_bare_model_less_db(tmp_path):
+    """The full migrate() pipeline, unlike the unit above, NEVER leaves
+    translator_config unseeded any more — _upsert_model_registry_and_remap
+    (run first) guarantees a default model row exists before
+    _create_translator_config's FK-guard is even checked. A genuinely bare,
+    never-migrated DB now bootstraps a working default instead of staying
+    permanently unconfigured."""
+    path = tmp_path / "bare.db"
     conn = sqlite3.connect(str(path))
     conn.row_factory = sqlite3.Row
     conn.executescript(OLD_SCHEMA)
     conn.commit()
     migrate.migrate(conn)
     row = conn.execute("SELECT * FROM translator_config WHERE id=1").fetchone()
-    assert row is None                          # no FK target → left unseeded, honestly
+    assert row is not None
+    assert row["model_name"] == DEFAULT_CRITERION_MODEL
 
 
 def test_migrate_backfills_paragraph_revision(old_conn):
@@ -283,13 +308,16 @@ def test_migrate_adds_grounding_config_table_and_seeds_row(prod_conn):
     assert row["prompt"]                          # non-empty judge prompt
 
 
-def test_migrate_skips_grounding_config_seed_when_model_absent(tmp_path):
+def test_create_grounding_config_skips_seed_when_model_absent(tmp_path):
+    """_create_grounding_config's own FK-safety fallback, exercised directly —
+    see test_create_translator_config_skips_seed_when_model_absent above for
+    why this is no longer reachable through the full migrate() pipeline."""
     path = tmp_path / "prod2.db"
     conn = sqlite3.connect(str(path))
     conn.row_factory = sqlite3.Row
     conn.executescript(PROD_SHAPED_SCHEMA)
     conn.commit()
-    migrate.migrate(conn)
+    migrate._create_grounding_config(conn)
     assert "grounding_config" in _tables(conn)
     row = conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
     assert row is None                             # no FK target → left unseeded, honestly
@@ -301,6 +329,38 @@ def test_migrate_adds_term_trace_json_column_with_default(prod_conn):
     assert "trace_json" in cols
     row = prod_conn.execute("SELECT trace_json FROM term LIMIT 1").fetchone()
     assert row["trace_json"] == "{}"               # pre-existing row backfilled by ALTER's DEFAULT
+
+
+# ── document.terms_status (2026-07-11 EMNLP sprint: live terminology) ──────
+
+def test_migrate_adds_document_terms_status_column_with_default_none(prod_conn):
+    migrate.migrate(prod_conn)
+    cols = _tables(prod_conn)["document"]
+    assert "terms_status" in cols
+    row = prod_conn.execute("SELECT terms_status FROM document LIMIT 1").fetchone()
+    assert row["terms_status"] == "none"           # pre-existing (upload) row backfilled by ALTER's DEFAULT
+
+
+def test_migrate_backfills_seed_document_terms_status_to_done(prod_conn):
+    prod_conn.execute(
+        "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,created_at) "
+        "VALUES('Seed','ru','en','user',0,'seed','2026-01-01T00:00:00Z')")
+    prod_conn.commit()
+    migrate.migrate(prod_conn)
+    rows = {r["origin"]: r["terms_status"] for r in prod_conn.execute("SELECT origin, terms_status FROM document")}
+    assert rows["seed"] == "done"                  # already has precomputed terms
+    assert rows["upload"] == "none"                # non-seed rows are left alone
+
+
+def test_migrate_terms_status_backfill_idempotent_double_run(prod_conn):
+    prod_conn.execute(
+        "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,created_at) "
+        "VALUES('Seed','ru','en','user',0,'seed','2026-01-01T00:00:00Z')")
+    prod_conn.commit()
+    migrate.migrate(prod_conn)
+    migrate.migrate(prod_conn)                     # second run must not raise or change the result
+    rows = {r["origin"]: r["terms_status"] for r in prod_conn.execute("SELECT origin, terms_status FROM document")}
+    assert rows == {"seed": "done", "upload": "none"}
 
 
 def test_migrate_keeps_glossary_table(prod_conn):
@@ -363,10 +423,15 @@ def test_grounding_config_endpoint_200_on_migrated_prod_shaped_db(tmp_path, monk
     assert body["modelName"] == DEFAULT_CRITERION_MODEL
 
 
-def test_grounding_config_endpoint_200_when_table_missing_and_no_default_model(tmp_path, monkeypatch):
-    """Same boot path, but with no model row at all — the FK-safety guard
-    leaves grounding_config unseeded (empty table), and the endpoint must
-    still return 200 with a null/default config, never 500."""
+def test_grounding_config_endpoint_200_when_booted_from_a_bare_model_less_db(tmp_path, monkeypatch):
+    """Same boot path, but starting with NO model row at all. Before
+    2026-07-11 this left grounding_config permanently unseeded (FK-safety
+    guard, null/default config forever) — since
+    _upsert_model_registry_and_remap now runs first in migrate() and
+    unconditionally seeds the 5-model registry, a bare DB now bootstraps a
+    REAL default config instead. Either way the endpoint must return 200,
+    never 500 — that's the one invariant both the old and new test versions
+    protect."""
     db_path = tmp_path / "prod_boot_no_model.db"
     setup_conn = sqlite3.connect(str(db_path))
     setup_conn.executescript(PROD_SHAPED_SCHEMA)
@@ -380,7 +445,7 @@ def test_grounding_config_endpoint_200_when_table_missing_and_no_default_model(t
     with TestClient(app) as client:
         resp = client.get("/api/grounding-config")
     assert resp.status_code == 200
-    assert resp.json() == {"modelName": None, "prompt": "", "params": {}}
+    assert resp.json()["modelName"] == DEFAULT_CRITERION_MODEL
 
 
 def test_migrate_cli_help_runs():

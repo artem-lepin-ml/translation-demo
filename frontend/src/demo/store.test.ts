@@ -8,6 +8,7 @@ vi.mock('./api-client', async (importOriginal) => {
     patchIssueStatus: vi.fn(),
     applyEdit: vi.fn(),
     evaluate: vi.fn(),
+    refineParagraph: vi.fn(),
     createCriterion: vi.fn(),
     deleteCriterion: vi.fn(),
     patchParagraph: vi.fn(),
@@ -29,6 +30,7 @@ import {
   createCriterion,
   deleteCriterion,
   evaluate,
+  refineParagraph as apiRefineParagraph,
   patchIssueStatus,
   patchParagraph,
   translateDocument,
@@ -466,14 +468,12 @@ describe('init (boot sequence) — auxiliary config isolation (2026-07-06 prod i
   ];
   const groundingCfg: GroundingConfig = { modelName: 'openai/gpt-5.4-mini', prompt: 'g', params: {} };
   const translatorCfg: TranslatorConfig = { modelName: 'openai/gpt-5.4-mini', prompt: 't', params: {} };
-  const doc = makeDoc([]);
 
   beforeEach(() => {
     useDemoStore.setState({ document: null, documentError: null, documentLoading: false });
     vi.mocked(getDocuments).mockResolvedValue(summaries);
     vi.mocked(getCriteria).mockResolvedValue(criteriaList);
     vi.mocked(getModels).mockResolvedValue(modelsList);
-    vi.mocked(getDocument).mockResolvedValue(doc);
     vi.mocked(getHealth).mockResolvedValue({ service: 's', status: 'ok', limits: { maxParagraphs: 100, maxParaChars: 5000 } });
   });
 
@@ -481,7 +481,19 @@ describe('init (boot sequence) — auxiliary config isolation (2026-07-06 prod i
     vi.restoreAllMocks();
   });
 
-  it('a rejected grounding-config fetch does not block the document from loading; fallback recorded as null', async () => {
+  it('does not auto-open a document — the picker is the landing view (docId=null) even on a fully successful init', async () => {
+    vi.mocked(getGroundingConfig).mockResolvedValue(groundingCfg);
+    vi.mocked(getTranslatorConfig).mockResolvedValue(translatorCfg);
+
+    await useDemoStore.getState().init();
+
+    const state = useDemoStore.getState();
+    expect(state.document).toBeNull();
+    expect(state.documents).toEqual(summaries);
+    expect(getDocument).not.toHaveBeenCalled();
+  });
+
+  it('a rejected grounding-config fetch does not block the rest of init; fallback recorded as null', async () => {
     vi.mocked(getGroundingConfig).mockRejectedValue(new Error('GET /grounding-config → 500'));
     vi.mocked(getTranslatorConfig).mockResolvedValue(translatorCfg);
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -490,14 +502,14 @@ describe('init (boot sequence) — auxiliary config isolation (2026-07-06 prod i
 
     const state = useDemoStore.getState();
     expect(state.documentError).toBeNull();
-    expect(state.document).toEqual(doc);
+    expect(state.document).toBeNull();
     expect(state.documents).toEqual(summaries);
     expect(state.groundingConfig).toBeNull();
     expect(state.translatorConfig).toEqual(translatorCfg);
     expect(warnSpy).toHaveBeenCalled();
   });
 
-  it('a rejected translator-config fetch does not block the document from loading; fallback recorded as null', async () => {
+  it('a rejected translator-config fetch does not block the rest of init; fallback recorded as null', async () => {
     vi.mocked(getGroundingConfig).mockResolvedValue(groundingCfg);
     vi.mocked(getTranslatorConfig).mockRejectedValue(new Error('GET /translator-config → 500'));
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -506,7 +518,7 @@ describe('init (boot sequence) — auxiliary config isolation (2026-07-06 prod i
 
     const state = useDemoStore.getState();
     expect(state.documentError).toBeNull();
-    expect(state.document).toEqual(doc);
+    expect(state.document).toBeNull();
     expect(state.groundingConfig).toEqual(groundingCfg);
     expect(state.translatorConfig).toBeNull();
     expect(warnSpy).toHaveBeenCalled();
@@ -523,5 +535,146 @@ describe('init (boot sequence) — auxiliary config isolation (2026-07-06 prod i
     expect(state.documentError).toContain('500');
     expect(state.document).toBeNull();
     expect(state.documentLoading).toBe(false);
+  });
+
+  it('zero documents from the server is a valid (empty) picker state, not documentError', async () => {
+    vi.mocked(getDocuments).mockResolvedValue([]);
+    vi.mocked(getGroundingConfig).mockResolvedValue(groundingCfg);
+    vi.mocked(getTranslatorConfig).mockResolvedValue(translatorCfg);
+
+    await useDemoStore.getState().init();
+
+    const state = useDemoStore.getState();
+    expect(state.documentError).toBeNull();
+    expect(state.document).toBeNull();
+    expect(state.documents).toEqual([]);
+  });
+});
+
+describe('refineParagraph (EMNLP sprint — refiner pass, replaces per-paragraph Accept all)', () => {
+  function refinedPara(): Paragraph {
+    return {
+      id: 1, idx: 0, source: 'ru', target: 'refined text', scores: [], scoresPrev: null,
+      scoresBaseline: null, aggregate: null, aggregateBaseline: null, best: null,
+      issues: [issue('1', { status: 'accepted' }), issue('2', { status: 'accepted' })], terms: [],
+    };
+  }
+
+  beforeEach(() => {
+    useDemoStore.setState({
+      document: makeDoc([issue('1', { suggestion: 'xxx' }), issue('2', { suggestion: 'yyy' })]),
+      paraEvalState: { 0: {
+        loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false,
+      } },
+    });
+  });
+
+  it('sets refineStage="refining" synchronously while the refine POST is in flight', () => {
+    vi.mocked(apiRefineParagraph).mockReturnValue(new Promise(() => {}));   // never resolves
+    void useDemoStore.getState().refineParagraph(1, 0);
+    expect(useDemoStore.getState().paraEvalState[0].refineStage).toBe('refining');
+  });
+
+  it('merges the returned paragraph, chains evaluate, then clears refineStage (success path)', async () => {
+    vi.mocked(apiRefineParagraph).mockResolvedValue(refinedPara());
+    vi.mocked(evaluate).mockResolvedValue(evalResponse);
+
+    await useDemoStore.getState().refineParagraph(1, 0);
+
+    expect(apiRefineParagraph).toHaveBeenCalledWith(1);
+    expect(evaluate).toHaveBeenCalledWith(1, undefined);   // chained re-score, full re-evaluate
+    const state = useDemoStore.getState();
+    expect(state.document!.paragraphs[0].target).toBe('refined text');
+    expect(state.document!.paragraphs[0].aggregate).toBe(7);   // from evalResponse, via the chained evaluate
+    expect(state.paraEvalState[0].refineStage).toBeUndefined();
+    expect(state.paraEvalState[0].loading).toBe(false);
+  });
+
+  it('holds refineStage="rescoring" while the chained evaluate is still in flight', async () => {
+    vi.mocked(apiRefineParagraph).mockResolvedValue(refinedPara());
+    let resolveEvaluate: (r: EvaluateResponse) => void = () => {};
+    vi.mocked(evaluate).mockReturnValue(new Promise((res) => { resolveEvaluate = res; }));
+
+    const inFlight = useDemoStore.getState().refineParagraph(1, 0);
+    await vi.waitFor(() => {
+      expect(useDemoStore.getState().paraEvalState[0].refineStage).toBe('rescoring');
+    });
+    resolveEvaluate(evalResponse);
+    await inFlight;
+    expect(useDemoStore.getState().paraEvalState[0].refineStage).toBeUndefined();
+  });
+
+  it('409 (no open issues): clears refineStage without an error banner, and does not chain evaluate', async () => {
+    vi.mocked(apiRefineParagraph).mockRejectedValue(
+      new Error('POST /paragraphs/1/refine → 409: {"detail":"no open issues"}'),
+    );
+
+    await useDemoStore.getState().refineParagraph(1, 0);
+
+    const state = useDemoStore.getState().paraEvalState[0];
+    expect(state.refineStage).toBeUndefined();
+    expect(state.error).toBeNull();
+    expect(evaluate).not.toHaveBeenCalled();
+  });
+
+  it('non-409 failure (network/5xx): surfaces the error via paraEvalState.error — the same affordance evaluate failures use', async () => {
+    vi.mocked(apiRefineParagraph).mockRejectedValue(new Error('POST /paragraphs/1/refine → 500: boom'));
+
+    await useDemoStore.getState().refineParagraph(1, 0);
+
+    const state = useDemoStore.getState().paraEvalState[0];
+    expect(state.refineStage).toBeUndefined();
+    expect(state.error).toContain('500');
+    expect(evaluate).not.toHaveBeenCalled();
+  });
+});
+
+describe('terms-status polling (store-owned single interval, S? live terminology UX)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    useDemoStore.setState({ document: makeDoc([]) });
+  });
+
+  afterEach(() => {
+    useDemoStore.getState().stopTermsPolling();   // guard against a leaked interval bleeding into later tests
+    vi.useRealTimers();
+  });
+
+  it('polls getDocument every 2.5s once started', async () => {
+    vi.mocked(getDocument).mockResolvedValue(makeDoc([]));
+
+    useDemoStore.getState().startTermsPolling();
+    expect(getDocument).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getDocument).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getDocument).toHaveBeenCalledTimes(2);
+  });
+
+  it('stops polling once stopTermsPolling is called', async () => {
+    vi.mocked(getDocument).mockResolvedValue(makeDoc([]));
+
+    useDemoStore.getState().startTermsPolling();
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getDocument).toHaveBeenCalledTimes(1);
+
+    useDemoStore.getState().stopTermsPolling();
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(getDocument).toHaveBeenCalledTimes(1);   // no further calls after stop
+  });
+
+  it('is idempotent — calling start twice never stacks a second interval', async () => {
+    vi.mocked(getDocument).mockResolvedValue(makeDoc([]));
+
+    useDemoStore.getState().startTermsPolling();
+    useDemoStore.getState().startTermsPolling();
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getDocument).toHaveBeenCalledTimes(1);   // not 2
+  });
+
+  it('stop is a safe no-op when nothing is polling', () => {
+    expect(() => useDemoStore.getState().stopTermsPolling()).not.toThrow();
   });
 });

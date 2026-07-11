@@ -18,7 +18,16 @@ Judge = Callable[[str], dict]
 
 # An extractor turns source text into raw NER surfaces. Same subagent-injection
 # pattern as Judge, but a different return arity (list[dict], not dict).
-Extractor = Callable[[str], list[dict]]   # source text -> [{surface, category}]
+Extractor = Callable[[str], list[dict]]   # source text -> [{surface, lemma}]
+
+
+class FatalGroundingJudgeError(Exception):
+    """A judge failure that must HALT the run, never collapse to the terminal
+    ``resolved_by=judge_unavailable`` path (wiki-eval experiment v2, spec
+    2026-07-10 Р15: token-limit overflow and per-call gate violations are
+    errors, not tolerable degradations). ``LabelFirstGrounding.ground()``
+    re-raises this marker before its judge catch-all; everything else about
+    judge error handling is unchanged."""
 
 
 @dataclass(frozen=True)
@@ -49,6 +58,22 @@ class GroundingConfig:
     match_aliases: bool = True
     search_limit: int = 7
     enrich_top: int = 5
+    # Candidate-search widening tiers (wiki-eval experiment, 2026-07-10):
+    # cumulative, gated entirely inside candidates.py::generate_candidates.
+    #   "baseline"    -- today's search (rungs 1-4), unchanged.
+    #   "alt-names"   -- baseline PLUS: when baseline finds 0 candidates,
+    #                    derive alt surface forms from parenthesized
+    #                    alternates in the mention's sentence context
+    #                    (e.g. «Унку (Unqi)» -> "Unqi") and re-run the same
+    #                    prefix search. Zero LLM calls.
+    #   "label-guess" -- alt-names PLUS: if still 0 candidates, ONE LLM call
+    #                    (the injected ``label_guesser``) guesses the exact
+    #                    Wikidata label, re-searched the same way.
+    # Not part of the 3-bit ablation id (search_mode is CLI-only, see
+    # scripts/wiki_eval.py's --search-mode) -- kept here rather than as a
+    # separate parameter threaded through every call site because it's an
+    # ablation-style toggle just like the other fields on this frozen config.
+    search_mode: Literal["baseline", "alt-names", "label-guess"] = "baseline"
 
     def __init__(
         self,
@@ -59,6 +84,7 @@ class GroundingConfig:
         search_limit: int = 7,
         enrich_top: int = 5,
         use_fallbacks: bool | None = None,
+        search_mode: Literal["baseline", "alt-names", "label-guess"] = "baseline",
     ) -> None:
         # dataclass(frozen=True) only auto-generates __init__ when the class
         # doesn't already define one, so this hand-written constructor is the
@@ -74,6 +100,7 @@ class GroundingConfig:
         object.__setattr__(self, "match_aliases", match_aliases)
         object.__setattr__(self, "search_limit", search_limit)
         object.__setattr__(self, "enrich_top", enrich_top)
+        object.__setattr__(self, "search_mode", search_mode)
 
     @property
     def use_fallbacks(self) -> bool:

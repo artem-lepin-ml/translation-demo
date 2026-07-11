@@ -5,10 +5,12 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from palimpsest.terminology import pipeline
-from palimpsest.terminology.base import GroundingResult, PairResult, TermMention, WikidataRef
+from palimpsest.terminology.base import FatalGroundingJudgeError, GroundingResult, PairResult, TermMention, WikidataRef
 from palimpsest.terminology.eval_harness import wilson_ci
 from palimpsest.terminology.extract import deterministic_extract, mentions_from_surfaces
 from palimpsest.terminology.verdict import pair_from_forms
@@ -88,48 +90,147 @@ def test_deterministic_extract_finds_proper_nouns():
     assert any("Вавилон" in m.surface for m in ms)
 
 
-def test_categories_and_prompt_present():
-    from palimpsest.terminology.extract import CATEGORIES, DEFAULT_NER_PROMPT
-    assert {"people", "title", "social"} <= CATEGORIES
-    assert "{{source}}" in DEFAULT_NER_PROMPT
-    assert "<categories>" in DEFAULT_NER_PROMPT and "bad_example" in DEFAULT_NER_PROMPT
+def test_ner_system_prompt_covers_full_category_scope():
+    from palimpsest.terminology.extract import NER_CATEGORIES, NER_SYSTEM_PROMPT
+    assert "<categories>" in NER_SYSTEM_PROMPT
+    assert "What to extract (examples)" in NER_SYSTEM_PROMPT
+    for cat in ("deity", "work", "religion"):
+        assert cat in NER_SYSTEM_PROMPT
+    for cat in NER_CATEGORIES:                    # every canonical token is named in the prompt
+        assert cat in NER_SYSTEM_PROMPT
 
 
-def test_parse_surfaces_tolerates_fence_and_bad_category():
+def test_ner_system_prompt_requires_category_and_is_frozen():
+    from palimpsest.terminology.extract import NER_SYSTEM_PROMPT
+    assert "{surface, lemma, category}" in NER_SYSTEM_PROMPT
+    assert "category NEVER changes" in NER_SYSTEM_PROMPT     # category never affects extraction decisions
+    src = Path(__file__).resolve().parents[1] / "src/palimpsest/terminology/extract.py"
+    text = src.read_text(encoding="utf-8")
+    assert "FROZEN 2026-07-10" in text                       # freeze marker above NER_SYSTEM_PROMPT
+    assert "Do not modify without an owner-approved spec" in text
+
+
+def test_ner_user_wraps_source():
+    from palimpsest.terminology.extract import ner_user
+    assert ner_user("В Лагаше правил лугаль.") == "<source>\nВ Лагаше правил лугаль.\n</source>"
+
+
+def test_parse_surfaces_tolerates_fence():
     from palimpsest.terminology.extract import parse_surfaces
-    raw = '```json\n[{"surface":"Лагаше","category":"place"},{"surface":"x","category":"nonsense"}]\n```'
+    raw = '```json\n[{"surface":"Лагаше","lemma":"Лагаш"},{"surface":"x","lemma":"x"}]\n```'
     out = parse_surfaces(raw)
-    assert out[0] == {"surface": "Лагаше", "lemma": "Лагаше", "category": "place"}
-    assert out[1]["category"] is None            # unknown category -> None
-    assert parse_surfaces("not json") == []
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other"},
+                    {"surface": "x", "lemma": "x", "category": "other"}]  # missing category -> "other"
+
+
+def test_parse_surfaces_ignores_trailing_commentary_with_brackets():
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = ('[{"surface":"Лагаше","lemma":"Лагаш"}]\n'
+           'Note: this also mentions [Вавилон] as a location.')
+    out = parse_surfaces(raw)
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other"}]
 
 
 def test_parse_surfaces_includes_lemma():
     from palimpsest.terminology.extract import parse_surfaces
-    raw = '[{"surface":"династии Цин","lemma":"династия Цин","category":"dynasty"}]'
+    raw = '[{"surface":"династии Цин","lemma":"династия Цин"}]'
     out = parse_surfaces(raw)
-    assert out == [{"surface": "династии Цин", "lemma": "династия Цин", "category": "dynasty"}]
+    assert out == [{"surface": "династии Цин", "lemma": "династия Цин", "category": "other"}]
+
+
+def test_parse_surfaces_valid_category_passes():
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш", "category": "place"}], ensure_ascii=False)
+    out = parse_surfaces(raw)
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "place"}]
+    assert "category_raw" not in out[0]           # known token -> nothing to preserve
+
+
+def test_parse_surfaces_unknown_category_normalizes_with_raw_preserved():
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш", "category": "monument"}], ensure_ascii=False)
+    out = parse_surfaces(raw)
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other", "category_raw": "monument"}]
+
+
+def test_parse_surfaces_missing_category_normalizes_to_other_no_raw():
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш"}], ensure_ascii=False)
+    out = parse_surfaces(raw)
+    assert out == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other"}]
+    assert "category_raw" not in out[0]           # nothing was emitted, nothing to preserve
+
+    raw_empty = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш", "category": ""}], ensure_ascii=False)
+    out_empty = parse_surfaces(raw_empty)
+    assert out_empty == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "other"}]
+    assert "category_raw" not in out_empty[0]
+
+
+def test_parse_surfaces_never_rejects_over_category_value():
+    # an otherwise-valid extraction is never dropped/raised over a bad category value
+    from palimpsest.terminology.extract import parse_surfaces
+    raw = json.dumps([{"surface": "Лагаше", "lemma": "Лагаш", "category": 42}], ensure_ascii=False)
+    out = parse_surfaces(raw)
+    assert out[0]["surface"] == "Лагаше" and out[0]["category"] == "other"
 
 
 def test_parse_surfaces_lemma_sanity_falls_back_to_surface():
     from palimpsest.terminology.extract import parse_surfaces
     raw = json.dumps([
-        {"surface": "Лагаше", "lemma": "", "category": "place"},
-        {"surface": "Вавилон", "lemma": "x" * 81, "category": "place"},
-        {"surface": "Ниппур", "lemma": "Ниппур\nс переносом", "category": "place"},
+        {"surface": "Лагаше", "lemma": ""},
+        {"surface": "Вавилон", "lemma": "x" * 81},
+        {"surface": "Ниппур", "lemma": "Ниппур\nс переносом"},
     ], ensure_ascii=False)
     out = parse_surfaces(raw)
     assert [o["lemma"] for o in out] == ["Лагаше", "Вавилон", "Ниппур"]  # sanity fails -> lemma=surface
 
 
+def test_parse_surfaces_empty_array_is_honest_not_a_failure():
+    from palimpsest.terminology.extract import parse_surfaces
+    assert parse_surfaces("[]") == []
+    assert parse_surfaces("```json\n[]\n```") == []
+
+
+def test_parse_surfaces_raises_on_not_json():
+    from palimpsest.terminology.extract import ExtractionParseError, parse_surfaces
+    with pytest.raises(ExtractionParseError):
+        parse_surfaces("not json")
+
+
+def test_parse_surfaces_raises_on_single_json_object():
+    from palimpsest.terminology.extract import ExtractionParseError, parse_surfaces
+    with pytest.raises(ExtractionParseError):
+        parse_surfaces('{"surface":"Лагаше","lemma":"Лагаш"}')
+
+
+def test_parse_surfaces_raises_on_truncated_array():
+    from palimpsest.terminology.extract import ExtractionParseError, parse_surfaces
+    with pytest.raises(ExtractionParseError):
+        parse_surfaces('[{"surface":"Лагаше","lemma":"Лагаш"}')
+
+
 def test_validate_surfaces_drops_not_in_source_and_dedups():
     from palimpsest.terminology.extract import validate_surfaces
     src = "В Лагаше правил лугаль. Лагаше славился."
-    surfaces = [{"surface":"Лагаше","category":"place"},{"surface":"Лагаше","category":"place"},
-                {"surface":"Lagash","category":"place"},{"surface":"","category":None}]
+    surfaces = [{"surface": "Лагаше", "lemma": "Лагаш"}, {"surface": "Лагаше", "lemma": "Лагаш"},
+                {"surface": "Lagash", "lemma": "Lagash"}, {"surface": "", "lemma": None}]
     valid, dropped = validate_surfaces(src, surfaces)
     assert [v["surface"] for v in valid] == ["Лагаше"]   # deduped, only substring
+    assert valid == [{"surface": "Лагаше", "lemma": "Лагаш"}]  # no category key in input -> none added
     assert dropped == 1                                   # "Lagash" not in source
+
+
+def test_validate_surfaces_passes_category_through_untouched():
+    # validate_surfaces re-validates only substring/dedup -- it never touches category itself
+    from palimpsest.terminology.extract import validate_surfaces
+    src = "В Лагаше правил лугаль."
+    surfaces = [{"surface": "Лагаше", "lemma": "Лагаш", "category": "place"},
+                {"surface": "лугаль", "lemma": "лугаль", "category": "other", "category_raw": "monument"}]
+    valid, dropped = validate_surfaces(src, surfaces)
+    assert valid == [{"surface": "Лагаше", "lemma": "Лагаш", "category": "place"},
+                      {"surface": "лугаль", "lemma": "лугаль", "category": "other",
+                       "category_raw": "monument"}]
+    assert dropped == 0
 
 
 def test_gazetteer_matches_lowercase_forms_word_boundary():
@@ -174,8 +275,10 @@ def test_llm_surfaces_validates_against_source():
     from palimpsest.terminology.extract import llm_surfaces
     src = "В Лагаше правил лугаль."
     fake = lambda s: [{"surface":"лугаль","category":"title"},{"surface":"Lagash","category":"place"}]
-    got = {v["surface"] for v in llm_surfaces(src, extractor=fake)}
+    out = llm_surfaces(src, extractor=fake)
+    got = {v["surface"] for v in out}
     assert got == {"лугаль"}                     # hallucinated "Lagash" dropped
+    assert out[0]["category"] == "title"          # category survives the validate_surfaces roundtrip
 
 
 def test_extract_key_is_stable_and_canonical():
@@ -382,6 +485,174 @@ def test_candidates_redirect_canonicalized_to_target_qid():
                  entities={"Q_OLD": _entity("Q_CANON", "Test", "Тест", p31=("Q5",), enwiki="Test")})
     gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
     assert gen["candidates"][0]["qid"] == "Q_CANON"   # not the pre-redirect Q_OLD
+
+
+# ── search_mode widening tiers (wiki-eval experiment, 2026-07-10) ────────────
+from palimpsest.terminology.base import FatalGroundingJudgeError
+from palimpsest.terminology.grounding.candidates import _alt_names_from_context
+
+
+def test_alt_names_from_context_unqi_case():
+    # canonical example from the spec: «Унку (Unqi)» -> ["Unqi"]
+    assert _alt_names_from_context("Унку", "Народ Унку (Unqi) жил в Сирии.") == ["Unqi"]
+
+
+def test_alt_names_from_context_comma_and_ili_split():
+    assert _alt_names_from_context("Унку", "Унку (Unqi, или Уна) упоминается в текстах.") == ["Unqi", "Уна"]
+
+
+def test_alt_names_from_context_no_parens_returns_empty():
+    assert _alt_names_from_context("Унку", "Унку жил в Сирии.") == []
+
+
+def test_alt_names_from_context_paren_not_immediately_following_returns_empty():
+    # the parenthesized group belongs to a different word -- "immediately
+    # following" per spec means only whitespace may separate surface and "("
+    assert _alt_names_from_context("Унку", "Унку и другое слово (пример) здесь.") == []
+
+
+def test_alt_names_from_context_empty_surface_or_context_returns_empty():
+    assert _alt_names_from_context("", "Унку (Unqi) жил.") == []
+    assert _alt_names_from_context("Унку", "") == []
+
+
+def test_candidates_baseline_mode_never_adds_source_key():
+    # hard regression constraint: baseline candidates never gain a "source"
+    # key, even when a hit is found (byte-for-byte wire identity).
+    wd = _FakeWD(search={"Тест": [{"id": "Q1"}]}, entities={"Q1": _entity("Q1", "Test", "Тест")})
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert "source" not in gen["candidates"][0]
+
+
+def test_candidates_alt_names_not_triggered_in_baseline_mode():
+    # even though the context has a parenthesized alternate that WOULD
+    # resolve under alt-names, default (baseline) search_mode must not widen.
+    wd = _FakeWD(search={"Unqi": [{"id": "Q99"}]}, entities={"Q99": _entity("Q99", "Unqi")})
+    mention = TermMention(surface="Унку", lemma="Унку", context="Унку (Unqi) жил.")
+    gen = generate_candidates(wd, mention, GroundingConfig())  # default search_mode="baseline"
+    assert gen["candidates"] == []
+    assert gen["source"] == "none"
+
+
+def test_candidates_alt_names_widens_when_baseline_finds_nothing():
+    wd = _FakeWD(search={"Unqi": [{"id": "Q99"}]}, entities={"Q99": _entity("Q99", "Unqi", p31=("Q6256",))})
+    mention = TermMention(surface="Унку", lemma="Унку", context="Народ Унку (Unqi) жил в Сирии.")
+    config = GroundingConfig(search_mode="alt-names")
+    gen = generate_candidates(wd, mention, config)
+    assert gen["source"] == "alt"
+    assert [c["qid"] for c in gen["candidates"]] == ["Q99"]
+    assert gen["candidates"][0]["source"] == "alt"
+    assert any(q["kind"] == "alt" for q in gen["queries"])
+
+
+def test_candidates_alt_names_stays_empty_when_context_has_no_alternates():
+    wd = _FakeWD()  # nothing to find anywhere
+    mention = TermMention(surface="Унку", lemma="Унку", context="Унку жил в Сирии, без скобок.")
+    config = GroundingConfig(search_mode="alt-names")
+    gen = generate_candidates(wd, mention, config)
+    assert gen["candidates"] == []
+    assert gen["source"] == "none"
+
+
+def test_candidates_alt_names_mode_never_calls_label_guesser():
+    # alt-names is zero-LLM-calls by construction: even if a label_guesser
+    # happened to be passed in, it must not be consulted at this tier.
+    calls = []
+    wd = _FakeWD()
+    mention = TermMention(surface="Совсем неизвестное", lemma="неизвестное", context="без скобок")
+    config = GroundingConfig(search_mode="alt-names")
+    gen = generate_candidates(wd, mention, config, label_guesser=lambda p: calls.append(p) or {})
+    assert calls == []
+    assert gen["candidates"] == []
+
+
+def test_candidates_label_guess_tier_fires_only_after_alt_names_also_empty():
+    wd = _FakeWD(search={"Guessed Label": [{"id": "Q77"}]}, entities={"Q77": _entity("Q77", "Guessed Label")})
+    calls = []
+
+    def fake_guesser(prompt):
+        calls.append(prompt)
+        return {"label_en": "Guessed Label", "label_ru": None}
+
+    mention = TermMention(surface="Загадка", lemma="Загадка", context="Загадка была необычной, без скобок.")
+    config = GroundingConfig(search_mode="label-guess")
+    gen = generate_candidates(wd, mention, config, label_guesser=fake_guesser)
+
+    assert len(calls) == 1
+    assert "Загадка" in calls[0]  # surface reached the prompt
+    assert gen["source"] == "label_guess"
+    assert gen["candidates"][0]["source"] == "label_guess"
+    assert gen["candidates"][0]["qid"] == "Q77"
+    assert any(q["kind"] == "label_guess" for q in gen["queries"])
+
+
+def test_candidates_label_guess_not_called_when_alt_names_already_succeeded():
+    # cumulation: alt-names success short-circuits the (more expensive)
+    # label-guess tier entirely.
+    wd = _FakeWD(search={"Unqi": [{"id": "Q99"}]}, entities={"Q99": _entity("Q99", "Unqi")})
+    calls = []
+
+    def fake_guesser(prompt):
+        calls.append(prompt)
+        return {"label_en": "Should not be used"}
+
+    mention = TermMention(surface="Унку", lemma="Унку", context="Унку (Unqi) жил.")
+    config = GroundingConfig(search_mode="label-guess")
+    gen = generate_candidates(wd, mention, config, label_guesser=fake_guesser)
+
+    assert calls == []
+    assert gen["source"] == "alt"
+
+
+def test_candidates_label_guess_mode_without_guesser_yields_no_candidates():
+    # label_guesser=None (e.g. no judge configured) degrades to "skip this
+    # tier" rather than crashing -- the CLI-level guard is what's supposed to
+    # prevent this combination in practice (search_mode=label-guess + no
+    # judge), generate_candidates itself stays defensive regardless.
+    wd = _FakeWD()
+    mention = TermMention(surface="Совсем неизвестный термин", lemma="термин", context="")
+    config = GroundingConfig(search_mode="label-guess")
+    gen = generate_candidates(wd, mention, config, label_guesser=None)
+    assert gen["candidates"] == []
+    assert gen["source"] == "none"
+
+
+def test_candidates_label_guess_call_failure_degrades_to_no_guess():
+    wd = _FakeWD()
+
+    def failing_guesser(prompt):
+        raise RuntimeError("boom")
+
+    mention = TermMention(surface="X", lemma="X", context="")
+    config = GroundingConfig(search_mode="label-guess")
+    gen = generate_candidates(wd, mention, config, label_guesser=failing_guesser)
+    assert gen["candidates"] == []
+    assert gen["source"] == "none"
+
+
+def test_candidates_label_guess_fatal_error_propagates():
+    wd = _FakeWD()
+
+    def fatal_guesser(prompt):
+        raise FatalGroundingJudgeError("halt marker")
+
+    mention = TermMention(surface="X", lemma="X", context="")
+    config = GroundingConfig(search_mode="label-guess")
+    with pytest.raises(FatalGroundingJudgeError):
+        generate_candidates(wd, mention, config, label_guesser=fatal_guesser)
+
+
+def test_candidates_label_guess_ignores_null_labels_in_response():
+    wd = _FakeWD()
+
+    def null_guesser(prompt):
+        return {"label_ru": None, "label_en": None}
+
+    mention = TermMention(surface="X", lemma="X", context="")
+    config = GroundingConfig(search_mode="label-guess")
+    gen = generate_candidates(wd, mention, config, label_guesser=null_guesser)
+    assert gen["candidates"] == []
+    assert gen["source"] == "none"
 
 
 # ── G6 label_first: norm() + exact_match() ─────────────────────────────────────
@@ -731,6 +1002,22 @@ def test_label_first_judge_raises_resolves_judge_unavailable_called_once_not_ret
     assert result.trace["resolved_by"] == "judge_unavailable"
     assert result.grounded is None
     assert len(calls) == 1  # terminal failure -- the strategy itself never retries
+
+
+def test_label_first_judge_fatal_error_propagates_out_of_ground():
+    # FatalGroundingJudgeError (halt marker: token-limit overflow, per-call gate
+    # violation) must halt the run, NOT collapse to judge_unavailable like a
+    # plain RuntimeError does (wiki-eval experiment v2, spec 2026-07-10 Р15).
+    wd = _FakeWD(search={"Тутмос": [{"id": "Q1"}, {"id": "Q2"}]},
+                 entities={"Q1": _entity("Q1", "Thutmose I", "Тутмос"),
+                           "Q2": _entity("Q2", "Thutmose II", "Тутмос")})
+
+    def fatal_judge(prompt):
+        raise FatalGroundingJudgeError("token-limit overflow")
+
+    strategy = LabelFirstGrounding(wd)
+    with pytest.raises(FatalGroundingJudgeError):
+        strategy.ground(TermMention(surface="Тутмос", lemma="Тутмос"), judge=fatal_judge)
 
 
 def test_label_first_judge_qid_not_in_candidates_is_judge_unavailable_never_top1():

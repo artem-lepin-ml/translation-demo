@@ -43,10 +43,43 @@ function buildTerm(overrides: Partial<TermWithTrace> = {}): TermWithTrace {
   };
 }
 
-describe('GlossaryTab empty state', () => {
-  it('renders the offline-note empty state when there are no terms', () => {
+describe('GlossaryTab empty state (status-aware, EMNLP sprint)', () => {
+  it('renders the neutral empty state when termsStatus is absent/none', () => {
     render(<GlossaryTab terms={[]} paragraphs={[]} sourceLang="ru" targetLang="en" />);
-    expect(screen.getByText(/precomputed offline/i)).toBeTruthy();
+    expect(screen.getByText('No terminology extracted for this document.')).toBeTruthy();
+  });
+
+  it('renders the running message while extraction is in progress', () => {
+    render(<GlossaryTab terms={[]} paragraphs={[]} sourceLang="ru" targetLang="en" termsStatus="running" />);
+    expect(
+      screen.getByText('Terminology pipeline is running — terms appear as paragraphs complete.'),
+    ).toBeTruthy();
+  });
+
+  it('renders the failure message when extraction failed', () => {
+    render(<GlossaryTab terms={[]} paragraphs={[]} sourceLang="ru" targetLang="en" termsStatus="failed" />);
+    expect(screen.getByText('Terminology extraction failed for this document.')).toBeTruthy();
+  });
+
+  it('renders the neutral empty state for termsStatus="done" with zero terms found', () => {
+    render(<GlossaryTab terms={[]} paragraphs={[]} sourceLang="ru" targetLang="en" termsStatus="done" />);
+    expect(screen.getByText('No terminology extracted for this document.')).toBeTruthy();
+  });
+
+  it('shows the populated table instead of the empty state once terms exist, even mid-run', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm()];
+    render(
+      <GlossaryTab
+        terms={terms}
+        paragraphs={paragraphs}
+        sourceLang="ru"
+        targetLang="en"
+        termsStatus="running"
+      />,
+    );
+    expect(screen.queryByText(/Terminology pipeline is running/)).toBeNull();
+    expect(screen.getAllByText('Transjordan').length).toBeGreaterThan(0);
   });
 });
 

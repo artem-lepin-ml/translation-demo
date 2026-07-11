@@ -112,6 +112,7 @@ interface Document extends DocumentSummary {
   paragraphs: Paragraph[];
   precompute: { status: 'running' | 'done' | 'stopped' | 'skipped'; done: number; planned: number; succeeded: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-4 (custom-pair-upload); присутствует для origin='upload', null для origin='seed'
   translation: { status: 'running' | 'done' | 'failed'; done: number; total: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-5 (translator): присутствует, когда присутствует precompute (т.е. origin='upload'); зеркалит форму precompute
+  termsStatus: 'none' | 'running' | 'done' | 'failed';  // 2026-07-11 (live terminology, см. дельту внизу файла): присутствует ДЛЯ ВСЕХ документов (в т.ч. origin='seed', там всегда 'done') — в отличие от precompute/translation это колонка БД (document.terms_status), не in-memory реестр
 }
 
 // ───────── реестр моделей (роудмапа п.4) ─────────
@@ -181,9 +182,6 @@ POST   /api/models                 {entry}      -> ModelRegistryEntryPublic
 PUT    /api/models/{name}          {entry}      -> ModelRegistryEntryPublic     # name неизменяем; apiKey опущен = оставить прежний
 DELETE /api/models/{name}                       -> 204 | 409
 POST   /api/models/{name}/test  {effort?}       -> TestModelResult             # реальный вызов (тратит деньги); 404 только для неизвестного name
-
-# контрибьюшен 1 — терминология (заполняет term-агент; роудмапа п.1,3)
-POST   /api/paragraphs/{id}/terms               -> Term[]               # DELETE прежних term-строк абзаца → INSERT новых
 
 # бюджет (guard над реальными LLM-вызовами)
 GET    /api/budget                              -> {spentUsd, capUsd, calls, callCap}
@@ -272,7 +270,7 @@ CREATE TABLE grounding_config (            -- singleton (G6): judge-модель
 
 ## 5. Контракт term-агента (граница интеграции)
 
-На вход `{paragraphId, source(RU), target(EN)}`, на выход `Term[]` ровно по типу §1 — файлом `term_pairs.json` для seed или ответом `POST /terms`. Правила:
+На вход `{paragraphId, source(RU), target(EN)}`, на выход `Term[]` ровно по типу §1 — файлом `data/seed/terminology_out.json` для seed (§1 `Term`-строки, `scripts/load_terms.py`) или, с 2026-07-11, автоматически в фоне при создании документа (`webapp/terminology_live.py`, DELETE прежних term-строк абзаца → INSERT новых; см. дельту внизу файла) — `POST /paragraphs/{id}/terms` как отдельный REST-канал удалён (был stub без вызовов с фронта). Правила:
 - Одна `Term`-строка на **каждое вхождение** термина (свои `charStart/charEnd`, свой `targetSurface`/`pairAccuracy`).
 - При `difficulty='red'` → `grounded=null`, `pairAccuracy=null`, `recommended=null`.
 - **Амендмент (G6, 2026-07-03):** `difficulty='yellow'` с `resolved_by='judge_unavailable'` тоже даёт `grounded=null` — задокументированное расширение правила «red → null», не нарушение. Причина: judge был недоступен на эскалации, QID честно не выбран, но difficulty остаётся 🟡 (путь дошёл до эскалации, а не оборвался на пустых кандидатах). Фронтовые truthiness-проверки вида `term.grounded && …` трактуют `null` как «нет узла» независимо от `difficulty` — ветку `yellow`+`grounded=null` не нужно отличать от `red` на уровне рендера.
@@ -416,3 +414,74 @@ GET  /api/health -> {service, status, limits: {maxParagraphs, maxParaChars}}
 Ревизия 4. Механические CRITICAL/HIGH из verify-spec закрыты. Решения владельца: **#4 — курируемый срез ~15–20 показательных абзацев + опц. второй документ для A/B** (принято); глоссарий — `wikidataUrl` обязателен, `wikidataId` опционален (принято). **#1** (формулировка «детерминированность»), **#2** (сила MQM-заявки), **#3** (семантика судейского `terminology` vs `pairAccuracy`), **#5** (деплой) — **оставлены открытыми** (research/paper/scope), НЕ блокируют сборку сайта. **Гейт пройден → автономная реализация** (`writing-plans` → ветка `feat/demo` → execute).
 
 **Ревизия 5 (2026-07-05, wave-5):** дельта в § 7 выше — `target_revision`/`translator_config` таблицы + `score.revision_id`, ревизии/best-выбор, translate-фича, экспорт xlsx/md, params-whitelist + `effectiveParams`, `apiKey`-presence-check, `error_reason` в precompute/translation, `/api/health` limits. Реализовано и покрыто тестами backend-веткой этой волны; doc-parity в [webapp.md](../../subsystems/webapp.md) и [known_issues.md](../../known_issues.md) обновлена в том же коммите.
+
+## Live terminology delta (2026-07-11, EMNLP-demo sprint — lane B2)
+
+Отдельная секция (не переиспользует нумерацию §7/«ревизия N» во избежание коллизии редактирования с параллельной дельтой критериев/моделей/refiner той же спринт-волны — см. lane B1). Полная реализация: `src/palimpsest/webapp/terminology_live.py`; поведенческие детали (launch-точки, sync/async-мост к живому судье, бюджет) — [webapp.md § Live terminology](../../subsystems/webapp.md#live-terminology); семантика grounding/pairing (переиспользуется без изменений) — [terminology.md § Live trigger](../../stages/terminology.md).
+
+**Что изменилось в контракте:**
+- **`Document.termsStatus: 'none'|'running'|'done'|'failed'`** добавлено в §1 `Document` (инлайн-коммент выше) — присутствует для ВСЕХ документов (в т.ч. `origin='seed'` → всегда `'done'`, миграцией). В отличие от `precompute`/`translation` это колонка БД (`document.terms_status`, `db.py::SCHEMA` + `migrate.py`), не in-memory реестр — переживает рестарт процесса.
+- **`POST /api/paragraphs/{id}/terms` удалён** (§2, §5) — был stub (`SELECT`-passthrough, ноль вызовов с фронта). `Term[]` абзаца теперь заполняется автоматически: (a) для документов без `translate` — сразу после создания (таргеты уже есть); (b) для `translate:true` — по завершении фонового перевода (`translate.py`'s `_run` получил опциональный `terms_launch` колбэк), чтобы pairing видел финальный, а не пустой, target. Сид-документ никогда не запускается этим путём — у него уже есть precomputed термины (`scripts/load_terms.py`), и миграция ставит `terms_status='done'` явно.
+- **`app._grounding_judge_live` теперь реально вызывается** (раньше — мёртвый код с пустым system-сообщением, TODO "no caller in the webapp yet"): шлёт `DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT` как system, budget reserve/settle без изменений.
+
+**Что НЕ реализовано этой дельтой (честно, не заявляем больше сделанного):** §5's «глоссарий term-агента» — персистентный `glossary`-стол как **backbone согласованности между документами** (одинаковый `(term, context)` → одинаковый эквивалент везде, dense-embedding/BM25 ретрив) — не построен. Живой пайплайн переиспользует существующие `LabelFirstGrounding`/`LinkLocatePairing` как есть; согласованность решений судьи — только **в пределах одного документа** (`judge_cache`, "one sense per discourse", scope_id=doc_id), не через документы. Также не реализовано: `DELETE /api/documents/{doc_id}` не отменяет уже запущенный `terminology_live`-таск (precompute/translate это умеют через свои `cancel()`; для terms — не подключено, задел на будущее).
+
+## Criteria, model registry & refiner delta (2026-07-11, EMNLP-demo sprint — lane B1)
+
+Separate top-level section (not §7/"ревизия N" numbering, same reasoning as the Live terminology delta above — avoids an edit collision with the parallel lane B2 delta in the same sprint wave). Written in English per this task's explicit instruction (project convention is normally Russian prose for this doc; English here is intentional, not drift). Full implementation: `model_matrix.py`, `seed.py`, `migrate.py`, `app.py` (refiner-config CRUD + `/refine`), `prompts/refiner/default.md`.
+
+### Criteria set: 5 → 3
+
+The judge-criterion set collapses to `{accuracy, fluency, style}`. `terminology` (the LLM-judge scoring dimension — **not** the separate Wikidata term-grounding pipeline in §1's `Term`/lane B2's live-terminology delta, which is untouched) and the already-disabled legacy `cultural` row both retire. Weights move from `accuracy 0.30 / fluency 0.20 / style 0.15 (+ terminology 0.20)` to `accuracy 0.40 / fluency 0.30 / style 0.30`; colors for the 3 survivors are unchanged. `prompts/scoring/terminology.md` is deleted (accuracy/fluency/style prompt files are unchanged).
+
+**Migration (prod data, never deletes predictions):** `score`/`issue` rows for the two retired criterion ids move to `kind='archived'` / `status='archived'` respectively — **not** `dismissed`: `_para_issues` (app.py) unconditionally drops `archived` on every branch, while `dismissed` is still surfaced as inspector history (would leak a dangling `criterionId` once the criterion row is gone) — verified against `_para_issues`'s status handling and this doc's own §1 `IssueStatus` note before picking it. Only then are the two criterion rows deleted (FK from `score`/`issue`.`criterion_id` is default `ON DELETE NO ACTION`, so the migration step scopes `PRAGMA foreign_keys=OFF` around just the `DELETE`, committing immediately before/after to dodge SQLite's "no-op while a transaction is open" pragma behavior). Every surviving `score` row's frozen `aggregate`/`criteria_key` is recomputed over the 3 remaining criteria (`seed`/`cache`: one pass per paragraph; `live`: replayed in `created_at` order, carrying the latest per-criterion value forward pass-to-pass — the same carry-forward `POST /evaluate` itself uses), so `criteria_key` reads `"accuracy,fluency,style"` uniformly and no stale "criterion set changed" badge appears post-migration. A criterion's weight is migrated old-default→new-default only when it still carries the *old* default value — an owner customization via `PUT /api/criteria/{id}` is left alone.
+
+### Model registry: 8 → 5 (paper models)
+
+`model_matrix.MATRIX` becomes exactly 5 rows (was 8): `qwen/qwen3.6-27b` (OpenRouter — new default everywhere), `google/gemma-3-27b-it` (OpenRouter), `TranslateGemma-27B` (local vLLM placeholder, `http://localhost:8001/v1`, display-only — replaces the old `Qwen/Qwen3.6-27B`/`Infomaniak-AI/vllm-translategemma-27b-it` placeholder rows), `deepseek/deepseek-v4-flash` (OpenRouter), `google/gemini-3.1-flash-lite` (OpenRouter). All 4 OpenRouter ids verified live against `GET https://openrouter.ai/api/v1/models` (public, no key) on 2026-07-11 — `qwen/qwen3.6-27b` exists exactly as expected (no fallback substitution needed). Capability flags (`supports_temperature`/`top_k`/`min_p`/`seed`/`reasoning` kind) cross-checked against that same fetch's `supported_parameters` per model; the one deliberate non-metadata call is Gemini's `supports_temperature=False`, carried over from the retired `gemini-3.5-flash` row's empirical finding (an obligatory-reasoning Gemini route ignores temperature in practice) rather than the raw schema, which does list `temperature` as accepted.
+
+`seed.py` now seeds all 5 rows **unconditionally** — the `PALIMPSEST_SEED_DEMO` env flag no longer branches model seeding (the flag itself is unused dead config now; `docs/subsystems/webapp.md`'s description of it is stale pending a docs-keeper pass, flagged not fixed by this delta). `DEFAULT_CRITERION_MODEL` moves from `openai/gpt-5.4-mini` to `qwen/qwen3.6-27b`.
+
+**Migration (prod data):** `_upsert_model_registry_and_remap` runs FIRST in `migrate()` — `INSERT OR IGNORE`s the 5 new rows (never clobbers an owner-edited `api_key`/`params` on a re-run) and repoints every `criterion.model_name` to the new default. `translator_config`/`grounding_config`/`refiner_config.model_name` are repointed the same way once their tables are guaranteed to exist. The 8 obsolete model rows are then deleted (config, not predictions — deletion is fine here, unlike `score`/`issue`) once nothing still references them; a defensive re-check skips (rather than raising) any row a future caller might still reference.
+
+### New: refiner role
+
+Paper: *"a dedicated refiner LLM integrates aggregated corrections in a single pass."* A new singleton config table mirrors `translator_config`/`grounding_config` exactly, plus a paragraph-level action endpoint.
+
+```sql
+CREATE TABLE refiner_config (   -- singleton, mirrors translator_config
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
+);
+```
+
+```ts
+interface RefinerConfig { modelName: string | null; prompt: string; params: Record<string, unknown>; }
+```
+
+```
+GET  /api/refiner-config                        -> RefinerConfig       # mirrors translator/grounding-config
+PUT  /api/refiner-config      {RefinerConfig}    -> RefinerConfig       # params: whitelist §7.4 (unchanged)
+
+POST /api/paragraphs/{pid}/refine
+     -> Paragraph   # fresh target + gathered open issues flipped to 'accepted', new
+                     # target_revision(origin='refine'); scores/aggregate on the response
+                     # are the PRE-refine values — refine never writes a `score` row, the
+                     # caller (frontend) chains a real /evaluate right after.
+     # 404 unknown paragraph
+     # 409 {detail:'no_open_issues', message} — the ONLY status the frontend treats as a
+     #     silent no-banner outcome (api-client.ts refineParagraph / store.ts's refine
+     #     action already gate the button on activeIssueCount>0)
+     # 503 'translation_in_progress' | 'no_api_key' — precondition, nothing attempted/billed
+     # 429 'budget_exhausted' — budget.reserve() tripped before any network call
+     # 502 {detail:'refine_failed', error} — the LLM call itself failed after one transient
+     #     retry, or returned empty/whitespace output; nothing is mutated on this path
+```
+
+**Default refiner prompt** (`prompts/refiner/default.md`, DB-stored like the translator's, live-read at call time): *"You are an expert translation editor. You receive a source paragraph, its current translation, and a numbered list of reviewer findings (source fragment, problematic translation fragment, explanation, suggested correction). Rewrite the translation as a single improved version: apply every valid suggestion; resolve overlapping or contradictory suggestions in favor of fidelity to the source; keep the current translation's wording wherever no finding applies; do not add information, omit content, or shift style. Output ONLY the revised translation text — no commentary, no quotes, no markup."* Default params: `{"max_tokens": 2048, "temperature": 0.2}`.
+
+**Call semantics:** findings = the paragraph's `status='open'` issues across ALL criteria — the same set `_para_issues` (app.py) surfaces to the inspector, filtered to `open` (accepted/dismissed/outdated history is not re-litigated). Budget reserve/settle + `REFINE_TIMEOUT=60s` + one transient retry mirror the `_judge_live`/`_evaluate` pattern; unlike `/evaluate`, there is **no cache fallback**. On success, in one transaction: `paragraph.target` updated, every gathered finding's `issue.status` set to `'accepted'` (re-checked `AND status='open'` at write time — a TOCTOU guard against a concurrent human dismiss/accept during the LLM call), `target_revision(origin='refine')` written. Model output is defensively stripped of an accidental ```` ``` ````-fence and one layer of wrapping quotes before being accepted; empty/whitespace-only output is rejected as a `502` failure, never written.
+
+**Response-shape note (deliberate, verified against the already-shipped frontend, not a guess):** unlike `/apply-edit`'s `{target, issue, siblingIssues}` shape, `/refine` returns the **full** `Paragraph` dict (`_para_dict`) — matching `api-client.ts`'s `refineParagraph(): Promise<Paragraph>` and `store.ts`'s merge (`{...p, ...updated}`), which already shipped ahead of this backend work.

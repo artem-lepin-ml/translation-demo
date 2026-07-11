@@ -18,12 +18,13 @@ import type { Document, Issue, Term } from '../api-client';
 
 import IssuePopover from './IssuePopover';
 import TermPopover from './TermPopover';
-import GlossaryTab from './GlossaryTab';
+import GlossaryTab, { termsStatusEmptyMessage } from './GlossaryTab';
 import RankingTab from './RankingTab';
 import SettingsTab from './SettingsTab';
 import EditorParagraph, { ScoreChip, computeChipDelta } from './EditorParagraph';
 import InspectorPanel from './InspectorPanel';
 import UploadModal from './upload/UploadModal';
+import DocumentPicker from './DocumentPicker';
 
 type TabId = 'document' | 'glossary' | 'ranking' | 'settings';
 
@@ -91,6 +92,7 @@ export default function VariantA() {
     models,
     groundingConfig,
     translatorConfig,
+    refinerConfig,
     documentLoading,
     documentError,
     paraEvalState,
@@ -111,6 +113,7 @@ export default function VariantA() {
     dismissIssue,
     acceptAllIssues,
     evaluateParagraph,
+    refineParagraph,
     resetDoc,
     saveCriterion,
     addCriterion,
@@ -121,6 +124,7 @@ export default function VariantA() {
     testModel,
     saveGroundingConfig,
     saveTranslatorConfig,
+    saveRefinerConfig,
     retryTranslate,
     runFirstParagraphsEvaluate,
     restoreParagraphRevision,
@@ -129,6 +133,9 @@ export default function VariantA() {
     openUploadModal,
     uploadModalOpen,
     refreshDocument,
+    backToPicker,
+    startTermsPolling,
+    stopTermsPolling,
   } = useDemoStore();
 
   // ── Local UI state ────────────────────────────────────────────────────────
@@ -138,19 +145,12 @@ export default function VariantA() {
     useState<{ paraId: number; issueIds: string[]; rect: DOMRect } | null>(null);
   const [termPopover, setTermPopover] = useState<{ term: Term; rect: DOMRect } | null>(null);
   const [resetting, setResetting] = useState(false);
-  /** Last accept-all outcome for the selected paragraph; cleared on selection change / evaluate */
-  const [acceptAllSummary, setAcceptAllSummary] =
-    useState<{ applied: number; outdated: number } | null>(null);
   // Translation-done badge fades after 5s (S4 §3.3) — tracked per doc so
   // switching documents doesn't leave a stale fade timer running.
   const [translationDoneVisible, setTranslationDoneVisible] = useState(true);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [runningFirstEvaluate, setRunningFirstEvaluate] = useState(false);
   const [retryingTranslate, setRetryingTranslate] = useState(false);
-
-  useEffect(() => {
-    setAcceptAllSummary(null);
-  }, [selectedParaIdx]);
 
   // Debounce target text PATCH
   const pendingTextRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
@@ -179,6 +179,20 @@ export default function VariantA() {
     return () => clearInterval(t);
   }, [doc?.id, doc?.translation?.status, refreshDocument]);
 
+  // Terms-status polling — the store owns the single interval (idempotent
+  // start/stop); this effect only decides WHEN to poll: while terminology is
+  // running, or while translation is still filling targets (terms extraction
+  // follows it, so the chip should keep refreshing through both phases).
+  // Cleared on done/failed (condition goes false → cleanup), unmount (React
+  // cleanup) and doc switch (doc?.id in the deps re-runs the effect).
+  useEffect(() => {
+    if (!doc) return;
+    const running = doc.termsStatus === 'running' || doc.translation?.status === 'running';
+    if (!running) return;
+    startTermsPolling();
+    return () => stopTermsPolling();
+  }, [doc?.id, doc?.termsStatus, doc?.translation?.status, startTermsPolling, stopTermsPolling]);
+
   // "Translated N¶" badge fades 5s after the run completes (S4 §3.3).
   useEffect(() => {
     if (doc?.translation?.status !== 'done') return;
@@ -206,11 +220,6 @@ export default function VariantA() {
   const inspectorIssues = useMemo(
     () => selectedPara?.issues.filter((i) => activeCriteria.has(i.criterionId)) ?? [],
     [selectedPara, activeCriteria],
-  );
-
-  const openInspectorIssues = useMemo(
-    () => inspectorIssues.filter((i) => i.status === 'open'),
-    [inspectorIssues],
   );
 
   const closedIssueIds = useMemo(() => {
@@ -307,21 +316,13 @@ export default function VariantA() {
     void dismissIssue(issue.id);
   }
 
-  function handleAcceptAll() {
+  function handleRefine() {
     if (!selectedPara) return;
-    const ids = openInspectorIssues.filter((i) => i.suggestion).map((i) => i.id);
-    if (ids.length === 0) return;
-    const ok = window.confirm(
-      `Accept ${ids.length} issue(s) in §${selectedPara.idx + 1}?\n` +
-      `All suggestions are applied; scores go stale until you press Evaluate.`,
-    );
-    if (!ok) return;
-    void acceptAllIssues(selectedPara.id, selectedParaIdx, ids).then(setAcceptAllSummary);
+    void refineParagraph(selectedPara.id, selectedParaIdx);
   }
 
   function handleEvaluate() {
     if (!selectedPara) return;
-    setAcceptAllSummary(null);
     void evaluateParagraph(selectedPara.id, selectedParaIdx);
   }
 
@@ -420,7 +421,22 @@ export default function VariantA() {
     );
   }
 
-  if (!doc) return null;
+  // No document selected — landing picker (init() no longer auto-opens the
+  // first document; brand click in the workspace chrome below also lands here
+  // via backToPicker). The upload modal must be reachable from this branch
+  // too (the picker's "Blank document" card opens it).
+  if (!doc) {
+    return (
+      <div className="va-root">
+        <DocumentPicker
+          documents={documents}
+          onSelect={(id) => void switchDocument(id)}
+          onCreateBlank={() => openUploadModal({ aiTranslateDefault: true })}
+        />
+        {uploadModalOpen && <UploadModal />}
+      </div>
+    );
+  }
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -428,7 +444,14 @@ export default function VariantA() {
     <div className="va-root">
       {/* ─── Top Chrome ─────────────────────────────────────────────────── */}
       <div className="va-chrome">
-        <div className="va-brand">Palimpsest</div>
+        <button
+          type="button"
+          className="va-brand va-brand-clickable"
+          onClick={backToPicker}
+          title="Back to documents"
+        >
+          Glossa-MT
+        </button>
 
         <div className="va-tabs">
           {TABS.map((t) => (
@@ -466,7 +489,7 @@ export default function VariantA() {
               🗑
             </button>
           )}
-          <button className="va-chip" data-testid="upload-open" onClick={openUploadModal}>
+          <button className="va-chip" data-testid="upload-open" onClick={() => openUploadModal()}>
             + Upload pair
           </button>
           {doc.precompute?.status === 'running' && (
@@ -612,16 +635,21 @@ export default function VariantA() {
             );
           })}
 
-          <button
-            className={`va-chip terms-chip${showTerms ? ' on' : ''}`}
-            disabled={allTerms.length === 0}
-            title={allTerms.length === 0
-              ? 'Terminology signals are precomputed offline and available for the seeded pilot document'
-              : undefined}
-            onClick={() => setShowTerms(!showTerms)}
-          >
-            Terms
-          </button>
+          {doc.termsStatus === 'running' ? (
+            <span className="va-chip terms-chip running" data-testid="terms-chip-running">
+              <span className="va-spinner" aria-hidden="true" />
+              Extracting terminology…
+            </span>
+          ) : (
+            <button
+              className={`va-chip terms-chip${showTerms ? ' on' : ''}`}
+              disabled={allTerms.length === 0}
+              title={allTerms.length === 0 ? termsStatusEmptyMessage(doc.termsStatus) : undefined}
+              onClick={() => setShowTerms(!showTerms)}
+            >
+              Terms
+            </button>
+          )}
         </div>
       )}
 
@@ -732,10 +760,9 @@ export default function VariantA() {
               criteria={criteria}
               isCollapsed={inspectorCollapsed}
               onToggleCollapse={() => setInspectorCollapsed(!inspectorCollapsed)}
-              acceptAllSummary={acceptAllSummary}
               onAccept={handleAcceptIssue}
               onDismiss={handleDismissIssue}
-              onAcceptAll={handleAcceptAll}
+              onRefine={handleRefine}
               onEvaluate={handleEvaluate}
               onRetryFailed={handleRetryFailed}
               visibleIssues={inspectorIssues}
@@ -754,6 +781,7 @@ export default function VariantA() {
             sourceLang={doc.sourceLang}
             targetLang={doc.targetLang}
             onMentionClick={handleRankingRowClick}
+            termsStatus={doc.termsStatus}
           />
         )}
 
@@ -780,6 +808,8 @@ export default function VariantA() {
             onSaveGroundingConfig={saveGroundingConfig}
             translatorConfig={translatorConfig}
             onSaveTranslatorConfig={saveTranslatorConfig}
+            refinerConfig={refinerConfig}
+            onSaveRefinerConfig={saveRefinerConfig}
           />
         )}
       </div>

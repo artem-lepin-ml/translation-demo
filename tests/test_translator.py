@@ -296,7 +296,8 @@ def test_translate_endpoint_budget_exhausted_409(client, monkeypatch):
 
 def test_translate_endpoint_starts_and_returns_total(client, monkeypatch):
     launched = {}
-    monkeypatch.setattr(translate, "launch", lambda doc_id, cf: launched.setdefault("doc_id", doc_id))
+    monkeypatch.setattr(
+        translate, "launch", lambda doc_id, cf, *a, **kw: launched.setdefault("doc_id", doc_id))
     conn = db.connect()
     conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
                  ("openai/gpt-5.4-mini", "https://openrouter.ai/api/v1", "k", "{}"))

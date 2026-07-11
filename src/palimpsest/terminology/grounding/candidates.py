@@ -19,10 +19,35 @@ Candidates are enriched, redirect-canonicalised, and returned as plain dicts
 plus a ``canon_by_qid`` map of canonical EN forms for pairing. No type
 filtering: the judge disambiguates from the description text instead of a
 type blocklist (spec D3/Q1).
+
+``config.search_mode`` (wiki-eval experiment, 2026-07-10) cumulatively widens
+rungs 1-4 above when they find nothing, entirely deterministic aside from the
+optional "label-guess" tier:
+
+  - ``"baseline"`` (default): exactly rungs 1-4, byte-identical to the
+    pre-2026-07-10 behavior — a hard regression constraint, so every
+    ``search_mode`` branch below is skipped entirely in this mode and
+    candidate dicts never gain a ``"source"`` key.
+  - ``"alt-names"``: when rungs 1-4 still found 0 hits, derive alternate
+    surface forms from parenthesized alternates immediately following the
+    mention in its sentence context (e.g. «Унку (Unqi)» → "Unqi"; also
+    comma/«или»-separated alternates inside the parens) and re-run the same
+    ``wbsearchentities`` prefix search per alternative form. Zero LLM calls.
+  - ``"label-guess"``: alt-names PLUS, if still 0 hits, ONE call to the
+    injected ``label_guesser`` (the run's judge LLM client, a different
+    system prompt than disambiguation) asking it to guess the entity's exact
+    Wikidata label; the guessed label(s) go through the same prefix search.
+
+In both widening modes, every candidate dict gains a ``"source"`` key
+(``"baseline"`` | ``"alt"`` | ``"label_guess"``) recording which tier first
+surfaced its QID (dedup-by-QID: a QID already found at an earlier tier keeps
+that tier's provenance).
 """
 from __future__ import annotations
 
-from ..base import GroundingConfig, TermMention
+import re
+
+from ..base import FatalGroundingJudgeError, GroundingConfig, Judge, TermMention
 from ..wikidata import (
     WikidataClient,
     aliases_of,
@@ -30,19 +55,105 @@ from ..wikidata import (
     label_of,
 )
 
+# Role + strict-JSON output contract for the "label-guess" tier's one-shot
+# call (spec: "guess the exact Wikidata label ... given {surface, lemma,
+# sentence}"). Single source of truth here (not label_first.py's judge
+# prompts, a genuinely different call) -- scripts/wiki_eval.py's
+# _build_label_guesser imports DEFAULT_LABEL_GUESS_SYSTEM_PROMPT directly,
+# same pattern as it already does for DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT.
+DEFAULT_LABEL_GUESS_SYSTEM_PROMPT = """## Role
+You are a Wikidata lookup assistant for a Russian-to-English historical
+translation pipeline. A term could not be found by a direct Wikidata label
+search. Given its Russian surface form, its lemma, and the sentence it
+occurs in, guess the EXACT Wikidata item label the entity is most likely
+filed under -- in Russian and/or English.
+
+## Output
+Return strict JSON only, no other text:
+{"label_ru": "<exact label>" or null, "label_en": "<exact label>" or null}
+
+Guess a plausible EXACT Wikidata label string (e.g. a standard
+transliteration or the common English name), never a description or
+paraphrase. Use null for a language you cannot confidently guess.
+"""
+
+DEFAULT_LABEL_GUESS_USER_TEMPLATE = """Surface form: {surface}
+Lemma: {lemma}
+Sentence context: {context}
+"""
+
 
 def _description(entity: dict, lang: str = "en") -> str:
     return entity.get("descriptions", {}).get(lang, {}).get("value", "")
 
 
+# Splits a parenthesized alternates group on a comma or the RU conjunction
+# «или» -- e.g. "Unqi, или Уна" -> ["Unqi", "Уна"]. "или" uses a word
+# boundary (\b, zero-width) rather than requiring literal surrounding
+# whitespace (\s+) -- a comma match may already have consumed the space
+# adjacent to "или" (e.g. in "Unqi, или Уна" the ", " match eats the space
+# right before "или"), which would otherwise leave "или" with nothing left
+# to match on its own. The resulting adjacent empty split segment is
+# filtered out below (``if p``).
+_ALT_SPLIT_RE = re.compile(r"\s*,\s*|\s*\bили\b\s*", re.IGNORECASE)
+
+
+def _alt_names_from_context(surface: str, context: str) -> list[str]:
+    """Alternate surface forms from a parenthesized group immediately
+    following ``surface`` in ``context`` (only whitespace may separate them,
+    "immediately following" per spec) -- e.g. «Унку (Unqi)» -> ["Unqi"];
+    comma/«или»-separated alternates inside the parens are all returned.
+    The first such match in ``context`` wins if ``surface`` recurs."""
+    if not surface or not context:
+        return []
+    m = re.search(re.escape(surface) + r"\s*\(([^)]*)\)", context)
+    if not m:
+        return []
+    inner = m.group(1).strip()
+    if not inner:
+        return []
+    return [p for p in (p.strip() for p in _ALT_SPLIT_RE.split(inner)) if p]
+
+
+def _guess_labels(label_guesser: Judge, mention: TermMention) -> dict:
+    """One label-guess call. Best-effort widening tier: any non-fatal
+    failure (transient-exhausted, malformed JSON) degrades to "no guess"
+    (``{}``) rather than killing the run -- mirrors how the disambiguation
+    judge's own failures collapse to a terminal degraded state instead of
+    propagating, except a ``FatalGroundingJudgeError`` halt marker (spec
+    Р15: token-limit overflow, per-call gate violations) is never tolerated
+    and re-raised unchanged."""
+    prompt = DEFAULT_LABEL_GUESS_USER_TEMPLATE.format(
+        surface=mention.surface, lemma=mention.lemma or mention.surface, context=mention.context,
+    )
+    try:
+        response = label_guesser(prompt)
+    except FatalGroundingJudgeError:
+        raise
+    except Exception:  # noqa: BLE001 -- best-effort widening tier, see docstring
+        return {}
+    return response if isinstance(response, dict) else {}
+
+
 def generate_candidates(wd: WikidataClient, mention: TermMention,
-                         config: GroundingConfig = GroundingConfig()) -> dict:
+                         config: GroundingConfig = GroundingConfig(), *,
+                         label_guesser: Judge | None = None) -> dict:
     """Return ``{candidates, canon_by_qid, source, n_hits, queries}`` for a mention.
 
     ``candidates`` is a list of ``{qid, label_ru, label_en, description,
     aliases_ru, aliases_en}`` dicts in search-rank order, insertion-order
     deduplicated by QID (a documented determinism invariant — spec §3.1, not
-    an implementation accident).
+    an implementation accident). In ``"alt-names"``/``"label-guess"`` mode
+    each candidate also carries ``"source"`` (module docstring); baseline
+    mode never adds that key, keeping it byte-for-byte identical to the
+    pre-2026-07-10 wire shape (hard regression constraint).
+
+    ``label_guesser`` (only consulted in ``"label-guess"`` mode, and only
+    when the alt-names tier also found nothing) is the run's judge-configured
+    LLM client for the one-shot label-guess call -- ``None`` simply skips
+    that tier (the caller is responsible for failing fast up front when
+    ``search_mode == "label-guess"`` but no judge is configured at all, see
+    ``scripts/wiki_eval.py``'s CLI guard).
     """
     queries: list[dict] = []
 
@@ -83,8 +194,43 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
         if qid:
             hits, source = [{"id": qid}], "wikipedia_langlink"
 
+    # hit_tier tracks provenance for the widening tiers below -- untouched
+    # (stays empty) in baseline mode or whenever rungs 1-4 already found
+    # something, so candidates from those paths never get a "source" key.
+    hit_tier: dict[str, str] = {}
+
+    empty_result = {"candidates": [], "canon_by_qid": {}, "source": "none", "n_hits": 0, "queries": queries}
+
     if not hits:
-        return {"candidates": [], "canon_by_qid": {}, "source": "none", "n_hits": 0, "queries": queries}
+        if config.search_mode == "baseline":
+            return empty_result
+
+        def _widen(q_list: list[str], tier: str) -> None:
+            for q in q_list:
+                if not q:
+                    continue
+                results = wd.search_entities(q, lang=mention.lang, limit=config.search_limit)
+                queries.append({"q": q, "kind": tier, "mechanism": "wbsearchentities",
+                                 "n_hits": len(results)})
+                for h in results:
+                    if h["id"] not in seen_qid:
+                        seen_qid.add(h["id"])
+                        hits.append(h)
+                        hit_tier[h["id"]] = tier
+
+        alt_forms = _alt_names_from_context(mention.surface, mention.context)
+        if alt_forms:
+            _widen(alt_forms, "alt")
+
+        if not hits and config.search_mode == "label-guess" and label_guesser is not None:
+            guess = _guess_labels(label_guesser, mention)
+            guess_forms = [g for g in (guess.get("label_ru"), guess.get("label_en")) if g]
+            if guess_forms:
+                _widen(guess_forms, "label_guess")
+
+        if not hits:
+            return empty_result
+        source = "alt" if any(t == "alt" for t in hit_tier.values()) else "label_guess"
 
     qids = [h["id"] for h in hits[:config.enrich_top]]
     entities = wd.get_entities(qids)
@@ -95,14 +241,17 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
         if not ent:
             continue
         cqid = ent.get("id", qid)  # canonicalise redirects to the target QID
-        candidates.append({
+        candidate = {
             "qid": cqid,
             "label_ru": label_of(ent, "ru"),
             "label_en": label_of(ent, "en"),
             "description": _description(ent, "en") or _description(ent, "ru"),
             "aliases_ru": aliases_of(ent, "ru"),
             "aliases_en": aliases_of(ent, "en"),
-        })
+        }
+        if config.search_mode != "baseline":
+            candidate["source"] = hit_tier.get(qid, "baseline")
+        candidates.append(candidate)
         canon_by_qid[cqid] = canonical_en_forms(ent)
     return {"candidates": candidates, "canon_by_qid": canon_by_qid,
             "source": source, "n_hits": len(hits), "queries": queries}

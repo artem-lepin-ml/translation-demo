@@ -2,7 +2,8 @@
  * InspectorPanel — focused on the currently selected paragraph.
  *
  * Tabs: Issues | Scores
- * Header: "§N — M active issues" + Accept all button
+ * Header: "§N — M active issues" + Refine paragraph button (refiner LLM pass:
+ *   aggregates every open finding into one rewrite, then re-scores).
  * Issues: per-criterion cards with Accept / Dismiss; resolved (accepted/dismissed)
  *   issues vanish from the panel once acted on (they remain in the DB for
  *   preservation — see the wave-4 invariant — but drop out of this UI view).
@@ -24,11 +25,12 @@ interface Props {
   criteria: Criterion[];
   isCollapsed: boolean;
   onToggleCollapse: () => void;
-  /** Outcome of the last Accept-all on the selected paragraph; null = nothing to report */
-  acceptAllSummary: { applied: number; outdated: number } | null;
   onAccept: (issue: Issue) => void;
   onDismiss: (issue: Issue) => void;
-  onAcceptAll: () => void;
+  /** Refiner pass: aggregate every open finding in this paragraph into one
+   *  LLM rewrite, then re-score (store.refineParagraph). Busy phase comes
+   *  from evalState.refineStage ('refining' | 'rescoring' | undefined). */
+  onRefine: () => void;
   /** Re-judge the selected paragraph on demand (dead-paragraph revival: the only
    * other evaluate trigger is Accept, which needs an existing issue to accept). */
   onEvaluate: () => void;
@@ -52,10 +54,9 @@ export default function InspectorPanel({
   criteria,
   isCollapsed,
   onToggleCollapse,
-  acceptAllSummary,
   onAccept,
   onDismiss,
-  onAcceptAll,
+  onRefine,
   onEvaluate,
   onRetryFailed,
   visibleIssues,
@@ -64,7 +65,10 @@ export default function InspectorPanel({
   const paraLabel = paragraph ? `§${paragraph.idx + 1}` : '§—';
   const openIssues = visibleIssues.filter((i) => i.status === 'open');
   const activeIssueCount = openIssues.length;
-  const isLoading = evalState.loading;
+  // Folds the refine flow's own busy phase in with the generic evaluate
+  // loading flag so Accept/Dismiss/Evaluate/Retry-failed all disable for the
+  // whole "Refining… → Re-scoring…" lifecycle, not just the re-score half.
+  const isLoading = evalState.loading || !!evalState.refineStage;
 
   return (
     <div className={`va-inspector${isCollapsed ? ' collapsed' : ''}`}>
@@ -93,13 +97,23 @@ export default function InspectorPanel({
               {isLoading ? '…' : 'Evaluate ↻'}
             </button>
           )}
-          {!isCollapsed && activeIssueCount > 0 && tab === 'issues' && (
+          {!isCollapsed && tab === 'issues' && (
             <button
-              className="va-btn-accept-all"
-              disabled={isLoading}
-              onClick={onAcceptAll}
+              className="va-btn-refine"
+              data-testid="refine-paragraph"
+              disabled={isLoading || activeIssueCount === 0}
+              onClick={onRefine}
+              title={
+                activeIssueCount === 0
+                  ? 'No open findings'
+                  : 'Aggregate all findings and rewrite with the refiner model'
+              }
             >
-              Accept all
+              {evalState.refineStage === 'refining'
+                ? 'Refining…'
+                : evalState.refineStage === 'rescoring'
+                ? 'Re-scoring…'
+                : 'Refine paragraph ✦'}
             </button>
           )}
           <button
@@ -112,14 +126,7 @@ export default function InspectorPanel({
         </div>
       </div>
 
-      {/* ── Accept-all outcome (dim, informational — replaces the old alert) ── */}
-      {acceptAllSummary && !isCollapsed && (
-        <div className="va-accept-summary" data-testid="accept-all-summary">
-          Applied {acceptAllSummary.applied} · {acceptAllSummary.outdated} outdated (overlapped by earlier edits)
-        </div>
-      )}
-
-      {/* ── Stale-scores hint (accept/accept-all/manual edit outdated the scores) ── */}
+      {/* ── Stale-scores hint (accept/refine/manual edit outdated the scores) ── */}
       {evalState.stale && !isCollapsed && (
         <div className="va-inspector-stale-hint">
           Scores are for a previous version — press Evaluate ↻

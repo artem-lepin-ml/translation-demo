@@ -67,7 +67,7 @@ def build_xlsx(conn, doc) -> bytes:
     ws.freeze_panes = "A2"
 
     meta = (f'"{doc["title"]}" · {doc["source_lang"]} → {doc["target_lang"]} · '
-            f'exported {datetime.now(timezone.utc).strftime("%Y-%m-%d")} · Palimpsest')
+            f'exported {datetime.now(timezone.utc).strftime("%Y-%m-%d")} · Glossa-MT')
     ws.cell(row=2, column=1, value=meta)
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=4)
     meta_font = Font(color="787C99")
