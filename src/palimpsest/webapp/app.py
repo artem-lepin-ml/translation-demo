@@ -45,7 +45,7 @@ async def _lifespan(_app: FastAPI):
     yield
 
 
-app = FastAPI(title="Palimpsest demo", lifespan=_lifespan)
+app = FastAPI(title="Glossa-MT demo", lifespan=_lifespan)
 
 
 @app.exception_handler(sqlite3.IntegrityError)
@@ -252,12 +252,12 @@ def _doc_dict(conn, d) -> dict:
 if not os.environ.get("DEMO_STATIC_DIR"):
     @app.get("/")
     def index() -> dict:
-        return {"service": "Palimpsest demo", "status": "ok"}
+        return {"service": "Glossa-MT demo", "status": "ok"}
 
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"service": "Palimpsest demo", "status": "ok",
+    return {"service": "Glossa-MT demo", "status": "ok",
             "limits": {"maxParagraphs": MAX_PARAGRAPHS, "maxParaChars": MAX_PARA_CHARS}}
 
 

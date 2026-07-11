@@ -389,7 +389,7 @@ def migrate(conn: sqlite3.Connection) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Additively migrate the Palimpsest demo SQLite DB in place "
+        description="Additively migrate the Glossa-MT demo SQLite DB in place "
                     "(idempotent — safe to run repeatedly against a live prod DB).")
     parser.parse_args()
     conn = db.connect()
