@@ -24,7 +24,7 @@ def seeded(tmp_path, monkeypatch):
 def test_seed_populated(seeded):
     conn = seeded.connect()
     assert conn.execute("SELECT COUNT(*) c FROM paragraph").fetchone()["c"] == 15
-    assert conn.execute("SELECT COUNT(*) c FROM criterion").fetchone()["c"] == 4
+    assert conn.execute("SELECT COUNT(*) c FROM criterion").fetchone()["c"] == 3
 
 
 def test_fk_restrict_blocks_criterion_delete(seeded):

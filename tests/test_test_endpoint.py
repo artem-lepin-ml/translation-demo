@@ -18,9 +18,9 @@ def seeded(tmp_path, monkeypatch):
 def test_client_for_env_fallback_on_empty_key(seeded, monkeypatch):
     from palimpsest.webapp import app, db
     conn = db.connect()
-    conn.execute("UPDATE model SET api_key='' WHERE name='qwen/qwen3.6-plus'"); conn.commit()
+    conn.execute("UPDATE model SET api_key='' WHERE name='qwen/qwen3.6-27b'"); conn.commit()
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-live")
-    client = app._client_for(conn, "qwen/qwen3.6-plus")
+    client = app._client_for(conn, "qwen/qwen3.6-27b")
     assert client is not None and client.config.api_key == "sk-or-live"
 
 
@@ -29,15 +29,15 @@ def test_client_for_no_fallback_for_vllm(seeded, monkeypatch):
     conn = db.connect()
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-live")
     # vLLM row has empty key + non-OR base_url → NO fallback → None (never leak OR key off-OR)
-    assert app._client_for(conn, "Qwen/Qwen3-4B-Thinking-2507") is None
+    assert app._client_for(conn, "TranslateGemma-27B") is None
 
 
-def test_client_for_drops_temperature_for_claude(seeded):
+def test_client_for_drops_temperature_for_gemini_flash_lite(seeded):
     from palimpsest.webapp import app, db
     conn = db.connect()
-    conn.execute("UPDATE model SET params_json=? WHERE name='anthropic/claude-sonnet-5'",
+    conn.execute("UPDATE model SET params_json=? WHERE name='google/gemini-3.1-flash-lite'",
                  (json.dumps({"temperature": 0.9, "max_tokens": 128}),)); conn.commit()
-    client = app._client_for(conn, "anthropic/claude-sonnet-5")
+    client = app._client_for(conn, "google/gemini-3.1-flash-lite")
     assert client.config.temperature is None and client.config.max_tokens == 128
 
 
@@ -75,7 +75,7 @@ def test_test_endpoint_happy_share_and_cost(seeded, monkeypatch):
     conn = db.connect()
     ref, _ = app._test_reference(conn)
     _install_fake_client(monkeypatch, _json.dumps(sorted(ref)))
-    out = asyncio.run(test_model("qwen/qwen3.6-plus", TestBody()))
+    out = asyncio.run(test_model("qwen/qwen3.6-27b", TestBody()))
     assert out["ok"] is True
     assert out["share"] == 1.0
     assert out["matched"] == out["total"]
@@ -87,7 +87,7 @@ def test_test_endpoint_parse_error_is_ok_false_200(seeded, monkeypatch):
     import asyncio
     from palimpsest.webapp.app import test_model, TestBody
     _install_fake_client(monkeypatch, "not json at all")
-    out = asyncio.run(test_model("qwen/qwen3.6-plus", TestBody()))
+    out = asyncio.run(test_model("qwen/qwen3.6-27b", TestBody()))
     assert out["ok"] is False and "message" in out
 
 
@@ -97,7 +97,7 @@ def test_test_endpoint_budget_block_is_ok_false(seeded, monkeypatch):
     from palimpsest.webapp.app import test_model, TestBody
     budget._CAP_USD = 0.0
     _install_fake_client(monkeypatch, '["сутии"]')
-    out = asyncio.run(test_model("qwen/qwen3.6-plus", TestBody()))
+    out = asyncio.run(test_model("qwen/qwen3.6-27b", TestBody()))
     assert out["ok"] is False and out["message"] == "budget"
 
 
@@ -155,7 +155,7 @@ def test_update_model_allows_max_tokens_param(seeded):
     from palimpsest.webapp import app
 
     result = app.update_model(
-        "qwen/qwen3.6-plus",
+        "qwen/qwen3.6-27b",
         {"baseUrl": "https://openrouter.ai/api/v1", "apiKey": "",
          "params": {"max_tokens": 512, "temperature": 0.3}},
     )
@@ -168,7 +168,7 @@ def test_update_model_still_blocks_real_secret_keys(seeded):
 
     with pytest.raises(HTTPException) as ei:
         app.update_model(
-            "qwen/qwen3.6-plus",
+            "qwen/qwen3.6-27b",
             {"baseUrl": "https://openrouter.ai/api/v1", "apiKey": "",
              "params": {"api_key": "x"}},
         )
@@ -199,5 +199,5 @@ def test_test_metric_credits_nominative_output(seeded, monkeypatch):
         monkeypatch,
         '["Нижняя Месопотамия", "Плодородный полумесяц", "Верхняя Месопотамия", '
         '"Ассирия", "Ашшур", "Средний Тигр"]')
-    out = asyncio.run(test_model("qwen/qwen3.6-plus", TestBody()))
+    out = asyncio.run(test_model("qwen/qwen3.6-27b", TestBody()))
     assert out["matched"] >= 5        # 6 nominative forms matched oblique-case references

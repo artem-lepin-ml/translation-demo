@@ -1,7 +1,7 @@
 """HTTP-level routing tests via FastAPI TestClient.
 
 The unit tests call endpoint functions directly, so they never exercise the
-router. Model names contain a slash (e.g. ``qwen/qwen3.6-plus``); ASGI decodes
+router. Model names contain a slash (e.g. ``qwen/qwen3.6-27b``); ASGI decodes
 ``%2F`` to ``/`` before routing, so a single-segment ``{name}`` route 404s on
 every model. These tests pin the ``{name:path}`` fix by driving the real router.
 """
@@ -34,7 +34,7 @@ def client(tmp_path, monkeypatch):
 
 def test_put_model_slashed_name_routes(client):
     c, _ = client
-    r = c.put("/api/models/qwen/qwen3.6-plus",
+    r = c.put("/api/models/qwen/qwen3.6-27b",
               json={"baseUrl": "https://openrouter.ai/api/v1", "apiKey": "",
                     "params": {"max_tokens": 512, "temperature": 0.5}})
     assert r.status_code == 200, r.text          # routes, not 404 Not Found
@@ -52,7 +52,7 @@ def test_test_endpoint_slashed_name_routes(client, monkeypatch):
             return LLMResult('["сутии", "амореи"]', Usage(10, 5, 0, 0.0001))
 
     monkeypatch.setattr(appmod, "_client_for", lambda conn, name: Fake())
-    r = c.post("/api/models/qwen/qwen3.6-plus/test", json={})
+    r = c.post("/api/models/qwen/qwen3.6-27b/test", json={})
     assert r.status_code == 200, r.text
     body = r.json()
     assert "share" in body and body["costUsd"] == 0.0001
@@ -61,20 +61,20 @@ def test_test_endpoint_slashed_name_routes(client, monkeypatch):
 def test_delete_unused_model_slashed_name_routes(client):
     c, _ = client
     # a vLLM row not referenced by any criterion → 204 (proves the route matched)
-    r = c.delete("/api/models/Qwen/Qwen3.6-27B")
+    r = c.delete("/api/models/TranslateGemma-27B")
     assert r.status_code == 204, r.text
 
 
 def test_delete_referenced_model_returns_409_not_404(client):
     c, _ = client
-    # openai/gpt-5.4-mini is the seeded criteria model (DEFAULT_CRITERION_MODEL) →
+    # qwen/qwen3.6-27b is the seeded criteria model (DEFAULT_CRITERION_MODEL) →
     # 409, NOT a routing 404 (proves the slashed-name route matched)
-    r = c.delete("/api/models/openai/gpt-5.4-mini")
+    r = c.delete("/api/models/qwen/qwen3.6-27b")
     assert r.status_code == 409, r.text
 
 
 def _criterion_payload(**over):
-    payload = {"id": "new-crit", "name": "New", "modelName": "openai/gpt-5.4-mini",
+    payload = {"id": "new-crit", "name": "New", "modelName": "qwen/qwen3.6-27b",
                "prompt": "", "scaleMin": 1, "scaleMax": 10, "weight": 0.5,
                "color": "#888", "enabled": True}
     payload.update(over)
@@ -184,19 +184,19 @@ def test_post_model_params_valid_dict_accepted(client):
 
 def test_put_model_params_array_is_422(client):
     c, _ = client
-    r = c.put("/api/models/qwen/qwen3.6-plus", json=_model_payload(params=[1, 2, 3]))
+    r = c.put("/api/models/qwen/qwen3.6-27b", json=_model_payload(params=[1, 2, 3]))
     assert r.status_code == 422, r.text
 
 
 def test_put_model_params_string_is_422(client):
     c, _ = client
-    r = c.put("/api/models/qwen/qwen3.6-plus", json=_model_payload(params="hello"))
+    r = c.put("/api/models/qwen/qwen3.6-27b", json=_model_payload(params="hello"))
     assert r.status_code == 422, r.text
 
 
 def test_put_model_params_valid_dict_accepted(client):
     c, _ = client
-    r = c.put("/api/models/qwen/qwen3.6-plus", json=_model_payload(params={"temperature": 0.5}))
+    r = c.put("/api/models/qwen/qwen3.6-27b", json=_model_payload(params={"temperature": 0.5}))
     assert r.status_code == 200, r.text
     assert r.json()["params"] == {"temperature": 0.5}
 
@@ -216,11 +216,11 @@ def test_get_grounding_config_returns_seeded_default(client):
 def test_put_grounding_config_updates_and_get_reflects(client):
     c, _ = client
     r = c.put("/api/grounding-config",
-              json={"modelName": "qwen/qwen3.6-plus", "prompt": "Custom judge prompt",
+              json={"modelName": "qwen/qwen3.6-27b", "prompt": "Custom judge prompt",
                     "params": {"max_tokens": 256, "temperature": 0}})
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["modelName"] == "qwen/qwen3.6-plus"
+    assert body["modelName"] == "qwen/qwen3.6-27b"
     assert body["prompt"] == "Custom judge prompt"
     assert body["params"] == {"max_tokens": 256, "temperature": 0}
 
@@ -232,19 +232,19 @@ def test_put_grounding_config_updates_and_get_reflects(client):
 def test_put_grounding_config_params_array_is_422(client):
     c, _ = client
     r = c.put("/api/grounding-config",
-              json={"modelName": "qwen/qwen3.6-plus", "prompt": "x", "params": [1, 2, 3]})
+              json={"modelName": "qwen/qwen3.6-27b", "prompt": "x", "params": [1, 2, 3]})
     assert r.status_code == 422, r.text
 
 
 def test_put_grounding_config_params_string_is_422(client):
     c, _ = client
     r = c.put("/api/grounding-config",
-              json={"modelName": "qwen/qwen3.6-plus", "prompt": "x", "params": "hello"})
+              json={"modelName": "qwen/qwen3.6-27b", "prompt": "x", "params": "hello"})
     assert r.status_code == 422, r.text
 
 
 def test_put_grounding_config_params_secret_key_is_400(client):
     c, _ = client
     r = c.put("/api/grounding-config",
-              json={"modelName": "qwen/qwen3.6-plus", "prompt": "x", "params": {"api_key": "x"}})
+              json={"modelName": "qwen/qwen3.6-27b", "prompt": "x", "params": {"api_key": "x"}})
     assert r.status_code == 400, r.text

@@ -24,13 +24,16 @@ from ..terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_PROMPT
 
 SEED_FILE = paths.DATA / "seed" / "seed_paragraphs.jsonl"
 
-# 4 default evaluators (one per carried v2 prompt, minus Cultural Adaptation —
-# dropped wave-4 Б4). Cold palette — NOT 🟢🟡🔴.
+# 3 default evaluators (EMNLP demo sprint, 2026-07-11): Terminology (the
+# LLM-judge scoring dimension — NOT the separate Wikidata term-grounding
+# pipeline, which is untouched and still fed by `_seed_terms` below) and the
+# already-disabled legacy Cultural Adaptation (dropped wave-4 Б4) are both
+# retired; see docs/superpowers/specs/2026-06-30-demo-contracts.md rev-6
+# delta. Cold palette — NOT 🟢🟡🔴.
 CRITERIA = [
-    ("accuracy",    "Accuracy",            0.30, "#4d8dff"),
-    ("fluency",     "Fluency",             0.20, "#2ad4c8"),
-    ("style",       "Style",               0.15, "#b072ff"),
-    ("terminology", "Terminology",         0.20, "#f25cc1"),
+    ("accuracy", "Accuracy", 0.40, "#4d8dff"),
+    ("fluency",  "Fluency",  0.30, "#2ad4c8"),
+    ("style",    "Style",    0.30, "#b072ff"),
 ]
 SCALE_MIN, SCALE_MAX = 1.0, 10.0
 CACHE_UPLIFT = 1.5
@@ -63,15 +66,14 @@ def seed() -> None:
     conn = db.init_db(reset=True)
     ts = _now()
 
-    # model registry: all 8 rows from the matrix, or the 5 OpenRouter-only rows
-    # when PALIMPSEST_SEED_DEMO is set (spec §4 — curated demo registry, no dead
-    # vLLM rows on localhost). Shared OR key from env goes to OpenRouter rows;
-    # vLLM rows keep an empty key (not run now).
-    demo = bool(os.environ.get("PALIMPSEST_SEED_DEMO"))
+    # model registry: all 5 curated demo/paper rows, unconditionally (2026-07-11
+    # EMNLP sprint — MATRIX itself is now exactly the curated set, so the old
+    # PALIMPSEST_SEED_DEMO "skip the dead vLLM placeholders" branch no longer
+    # applies; the one remaining vLLM row, TranslateGemma-27B, is a deliberate
+    # display-only placeholder every environment seeds the same way). Shared OR
+    # key from env goes to OpenRouter rows; the vLLM row keeps an empty key.
     or_key = os.environ.get("OPENROUTER_API_KEY", "")
     for spec in MATRIX.values():
-        if demo and not spec.is_openrouter:
-            continue
         conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
                      (spec.name, spec.base_url,
                       or_key if spec.is_openrouter else "",
@@ -145,6 +147,7 @@ def seed() -> None:
     _seed_glossary(conn)
     _seed_grounding_config(conn)
     _seed_translator_config(conn)
+    _seed_refiner_config(conn)
     conn.commit()
     n = conn.execute("SELECT COUNT(*) n FROM paragraph").fetchone()["n"]
     print(f"seeded {n} paragraphs, doc_id={doc_id}, model_key={'set' if os.environ.get('OPENROUTER_API_KEY') else 'EMPTY (cache fallback)'}")
@@ -226,6 +229,17 @@ def _seed_translator_config(conn) -> None:
     conn.execute(
         "INSERT INTO translator_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
         (DEFAULT_CRITERION_MODEL, prompt, json.dumps({"max_tokens": 2048, "temperature": 0.3})))
+
+
+def _seed_refiner_config(conn) -> None:
+    """Mirrors _seed_translator_config — the refiner role (paper: "a dedicated
+    refiner LLM integrates aggregated corrections in a single pass") is a
+    singleton config exactly like the translator's, just for a rewrite-style
+    call instead of a first-pass draft."""
+    prompt = (paths.PROMPTS / "refiner" / "default.md").read_text(encoding="utf-8")
+    conn.execute(
+        "INSERT INTO refiner_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
+        (DEFAULT_CRITERION_MODEL, prompt, json.dumps({"max_tokens": 2048, "temperature": 0.2})))
 
 
 def _seed_glossary(conn) -> None:

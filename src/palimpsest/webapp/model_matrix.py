@@ -1,11 +1,21 @@
-"""The 8 demo models: per-model capability + seed defaults (single source of truth).
+"""The 5 EMNLP-demo models (paper registry): per-model capability + seed defaults
+(single source of truth) — replaces the prior 8-row matrix wholesale (2026-07-11
+sprint; see docs/superpowers/specs/2026-06-30-demo-contracts.md rev-6 delta).
 
-Rows mirror the /verify-spec-approved matrix in
-docs/superpowers/specs/2026-07-01-model-registry-design.md. `default_params` are
-intentionally small (cheap Tests). Reasoning effort is OMITTED where the provider
-has a usable default (owner: "run on default effort"); sent only where obligatory
-(gemini). Pricing is fetched live from OpenRouter at runtime (see budget.py), so
-no prices are hardcoded here.
+`default_params` are intentionally small (cheap judge calls). Reasoning effort is
+OMITTED where the provider has a usable default (owner: "run on default effort");
+sent only where obligatory (gemini). Pricing is fetched live from OpenRouter at
+runtime (see budget.py), so no prices are hardcoded here.
+
+Capability flags for the 4 OpenRouter rows are cross-checked against a live
+``GET /api/v1/models`` fetch (2026-07-11): ``supported_parameters`` confirmed
+temperature/min_p/top_k/seed/reasoning per row below. The one deliberate
+departure from raw metadata is Gemini: OpenRouter's schema lists `temperature`
+as accepted for gemini-3.1-flash-lite too, but `supports_temperature=False` is
+carried over from the retired gemini-3.5-flash row's empirical finding — an
+obligatory-reasoning Gemini route ignores temperature in practice, schema
+acceptance notwithstanding (unverified against a fresh live call on THIS exact
+model; flagged, not just assumed).
 """
 from __future__ import annotations
 
@@ -37,57 +47,48 @@ def _vllm(name, *, temp, top_k, min_p, seed, reasoning, default_params) -> Model
 
 
 _SPECS = [
-    # Seed defaults are tuned for the light term-extraction Test: reasoning is
-    # OMITTED (extraction needs none; on reasoning models it truncates the JSON
-    # answer and doubles cost — verified in live e2e), and max_tokens is 1536 so
-    # a 20+-term list is never cut off. gemini keeps a low effort (obligatory on
-    # its route) and a wider cap since its reasoning counts inside max_tokens.
+    # Demo-matrix temperature: forced to 0 on all 4 OpenRouter rows (judge/
+    # refiner determinism for the recorded demo — carried over from the
+    # 2026-07-05 settings-fixes §2.4 policy). A no-op where
+    # supports_temperature=False (ModelParams.for_model strips the key before
+    # the call — see model_params.py), but kept on the row so the raw params
+    # vs `effective_params` distinction is visible in Settings.
     #
-    # supports_seed: OpenRouter's `seed` param is accepted by every OR route we
-    # use here (best-effort determinism hint per-provider, not a hard guarantee)
-    # — see docs/known_issues.md for the one model (gpt-5.4-mini) where this is
-    # unverified against a live call. vLLM's OpenAI-compat server does not wire
-    # `seed` through by default in this deployment, so local models keep it off.
-    # Demo-matrix temperature: forced to 0 on all 5 OpenRouter rows (2026-07-05
-    # settings-fixes §2.4 — judge determinism for the recorded demo). A no-op
-    # where supports_temperature=False (ModelParams.for_model strips the key
-    # before the call — see model_params.py), but kept on the row so the raw
-    # params vs `effective_params` distinction is visible in Settings.
-    _or("anthropic/claude-haiku-4.5", temp=False, top_k=True, min_p=False, seed=True,
-        reasoning="max_tokens",
-        default_params={"max_tokens": 1536, "temperature": 0}),  # reasoning off → fast clean output
-    _or("anthropic/claude-sonnet-5", temp=False, top_k=False, min_p=False, seed=True,
-        reasoning="effort",
-        default_params={"max_tokens": 1536, "temperature": 0}),  # effort omitted → provider default
-    _or("google/gemini-3.5-flash", temp=False, top_k=False, min_p=False, seed=True,
-        reasoning="effort",
-        default_params={"max_tokens": 2048, "temperature": 0,
-                        "reasoning": {"effort": "low"}}),  # effort obligatory
-    _or("openai/gpt-5.4-mini", temp=False, top_k=False, min_p=False, seed=True,
-        reasoning="effort",
-        default_params={"max_tokens": 1536, "temperature": 0}),  # effort omitted → provider default
-    _or("qwen/qwen3.6-plus", temp=True, top_k=False, min_p=False, seed=True,
+    # supports_seed: OpenRouter's `seed` param is accepted by every OR route
+    # here per the live metadata fetch (best-effort determinism hint
+    # per-provider, not a hard guarantee). vLLM's OpenAI-compat server does
+    # not wire `seed` through by default in this deployment, so the local
+    # placeholder keeps it off.
+    # demo default model — everywhere (criteria, translator, grounding, refiner)
+    _or("qwen/qwen3.6-27b", temp=True, top_k=True, min_p=True, seed=True,
         reasoning="effort",
         default_params={"max_tokens": 1536, "temperature": 0}),
-    _vllm("Qwen/Qwen3-4B-Thinking-2507", temp=True, top_k=True, min_p=True, seed=False,
-          reasoning="none",
-          default_params={"max_tokens": 1024, "temperature": 0.6, "top_k": 20, "min_p": 0.0}),
-    _vllm("Infomaniak-AI/vllm-translategemma-27b-it", temp=True, top_k=False, min_p=False, seed=False,
+    # no reasoning surface on this route
+    _or("google/gemma-3-27b-it", temp=True, top_k=True, min_p=True, seed=True,
+        reasoning="none",
+        default_params={"max_tokens": 1536, "temperature": 0}),
+    # local placeholder, display-only
+    _vllm("TranslateGemma-27B", temp=True, top_k=False, min_p=False, seed=False,
           reasoning="none",
           default_params={"max_tokens": 1024, "temperature": 0.0}),
-    _vllm("Qwen/Qwen3.6-27B", temp=True, top_k=True, min_p=True, seed=False,
-          reasoning="enable_thinking",
-          default_params={"max_tokens": 1024, "temperature": 1.0, "top_k": 20, "min_p": 0.0,
-                          "enable_thinking": True}),
+    # effort omitted → provider default (fast/cheap tier)
+    _or("deepseek/deepseek-v4-flash", temp=True, top_k=True, min_p=True, seed=True,
+        reasoning="effort",
+        default_params={"max_tokens": 1536, "temperature": 0}),
+    # effort obligatory, mirrors the retired gemini-3.5-flash row
+    _or("google/gemini-3.1-flash-lite", temp=False, top_k=False, min_p=False, seed=True,
+        reasoning="effort",
+        default_params={"max_tokens": 2048, "temperature": 0,
+                        "reasoning": {"effort": "low"}}),
 ]
 
 MATRIX: dict[str, ModelSpec] = {s.name: s for s in _SPECS}
 
-# Seed criteria point here. Must be FAST (< the 20s /evaluate timeout) and emit
-# clean parseable scoring JSON, else live /evaluate always times out or fails to
-# parse and silently falls back to cached scores. gpt-5.4-mini: ~4s, cheap, no
-# reasoning, clean JSON (verified live e2e). NOT qwen3.6-plus — it reasons for 60s.
-DEFAULT_CRITERION_MODEL = "openai/gpt-5.4-mini"
+# Criteria/translator/grounding/refiner all point here by default. Must be FAST
+# (< the 20s /evaluate timeout) and emit clean parseable scoring JSON — qwen3.6-27b
+# is the paper's headline model and the OpenRouter row every role is seeded/
+# migrated onto (2026-07-11 EMNLP sprint; retires openai/gpt-5.4-mini).
+DEFAULT_CRITERION_MODEL = "qwen/qwen3.6-27b"
 
 
 def additive_reasoning_tokens(name: str, params: dict) -> int:
