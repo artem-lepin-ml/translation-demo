@@ -217,7 +217,8 @@ def _para_dict(conn, p) -> dict:
 def _doc_summary(conn, d) -> dict:
     n = conn.execute("SELECT COUNT(*) n FROM paragraph WHERE document_id=?", (d["id"],)).fetchone()["n"]
     return {"id": d["id"], "title": d["title"], "sourceLang": d["source_lang"],
-            "targetLang": d["target_lang"], "nParagraphs": n, "origin": d["origin"]}
+            "targetLang": d["target_lang"], "nParagraphs": n, "origin": d["origin"],
+            "termsStatus": d["terms_status"]}
 
 
 def _status_public(status: dict | None) -> dict | None:
