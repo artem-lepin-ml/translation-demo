@@ -21,3 +21,7 @@
 {"article": "Гандхара", "done": 21, "of": 100, "spent": 0.4626048099999951, "spent_by_kind": {"extract": 0.4626048099999951, "judge": 0.0}, "calls_by_kind": {"extract": 518, "judge": 0}}
 {"article": "Данайцы", "done": 22, "of": 100, "spent": 0.4759986899999947, "spent_by_kind": {"extract": 0.4759986899999947, "judge": 0.0}, "calls_by_kind": {"extract": 537, "judge": 0}}
 {"article": "Гаруда", "done": 23, "of": 100, "spent": 0.4783378799999947, "spent_by_kind": {"extract": 0.4783378799999947, "judge": 0.0}, "calls_by_kind": {"extract": 537, "judge": 0}}
+{"article": "Дауния", "done": 24, "of": 100, "spent": 0.5179788999999934, "spent_by_kind": {"extract": 0.5179788999999934, "judge": 0.0}, "calls_by_kind": {"extract": 596, "judge": 0}}
+{"article": "Древнеегипетский календарь", "done": 25, "of": 100, "spent": 0.5686108499999917, "spent_by_kind": {"extract": 0.5686108499999917, "judge": 0.0}, "calls_by_kind": {"extract": 666, "judge": 0}}
+{"article": "Древнегреческая религия", "done": 26, "of": 100, "spent": 0.5730182599999916, "spent_by_kind": {"extract": 0.5730182599999916, "judge": 0.0}, "calls_by_kind": {"extract": 672, "judge": 0}}
+{"article": "Древнехеттское царство", "done": 27, "of": 100, "spent": 0.6296876799999898, "spent_by_kind": {"extract": 0.6296876799999898, "judge": 0.0}, "calls_by_kind": {"extract": 733, "judge": 0}}
