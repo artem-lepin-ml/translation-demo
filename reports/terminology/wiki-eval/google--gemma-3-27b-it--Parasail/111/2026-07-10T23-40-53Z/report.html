@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Wiki-eval report — 111</title></head><body><style>
+:root{
+  --bg:#1a1b26; --bg2:#1f2335; --panel:#24283b; --line:#2f334d;
+  --tx:#c0caf5; --tx2:#a9b1d6; --dim:#565f89; --mut:#787c99;
+  --blue:#7aa2f7; --cyan:#2ac3de; --green:#9ece6a; --yel:#e0af68;
+  --red:#f7768e; --purple:#bb9af7; --orange:#ff9e64;
+}
+.wiki-eval-report{background:var(--bg);color:var(--tx);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:24px}
+.wiki-eval-report h1{font-size:24px;margin:0 0 6px}
+.wiki-eval-report h2{font-size:18px;margin:32px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.wiki-eval-report h3{font-size:14px;margin:16px 0 6px;color:var(--tx2)}
+.wiki-eval-report .meta{color:var(--mut);font-size:13px;margin-bottom:16px}
+.wiki-eval-report table.metrics{width:100%;max-width:520px;border-collapse:collapse;margin:8px 0;font-size:13.5px}
+.wiki-eval-report th,.wiki-eval-report td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.wiki-eval-report th{background:var(--bg2);color:var(--tx2);font-weight:600}
+.wiki-eval-report td.cell{background:var(--panel);font-weight:600}
+.wiki-eval-report td.cell.underpowered{background:rgba(224,175,104,.08);color:var(--mut)}
+.wiki-eval-report .n{font-weight:400;color:var(--mut);font-size:11.5px;margin-top:2px}
+.wiki-eval-report .flag{color:var(--yel);font-weight:600}
+.wiki-eval-report .slice-block{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0}
+.wiki-eval-report .note{color:var(--mut);font-size:12.5px;margin:4px 0}
+</style><div class="wiki-eval-report"><h1>Wiki-eval report (protocol v3)</h1><div class="meta">model <code>google/gemma-3-27b-it</code> · provider <code>Parasail</code> · run_id <code>2026-07-10T23-40-53Z</code></div><h2>Document-level R_doc / P_doc (set-based, named vs term)</h2><table class="metrics"><thead><tr><th>class</th><th>gold_units</th><th>TP</th><th>FN</th><th>FP</th><th>R_doc</th><th>P_doc</th></tr></thead><tbody><tr><td>Named entities</td><td class="cell">3885</td><td class="cell">3094</td><td class="cell">791</td><td class="cell">1901</td><td class="cell">0.796<div class="n">ci=[0.783, 0.809]</div></td><td class="cell">0.619<div class="n">ci=[0.606, 0.633]</div></td></tr><tr><td>Terms (common-noun)</td><td class="cell">1466</td><td class="cell">662</td><td class="cell">804</td><td class="cell">1817</td><td class="cell">0.452<div class="n">ci=[0.426, 0.477]</div></td><td class="cell">0.267<div class="n">ci=[0.250, 0.285]</div></td></tr></tbody></table><p class="note">n_ambiguous_gold_units=112 · n_gold_mentions_dropped_by_tier=764</p><h2>Survival-stage factorized metrics (pooled, unit = gold entity)</h2><table class="metrics"><thead><tr><th>stage</th><th>metric</th><th>value</th></tr></thead><tbody><tr><td>Recognition survival</td><td><code>R_NER</code></td><td class="cell">0.896<div class="n">ci=[0.887, 0.904]</div></td></tr><tr><td>Candidate-search survival</td><td><code>R_search</code></td><td class="cell">0.822<div class="n">ci=[0.811, 0.833]</div></td></tr><tr><td>Disambiguation accuracy</td><td><code>A_disamb</code></td><td class="cell">0.944<div class="n">ci=[0.936, 0.951]</div></td></tr><tr><td>End-to-end recall (factorized)</td><td><code>R</code></td><td class="cell">0.695<div class="n">ci=[0.682, 0.708]</div></td></tr><tr><td>End-to-end recall (direct)</td><td><code>R_direct</code></td><td class="cell">0.695<div class="n">ci=[0.682, 0.708]</div></td></tr><tr><td>Precision (lower bound)</td><td><code>P</code></td><td class="cell">0.497<div class="n">ci=[0.485, 0.508]</div></td></tr></tbody></table><p class="note">n_gold_entities=5061 · n_gold_mentions_dropped_by_tier=764 · n_gold_mentions_dropped_by_exclusion=321 · n_pred_linked_entities=7474 · n_resolved_correct_search_miss=0</p></div></body></html>
