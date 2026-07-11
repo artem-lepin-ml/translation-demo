@@ -53,8 +53,9 @@ All classes are `va-`-prefixed. The reusable building blocks a new feature shoul
 | `va-field-label` | 11px uppercase muted label above an input |
 | `va-field-input` (`+ va-field-select`) | Standard input: `--va-surface` bg, `--va-border2` border, `--va-radius-sm`, focus → accent border |
 | `va-btn-secondary` | Ghost/outline button: transparent bg, `--va-border2` border, muted text, hover → accent border+text. Used for Edit / Remove / Reset / + Add |
-| `va-btn-accept` / `va-btn-dismiss` / `va-btn-accept-all` | Semantic action buttons (accept = green, dismiss = neutral) |
-| `va-verdict-dot` (`.green/.yellow/.red`) | 10px status circle mapping to the three semantic colours — used in Glossary/Ranking for pass/fail-style status |
+| `va-btn-accept` / `va-btn-dismiss` | Semantic action buttons (accept = green, dismiss = neutral) |
+| `va-btn-refine` | Inspector header "Refine paragraph ✦" button (EMNLP sprint, replaces `va-btn-accept-all` — the old per-paragraph batch-splice affordance) — accent2 purple, matching the codebase's existing AI/LLM-action colour (`va-ai-translate-card .glyph`, `.terms-chip.on`) |
+| `va-verdict-dot` (`.green/.yellow/.red/.dim`) | 10px status circle mapping to the three semantic colours, plus a 4th neutral `.dim` tone (`--va-text-dim`, EMNLP sprint — `DocumentPicker` cards, termsStatus `none`/no-terms) — used in Glossary/Ranking/Picker for pass/fail-style status |
 | `va-insp-issue-card` / `-header` / `-crit-badge` / `-expl` | Bordered detail card with a coloured pill badge + explanation — the canonical "expandable per-row detail" block |
 | `va-score-chip` / `-loading` / `va-score-bar-shimmer` | Async-loading indicators (pulsing `…`, shimmer bar) — reuse for any "in progress" state |
 | `va-empty` | Italic dim placeholder ("No issues match the active criteria.") |
@@ -72,6 +73,9 @@ All classes are `va-`-prefixed. The reusable building blocks a new feature shoul
 | `va-history-block` / `va-history-row` / `va-history-origin` / `va-history-agg` / `va-history-time` / `va-history-tag` / `va-history-best` / `va-history-restore` / `va-history-preview` | Inspector "Revision history" list under `ScoresView` — up to 8 rows (`+N more`), current/best tags, click-to-preview text, one-click Restore (wave-5 S5 §3.2–3.3) |
 | `va-cached-mini` | 10px mono badge on a scored criterion row marking an offline-fallback (`kind='cache'`) response, distinct from the paragraph-level `va-cached-badge` (wave-5 S5 §3.4) |
 | `va-gl-*` (`va-gl-table`, `-row`, `-detail`, `-badge det\|llm\|rej\|none`, `-step done\|warn\|fail\|skip`, `-cand`, `-judge`, `-occ`, `-cat`, `-qid`, `-via`, …) | Glossary redesign namespace (wave-5 S2, [spec](../superpowers/specs/2026-07-05-glossary-redesign-impl.md)): grouped-row table, accordion detail panel (context/path-stepper/candidates/judge card/mentions), grounding badge tones, path-stepper step states. Ported verbatim from [2026-07-03-glossary-redesign-mockup.html](../superpowers/specs/2026-07-03-glossary-redesign-mockup.html) — no new values invented. |
+| `va-brand-clickable` | Button-chrome reset (`background:none;border:none;padding:0;cursor:pointer;font:inherit`) applied alongside `va-brand` when the brand doubles as a nav control (EMNLP sprint — workspace-chrome brand button, `backToPicker`). The plain `va-brand` div (picker header, non-interactive) is visually identical without it. |
+| `va-spinner` | 9px rotating ring (`--va-accent2` top border segment, `va-spin` keyframe) — subtle in-progress indicator; first consumer is the top-chrome Terms chip while `termsStatus==='running'` (EMNLP sprint) |
+| `va-picker` / `-header` / `-subtitle` / `-grid` / `-card` / `-card-title` / `-card-meta` / `-card-status` / `-card-blank` / `-blank-plus` | `DocumentPicker.tsx` landing view (EMNLP sprint): `va-picker` is the scrollable root (mirrors `va-tab-content`'s `flex:1 1 0; overflow-y:auto` pattern); `va-picker-grid` is a `repeat(auto-fill, minmax(260px,1fr))` card grid; `va-picker-card` reuses `va-surface2`/`va-border`/`va-radius` (same recipe as `va-translator-card`) with a hover lift; `va-picker-card-blank` is the dashed "Blank document" variant (accent2 `+` glyph). No new colour tokens — composed entirely from existing ones. |
 
 Loading convention: buttons show `…` while a request is in flight (e.g. `{isLoading ? '…' : 'Accept'}` in `InspectorPanel.tsx`).
 

@@ -36,10 +36,9 @@ describe('InspectorPanel error banner (H3)', () => {
         criteria={[]}
         isCollapsed={false}
         onToggleCollapse={vi.fn()}
-        acceptAllSummary={null}
         onAccept={vi.fn()}
         onDismiss={vi.fn()}
-        onAcceptAll={vi.fn()}
+        onRefine={vi.fn()}
         onEvaluate={vi.fn()}
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
@@ -78,10 +77,9 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         criteria={[]}
         isCollapsed={false}
         onToggleCollapse={vi.fn()}
-        acceptAllSummary={null}
         onAccept={vi.fn()}
         onDismiss={vi.fn()}
-        onAcceptAll={vi.fn()}
+        onRefine={vi.fn()}
         onEvaluate={onEvaluate}
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
@@ -107,10 +105,9 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         criteria={[{ id: 'accuracy' }, { id: 'style' }, { id: 'cultural' }] as never}
         isCollapsed={false}
         onToggleCollapse={vi.fn()}
-        acceptAllSummary={null}
         onAccept={vi.fn()}
         onDismiss={vi.fn()}
-        onAcceptAll={vi.fn()}
+        onRefine={vi.fn()}
         onEvaluate={vi.fn()}
         onRetryFailed={onRetryFailed}
         visibleIssues={[]}
@@ -133,10 +130,9 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         criteria={[]}
         isCollapsed={false}
         onToggleCollapse={vi.fn()}
-        acceptAllSummary={null}
         onAccept={vi.fn()}
         onDismiss={vi.fn()}
-        onAcceptAll={vi.fn()}
+        onRefine={vi.fn()}
         onEvaluate={vi.fn()}
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
@@ -147,7 +143,7 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
   });
 });
 
-describe('InspectorPanel stale hint and accept-all summary (explicit re-eval)', () => {
+describe('InspectorPanel stale hint (explicit re-eval)', () => {
   const paragraph = {
     id: 1, idx: 0, source: 'src', target: 'tgt', issues: [], scores: [],
     scoresPrev: null, scoresBaseline: null, aggregate: null,
@@ -164,7 +160,7 @@ describe('InspectorPanel stale hint and accept-all summary (explicit re-eval)', 
     onToggleCollapse: vi.fn(),
     onAccept: vi.fn(),
     onDismiss: vi.fn(),
-    onAcceptAll: vi.fn(),
+    onRefine: vi.fn(),
     onEvaluate: vi.fn(),
     onRetryFailed: vi.fn(),
     visibleIssues: [],
@@ -175,35 +171,104 @@ describe('InspectorPanel stale hint and accept-all summary (explicit re-eval)', 
     render(
       <InspectorPanel
         {...baseProps}
-        acceptAllSummary={null}
         evalState={{ loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: true }}
       />,
     );
     expect(screen.getByText(/Scores are for a previous version/)).toBeTruthy();
   });
+});
 
-  it('shows the accept-all summary line with applied and outdated counts', () => {
-    render(
-      <InspectorPanel
-        {...baseProps}
-        acceptAllSummary={{ applied: 5, outdated: 6 }}
-        evalState={{ loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: true }}
-      />,
-    );
-    const line = screen.getByTestId('accept-all-summary');
-    expect(line.textContent).toContain('Applied 5');
-    expect(line.textContent).toContain('6 outdated (overlapped by earlier edits)');
+describe('InspectorPanel Refine paragraph (EMNLP sprint — replaces per-paragraph Accept all)', () => {
+  const paragraph = {
+    id: 1, idx: 0, source: 'src', target: 'tgt', issues: [], scores: [],
+    scoresPrev: null, scoresBaseline: null, aggregate: null,
+    aggregateBaseline: null, aggregatePrev: null,
+  } as unknown as Paragraph;
+
+  const baseProps = {
+    tab: 'issues' as const,
+    onTabChange: vi.fn(),
+    paragraph,
+    activeCriteria: new Set<string>(),
+    criteria: [],
+    isCollapsed: false,
+    onToggleCollapse: vi.fn(),
+    onAccept: vi.fn(),
+    onDismiss: vi.fn(),
+    onEvaluate: vi.fn(),
+    onRetryFailed: vi.fn(),
+    onRestoreRevision: vi.fn(),
+  };
+
+  const openIssueWithSuggestion = {
+    id: '1', paragraphId: 1, criterionId: 'accuracy', targetFragment: '', sourceFragment: '',
+    explanation: 'x', suggestion: 'fix', severity: 'minor', mqmCategory: null, status: 'open',
+  };
+
+  const idleEval = { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false };
+
+  it('disables Refine with a "No open findings" tooltip when there are no open issues', () => {
+    render(<InspectorPanel {...baseProps} onRefine={vi.fn()} visibleIssues={[]} evalState={idleEval} />);
+    const btn = screen.getByTestId('refine-paragraph') as HTMLButtonElement;
+    expect(btn.disabled).toBe(true);
+    expect(btn.title).toBe('No open findings');
   });
 
-  it('hides the summary line when acceptAllSummary is null', () => {
+  it('enables Refine with the aggregate tooltip when open findings exist', () => {
     render(
       <InspectorPanel
         {...baseProps}
-        acceptAllSummary={null}
-        evalState={{ loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false }}
+        onRefine={vi.fn()}
+        visibleIssues={[openIssueWithSuggestion as never]}
+        evalState={idleEval}
       />,
     );
-    expect(screen.queryByTestId('accept-all-summary')).toBeNull();
+    const btn = screen.getByTestId('refine-paragraph') as HTMLButtonElement;
+    expect(btn.disabled).toBe(false);
+    expect(btn.title).toBe('Aggregate all findings and rewrite with the refiner model');
+    expect(btn.textContent).toBe('Refine paragraph ✦');
+  });
+
+  it('calls onRefine when clicked', () => {
+    const onRefine = vi.fn();
+    render(
+      <InspectorPanel
+        {...baseProps}
+        onRefine={onRefine}
+        visibleIssues={[openIssueWithSuggestion as never]}
+        evalState={idleEval}
+      />,
+    );
+    fireEvent.click(screen.getByTestId('refine-paragraph'));
+    expect(onRefine).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows "Refining…" and disables Evaluate/Accept/Dismiss during the refine phase', () => {
+    render(
+      <InspectorPanel
+        {...baseProps}
+        onRefine={vi.fn()}
+        visibleIssues={[openIssueWithSuggestion as never]}
+        evalState={{ ...idleEval, refineStage: 'refining' }}
+      />,
+    );
+    const btn = screen.getByTestId('refine-paragraph') as HTMLButtonElement;
+    expect(btn.textContent).toBe('Refining…');
+    expect(btn.disabled).toBe(true);
+    expect((screen.getByTestId('evaluate-para') as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByText('Dismiss') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('shows "Re-scoring…" during the chained-evaluate phase', () => {
+    render(
+      <InspectorPanel
+        {...baseProps}
+        onRefine={vi.fn()}
+        visibleIssues={[openIssueWithSuggestion as never]}
+        evalState={{ ...idleEval, refineStage: 'rescoring' }}
+      />,
+    );
+    expect(screen.getByTestId('refine-paragraph').textContent).toBe('Re-scoring…');
   });
 });
 
@@ -214,8 +279,8 @@ describe('InspectorPanel resolved/passive-note visibility (Б2)', () => {
   const base = {
     tab: 'issues' as const, onTabChange: vi.fn(), paragraph: para,
     activeCriteria: new Set<string>(), criteria: [], isCollapsed: false,
-    onToggleCollapse: vi.fn(), acceptAllSummary: null, onAccept: vi.fn(),
-    onDismiss: vi.fn(), onAcceptAll: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
+    onToggleCollapse: vi.fn(), onAccept: vi.fn(),
+    onDismiss: vi.fn(), onRefine: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
     onRestoreRevision: vi.fn(),
     evalState: { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false },
   };
@@ -312,8 +377,8 @@ describe('InspectorPanel criteria-key mismatch note (Б3.6)', () => {
   const evalState = { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false };
   const base = {
     tab: 'scores' as const, onTabChange: vi.fn(), activeCriteria: new Set<string>(), criteria,
-    isCollapsed: false, onToggleCollapse: vi.fn(), acceptAllSummary: null, onAccept: vi.fn(),
-    onDismiss: vi.fn(), onAcceptAll: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
+    isCollapsed: false, onToggleCollapse: vi.fn(), onAccept: vi.fn(),
+    onDismiss: vi.fn(), onRefine: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
     onRestoreRevision: vi.fn(),
     evalState, visibleIssues: [],
   };
@@ -359,8 +424,8 @@ describe('InspectorPanel Revision history (S5 §3.2-3.3)', () => {
   const evalState = { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false };
   const base = {
     tab: 'scores' as const, onTabChange: vi.fn(), activeCriteria: new Set<string>(), criteria,
-    isCollapsed: false, onToggleCollapse: vi.fn(), acceptAllSummary: null, onAccept: vi.fn(),
-    onDismiss: vi.fn(), onAcceptAll: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
+    isCollapsed: false, onToggleCollapse: vi.fn(), onAccept: vi.fn(),
+    onDismiss: vi.fn(), onRefine: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
     evalState, visibleIssues: [],
   };
   const paragraph = {

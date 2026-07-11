@@ -121,6 +121,7 @@ function makeStore(doc: Document): DemoStore {
     models: [],
     groundingConfig: null,
     translatorConfig: null,
+    refinerConfig: null,
     documentLoading: false,
     documentError: null,
     paraEvalState: {},
@@ -131,7 +132,9 @@ function makeStore(doc: Document): DemoStore {
     showTerms: false,
     hoveredTermId: null,
     uploadModalOpen: false,
+    uploadModalAiTranslateDefault: false,
     init: vi.fn().mockResolvedValue(undefined),
+    backToPicker: vi.fn(),
     setSelectedParaIdx: vi.fn(),
     setInspectorTab: vi.fn(),
     setInspectorCollapsed: vi.fn(),
@@ -150,6 +153,7 @@ function makeStore(doc: Document): DemoStore {
     dismissIssue: vi.fn().mockResolvedValue(undefined),
     acceptAllIssues: vi.fn().mockResolvedValue({ applied: 0, outdated: 0 }),
     evaluateParagraph: vi.fn().mockResolvedValue(undefined),
+    refineParagraph: vi.fn().mockResolvedValue(undefined),
     saveParagraphTarget: vi.fn().mockResolvedValue(undefined),
     resetDoc: vi.fn().mockResolvedValue(undefined),
     addCriterion: vi.fn().mockResolvedValue(undefined),
@@ -161,9 +165,12 @@ function makeStore(doc: Document): DemoStore {
     testModel: vi.fn().mockResolvedValue({ ok: true, extracted: [], reference: [], matched: 0, total: 0, share: 0 }),
     saveGroundingConfig: vi.fn().mockResolvedValue(undefined),
     saveTranslatorConfig: vi.fn().mockResolvedValue(undefined),
+    saveRefinerConfig: vi.fn().mockResolvedValue(undefined),
     retryTranslate: vi.fn().mockResolvedValue(undefined),
     runFirstParagraphsEvaluate: vi.fn().mockResolvedValue(undefined),
     restoreParagraphRevision: vi.fn().mockResolvedValue(undefined),
+    startTermsPolling: vi.fn(),
+    stopTermsPolling: vi.fn(),
   };
 }
 
