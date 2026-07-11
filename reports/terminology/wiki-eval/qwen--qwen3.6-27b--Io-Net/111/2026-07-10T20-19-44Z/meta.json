@@ -1,0 +1,77 @@
+{
+ "article_workers": 3,
+ "calls": {
+  "extract": 3605,
+  "judge": 0,
+  "label_guess": 0
+ },
+ "config": "111",
+ "failed_paragraphs": [],
+ "finished_at": "2026-07-11T08:26:41.741943+00:00",
+ "generation_params": {
+  "base_url": "https://openrouter.ai/api/v1",
+  "extra_body_effective": {
+   "provider": {
+    "allow_fallbacks": false,
+    "order": [
+     "Io Net"
+    ]
+   },
+   "reasoning": {
+    "enabled": false
+   },
+   "usage": {
+    "include": true
+   }
+  },
+  "max_tokens": 20000,
+  "model": "qwen/qwen3.6-27b",
+  "provider_pin": "Io Net",
+  "reasoning": {
+   "enabled": false
+  },
+  "temperature": 1.0,
+  "top_k": null,
+  "top_p": null
+ },
+ "grounding_config": {
+  "match_aliases": true,
+  "use_cirrus": true,
+  "use_lemma": true,
+  "use_sitelink": false
+ },
+ "llm_max_in_flight_observed": 4,
+ "llm_semaphore": 4,
+ "max_judge_calls": 1,
+ "max_usd": 8.0,
+ "model": "qwen/qwen3.6-27b",
+ "n_articles": 100,
+ "n_extraction_parse_failures": 0,
+ "n_failed_judge_calls": 0,
+ "n_failed_paragraphs": 0,
+ "n_paragraphs": 245,
+ "n_pred_mentions": 21862,
+ "no_judge": true,
+ "parse_failed_paragraphs": [],
+ "price_in_per_token": 1.5e-07,
+ "price_out_per_token": 6e-07,
+ "provider": "Io Net",
+ "resumed_from_n_articles": 90,
+ "run_id": "2026-07-10T20-19-44Z",
+ "search_mode": "baseline",
+ "spend": {
+  "extract": 3.4697277000002047,
+  "judge": 0.0,
+  "label_guess": 0.0,
+  "total": 3.4697277000002047
+ },
+ "started_at": "2026-07-11T08:12:38.298479+00:00",
+ "stopped_reason": null,
+ "wall_clock_s": 843.443464,
+ "wikidata": {
+  "cache_hits": 4772,
+  "calls": 2090,
+  "seconds": 589.008
+ },
+ "wikidata_workers": 2
+}
