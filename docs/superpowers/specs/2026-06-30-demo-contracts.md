@@ -425,3 +425,63 @@ GET  /api/health -> {service, status, limits: {maxParagraphs, maxParaChars}}
 - **`app._grounding_judge_live` теперь реально вызывается** (раньше — мёртвый код с пустым system-сообщением, TODO "no caller in the webapp yet"): шлёт `DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT` как system, budget reserve/settle без изменений.
 
 **Что НЕ реализовано этой дельтой (честно, не заявляем больше сделанного):** §5's «глоссарий term-агента» — персистентный `glossary`-стол как **backbone согласованности между документами** (одинаковый `(term, context)` → одинаковый эквивалент везде, dense-embedding/BM25 ретрив) — не построен. Живой пайплайн переиспользует существующие `LabelFirstGrounding`/`LinkLocatePairing` как есть; согласованность решений судьи — только **в пределах одного документа** (`judge_cache`, "one sense per discourse", scope_id=doc_id), не через документы. Также не реализовано: `DELETE /api/documents/{doc_id}` не отменяет уже запущенный `terminology_live`-таск (precompute/translate это умеют через свои `cancel()`; для terms — не подключено, задел на будущее).
+
+## Criteria, model registry & refiner delta (2026-07-11, EMNLP-demo sprint — lane B1)
+
+Separate top-level section (not §7/"ревизия N" numbering, same reasoning as the Live terminology delta above — avoids an edit collision with the parallel lane B2 delta in the same sprint wave). Written in English per this task's explicit instruction (project convention is normally Russian prose for this doc; English here is intentional, not drift). Full implementation: `model_matrix.py`, `seed.py`, `migrate.py`, `app.py` (refiner-config CRUD + `/refine`), `prompts/refiner/default.md`.
+
+### Criteria set: 5 → 3
+
+The judge-criterion set collapses to `{accuracy, fluency, style}`. `terminology` (the LLM-judge scoring dimension — **not** the separate Wikidata term-grounding pipeline in §1's `Term`/lane B2's live-terminology delta, which is untouched) and the already-disabled legacy `cultural` row both retire. Weights move from `accuracy 0.30 / fluency 0.20 / style 0.15 (+ terminology 0.20)` to `accuracy 0.40 / fluency 0.30 / style 0.30`; colors for the 3 survivors are unchanged. `prompts/scoring/terminology.md` is deleted (accuracy/fluency/style prompt files are unchanged).
+
+**Migration (prod data, never deletes predictions):** `score`/`issue` rows for the two retired criterion ids move to `kind='archived'` / `status='archived'` respectively — **not** `dismissed`: `_para_issues` (app.py) unconditionally drops `archived` on every branch, while `dismissed` is still surfaced as inspector history (would leak a dangling `criterionId` once the criterion row is gone) — verified against `_para_issues`'s status handling and this doc's own §1 `IssueStatus` note before picking it. Only then are the two criterion rows deleted (FK from `score`/`issue`.`criterion_id` is default `ON DELETE NO ACTION`, so the migration step scopes `PRAGMA foreign_keys=OFF` around just the `DELETE`, committing immediately before/after to dodge SQLite's "no-op while a transaction is open" pragma behavior). Every surviving `score` row's frozen `aggregate`/`criteria_key` is recomputed over the 3 remaining criteria (`seed`/`cache`: one pass per paragraph; `live`: replayed in `created_at` order, carrying the latest per-criterion value forward pass-to-pass — the same carry-forward `POST /evaluate` itself uses), so `criteria_key` reads `"accuracy,fluency,style"` uniformly and no stale "criterion set changed" badge appears post-migration. A criterion's weight is migrated old-default→new-default only when it still carries the *old* default value — an owner customization via `PUT /api/criteria/{id}` is left alone.
+
+### Model registry: 8 → 5 (paper models)
+
+`model_matrix.MATRIX` becomes exactly 5 rows (was 8): `qwen/qwen3.6-27b` (OpenRouter — new default everywhere), `google/gemma-3-27b-it` (OpenRouter), `TranslateGemma-27B` (local vLLM placeholder, `http://localhost:8001/v1`, display-only — replaces the old `Qwen/Qwen3.6-27B`/`Infomaniak-AI/vllm-translategemma-27b-it` placeholder rows), `deepseek/deepseek-v4-flash` (OpenRouter), `google/gemini-3.1-flash-lite` (OpenRouter). All 4 OpenRouter ids verified live against `GET https://openrouter.ai/api/v1/models` (public, no key) on 2026-07-11 — `qwen/qwen3.6-27b` exists exactly as expected (no fallback substitution needed). Capability flags (`supports_temperature`/`top_k`/`min_p`/`seed`/`reasoning` kind) cross-checked against that same fetch's `supported_parameters` per model; the one deliberate non-metadata call is Gemini's `supports_temperature=False`, carried over from the retired `gemini-3.5-flash` row's empirical finding (an obligatory-reasoning Gemini route ignores temperature in practice) rather than the raw schema, which does list `temperature` as accepted.
+
+`seed.py` now seeds all 5 rows **unconditionally** — the `PALIMPSEST_SEED_DEMO` env flag no longer branches model seeding (the flag itself is unused dead config now; `docs/subsystems/webapp.md`'s description of it is stale pending a docs-keeper pass, flagged not fixed by this delta). `DEFAULT_CRITERION_MODEL` moves from `openai/gpt-5.4-mini` to `qwen/qwen3.6-27b`.
+
+**Migration (prod data):** `_upsert_model_registry_and_remap` runs FIRST in `migrate()` — `INSERT OR IGNORE`s the 5 new rows (never clobbers an owner-edited `api_key`/`params` on a re-run) and repoints every `criterion.model_name` to the new default. `translator_config`/`grounding_config`/`refiner_config.model_name` are repointed the same way once their tables are guaranteed to exist. The 8 obsolete model rows are then deleted (config, not predictions — deletion is fine here, unlike `score`/`issue`) once nothing still references them; a defensive re-check skips (rather than raising) any row a future caller might still reference.
+
+### New: refiner role
+
+Paper: *"a dedicated refiner LLM integrates aggregated corrections in a single pass."* A new singleton config table mirrors `translator_config`/`grounding_config` exactly, plus a paragraph-level action endpoint.
+
+```sql
+CREATE TABLE refiner_config (   -- singleton, mirrors translator_config
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  model_name TEXT REFERENCES model(name),
+  prompt TEXT,
+  params_json TEXT
+);
+```
+
+```ts
+interface RefinerConfig { modelName: string | null; prompt: string; params: Record<string, unknown>; }
+```
+
+```
+GET  /api/refiner-config                        -> RefinerConfig       # mirrors translator/grounding-config
+PUT  /api/refiner-config      {RefinerConfig}    -> RefinerConfig       # params: whitelist §7.4 (unchanged)
+
+POST /api/paragraphs/{pid}/refine
+     -> Paragraph   # fresh target + gathered open issues flipped to 'accepted', new
+                     # target_revision(origin='refine'); scores/aggregate on the response
+                     # are the PRE-refine values — refine never writes a `score` row, the
+                     # caller (frontend) chains a real /evaluate right after.
+     # 404 unknown paragraph
+     # 409 {detail:'no_open_issues', message} — the ONLY status the frontend treats as a
+     #     silent no-banner outcome (api-client.ts refineParagraph / store.ts's refine
+     #     action already gate the button on activeIssueCount>0)
+     # 503 'translation_in_progress' | 'no_api_key' — precondition, nothing attempted/billed
+     # 429 'budget_exhausted' — budget.reserve() tripped before any network call
+     # 502 {detail:'refine_failed', error} — the LLM call itself failed after one transient
+     #     retry, or returned empty/whitespace output; nothing is mutated on this path
+```
+
+**Default refiner prompt** (`prompts/refiner/default.md`, DB-stored like the translator's, live-read at call time): *"You are an expert translation editor. You receive a source paragraph, its current translation, and a numbered list of reviewer findings (source fragment, problematic translation fragment, explanation, suggested correction). Rewrite the translation as a single improved version: apply every valid suggestion; resolve overlapping or contradictory suggestions in favor of fidelity to the source; keep the current translation's wording wherever no finding applies; do not add information, omit content, or shift style. Output ONLY the revised translation text — no commentary, no quotes, no markup."* Default params: `{"max_tokens": 2048, "temperature": 0.2}`.
+
+**Call semantics:** findings = the paragraph's `status='open'` issues across ALL criteria — the same set `_para_issues` (app.py) surfaces to the inspector, filtered to `open` (accepted/dismissed/outdated history is not re-litigated). Budget reserve/settle + `REFINE_TIMEOUT=60s` + one transient retry mirror the `_judge_live`/`_evaluate` pattern; unlike `/evaluate`, there is **no cache fallback**. On success, in one transaction: `paragraph.target` updated, every gathered finding's `issue.status` set to `'accepted'` (re-checked `AND status='open'` at write time — a TOCTOU guard against a concurrent human dismiss/accept during the LLM call), `target_revision(origin='refine')` written. Model output is defensively stripped of an accidental ```` ``` ````-fence and one layer of wrapping quotes before being accepted; empty/whitespace-only output is rejected as a `502` failure, never written.
+
+**Response-shape note (deliberate, verified against the already-shipped frontend, not a guess):** unlike `/apply-edit`'s `{target, issue, siblingIssues}` shape, `/refine` returns the **full** `Paragraph` dict (`_para_dict`) — matching `api-client.ts`'s `refineParagraph(): Promise<Paragraph>` and `store.ts`'s merge (`{...p, ...updated}`), which already shipped ahead of this backend work.
