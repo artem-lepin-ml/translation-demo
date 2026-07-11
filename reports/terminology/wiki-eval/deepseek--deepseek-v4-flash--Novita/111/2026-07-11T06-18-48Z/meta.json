@@ -2,12 +2,12 @@
  "article_workers": 6,
  "calls": {
   "extract": 0,
-  "judge": 2582,
+  "judge": 5100,
   "label_guess": 0
  },
  "config": "111",
  "failed_paragraphs": [],
- "finished_at": "2026-07-11T08:12:21.534711+00:00",
+ "finished_at": "2026-07-11T10:25:51.517062+00:00",
  "generation_params": {
   "base_url": "https://openrouter.ai/api/v1",
   "extra_body_effective": {
@@ -43,36 +43,37 @@
  "llm_max_in_flight_observed": 6,
  "llm_semaphore": 6,
  "max_judge_calls": 25000,
- "max_usd": 3.0,
+ "max_usd": 8.0,
  "model": "deepseek/deepseek-v4-flash",
- "n_articles": 54,
+ "n_articles": 100,
  "n_extraction_parse_failures": 0,
  "n_failed_judge_calls": 0,
  "n_failed_paragraphs": 0,
- "n_paragraphs": 1242,
- "n_pred_mentions": 10645,
+ "n_paragraphs": 416,
+ "n_pred_mentions": 21132,
  "n_reuse_extraction_unmatched": 0,
  "no_judge": false,
  "parse_failed_paragraphs": [],
  "price_in_per_token": 1.5e-07,
  "price_out_per_token": 6e-07,
  "provider": "Novita",
- "reuse_extraction_from": "/tmp/claude-0/-home-user-translation-demo/d94abddc-f105-576c-b81a-a51a1ca3f0ff/scratchpad/endgame/prefix-judge/deepseek-src",
+ "resumed_from_n_articles": 81,
+ "reuse_extraction_from": "reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--Novita/111/2026-07-10T20-20-34Z",
  "run_id": "2026-07-11T06-18-48Z",
  "search_mode": "baseline",
  "spend": {
   "extract": 0.0,
-  "judge": 0.32850302800001485,
+  "judge": 0.658532232000042,
   "label_guess": 0.0,
-  "total": 0.32850302800001485
+  "total": 0.658532232000042
  },
- "started_at": "2026-07-11T06:18:48.933390+00:00",
+ "started_at": "2026-07-11T10:03:54.979485+00:00",
  "stopped_reason": null,
- "wall_clock_s": 6812.601321,
+ "wall_clock_s": 1316.537577,
  "wikidata": {
-  "cache_hits": 28935,
-  "calls": 1949,
-  "seconds": 636.002
+  "cache_hits": 11329,
+  "calls": 178,
+  "seconds": 50.855
  },
  "wikidata_workers": 2
 }
