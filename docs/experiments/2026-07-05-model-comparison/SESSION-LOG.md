@@ -26,7 +26,7 @@ qwen → provider-8 (чистого маршрута нет — reliability-на
 |---|---|---|---|
 | gemini-3.1-flash-lite | `reports/terminology/wiki-eval/google--gemini-3.1-flash-lite--provider-9/111/2026-07-05T23-06-38Z/` | 0.690 | ✅ готов |
 | deepseek-v4-flash | `reports/terminology/wiki-eval/deepseek--deepseek-v4-flash--provider-9/111/2026-07-05T23-35-52Z/` | 0.614 | ✅ готов |
-| qwen3.7-plus | `reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/` | — | ⏳ 87/100, `--resume` |
+| qwen3.7-plus | `reports/terminology/wiki-eval/qwen--qwen3.7-plus--provider-8/111/2026-07-06T09-55-11Z/` | 0.164 | ⚠ ИНВАЛИДИРОВАН — progress/pred desync под провайдерским 429-штормом, см. docs/PROBLEMS.md; чистый re-run в процессе (v4.1) |
 | gpt-5.5 | — | — | ❌ заблокирован 429 провайдера |
 
 Инциденты ночи (все дали коммит + тест): Wikidata-429 (Retry-After обрезался), circuit-breaker auto qwen,
@@ -84,7 +84,8 @@ qwen → provider-8 (чистого маршрута нет — reliability-на
 промежуточный отчёт — `https://claude.ai/code/artifact/231866f8-cc53-40f6-b29d-af40ee777993`.
 
 ## Осталось (по спеке)
-1. Довести qwen (`--resume`), report с `--p3` + чистые sitelink-числа.
+1. ~~Довести qwen (`--resume`), report с `--p3` + чистые sitelink-числа.~~ Superseded — решение
+   принято и исполнено: см. отгруженный v4-отчёт и docs/PROBLEMS.md; чистый re-run уже в процессе.
 2. gpt-5.5 — если маршрут ожил, иначе reliability-заметка.
 3. Вписать P_label + qwen вместо плейсхолдеров → docx v4 + перепаковать .tex + обновить артефакт → верификация → доставка.
 4. doc-parity (`docs/stages/wiki-eval.md § Status`), LESSONS, сброс ACTIVE.
