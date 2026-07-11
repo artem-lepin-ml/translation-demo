@@ -30,7 +30,7 @@
 #      should have caught before reaching prod)
 #   7. disable the retired Cultural Adaptation criterion on PROD DATA
 #      (UPDATE, never DELETE — score/issue history is irreproducible)
-#   8. force temperature=0 on the demo model rows via the live API (judge
+#   8. pin temperature=0.7 on the demo model rows (owner 2026-07-11) via the live API (judge
 #      determinism for the recorded demo)
 #
 # Caddy: no config change needed — gse-demo keeps the same container name,
@@ -163,7 +163,7 @@ print(f"  criterion 'cultural' rows updated: {conn.total_changes}")
 conn.close()
 PY
 
-log "8/8 force temperature=0 on the demo model rows via the live API"
+log "8/8 pin temperature=0.7 on the demo model rows (owner 2026-07-11) via the live API"
 MODELS=(
     "qwen/qwen3.6-27b"
     "google/gemma-3-27b-it"
@@ -184,7 +184,7 @@ if row is None:
     print(f'  skip {name} — not present in the model registry')
 else:
     params = dict(row['params'])
-    params['temperature'] = 0
+    params['temperature'] = 0.7
     body = json.dumps({'baseUrl': row['baseUrl'], 'params': params}).encode()
     req = urllib.request.Request(
         f'{api}/api/models/{name}', data=body, method='PUT',
