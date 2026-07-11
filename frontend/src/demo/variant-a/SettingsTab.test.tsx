@@ -1,9 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import SettingsTab from './SettingsTab';
-import * as apiClient from '../api-client';
 import type {
-  BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig, TranslatorConfig,
+  Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig, TranslatorConfig,
 } from '../api-client';
 
 afterEach(() => {
@@ -105,65 +104,6 @@ describe('SettingsTab Remove confirm guard (LOW-b)', () => {
 
     expect(window.confirm).toHaveBeenCalledWith(`Delete "${criterion.name}"?`);
     expect(props.onRemoveCriterion).not.toHaveBeenCalled();
-  });
-});
-
-describe('SettingsTab budget line', () => {
-  function mockBudget(snapshot: BudgetSnapshot) {
-    vi.spyOn(apiClient, 'getBudget').mockResolvedValue(snapshot);
-  }
-
-  it('renders the spend and call counts from a fetched snapshot', async () => {
-    mockBudget({ spentUsd: 0.18, capUsd: 2.0, calls: 51, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.textContent).toBe('Budget: $0.18 / $2.00 · 51/200 calls');
-  });
-
-  it('applies the muted band under 50% of cap', async () => {
-    mockBudget({ spentUsd: 0.18, capUsd: 2.0, calls: 51, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.className).toContain('muted');
-  });
-
-  it('applies the yellow band above 50% of cap', async () => {
-    mockBudget({ spentUsd: 1.2, capUsd: 2.0, calls: 51, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.className).toContain('yellow');
-  });
-
-  it('applies the red band above 80% of cap', async () => {
-    mockBudget({ spentUsd: 1.8, capUsd: 2.0, calls: 51, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.className).toContain('red');
-  });
-
-  it('applies the red band above 80% of the call cap even when spend is low', async () => {
-    mockBudget({ spentUsd: 0.01, capUsd: 2.0, calls: 190, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.className).toContain('red');
-  });
-
-  it('does not render the budget line when the fetch fails', async () => {
-    let rejectFetch!: (e: Error) => void;
-    vi.spyOn(apiClient, 'getBudget').mockReturnValue(
-      new Promise((_resolve, reject) => { rejectFetch = reject; }),
-    );
-    renderSettings();
-    rejectFetch(new Error('network error'));
-
-    // let the rejected promise's .catch(() => setBudget(null)) flush
-    await new Promise((r) => setTimeout(r, 0));
-    expect(screen.queryByTestId('budget-line')).toBeNull();
   });
 });
 
@@ -744,20 +684,6 @@ describe('SettingsTab 5-section layout with mini-nav (EMNLP sprint)', () => {
       '#settings-grounding',
       '#settings-refiner',
     ]);
-  });
-
-  it('keeps BudgetLine above the sections as an unnumbered strip (not one of the 5 titled sections)', async () => {
-    vi.spyOn(apiClient, 'getBudget').mockResolvedValue(
-      { spentUsd: 0.1, capUsd: 2.0, calls: 1, callCap: 200 },
-    );
-    renderSettings();
-    const budget = await screen.findByTestId('budget-line');
-    const layout = (await screen.findByTestId('settings-nav')).closest('.va-settings-layout');
-
-    // BudgetLine sits as a sibling before .va-settings-layout, not nested
-    // inside it — i.e. it is not one of the 5 numbered sections.
-    expect(layout?.contains(budget)).toBe(false);
-    expect(screen.getAllByTestId('settings-section-title')).toHaveLength(5);
   });
 });
 

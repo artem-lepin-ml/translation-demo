@@ -1,9 +1,8 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getBudget } from '../api-client';
 import type {
-  BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig,
+  Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig,
   TestModelResult, TranslatorConfig,
 } from '../api-client';
 import type { DemoStore } from '../store';
@@ -129,7 +128,6 @@ export default function SettingsTab({
 
   const [testState, setTestState] = useState<Record<string, TestState>>({});
   const [editing, setEditing] = useState<ModelRegistryEntryPublic | null>(null);
-  const [budget, setBudget] = useState<BudgetSnapshot | null>(null);
   const [showAddEvaluator, setShowAddEvaluator] = useState(false);
   const [showAddModel, setShowAddModel] = useState(false);
   const [expandedParams, setExpandedParams] = useState<Record<string, boolean>>({});
@@ -137,12 +135,6 @@ export default function SettingsTab({
   // re-render, so rapid double/triple-clicks can fire several real (paid) calls
   // before React disables it. This ref blocks re-entry in the same tick.
   const inFlight = useRef<Set<string>>(new Set());
-
-  // Refresh the budget snapshot each time the Settings tab mounts (real-money
-  // spend is otherwise invisible in the UI — the backend has no push channel).
-  useEffect(() => {
-    getBudget().then(setBudget).catch(() => setBudget(null));
-  }, []);
 
   function stateFor(name: string): TestState {
     return testState[name] ?? defaultTestState();
@@ -205,7 +197,6 @@ export default function SettingsTab({
 
   return (
     <div className="va-tab-content">
-      {budget && <BudgetLine budget={budget} />}
 
       <div className="va-settings-layout">
         <nav className="va-settings-nav" aria-label="Settings sections" data-testid="settings-nav">
@@ -978,26 +969,6 @@ function RefinerCard({ config, models, onSave, error }: RefinerCardProps) {
           {error}
         </div>
       )}
-    </div>
-  );
-}
-
-// ─── BudgetLine ──────────────────────────────────────────────────────────────
-
-function budgetBand(spentUsd: number, capUsd: number, calls: number, callCap: number): 'muted' | 'yellow' | 'red' {
-  const usdShare = capUsd > 0 ? spentUsd / capUsd : 0;
-  const callShare = callCap > 0 ? calls / callCap : 0;
-  const share = Math.max(usdShare, callShare);
-  if (share > 0.8) return 'red';
-  if (share > 0.5) return 'yellow';
-  return 'muted';
-}
-
-function BudgetLine({ budget }: { budget: BudgetSnapshot }) {
-  const band = budgetBand(budget.spentUsd, budget.capUsd, budget.calls, budget.callCap);
-  return (
-    <div className={`va-budget-line ${band}`} data-testid="budget-line">
-      Budget: ${budget.spentUsd.toFixed(2)} / ${budget.capUsd.toFixed(2)} · {budget.calls}/{budget.callCap} calls
     </div>
   );
 }
