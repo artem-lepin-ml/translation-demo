@@ -64,3 +64,4 @@ data/e2e-budget_calls.jsonl
 .claude/memory/*.db-wal
 .claude/memory/*.db-shm
 reports/terminology/wikidata_cache.*.jsonl
+data/pilot/
