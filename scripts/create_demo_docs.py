@@ -6,8 +6,8 @@ demo-prep loader. Reads one or more ready-to-POST payload JSON files (see
 data/seed/demo_docs/*.json for the shape: title/sourceLang/targetLang/
 translate/precompute/paragraphs, matching CreateDocumentBody in
 src/palimpsest/webapp/app.py:282-288) and POSTs each to the target server.
-With --poll, then tracks each created document's live translation +
-terminology extraction to completion.
+With --poll, then tracks each created document's live translation,
+precompute, and terminology extraction to completion.
 
 Usage:
     uv run python scripts/create_demo_docs.py data/seed/demo_docs/*.json --poll
@@ -31,6 +31,14 @@ DEFAULT_BASE_URL = "http://localhost:8000"
 POLL_INTERVAL_S = 5.0
 POLL_TIMEOUT_S = 15 * 60.0
 _TERMINAL_STATUSES = {"done", "failed"}
+# precompute.py uses its own, DIFFERENT status vocabulary from
+# translate.py/terminology_live.py ({"skipped","running","stopped","done"},
+# not {"running","done","failed"}) -- "skipped" (precompute:false, or forced
+# off server-side whenever translate:true) and "done" are its two successful
+# terminal states, "stopped" is its failure terminal state (e.g. budget
+# exhausted mid-run; see precompute.py:137,162-163).
+_PRECOMPUTE_TERMINAL_STATUSES = {"skipped", "stopped", "done"}
+_PRECOMPUTE_FAILURE_STATUSES = {"stopped"}
 
 
 def _post_json(url: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -79,7 +87,16 @@ def _is_terminal(doc: dict[str, Any]) -> bool:
 
     translate:false payloads have no translation phase at all (`doc
     ["translation"]` is None -- translate.status_for() never ran for that
-    doc_id); termsStatus alone is then the whole signal.
+    doc_id); termsStatus alone (plus precompute below) is then the signal.
+
+    precompute runs independently of translate/terms (app.py launches it
+    unconditionally whenever `run_precompute` is true, in parallel with
+    terminology_live for a translate:false doc) -- so it is checked
+    separately and unconditionally whenever the key is present, using its
+    own terminal-status set (see _PRECOMPUTE_TERMINAL_STATUSES). For
+    translate:true documents precompute is forced to "skipped" server-side
+    at creation time (already terminal from the first poll), so this never
+    adds a wait there.
     """
     translation = doc.get("translation")
     if translation is not None:
@@ -88,12 +105,18 @@ def _is_terminal(doc: dict[str, Any]) -> bool:
             return False
         if trans_status == "failed":
             return True
+    precompute = doc.get("precompute")
+    if precompute is not None and precompute.get("status") not in _PRECOMPUTE_TERMINAL_STATUSES:
+        return False
     return doc.get("termsStatus") in _TERMINAL_STATUSES
 
 
 def _succeeded(doc: dict[str, Any]) -> bool:
     translation = doc.get("translation")
     if translation is not None and translation.get("status") != "done":
+        return False
+    precompute = doc.get("precompute")
+    if precompute is not None and precompute.get("status") in _PRECOMPUTE_FAILURE_STATUSES:
         return False
     return doc.get("termsStatus") == "done"
 
@@ -102,9 +125,10 @@ def poll_document(
     base_url: str, doc_id: int, *, interval: float = POLL_INTERVAL_S, timeout: float = POLL_TIMEOUT_S
 ) -> bool:
     """Poll GET /api/documents/{doc_id} every `interval` seconds, printing
-    translation progress + termsStatus, until both reach a terminal state or
-    `timeout` seconds elapse. Returns True iff translation and terminology
-    extraction both finished successfully ("done").
+    translation progress, precompute progress (when present in the
+    response), and termsStatus, until all reach a terminal state or
+    `timeout` seconds elapse. Returns True iff translation, precompute, and
+    terminology extraction all finished successfully.
     """
     url = f"{base_url.rstrip('/')}/api/documents/{doc_id}"
     start = time.monotonic()
@@ -113,20 +137,24 @@ def poll_document(
         translation = doc.get("translation") or {}
         t_status = translation.get("status", "n/a")
         t_done, t_total = translation.get("done", "?"), translation.get("total", "?")
+        precompute = doc.get("precompute") or {}
+        p_status = precompute.get("status", "n/a")
+        p_done, p_planned = precompute.get("done", "?"), precompute.get("planned", "?")
         terms_status = doc.get("termsStatus", "?")
         elapsed = time.monotonic() - start
         print(f"[t={elapsed:5.0f}s] doc {doc_id}: translation={t_status} "
-              f"({t_done}/{t_total}) termsStatus={terms_status}")
+              f"({t_done}/{t_total}) precompute={p_status} ({p_done}/{p_planned}) "
+              f"termsStatus={terms_status}")
 
         if _is_terminal(doc):
             ok = _succeeded(doc)
-            reason = translation.get("errorReason")
-            extra = f" errorReason={reason}" if reason else ""
+            reasons = [r for r in (translation.get("errorReason"), precompute.get("errorReason")) if r]
+            extra = f" errorReason={','.join(reasons)}" if reasons else ""
             print(f"doc {doc_id}: {'OK' if ok else 'FAILED'}{extra}")
             return ok
         if elapsed > timeout:
-            print(f"doc {doc_id}: TIMEOUT after {timeout:.0f}s "
-                  f"(translation={t_status} termsStatus={terms_status})", file=sys.stderr)
+            print(f"doc {doc_id}: TIMEOUT after {timeout:.0f}s (translation={t_status} "
+                  f"precompute={p_status} termsStatus={terms_status})", file=sys.stderr)
             return False
         time.sleep(interval)
 
@@ -149,8 +177,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL,
                          help=f"webapp base URL (default: {DEFAULT_BASE_URL})")
     parser.add_argument("--poll", action="store_true",
-                         help="poll each created document until translation + terminology "
-                              "extraction finish, or a 15 min per-document timeout")
+                         help="poll each created document until translation, precompute, and "
+                              "terminology extraction finish, or a 15 min per-document timeout")
     args = parser.parse_args(argv)
 
     payload_paths = _gather_payload_paths(args)

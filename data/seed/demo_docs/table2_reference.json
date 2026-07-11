@@ -1,0 +1,112 @@
+{
+  "provenance": {
+    "repo": "ssh://git@gitlab.frontierai.ru:8022/frontierai/teams/research/history-translation/ru2en-enciclopedia-translation.git",
+    "local_checkout": "/Users/a1111/Projects/Work/gse-translation",
+    "branch": "origin/artem",
+    "files": {
+      "gemma_before": "data/pilot/evaluation/gemma_par_by_par/v1/reports/qwen3_6-27b.jsonl",
+      "gemma_after": "data/pilot/evaluation/gemma_edited_par_by_par/v1/reports/qwen3_6-27b.jsonl",
+      "qwen_before": "data/pilot/evaluation/qwen_par_by_par/v1/reports/qwen3_6-27b.jsonl",
+      "qwen_after": "data/pilot/evaluation/qwen_edited_par_by_par/v1/reports/qwen3_6-27b.jsonl"
+    },
+    "lfs_oids": {
+      "gemma_before": "f8e09fff23bda5baced4e28db1d7bb952cefc0fc344ef61a301fad330fc45d5f",
+      "gemma_after": "2a3d07d3c905b1049fea4145b0e84ac62efd0c4321a745527a7978a59436b19a",
+      "qwen_before": "05b5f5f00d159c2fe4dc32e3741a2a7fa6ba94cf38cd7593c23d14daa69cd0dc",
+      "qwen_after": "ebc1257bcee6bf04804b72e78c439e99c736ad879e8a5682e8899677d32303fd"
+    },
+    "record_id_convention": "0-indexed `id` field == pilot_original.md line number minus 1 (id=0 -> pilot line 1, verified against record 0's source 'МЕСОПОТАМИЯ' == pilot line 1).",
+    "ids_used": [
+      40,
+      47,
+      79,
+      90,
+      504
+    ]
+  },
+  "rows": [
+    {
+      "id": 40,
+      "pilot_line": 41,
+      "pair": "qwen",
+      "table2_rows": [
+        "Уруинимгину"
+      ],
+      "source_snippet": "В Лагаше, одном из наиболее экономически развитых номов, дело дошло до переворот",
+      "before_target": "In Lagash, one of the most economically advanced city-states, these conditions culminated in a political overthrow. The local ruler concentrated near-absolute ownership of half of Lagash’s land in his own hands, systematically redistributed administrative offices to his personal retinue, and increased exactions on both dependent laborers and free commoners. Concurrently, elite-driven debt bondage among the common populace reached its peak. The ruling house was overthrown in a mass uprising, though the ruler himself was spared his life and civic rights. The popular assembly subsequently elevated a certain Ur-Nanshe to power, bestowing upon him the title of *lugal* (Sumerian for king, late 24th century BCE). This new ruler abolished the excessive levies, once again separated the temple economy from the ruler’s private estates, and annulled a series of debt contracts. Comparable reforms were occasionally implemented in other Mesopotamian city-states.",
+      "after_target": "In Lagash, one of the most economically advanced city-states, a coup took place: the local ruler concentrated near-absolute ownership of half of Lagash’s land in his own hands, began a massive redistribution of administrative offices to his personal retinue, and increased exactions on both dependent laborers and commoners. Debt bondage of the commoners by the nobility reached its peak. As a result, the ruler's house was overthrown in a mass uprising (though he himself was spared his life and civic rights), and in his place the popular assembly put forward a certain Urukagina, bestowing upon him the title of \"lugal\" (late 24th century BCE). He abolished the excessive exactions, once again separated the temple economy from the ruler’s private estates, and annulled a series of debt contracts. Comparable reforms were occasionally implemented in other Mesopotamian city-states.",
+      "metric_transition": {
+        "accuracy": "6→9",
+        "fluency": "9→9",
+        "style": "7→8"
+      }
+    },
+    {
+      "id": 47,
+      "pilot_line": 48,
+      "pair": "gemma",
+      "table2_rows": [
+        "Нарам-Суэн + XXIII в. (victory stele caption)"
+      ],
+      "source_snippet": "Победная стела Нарам-Суэна, посвященная его походу на горцев-луллубеев. Конец XX",
+      "before_target": "Naram-Sin’s victory stele, commemorating his campaign against the Lullubi mountain people. Late 3rd millennium BCE. Paris, Louvre.",
+      "after_target": "Naram-Sin’s victory stele, commemorating his campaign against the Lullubi mountain people. End of the 23rd century BCE. Paris, Louvre.",
+      "metric_transition": {
+        "accuracy": "6→10",
+        "fluency": "10→10",
+        "style": "10→10"
+      }
+    },
+    {
+      "id": 79,
+      "pilot_line": 80,
+      "pair": "gemma",
+      "table2_rows": [
+        "Ханейское",
+        "Самсудитане"
+      ],
+      "source_snippet": "В середине XVII в. до н.э. Вавилония стала постепенно восстанавливать свое могущ",
+      "before_target": "In the mid-17th century BCE, Babylonia gradually began to restore its power, and around 1630 BCE, it conquered the Euphrates principality of the Kassites and the Khanir kingdom, extending its authority to the Middle Euphrates. However, during the reign of the last king of the Hammurabi dynasty, Samsu-iluna (1625–1595 BCE), a severe crisis erupted. Khanigalbat rose up against Babylonia, and the Kassites of the Gandash and later the Hana dynasties rebelled and waged war against it. Furthermore, Gulkishar, the king of the Coastal Region, also began to fight against Babylonia, and finally, in 1595 BCE, the unexpected campaign of the Hittite king Mursili I from Anatolia brought matters to a head. Marching along the Euphrates and passing through Hana, he captured and plundered Babylon. Samsu-iluna presumably died. The Hittites did not attempt to establish a foothold in Mesopotamia but turned back with enormous plunder, including the main statues of the god Marduk and his consort Tsarpani from the temple of Marduk in Babylon. The Babylonians believed that maintaining full communication with the gods was impossible without these relics.",
+      "after_target": "In the mid-17th century BCE, Babylonia gradually began to restore its power, and around 1630 BCE, it conquered the Euphrates principality of the Kassites and the Hana kingdom, extending its authority to the Middle Euphrates. However, during the reign of the last king of the Hammurabi dynasty, Samsu-ditana (1625–1595 BCE), a severe crisis erupted. Khanigalbat rose up against Babylonia, the Euphrates Kassites of the house of Gandash rebelled and waged war against it, followed by those of Hana, and then Gulkishar, king of the Sealand, also took up arms against Babylonia; finally, in 1595 BCE, the unexpected campaign of the Hittite king Mursili I from Anatolia delivered the final blow. Marching along the Euphrates and passing through Hana, he captured and plundered Babylon. Samsu-ditana presumably died. The Hittites did not attempt to establish a foothold in Mesopotamia but turned back with enormous plunder, including the main statues of the god Marduk and his consort Tsarpani from the temple of Marduk in Babylon (without these relics, in the view of the Babylonians, it was impossible to maintain full communion with the gods).",
+      "metric_transition": {
+        "accuracy": "6→9",
+        "fluency": "8→9",
+        "style": "9→9"
+      },
+      "note": "This single paragraph carries TWO Table-2 rows (Ханейское + Самсудитане) -- same source text, same before/after targets, same score transition for both rows. Also contains real 'Гулькишар' и 'Приморья' mentions in the source text (not a scored Table-2 row on their own here)."
+    },
+    {
+      "id": 90,
+      "pilot_line": 91,
+      "pair": "gemma",
+      "table2_rows": [
+        "царя Приморья (Sealand)"
+      ],
+      "source_snippet": "Вскоре, в середине XV в. до н.э. Вавилония была окончательно (и навсегда) интегр",
+      "before_target": "Soon after, in the mid-15th century BCE, Babylonia was definitively (and permanently) integrated territorially: the last king of the Primordial Lands, Eagamīl, became preoccupied with wars against Elam, and the Kassite ruler Kaštiliaš III sent his brother, Ulam-Būriaš, against the Primordial Lands; the latter defeated and killed Eagamīl, and assumed the title of “king of the Primordial Lands” as the de facto “viceroy” of his brother in that territory. With the death of Ulam-Būriaš, the lands of the Primordial Lands were fully merged with Babylonia; the inhabitants of the Primordial Lands revolted, but the new king of Babylon, Agum III (son of Kaštiliaš and nephew of Ulam-Būriaš), crushed them and destroyed the temple of Ea, the patron deity of the Primordial Lands. In the same decades, the Kassites seized the Middle Euphrates valley from Hanigalbat, king of Mitanni (Mitanni was at this time embroiled in wars with the Egyptian pharaoh Thutmose III, and the Kassites took advantage of this). Notably, after the Kassite annexation of the Primordial Lands, its inhabitants were still considered a distinct sub-ethnic group, the “people of the Primordial Lands,” distinct from the Babylonians proper – the “Akkadians” – but by the end of the 2nd millennium BCE, they no longer attempted to secede from Babylonia. Thus, the country that was once called “Babylonia” finally took shape as a unified entity under the Kassites, and the ancient peoples themselves (the Assyrians, and five hundred years later, after the fall of the Kassite dynasty) were well aware of this, continuing to refer to Babylonia by its official Kassite name, “Karduniaš.”",
+      "after_target": "Soon after, in the mid-15th century BCE, Babylonia was territorially integrated definitively (and permanently): the last king of the Sealand, Eagamīl, became preoccupied with wars against Elam, and the Kassite ruler Kaštiliaš III sent his brother, Ulam-Būriaš, against the Sealand; the latter defeated and killed Eagamīl, and assumed the title of “king of the Sealand” as the de facto “viceroy” of his brother in that territory. With the death of Ulam-Būriaš, the Sealand was fully merged with Babylonia; the Sealanders revolted, but the new king of Babylon, Agum III (son of Kaštiliaš and nephew of Ulam-Būriaš), crushed them and destroyed the temple of Ea, the patron deity of the Sealand. In the same decades, the Kassites seized the Middle Euphrates valley from Hanigalbat-Mitanni (Mitanni was at this time embroiled in wars with the Egyptian pharaoh Thutmose III, and the Kassites took advantage of this). Notably, after the Kassite annexation of the Sealand, its people were still regarded as a separate sub-ethnic group, the “Sealanders,” distinct from the Babylonians proper – the “Akkadians” – until the end of the 2nd millennium BCE, but never again attempted to secede from Babylonia. Thus, the country that was once called “Babylonia” finally took shape as a unified entity under the Kassites, and this was well understood by the ancients themselves (the Assyrians continued to refer to Babylonia by its official name under the Kassites—“Karduniaš,” even five hundred years after the fall of the Kassite dynasty).",
+      "metric_transition": {
+        "accuracy": "6→10",
+        "fluency": "8→9",
+        "style": "9→9"
+      },
+      "note": "This is the 'царя Приморья' / Sealand-king row. The literal name 'Гулькишар' does NOT appear in this paragraph or its +/-2 neighbors (ids 88,89,91,92) -- Gulkishar is a different, earlier Sealand king named two generations before, in id=79 (and neighboring id=80). This paragraph is about later Sealand kings Eagamil and Ulam-Buriash. Read the task's 'Гулькишар / царя Приморья' label as 'the Sealand-king title', not the specific name Gulkishar."
+    },
+    {
+      "id": 504,
+      "pilot_line": 505,
+      "pair": "qwen",
+      "table2_rows": [
+        "право копья"
+      ],
+      "source_snippet": "Было ли вещное публичное право выделено в Законах XII таблиц в отдельный раздел,",
+      "before_target": "It is difficult to determine whether public property law constituted a separate section in the Twelve Tables. The distinction between *res publicae* and *res privatae* was undoubtedly already recognized, yet the separation between public and private property remained relatively limited. For land, it extended only to a private allotment of two *iugera* (0.5 hectares). This conclusion is further supported by the fact that the core institutions of property law applied to both public and private holdings. For example, the *ius spei* (“right of the spear”), enforced through the *vindicatio* action, served not only to protect an individual’s claim to property but also to vindicate—that is, confiscate—property belonging to a private party or even another state for the benefit of the Roman people. This dual function reflects the ritual’s origins. The spear (*vindicta*), its principal symbol, derives from the right to declare war, specifically the fetial rite of “spearing” enemy territory and the public auctions *sub hasta* (“under the spear”) of the Roman people’s property captured from enemies.",
+      "after_target": "It is difficult to determine whether public law of things constituted a separate section in the Twelve Tables. The distinction between *res publicae* and *res privatae* was undoubtedly already recognized, yet the separation between public and private property remained relatively limited. For land, it extended only to a private allotment of two *iugera* (0.5 hectares). This is all the more probable in light of the fact that the core institutions of real rights applied to both public and private holdings. For example, the *ius hastae* (“right of the spear”), enforced through the *vindicatio* action, served not only to protect an individual’s claim to property but also to vindicate—that is, confiscate—property belonging to a private party or even another state for the benefit of the Roman people. This is all the more likely given that the very origin of the vindication ritual, with its principal symbol—the spear (vindicta)—is linked to the right to declare war, to the corresponding fetial rite of 'spearing' enemy territory, and to the public auctions 'under the spear' of property captured from enemies for the Roman people.",
+      "metric_transition": {
+        "accuracy": "6→9",
+        "fluency": "10→9",
+        "style": "8→8"
+      }
+    }
+  ]
+}
