@@ -1,0 +1,187 @@
+{
+ "protocol": "v3",
+ "n_ambiguous_gold_units": 68,
+ "n_gold_mentions_dropped_by_tier": 350,
+ "classes": {
+  "named": {
+   "tp": 1844,
+   "fn": 358,
+   "fp": 863,
+   "gold_units": 2202,
+   "R_doc": {
+    "matched": 1844,
+    "total": 2202,
+    "value": 0.8374205267938238,
+    "ci_lo": 0.8214,
+    "ci_hi": 0.8522,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 1844,
+    "total": 2707,
+    "value": 0.6811968969338751,
+    "ci_lo": 0.6634,
+    "ci_hi": 0.6985,
+    "underpowered": false
+   }
+  },
+  "term": {
+   "tp": 411,
+   "fn": 362,
+   "fp": 896,
+   "gold_units": 773,
+   "R_doc": {
+    "matched": 411,
+    "total": 773,
+    "value": 0.5316946959896507,
+    "ci_lo": 0.4964,
+    "ci_hi": 0.5666,
+    "underpowered": false
+   },
+   "P_doc": {
+    "matched": 411,
+    "total": 1307,
+    "value": 0.31446059678653404,
+    "ci_lo": 0.2899,
+    "ci_hi": 0.3401,
+    "underpowered": false
+   }
+  }
+ },
+ "survival": {
+  "n_gold_entities": 2856,
+  "n_gold_mentions_dropped_by_tier": 350,
+  "n_gold_mentions_dropped_by_exclusion": 129,
+  "n_pred_linked_entities": 4014,
+  "n_resolved_correct_search_miss": 0,
+  "R_NER": {
+   "matched": 2692,
+   "total": 2856,
+   "value": 0.9425770308123249,
+   "ci_lo": 0.9334,
+   "ci_hi": 0.9505,
+   "underpowered": false
+  },
+  "R_search": {
+   "matched": 2294,
+   "total": 2692,
+   "value": 0.8521545319465081,
+   "ci_lo": 0.8382,
+   "ci_hi": 0.8651,
+   "underpowered": false
+  },
+  "A_disamb": {
+   "matched": 2184,
+   "total": 2294,
+   "value": 0.9520488230165649,
+   "ci_lo": 0.9425,
+   "ci_hi": 0.9601,
+   "underpowered": false
+  },
+  "R": {
+   "matched": 2184,
+   "total": 2856,
+   "value": 0.7647058823529411,
+   "ci_lo": 0.7488,
+   "ci_hi": 0.7799,
+   "underpowered": false
+  },
+  "R_direct": {
+   "matched": 2184,
+   "total": 2856,
+   "value": 0.7647058823529411,
+   "ci_lo": 0.7488,
+   "ci_hi": 0.7799,
+   "underpowered": false
+  },
+  "P": {
+   "matched": 2250,
+   "total": 4014,
+   "value": 0.5605381165919282,
+   "ci_lo": 0.5451,
+   "ci_hi": 0.5758,
+   "underpowered": false
+  }
+ },
+ "meta": {
+  "article_workers": 6,
+  "calls": {
+   "extract": 0,
+   "judge": 3318,
+   "label_guess": 0
+  },
+  "config": "111",
+  "failed_paragraphs": [],
+  "finished_at": "2026-07-11T07:12:08.671035+00:00",
+  "generation_params": {
+   "base_url": "https://openrouter.ai/api/v1",
+   "extra_body_effective": {
+    "provider": {
+     "allow_fallbacks": false,
+     "order": [
+      "Google AI Studio"
+     ]
+    },
+    "reasoning": {
+     "effort": "medium"
+    },
+    "usage": {
+     "include": true
+    }
+   },
+   "max_tokens": 20000,
+   "model": "google/gemini-3.1-flash-lite",
+   "provider_pin": "Google AI Studio",
+   "reasoning": {
+    "effort": "medium"
+   },
+   "temperature": 1.0,
+   "top_k": null,
+   "top_p": null
+  },
+  "grounding_config": {
+   "match_aliases": true,
+   "use_cirrus": true,
+   "use_lemma": true,
+   "use_sitelink": false
+  },
+  "llm_max_in_flight_observed": 2,
+  "llm_semaphore": 6,
+  "max_judge_calls": 25000,
+  "max_usd": 8.0,
+  "model": "google/gemini-3.1-flash-lite",
+  "n_articles": 59,
+  "n_extraction_parse_failures": 0,
+  "n_failed_judge_calls": 0,
+  "n_failed_paragraphs": 0,
+  "n_paragraphs": 65,
+  "n_pred_mentions": 12607,
+  "n_reuse_extraction_unmatched": 0,
+  "no_judge": false,
+  "parse_failed_paragraphs": [],
+  "price_in_per_token": 1.5e-07,
+  "price_out_per_token": 6e-07,
+  "provider": "Google AI Studio",
+  "resumed_from_n_articles": 57,
+  "reuse_extraction_from": "/tmp/claude-0/-home-user-translation-demo/d94abddc-f105-576c-b81a-a51a1ca3f0ff/scratchpad/endgame/prefix-judge/gemini-src",
+  "run_id": "2026-07-11T05-27-07Z",
+  "search_mode": "baseline",
+  "spend": {
+   "extract": 0.0,
+   "judge": 2.455156749999894,
+   "label_guess": 0.0,
+   "total": 2.455156749999894
+  },
+  "started_at": "2026-07-11T06:58:21.289181+00:00",
+  "stopped_reason": null,
+  "wall_clock_s": 827.381854,
+  "wikidata": {
+   "cache_hits": 1705,
+   "calls": 60,
+   "seconds": 19.026
+  },
+  "wikidata_workers": 2,
+  "n_gt_tuples": 4239,
+  "generated_at": "2026-07-11T07:12:30.247458+00:00"
+ }
+}
