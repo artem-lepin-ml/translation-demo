@@ -543,12 +543,13 @@ describe('SettingsTab EditModelModal — API key clear (S1 §2.5)', () => {
 });
 
 describe('SettingsTab Translator card (S4 §3.4)', () => {
-  it('renders above Evaluators with model/params/prompt from translatorConfig', async () => {
+  it('renders above Evaluators with model/prompt from translatorConfig; call params stay Model-Registry-only', async () => {
     renderSettings();
     const card = await screen.findByTestId('translator-card');
     expect(within(card).getByText('openai/gpt-5.4-mini', { selector: 'option' })).toBeTruthy();
-    expect(within(card).getByTestId('translator-params').textContent).toContain('2048');
     expect(screen.getByText('Applies to the next translation run')).toBeTruthy();
+    expect(screen.queryByTestId('translator-params')).toBeNull();
+    expect(screen.queryByTestId('translator-effective')).toBeNull();
   });
 
   it('does not render the Translator card when translatorConfig is null, showing the unavailable affordance instead (2026-07-06 prod incident)', () => {
@@ -574,32 +575,15 @@ describe('SettingsTab Translator card (S4 §3.4)', () => {
     ));
   });
 
-  it('editing params and blurring commits via onSaveTranslatorConfig', async () => {
-    const onSaveTranslatorConfig = vi.fn().mockResolvedValue(undefined);
-    renderSettings({ onSaveTranslatorConfig });
-    const textarea = await screen.findByTestId('translator-params');
-    fireEvent.change(textarea, { target: { value: '{"max_tokens": 999}' } });
-    fireEvent.blur(textarea);
-
-    await waitFor(() => expect(onSaveTranslatorConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ params: { max_tokens: 999 } }),
-    ));
-  });
-
-  it('shows an inline error on invalid params JSON', async () => {
-    renderSettings();
-    const textarea = await screen.findByTestId('translator-params');
-    fireEvent.change(textarea, { target: { value: '{not json' } });
-    fireEvent.blur(textarea);
-    expect(await screen.findByTestId('translator-params-error')).toBeTruthy();
-  });
-
   it('shows an inline error when the save is rejected', async () => {
     const onSaveTranslatorConfig = vi.fn().mockRejectedValue(new Error('PUT /translator-config → 500'));
-    renderSettings({ onSaveTranslatorConfig });
-    const textarea = await screen.findByTestId('translator-params');
-    fireEvent.change(textarea, { target: { value: '{"max_tokens": 999}' } });
-    fireEvent.blur(textarea);
+    const otherModel: ModelRegistryEntryPublic = { ...model, name: 'anthropic/claude' };
+    renderSettings({ models: [model, otherModel], onSaveTranslatorConfig });
+
+    const card = await screen.findByTestId('translator-card');
+    const select = within(card).getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: otherModel.name } });
+
     expect((await screen.findByTestId('translator-field-error')).textContent).toContain('500');
   });
 });
@@ -667,7 +651,7 @@ describe('SettingsTab Grounding card', () => {
     sessionStorage.clear();
   });
 
-  it('renders the Grounding section with the model select populated', async () => {
+  it('renders the Grounding section with the model select populated; call params stay Model-Registry-only', async () => {
     renderSettings();
 
     // Numbered heading now shares text with its nav link ("4. Grounding"),
@@ -677,6 +661,7 @@ describe('SettingsTab Grounding card', () => {
     const select = editor.querySelector('select') as HTMLSelectElement;
     expect(select.value).toBe(model.name);
     expect(select.querySelectorAll('option')).toHaveLength(1);
+    expect(within(editor).queryByTestId('grounding-params-badge')).toBeNull();
   });
 
   it('does not render the Grounding editor when groundingConfig is null, showing the unavailable affordance instead (2026-07-06 prod incident)', () => {
@@ -714,19 +699,6 @@ describe('SettingsTab Grounding card', () => {
     await waitFor(() => expect(onSaveGroundingConfig).toHaveBeenCalledWith(
       expect.objectContaining({ modelName: otherModel.name }),
     ));
-  });
-
-  it('expands params and shows an inline error on invalid JSON', async () => {
-    renderSettings();
-
-    const badge = await screen.findByTestId('grounding-params-badge');
-    fireEvent.click(badge);
-    const paramsArea = await screen.findByTestId('grounding-params-expanded');
-    const textarea = paramsArea.querySelector('textarea') as HTMLTextAreaElement;
-    fireEvent.change(textarea, { target: { value: '{not json' } });
-    fireEvent.blur(textarea);
-
-    expect(await screen.findByTestId('grounding-params-error')).toBeTruthy();
   });
 
   it('shows an inline error when the save is rejected', async () => {
@@ -790,12 +762,12 @@ describe('SettingsTab 5-section layout with mini-nav (EMNLP sprint)', () => {
 });
 
 describe('SettingsTab Refiner card (EMNLP sprint)', () => {
-  it('renders with model/params/prompt from refinerConfig', async () => {
+  it('renders with model/prompt from refinerConfig; call params stay Model-Registry-only', async () => {
     renderSettings();
     const card = await screen.findByTestId('refiner-card');
     expect(within(card).getByText(model.name, { selector: 'option' })).toBeTruthy();
-    expect(within(card).getByTestId('refiner-params').textContent).toContain('max_tokens');
     expect(within(card).getByTestId('refiner-prompt-preview')).toBeTruthy();
+    expect(within(card).queryByTestId('refiner-params')).toBeNull();
   });
 
   it('does not render the Refiner card when refinerConfig is null, showing the unavailable affordance instead', () => {

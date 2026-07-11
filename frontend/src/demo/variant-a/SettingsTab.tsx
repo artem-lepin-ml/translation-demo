@@ -830,45 +830,11 @@ interface TranslatorCardProps {
 
 function TranslatorCard({ config, models, onSave, error }: TranslatorCardProps) {
   const [modelName, setModelName] = useState(config.modelName ?? '');
-  const [paramsText, setParamsText] = useState(JSON.stringify(config.params, null, 2));
-  const [paramsError, setParamsError] = useState<string | null>(null);
 
   function commitField(next: Partial<TranslatorConfig>) {
     void onSave({ modelName, prompt: config.prompt, params: config.params, ...next }).catch(() => {
       // onSave already recorded the error via the `error` prop.
     });
-  }
-
-  function commitParams() {
-    let params: Record<string, unknown>;
-    try {
-      params = JSON.parse(paramsText);
-    } catch {
-      setParamsError('Params must be valid JSON.');
-      return;
-    }
-    setParamsError(null);
-    commitField({ params });
-  }
-
-  // "Effective" preview is estimated client-side from the draft params plus
-  // the selected model's own capability fact (does it force a seed?) — there
-  // is no dedicated translator-effective-params endpoint (GET
-  // /translator-config only returns model/prompt/params), so this mirrors
-  // the same whitelist the backend validates against rather than guessing.
-  const selectedModel = models.find((m) => m.name === modelName);
-  const forcesSeed = 'seed' in (selectedModel?.effectiveParams ?? {});
-  let parsedForPreview: Record<string, unknown> | null = null;
-  try {
-    parsedForPreview = JSON.parse(paramsText);
-  } catch {
-    parsedForPreview = null;
-  }
-  const effectiveParts = parsedForPreview
-    ? Object.entries(parsedForPreview).map(([k, v]) => `${PARAM_DISPLAY_KEY[k] ?? k} ${formatParamValue(v)}`)
-    : [];
-  if (forcesSeed && parsedForPreview && !('seed' in parsedForPreview)) {
-    effectiveParts.push('seed 7 (forced for reproducibility)');
   }
 
   return (
@@ -885,24 +851,6 @@ function TranslatorCard({ config, models, onSave, error }: TranslatorCardProps) 
             <option key={m.name} value={m.name}>{m.name}</option>
           ))}
         </select>
-      </div>
-
-      <div className="va-translator-params-row">
-        <div style={{ maxWidth: 340, flex: 1 }}>
-          <div className="va-field-label">Params</div>
-          <textarea
-            className="va-field-input"
-            style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11.5, minHeight: 70, resize: 'vertical' }}
-            data-testid="translator-params"
-            value={paramsText}
-            onChange={(e) => setParamsText(e.target.value)}
-            onBlur={commitParams}
-          />
-          {paramsError && <div className="va-inline-error" data-testid="translator-params-error">{paramsError}</div>}
-          <div className="va-effective-line" data-testid="translator-effective">
-            Effective: <b>{effectiveParts.join(' · ') || '—'}</b>
-          </div>
-        </div>
       </div>
 
       <PromptEditor
@@ -935,26 +883,11 @@ interface GroundingEditorProps {
 function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps) {
   const [modelName, setModelName] = useState(config.modelName ?? '');
   const [prompt, setPrompt] = useState(config.prompt);
-  const [paramsText, setParamsText] = useState(JSON.stringify(config.params, null, 2));
-  const [paramsError, setParamsError] = useState<string | null>(null);
-  const [paramsOpen, setParamsOpen] = useState(false);
 
   function commitField(next: Partial<GroundingConfig>) {
     void onSave({ modelName, prompt, params: config.params, ...next }).catch(() => {
       // onSave already recorded the error in `error`; nothing further to do here.
     });
-  }
-
-  function commitParams() {
-    let params: Record<string, unknown>;
-    try {
-      params = JSON.parse(paramsText);
-    } catch {
-      setParamsError('Params must be valid JSON.');
-      return;
-    }
-    setParamsError(null);
-    commitField({ params });
   }
 
   return (
@@ -985,32 +918,6 @@ function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps
         />
       </div>
 
-      {/* Params — Model Registry's expand pattern */}
-      <div>
-        <div className="va-field-label">Params</div>
-        <span
-          className={`va-params-badge${paramsOpen ? ' open' : ''}`}
-          data-testid="grounding-params-badge"
-          onClick={() => setParamsOpen((v) => !v)}
-        >
-          <span className="chev">▶</span>{Object.keys(config.params).length} params
-        </span>
-        {paramsOpen && (
-          <div className="va-params-expanded" data-testid="grounding-params-expanded">
-            <textarea
-              className="va-field-input"
-              style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, minHeight: 100, resize: 'vertical' }}
-              value={paramsText}
-              onChange={(e) => setParamsText(e.target.value)}
-              onBlur={commitParams}
-            />
-            {paramsError && (
-              <div className="va-inline-error" data-testid="grounding-params-error">{paramsError}</div>
-            )}
-          </div>
-        )}
-      </div>
-
       {error && (
         <div className="va-inspector-warning" data-testid="grounding-field-error">
           {error}
@@ -1022,9 +929,9 @@ function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps
 
 // ─── RefinerCard — aggregates judge findings, rewrites the paragraph (EMNLP sprint) ──
 // Mirrors TranslatorCard: model select + editable prompt (via the shared
-// PromptEditor). Params are display-only here (ParamsInline, read-only) — the
-// refiner endpoint is brand-new this sprint, so the JSON-editing surface
-// TranslatorCard/GroundingEditor expose for params is deliberately deferred.
+// PromptEditor). Params are never shown here — role-level overrides stay
+// active server-side but are only ever displayed/edited in the Model
+// Registry section (owner call, 2026-07-11: params visible there only).
 
 interface RefinerCardProps {
   config: RefinerConfig;
@@ -1056,13 +963,6 @@ function RefinerCard({ config, models, onSave, error }: RefinerCardProps) {
             <option key={m.name} value={m.name}>{m.name}</option>
           ))}
         </select>
-      </div>
-
-      <div>
-        <div className="va-field-label">Params</div>
-        <span data-testid="refiner-params">
-          <ParamsInline params={config.params} />
-        </span>
       </div>
 
       <PromptEditor
