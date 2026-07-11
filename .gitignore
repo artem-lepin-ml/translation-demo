@@ -63,4 +63,6 @@ data/e2e-budget_calls.jsonl
 .claude/memory/*.db
 .claude/memory/*.db-wal
 .claude/memory/*.db-shm
-reports/terminology/wikidata_cache.*.jsonl
+
+# per-run Wikidata API caches (rebuildable, 600+MB each)
+reports/terminology/wikidata_cache_*.jsonl
