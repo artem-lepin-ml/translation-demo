@@ -40,3 +40,4 @@
 {"article": "Касситская династия", "done": 40, "of": 100, "spent": 1.0967922449999898, "spent_by_kind": {"extract": 1.0967922449999898, "judge": 0.0}, "calls_by_kind": {"extract": 1111, "judge": 0}}
 {"article": "Кесария Палестинская", "done": 41, "of": 100, "spent": 1.119965069999992, "spent_by_kind": {"extract": 1.119965069999992, "judge": 0.0}, "calls_by_kind": {"extract": 1137, "judge": 0}}
 {"article": "Кипрская война (390—380 до н. э.)", "done": 42, "of": 100, "spent": 1.1216450699999923, "spent_by_kind": {"extract": 1.1216450699999923, "judge": 0.0}, "calls_by_kind": {"extract": 1141, "judge": 0}}
+{"article": "Лувийский язык", "done": 43, "of": 100, "spent": 1.155559634999996, "spent_by_kind": {"extract": 1.155559634999996, "judge": 0.0}, "calls_by_kind": {"extract": 1179, "judge": 0}}
