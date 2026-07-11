@@ -283,6 +283,74 @@ to read "no caller in the webapp yet") now sends
 string, so a live disambiguation call actually carries the Role/output-contract
 instructions the frozen module's decision table expects.
 
+## Content clone cache
+
+EMNLP demo-video follow-up: `POST /api/documents` (`translate:false` only) now
+checks whether the upload's CONTENT already matches an existing, fully-processed
+document before touching precompute/live terminology at all. On a match it
+clones that document's terms/scores/issues straight into the new one — no LLM
+call, no waiting — so a presenter can upload a source+translation pair that is
+byte-identical to a document already run through the pipeline and get terms +
+judge scores back in the same 201 response.
+
+**Fingerprint.** After paragraphs are inserted (still inside the same
+`db._lock`/transaction, before the single `conn.commit()`), `app.py` hashes the
+ordered `(source, target)` pairs — `_content_fingerprint`: each field run through
+`_normalize_ws` (collapse whitespace runs, strip ends — the same normalization
+`_sanitize_lang` applies to language names) and the whole list serialized as
+JSON before `sha256`. Title and languages are deliberately excluded — the cache
+matches on translation content only. Serializing as a JSON array (not a raw
+string concatenation) keeps pair count and order load-bearing in the hash
+itself, so a different paragraph count or a reordering can never collide by
+construction — a mismatched count silently falls through to the normal
+(non-cloned) path, no special-case needed. No schema change and no persisted
+fingerprint column: `_find_clone_source` recomputes each candidate's fingerprint
+on the fly from its current `paragraph` rows on every call — the demo has few
+documents, so this is cheap.
+
+**Match rule.** Only a document with `terms_status='done'` is eligible as a
+clone source (never a document that is itself `none`/`running`/`failed`) —
+oldest match wins if several qualify. Any `origin` qualifies, including the
+seed document. `translate:true` uploads are exempt outright — their targets are
+still empty at this point in `create_document`, so fingerprinting them would
+never usefully match anything real.
+
+**Copy.** `_clone_predictions` copies, paragraph-by-paragraph in `idx` order
+(index-aligned against the source document's own `idx` order): every `term`
+row verbatim (`paragraph_id` remapped only — difficulty/grounded_json/
+candidates_json/trace_json/target_surface/pair_accuracy/recommended/note all
+carried over), every `score` row verbatim including its own frozen `aggregate`/
+`criteria_key` columns (`_para_score_views` reads `score.aggregate` straight off
+the row rather than recomputing it, the same "frozen at write time" contract
+`seed.py`/`precompute._write_paragraph` use — see `aggregate.py`), and every
+`issue` row verbatim (`kind`/`status`/`criterion_id` included, so accepted/
+dismissed history carries over too, not just the open set). `created_at` on the
+copied score/issue rows is stamped to the clone's own timestamp;
+`score.revision_id` is remapped to the new paragraph's own single just-inserted
+`target_revision` (every paragraph reaching this path came from a non-translate
+upload, so it always has exactly one) — this is what makes `_best_revision`
+report `isCurrent: true` immediately on a cloned paragraph. Source rows are read
+oldest-first and re-inserted in that same relative order, so the fresh
+autoincrement ids preserve the original recency ordering and
+`_para_score_views`'s `ORDER BY created_at DESC, id DESC` tie-break reproduces
+the source document's latest/prev split exactly — a cloned document reads
+identically to its source through every existing read path (`_para_dict`,
+`_para_score_views`, `_para_issues`, `_best_revision`), no special-casing needed
+there at all.
+
+**Response and skipped launches.** On a match, `create_document` sets
+`terms_status='done'` directly (instead of `'running'`) inside the same
+lock/transaction, so the 201 body already carries `termsStatus: "done"` and the
+cloned `scores`/`issues`/`terms`/`aggregate`/`best` per paragraph — never
+`precompute.launch` nor `terminology_live.launch` run for this document.
+`precompute.mark_skipped(doc_id)` is called regardless of the request's own
+`precompute` flag (cloned scores already ARE the baseline; running precompute
+over them would be redundant spend). A single `logger.info("document %d cloned
+from %d via content fingerprint", ...)` line records the clone. A non-matching
+upload (different content, or the same content padded/trimmed to a different
+paragraph count) is entirely unaffected — it takes the pre-existing precompute/
+terminology-live path exactly as before.
+
 ## Revision history & best
 
 Every write to `paragraph.target` — upload, a manual PATCH (only if the text actually changed), apply-edit, translate, reset, and restore — also inserts a `target_revision` row (`{paragraph_id, text, origin, created_at}`; `origin` one of `seed|upload|edit|apply_edit|translate|restore`). `seed.py` writes one at seed time too, so a freshly-seeded DB and a migrated prod DB have the same shape of history. `score.revision_id` is stamped at all three score-INSERT sites (`/evaluate`, `precompute._write_paragraph`, `seed.py`) via `db.latest_revision_id(conn, pid)`.

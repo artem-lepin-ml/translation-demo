@@ -6,6 +6,7 @@ API-only: the React/TipTap frontend is served separately by Vite (which proxies
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import io
 import json
 import logging
@@ -338,6 +339,112 @@ def _terms_launch_after_translate(doc_id: int, client_for) -> None:
         terminology_live.launch(doc_id, client_for, _grounding_judge_live)
 
 
+# ─────────────────────── content-fingerprint clone cache ───────────────────────
+# EMNLP demo-video follow-up: a translate:false upload whose (source, target)
+# pairs match an existing terms_status='done' document byte-for-byte
+# (whitespace-run normalized) instantly inherits its terms/scores/issues
+# instead of spending LLM calls. See "Content clone cache" in
+# docs/subsystems/webapp.md for the full design.
+
+def _normalize_ws(text: str) -> str:
+    """Collapse every whitespace run (including newlines/tabs) to a single
+    space and strip the ends — the same "incidental formatting shouldn't
+    matter" normalization ``_sanitize_lang`` applies to language names,
+    reused here so the fingerprint matches across trivial paste differences
+    (double spaces, CRLF, a trailing blank line)."""
+    return " ".join((text or "").split())
+
+
+def _content_fingerprint(pairs: list[tuple[str, str]]) -> str:
+    """sha256 over the ordered ``(source, target)`` pairs, whitespace-run
+    normalized. Title/langs are deliberately excluded — the clone cache
+    matches on translation CONTENT only. Serializing as a JSON array (not a
+    raw concatenation) keeps pair count and order load-bearing in the hash
+    itself, so a different paragraph count or a reordering can never
+    collide by construction."""
+    normalized = [[_normalize_ws(s), _normalize_ws(t)] for s, t in pairs]
+    payload = json.dumps(normalized, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _find_clone_source(conn, new_doc_id: int, fingerprint: str) -> int | None:
+    """First existing document (any origin — the seed document qualifies like
+    any other) whose CURRENT paragraph content hashes to ``fingerprint``,
+    oldest match wins. Fingerprints are never stored — recomputed on the fly
+    per candidate on every call; the demo has few documents, so this is
+    cheap and needs no schema change. Only a fully-processed source
+    (``terms_status='done'``) is eligible — a document still
+    none/running/failed has nothing worth cloning yet, and this also keeps
+    the brand-new document (still 'none' at this point) from matching
+    itself."""
+    for row in conn.execute(
+            "SELECT id FROM document WHERE id != ? AND terms_status='done' ORDER BY id",
+            (new_doc_id,)):
+        cand_id = row["id"]
+        cand_rows = conn.execute(
+            "SELECT source, target FROM paragraph WHERE document_id=? ORDER BY idx",
+            (cand_id,)).fetchall()
+        cand_pairs = [(r["source"], r["target"]) for r in cand_rows]
+        if _content_fingerprint(cand_pairs) == fingerprint:
+            return cand_id
+    return None
+
+
+def _clone_predictions(
+        conn, source_doc_id: int, new_pids: list[int], new_revision_ids: list[int | None], ts: str) -> None:
+    """Copy every term/score/issue row from ``source_doc_id`` onto the
+    freshly-inserted paragraphs in ``new_pids``, index-aligned (caller
+    already matched paragraph counts via the fingerprint, and holds
+    ``db._lock`` inside the same not-yet-committed transaction as the
+    paragraph inserts).
+
+    ``term`` rows keep every column verbatim (difficulty/grounded_json/
+    candidates_json/trace_json/target_surface/pair_accuracy/recommended/
+    note) — only ``paragraph_id`` is remapped. ``score``/``issue`` rows keep
+    kind/status/criterion_id verbatim too, INCLUDING each score row's own
+    frozen ``aggregate``/``criteria_key`` columns — the same "computed once
+    at write time, never recomputed" contract ``seed.py``/
+    ``precompute._write_paragraph`` use (see ``aggregate.py``):
+    ``_para_score_views`` reads ``score.aggregate`` straight off the row, so
+    copying the column verbatim reproduces the source document's exact
+    scores/deltas with no extra computation here. ``created_at`` is stamped
+    to ``ts`` (the clone happens "now"); ``score.revision_id`` is remapped
+    to the new paragraph's own (single, just-inserted) revision — every
+    paragraph reaching this function came from a non-translate upload, so
+    it always has exactly one. Source rows are read oldest-first and
+    inserted in that same relative order, so the fresh autoincrement ids
+    preserve the original recency ordering and ``_para_score_views``'s
+    ``ORDER BY created_at DESC, id DESC`` "latest per criterion" tie-break
+    reproduces the source document's latest/prev split exactly.
+    """
+    cand_rows = conn.execute(
+        "SELECT id FROM paragraph WHERE document_id=? ORDER BY idx", (source_doc_id,)).fetchall()
+    cand_pids = [r["id"] for r in cand_rows]
+    for new_pid, new_revision_id, cand_pid in zip(new_pids, new_revision_ids, cand_pids, strict=True):
+        for t in conn.execute("SELECT * FROM term WHERE paragraph_id=? ORDER BY id", (cand_pid,)):
+            conn.execute(
+                "INSERT INTO term(paragraph_id,source_surface,source_lemma,context,char_start,char_end,"
+                "difficulty,grounded_json,candidates_json,target_surface,pair_accuracy,recommended,note,"
+                "trace_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (new_pid, t["source_surface"], t["source_lemma"], t["context"], t["char_start"], t["char_end"],
+                 t["difficulty"], t["grounded_json"], t["candidates_json"], t["target_surface"],
+                 t["pair_accuracy"], t["recommended"], t["note"], t["trace_json"]))
+        for s in conn.execute(
+                "SELECT * FROM score WHERE paragraph_id=? ORDER BY created_at ASC, id ASC", (cand_pid,)):
+            conn.execute(
+                "INSERT INTO score(paragraph_id,criterion_id,value,summary,aggregate,criteria_key,kind,"
+                "created_at,revision_id) VALUES(?,?,?,?,?,?,?,?,?)",
+                (new_pid, s["criterion_id"], s["value"], s["summary"], s["aggregate"], s["criteria_key"],
+                 s["kind"], ts, new_revision_id))
+        for i in conn.execute("SELECT * FROM issue WHERE paragraph_id=? ORDER BY id", (cand_pid,)):
+            conn.execute(
+                "INSERT INTO issue(paragraph_id,criterion_id,target_fragment,source_fragment,explanation,"
+                "suggestion,severity,mqm_category,status,kind,created_at) "
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                (new_pid, i["criterion_id"], i["target_fragment"], i["source_fragment"], i["explanation"],
+                 i["suggestion"], i["severity"], i["mqm_category"], i["status"], i["kind"], ts))
+
+
 @app.post("/api/documents", status_code=201)
 async def create_document(request: Request) -> dict:
     raw = await _read_body_capped(request)
@@ -390,28 +497,53 @@ async def create_document(request: Request) -> dict:
             "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,created_at) "
             "VALUES(?,?,?,'user',0,'upload',?)",
             (body.title.strip(), src, tgt, ts)).lastrowid
+        new_pids: list[int] = []
+        new_revision_ids: list[int | None] = []
+        stored_pairs: list[tuple[str, str]] = []
         for idx, pair in enumerate(body.paragraphs):
             source = pair.source.strip()
             target = "" if body.translate else pair.target.strip()
             pid = conn.execute(
                 "INSERT INTO paragraph(document_id,idx,source,target,seed_target) VALUES(?,?,?,?,?)",
                 (doc_id, idx, source, target, target)).lastrowid
+            new_pids.append(pid)
+            stored_pairs.append((source, target))
             if not body.translate:
                 # translate:true leaves target empty — translate.py writes the
                 # first real revision once each paragraph is actually translated.
-                db.write_revision(conn, pid, target, "upload", ts)
+                new_revision_ids.append(db.write_revision(conn, pid, target, "upload", ts))
+            else:
+                new_revision_ids.append(None)
+
+        # Content-fingerprint clone cache — translate:true is exempt (targets
+        # are still empty here, nothing meaningful to fingerprint yet; terms
+        # for a translate:true doc only ever launch post-translation, see
+        # _terms_launch_after_translate).
+        cloned_from: int | None = None
+        if not body.translate:
+            fingerprint = _content_fingerprint(stored_pairs)
+            cloned_from = _find_clone_source(conn, doc_id, fingerprint)
+            if cloned_from is not None:
+                _clone_predictions(conn, cloned_from, new_pids, new_revision_ids, ts)
+
         conn.commit()
         # Set in-memory precompute/translation status BEFORE building the
         # response so the 201 body already carries it (run() refines `planned`
         # once it re-counts the paragraphs, but the initial value here is
         # already correct — same min(N, PRECOMPUTE_PARAS) math).
-        if run_precompute:
+        if cloned_from is not None:
+            # Cloned scores already ARE the baseline — never spend a judge
+            # pass on paragraphs whose scores were just cloned in.
+            precompute.mark_skipped(doc_id)
+        elif run_precompute:
             precompute.mark_started(doc_id, len(body.paragraphs))
         else:
             precompute.mark_skipped(doc_id)
         if body.translate:
             translate._translating.add(doc_id)
             translate.mark_started(doc_id, len(body.paragraphs))
+        elif cloned_from is not None:
+            conn.execute("UPDATE document SET terms_status='done' WHERE id=?", (doc_id,))
         else:
             # translate:true docs have no target yet — terms launch later, at
             # translate's successful end (see _terms_launch_after_translate).
@@ -422,11 +554,13 @@ async def create_document(request: Request) -> dict:
             conn.execute("UPDATE document SET terms_status='running' WHERE id=?", (doc_id,))
         d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
         result = _doc_dict(conn, d)
-    if run_precompute:
+    if cloned_from is not None:
+        logger.info("document %d cloned from %d via content fingerprint", doc_id, cloned_from)
+    if run_precompute and cloned_from is None:
         precompute.launch(doc_id, _judge_live)
     if body.translate:
         translate.launch(doc_id, _client_for, _terms_launch_after_translate)
-    else:
+    elif cloned_from is None:
         terminology_live.launch(doc_id, _client_for, _grounding_judge_live)
     return result
 
