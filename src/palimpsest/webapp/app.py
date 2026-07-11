@@ -22,8 +22,9 @@ from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from ..llm.client import LLMClient, LLMConfig, is_transient_error
+from ..terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
 from ..terminology.verdict import _norm
-from . import budget, db, export, precompute, translate
+from . import budget, db, export, precompute, terminology_live, translate
 from .aggregate import compute_aggregate
 from .judge import judge_one, looks_like_advice, scoring_system_prompt
 from .migrate import migrate as _migrate_db
@@ -236,7 +237,8 @@ def _doc_dict(conn, d) -> dict:
     para_dicts = [_para_dict(conn, p) for p in paras]
     aggs = [pd["aggregate"] for pd in para_dicts if pd["aggregate"] is not None]
     out = {**_doc_summary(conn, d), "sourceModel": d["source_model"], "version": d["version"],
-           "aggregate": round(sum(aggs) / len(aggs), 2) if aggs else None, "paragraphs": para_dicts}
+           "aggregate": round(sum(aggs) / len(aggs), 2) if aggs else None, "paragraphs": para_dicts,
+           "termsStatus": d["terms_status"]}
     if d["origin"] == "upload":
         out["precompute"] = _status_public(precompute.status_for(d["id"]))
         out["translation"] = _status_public(translate.status_for(d["id"]))
@@ -319,6 +321,22 @@ async def _read_body_capped(request: Request) -> bytes:
     return body
 
 
+def _terms_launch_after_translate(doc_id: int, client_for) -> None:
+    """``translate.py``'s optional ``terms_launch`` callback, invoked once at
+    the successful end of a translate run (see ``translate.py``'s ``_run``)
+    so pairing sees the FINAL translated targets. Bundles
+    ``_grounding_judge_live`` here so ``terminology_live``/``translate``
+    don't need a second injected parameter threaded through translate.py's
+    own launch chain (which only ever passes ``client_for`` around, mirroring
+    precompute's ``judge_live``-only convention).
+    ``terminology_live.try_start`` guards against a resumed ``POST
+    .../translate`` re-triggering terms after they already ran once for this
+    document."""
+    conn = db.connect()
+    if terminology_live.try_start(conn, doc_id):
+        terminology_live.launch(doc_id, client_for, _grounding_judge_live)
+
+
 @app.post("/api/documents", status_code=201)
 async def create_document(request: Request) -> dict:
     raw = await _read_body_capped(request)
@@ -393,12 +411,22 @@ async def create_document(request: Request) -> dict:
         if body.translate:
             translate._translating.add(doc_id)
             translate.mark_started(doc_id, len(body.paragraphs))
+        else:
+            # translate:true docs have no target yet — terms launch later, at
+            # translate's successful end (see _terms_launch_after_translate).
+            # A non-translate doc already has real targets, so terms can run
+            # immediately; write 'running' inside this same lock/transaction
+            # so the 201 body below already reflects it (same "set status
+            # before building the response" rule precompute/translate follow).
+            conn.execute("UPDATE document SET terms_status='running' WHERE id=?", (doc_id,))
         d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
         result = _doc_dict(conn, d)
     if run_precompute:
         precompute.launch(doc_id, _judge_live)
     if body.translate:
-        translate.launch(doc_id, _client_for)
+        translate.launch(doc_id, _client_for, _terms_launch_after_translate)
+    else:
+        terminology_live.launch(doc_id, _client_for, _grounding_judge_live)
     return result
 
 
@@ -1154,9 +1182,14 @@ async def _grounding_judge_live(conn, prompt: str, endpoint: str = "grounding"):
     max_tokens=512/temperature=0 per the grounding_config row, reasoning param
     omitted per-model via the existing model_matrix/ModelParams mechanism.
 
-    # TODO(wired when live re-grounding endpoint exists) — no caller in the
-    # webapp yet (spec scopes the Settings surface only: table + 2 endpoints +
-    # card + this wrapper; see 2026-07-03-grounding-label-first-design.md §4).
+    ``prompt`` is the USER-only content (Role + output contract now live in
+    ``DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT``, sent as the system message below
+    -- spec 2026-07-10-wiki-eval-experiment-v2.md Р7).
+
+    Called for real by ``terminology_live.py``'s live disambiguation judge
+    (2026-07-11 EMNLP sprint) — see that module for the sync/async bridge
+    that lets its Judge callable (invoked deep inside the frozen, synchronous
+    ``LabelFirstGrounding.ground()``) reach this async, budget-guarded call.
     """
     row = conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
     if row is None or not row["model_name"]:
@@ -1174,7 +1207,7 @@ async def _grounding_judge_live(conn, prompt: str, endpoint: str = "grounding"):
     while True:
         try:
             res = await asyncio.wait_for(
-                asyncio.to_thread(client.complete, "", prompt), EVAL_TIMEOUT)
+                asyncio.to_thread(client.complete, DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT, prompt), EVAL_TIMEOUT)
             break
         except Exception as exc:
             if is_transient_error(exc) and attempt < EVAL_RETRIES:
@@ -1323,15 +1356,6 @@ async def test_model(name: str, body: TestBody = TestBody()) -> dict:
             "matched": matched, "total": total, "share": round(share, 3),
             "tokens": tokens, "costUsd": cost, "latencyMs": latency,
             "message": "ok" if share >= 0.5 else "share below 0.5"}
-
-
-# ─────────────────────────── terminology (term-agent fills later) ───────────────────────────
-
-@app.post("/api/paragraphs/{pid}/terms")
-def post_terms(pid: int) -> list:
-    conn = db.connect()
-    _para_or_404(conn, pid)
-    return [_term_dict(r) for r in conn.execute("SELECT * FROM term WHERE paragraph_id=? ORDER BY char_start", (pid,))]
 
 
 # ─────────────────────────── static frontend (production container) ───────────────────────────

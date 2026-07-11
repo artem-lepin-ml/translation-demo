@@ -24,7 +24,8 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE document (
   id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, source_lang TEXT, target_lang TEXT,
   source_model TEXT, seed_model TEXT, seed_prompt_variant TEXT,
-  version INTEGER DEFAULT 0, origin TEXT DEFAULT 'seed', created_at TEXT
+  version INTEGER DEFAULT 0, origin TEXT DEFAULT 'seed', created_at TEXT,
+  terms_status TEXT NOT NULL DEFAULT 'none'
 );
 CREATE TABLE paragraph (
   id INTEGER PRIMARY KEY AUTOINCREMENT, document_id INTEGER REFERENCES document(id) ON DELETE CASCADE,

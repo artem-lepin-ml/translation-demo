@@ -124,6 +124,25 @@ def _add_score_revision_column(conn: sqlite3.Connection) -> None:
             "ALTER TABLE score ADD COLUMN revision_id INTEGER REFERENCES target_revision(id)")
 
 
+def _add_document_terms_status_column(conn: sqlite3.Connection) -> None:
+    """2026-07-11 EMNLP sprint (live terminology pipeline): 'none'|'running'|
+    'done'|'failed', see terminology_live.py. NOT NULL DEFAULT 'none' matches
+    db.py SCHEMA and backfills every existing row via the ALTER's DEFAULT —
+    same pattern as _add_term_trace_json_column."""
+    if not _has_column(conn, "document", "terms_status"):
+        conn.execute("ALTER TABLE document ADD COLUMN terms_status TEXT NOT NULL DEFAULT 'none'")
+
+
+def _backfill_seed_document_terms_status(conn: sqlite3.Connection) -> None:
+    """The seeded demo document already has precomputed terms (loaded by
+    scripts/load_terms.py, not by the live pipeline) — mark it 'done' so the
+    frontend never shows it as pending. Idempotent (a 'done' row is simply
+    left unchanged); runs unconditionally, unlike the FK-guarded config
+    seeds above, since 'origin=seed' rows are safe to touch regardless of
+    whether any model row exists yet."""
+    conn.execute("UPDATE document SET terms_status='done' WHERE origin='seed' AND terms_status!='done'")
+
+
 def _backfill_paragraph_revisions(conn: sqlite3.Connection) -> None:
     """Every paragraph without a single ``target_revision`` row gets one,
     seeded from its current ``target`` text — so a migrated prod DB and a
@@ -150,6 +169,8 @@ def migrate(conn: sqlite3.Connection) -> None:
     _add_term_trace_json_column(conn)
     _add_score_revision_column(conn)
     _backfill_paragraph_revisions(conn)
+    _add_document_terms_status_column(conn)
+    _backfill_seed_document_terms_status(conn)
     conn.commit()
 
 

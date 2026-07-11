@@ -74,8 +74,8 @@ def _strip_label(text: str) -> str:
     return _LEADING_LABEL_RE.sub("", text.strip()).strip()
 
 
-def launch(doc_id: int, client_for) -> None:
-    t = asyncio.create_task(run_translation(doc_id, client_for))
+def launch(doc_id: int, client_for, terms_launch=None) -> None:
+    t = asyncio.create_task(run_translation(doc_id, client_for, terms_launch))
     _tasks[doc_id] = t
     t.add_done_callback(lambda _: _tasks.pop(doc_id, None))
 
@@ -119,11 +119,15 @@ async def _translate_one(client: LLMClient, system: str, user: str) -> str | Non
     return _strip_label(res.content or "")
 
 
-async def run_translation(doc_id: int, client_for) -> None:
+async def run_translation(doc_id: int, client_for, terms_launch=None) -> None:
     """``client_for`` is ``app._client_for`` (injected to avoid a circular
-    import, same pattern as precompute's ``judge_live``)."""
+    import, same pattern as precompute's ``judge_live``). ``terms_launch``
+    (2026-07-11 EMNLP sprint, optional — existing callers/tests that pass
+    only ``client_for`` keep working unchanged) is ``app._terms_launch_
+    after_translate``, called once at the successful end of ``_run`` so the
+    live terminology pipeline sees the FINAL translated targets."""
     try:
-        await _run(doc_id, client_for)
+        await _run(doc_id, client_for, terms_launch)
     except asyncio.CancelledError:
         raise                                  # propagate — do not touch _status further
     except Exception:
@@ -134,7 +138,7 @@ async def run_translation(doc_id: int, client_for) -> None:
         _translating.discard(doc_id)
 
 
-async def _run(doc_id: int, client_for) -> None:
+async def _run(doc_id: int, client_for, terms_launch=None) -> None:
     conn = db.connect()
     d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
     if d is None:
@@ -201,3 +205,5 @@ async def _run(doc_id: int, client_for) -> None:
         _status[doc_id].setdefault("error_reason", "all_failed")
     else:
         _status[doc_id]["status"] = "done"
+        if terms_launch is not None:
+            terms_launch(doc_id, client_for)

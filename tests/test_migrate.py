@@ -303,6 +303,38 @@ def test_migrate_adds_term_trace_json_column_with_default(prod_conn):
     assert row["trace_json"] == "{}"               # pre-existing row backfilled by ALTER's DEFAULT
 
 
+# ── document.terms_status (2026-07-11 EMNLP sprint: live terminology) ──────
+
+def test_migrate_adds_document_terms_status_column_with_default_none(prod_conn):
+    migrate.migrate(prod_conn)
+    cols = _tables(prod_conn)["document"]
+    assert "terms_status" in cols
+    row = prod_conn.execute("SELECT terms_status FROM document LIMIT 1").fetchone()
+    assert row["terms_status"] == "none"           # pre-existing (upload) row backfilled by ALTER's DEFAULT
+
+
+def test_migrate_backfills_seed_document_terms_status_to_done(prod_conn):
+    prod_conn.execute(
+        "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,created_at) "
+        "VALUES('Seed','ru','en','user',0,'seed','2026-01-01T00:00:00Z')")
+    prod_conn.commit()
+    migrate.migrate(prod_conn)
+    rows = {r["origin"]: r["terms_status"] for r in prod_conn.execute("SELECT origin, terms_status FROM document")}
+    assert rows["seed"] == "done"                  # already has precomputed terms
+    assert rows["upload"] == "none"                # non-seed rows are left alone
+
+
+def test_migrate_terms_status_backfill_idempotent_double_run(prod_conn):
+    prod_conn.execute(
+        "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,created_at) "
+        "VALUES('Seed','ru','en','user',0,'seed','2026-01-01T00:00:00Z')")
+    prod_conn.commit()
+    migrate.migrate(prod_conn)
+    migrate.migrate(prod_conn)                     # second run must not raise or change the result
+    rows = {r["origin"]: r["terms_status"] for r in prod_conn.execute("SELECT origin, terms_status FROM document")}
+    assert rows == {"seed": "done", "upload": "none"}
+
+
 def test_migrate_keeps_glossary_table(prod_conn):
     migrate.migrate(prod_conn)
     assert "glossary" in _tables(prod_conn)
