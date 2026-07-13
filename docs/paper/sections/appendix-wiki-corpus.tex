@@ -1,0 +1,22 @@
+% Appendix: WikiHist corpus construction. Facts verified against
+% scripts/select_wiki_corpus.py, data/eval/wiki/selection_v2.json and
+% docs/stages/wiki-eval.md (selection v2, 2026-07-05).
+
+\section{\datasetWikipediaName{} Corpus Construction}
+\label{app:wiki-corpus}
+
+Candidate pools are the article-namespace category subtrees of the ten
+section root categories. An article reachable from several sections is
+assigned to the first section in a fixed order and is used once.
+Candidates within each pool are shuffled with seed 42. The selection
+gate requires at least 30 unique in-text links to other articles, which
+serves as a proxy for substantive content. The chronological criterion
+takes the earliest value among the Wikidata properties inception (P571),
+start time (P580), point in time (P585), date of birth (P569), and
+publication date (P577). Articles with no recorded date are retained.
+Articles typed as films, paintings, or museums are excluded. Article
+HTML was collected in July 2026.
+
+Because the Wikipedia category graph is noisy, roughly three of the 100
+articles fall outside the target period. We disclose and retain them to
+avoid manual curation.
