@@ -60,7 +60,10 @@ _SPECS = [
     # supports_seed: OpenRouter's `seed` param is accepted by every OR route
     # here per the live metadata fetch (best-effort determinism hint
     # per-provider, not a hard guarantee).
-    # demo default model — everywhere (criteria, translator, grounding, refiner)
+    # available registry model — no longer the default (see DEFAULT_CRITERION_MODEL
+    # below); qwen3.6-27b is a forced-thinking model that returns empty output
+    # or times out in the refiner role (docs/known_issues.md), which drove the
+    # 2026-07-16 demo-wide move to gemini for every role
     _or("qwen/qwen3.6-27b", temp=True, top_k=True, min_p=True, seed=True,
         reasoning="effort",
         default_params={"max_tokens": 20000, "temperature": 0.7}),
@@ -72,8 +75,10 @@ _SPECS = [
     _or("deepseek/deepseek-v4-flash", temp=True, top_k=True, min_p=True, seed=True,
         reasoning="effort",
         default_params={"max_tokens": 20000, "temperature": 0.7}),
-    # effort obligatory, mirrors the retired gemini-3.5-flash row; owner set
-    # "medium" — not the cheaper "low" tier — as the model's default effort
+    # demo default model — everywhere (criteria, translator, grounding,
+    # refiner; EMNLP demo sprint, 2026-07-16 gemini-everywhere config); effort
+    # obligatory, mirrors the retired gemini-3.5-flash row; owner set "medium"
+    # — not the cheaper "low" tier — as the model's default effort
     # (2026-07-11 Settings finalization)
     _or("google/gemini-3.1-flash-lite", temp=False, top_k=False, min_p=False, seed=True,
         reasoning="effort",
@@ -83,14 +88,15 @@ _SPECS = [
 
 MATRIX: dict[str, ModelSpec] = {s.name: s for s in _SPECS}
 
-# Criteria/translator/grounding/refiner all point here by default. Must emit
-# clean parseable scoring JSON — qwen3.6-27b is the paper's headline model and
-# the OpenRouter row every role is seeded/migrated onto (2026-07-11 EMNLP
-# sprint; retires openai/gpt-5.4-mini). The 20000-token max_tokens is a
+# Criteria/translator/grounding/refiner all point here by default (2026-07-16:
+# moved from qwen/qwen3.6-27b to gemini-3.1-flash-lite for demo speed across
+# every role — see docs/known_issues.md for the qwen-as-refiner empty-output
+# gotcha that motivated the move). qwen3.6-27b stays in MATRIX as an available
+# registry model, just no longer the default. The 20000-token max_tokens is a
 # generous ceiling, not an expected generation length — /evaluate is still
 # bounded by EVAL_TIMEOUT (app.py, default 20s, env-overridable via
 # PALIMPSEST_EVAL_TIMEOUT).
-DEFAULT_CRITERION_MODEL = "qwen/qwen3.6-27b"
+DEFAULT_CRITERION_MODEL = "google/gemini-3.1-flash-lite"
 
 
 def additive_reasoning_tokens(name: str, params: dict) -> int:

@@ -28,7 +28,13 @@ TRANSLATOR_PROMPT_FILE = paths.PROMPTS / "translator" / "default.md"
 TRANSLATOR_DEFAULT_PARAMS = {"max_tokens": 2048, "temperature": 0.3}
 GROUNDING_DEFAULT_PARAMS = {"max_tokens": 512, "temperature": 0}
 REFINER_PROMPT_FILE = paths.PROMPTS / "refiner" / "default.md"
-REFINER_DEFAULT_PARAMS = {"max_tokens": 2048, "temperature": 0.2}
+# max_tokens=4096 (was 2048): the refiner rewrites a full paragraph in one
+# pass, and the demo default model (gemini-3.1-flash-lite, EMNLP sprint
+# 2026-07-16) has obligatory reasoning that shares the same token budget —
+# 2048 was tight enough to starve visible output on some paragraphs. See
+# docs/known_issues.md "qwen as refiner returns empty output" for why the
+# model itself moved off qwen the same day.
+REFINER_DEFAULT_PARAMS = {"max_tokens": 4096, "temperature": 0.2}
 
 # EMNLP demo sprint (2026-07-11): criteria collapsed to {accuracy, fluency,
 # style}; 'terminology' (the LLM-judge scoring dimension, NOT the separate
@@ -206,32 +212,55 @@ def _backfill_paragraph_revisions(conn: sqlite3.Connection) -> None:
 
 def _upsert_model_registry_and_remap(conn: sqlite3.Connection) -> None:
     """Ensure the current 4-row MATRIX exists in `model` and every `criterion`
-    row points at the new default model (EMNLP demo sprint, 2026-07-11).
+    row points at a valid model (EMNLP demo sprint, 2026-07-11).
     `INSERT OR IGNORE` — never clobbers an api_key/params an owner already
     edited via Settings on a prior migrate() run; `model`/`criterion` are base
-    tables, always present, so this is safe to run first."""
+    tables, always present, so this is safe to run first.
+
+    Durability fix (2026-07-16): only remap a criterion whose `model_name` is
+    NULL (never configured — use the default) or points at a RETIRED model
+    (not in the current MATRIX, e.g. a pre-2026-07-11 row about to be pruned
+    by `_prune_obsolete_model_rows`). A criterion an operator deliberately
+    pointed at a current-MATRIX model (e.g. gemini) must survive every
+    restart — the old `model_name != DEFAULT_CRITERION_MODEL` predicate
+    clobbered that choice back to the default on every migrate() run, which
+    is every app startup (app.py lifespan)."""
     or_key = os.environ.get("OPENROUTER_API_KEY", "")
     for spec in MATRIX.values():
         conn.execute(
             "INSERT OR IGNORE INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
             (spec.name, spec.base_url, or_key if spec.is_openrouter else "",
              json.dumps(spec.default_params)))
+    matrix_names = tuple(MATRIX.keys())
+    placeholders = ",".join("?" for _ in matrix_names)
     conn.execute(
-        "UPDATE criterion SET model_name=? WHERE model_name IS NULL OR model_name!=?",
-        (DEFAULT_CRITERION_MODEL, DEFAULT_CRITERION_MODEL))
+        f"UPDATE criterion SET model_name=? "
+        f"WHERE model_name IS NULL OR model_name NOT IN ({placeholders})",
+        (DEFAULT_CRITERION_MODEL, *matrix_names))
 
 
 def _remap_singleton_config_model_refs(conn: sqlite3.Connection) -> None:
     """translator_config/grounding_config/refiner_config.model_name each FK to
-    model(name) — repoint any of them still pointing at a pre-2026-07-11 model
-    row to the new registry default, now that the old rows are about to be
-    pruned (_prune_obsolete_model_rows). Runs after the three _create_*_config
-    steps, so all three tables are guaranteed to exist by now."""
+    model(name) — repoint any of them still pointing at a RETIRED (not in the
+    current MATRIX) model row to the new registry default, now that the old
+    rows are about to be pruned (_prune_obsolete_model_rows). Runs after the
+    three _create_*_config steps, so all three tables are guaranteed to exist
+    by now.
+
+    Durability fix (2026-07-16): the predicate used to be `model_name !=
+    DEFAULT_CRITERION_MODEL`, which reverted an operator's deliberate,
+    still-valid model choice (e.g. gemini) back to the default on every
+    migrate() run — migrate() runs on every app startup, so a restart/redeploy
+    silently undid a Settings-page choice. Only a genuinely retired model
+    (NOT IN the current MATRIX) gets repointed now; any current-MATRIX value
+    is preserved."""
+    matrix_names = tuple(MATRIX.keys())
+    placeholders = ",".join("?" for _ in matrix_names)
     for table in ("translator_config", "grounding_config", "refiner_config"):
         conn.execute(
             f"UPDATE {table} SET model_name=? "
-            f"WHERE id=1 AND model_name IS NOT NULL AND model_name!=?",
-            (DEFAULT_CRITERION_MODEL, DEFAULT_CRITERION_MODEL))
+            f"WHERE id=1 AND model_name IS NOT NULL AND model_name NOT IN ({placeholders})",
+            (DEFAULT_CRITERION_MODEL, *matrix_names))
 
 
 def _recompute_aggregates_for_remaining_criteria(

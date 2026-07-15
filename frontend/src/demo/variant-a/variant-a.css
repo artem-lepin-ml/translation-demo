@@ -1198,8 +1198,7 @@
 /* ─── Settings tab ────────────────────────────────────────────────────────── */
 
 /* 5-section layout with a sticky left mini-nav (EMNLP sprint): Model Registry /
-   Translator / Judges / Grounding / Refiner. BudgetLine sits above this as an
-   unnumbered status strip, not part of the nav. */
+   Translator / Judges / Grounding / Refiner. */
 .va-settings-layout {
   display: flex;
   align-items: flex-start;
@@ -1282,21 +1281,6 @@
   margin-bottom: 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--va-border);
-}
-
-.va-budget-line {
-  font-size: 12px;
-  font-family: var(--va-font-mono);
-  color: var(--va-text-muted);
-  margin-bottom: 16px;
-}
-
-.va-budget-line.yellow {
-  color: var(--va-yellow);
-}
-
-.va-budget-line.red {
-  color: var(--va-red);
 }
 
 .va-evaluator-color-swatch {

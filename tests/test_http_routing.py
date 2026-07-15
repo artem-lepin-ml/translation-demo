@@ -69,9 +69,10 @@ def test_delete_unused_model_slashed_name_routes(client):
 
 def test_delete_referenced_model_returns_409_not_404(client):
     c, _ = client
-    # qwen/qwen3.6-27b is the seeded criteria model (DEFAULT_CRITERION_MODEL) →
-    # 409, NOT a routing 404 (proves the slashed-name route matched)
-    r = c.delete("/api/models/qwen/qwen3.6-27b")
+    # google/gemini-3.1-flash-lite is the seeded criteria model
+    # (DEFAULT_CRITERION_MODEL, 2026-07-16 gemini-everywhere default) → 409,
+    # NOT a routing 404 (proves the slashed-name route matched)
+    r = c.delete("/api/models/google/gemini-3.1-flash-lite")
     assert r.status_code == 409, r.text
 
 

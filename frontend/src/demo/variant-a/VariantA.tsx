@@ -316,14 +316,37 @@ export default function VariantA() {
     void dismissIssue(issue.id);
   }
 
-  function handleRefine() {
+  // Synchronous re-entry guard: the buttons' `disabled={isLoading}` derives
+  // from Zustand state and only reaches the DOM on the next React render, so
+  // a rapid double/triple-click fires several real (paid) LLM calls before
+  // React disables it — Refine is a rewrite+rescore pair, so a triple-click
+  // can mean up to 6 paid calls. Same idiom as SettingsTab's handleTest guard
+  // and UploadModal's submit guard. Keyed by paraIdx (Set, not a single bool)
+  // so an in-flight call on one paragraph never blocks a click on another;
+  // shared between Refine and Evaluate so either one in flight blocks both,
+  // mirroring the combined `isLoading` the buttons already render against.
+  const inFlightEvalRef = useRef<Set<number>>(new Set());
+
+  async function handleRefine() {
     if (!selectedPara) return;
-    void refineParagraph(selectedPara.id, selectedParaIdx);
+    if (inFlightEvalRef.current.has(selectedParaIdx)) return;
+    inFlightEvalRef.current.add(selectedParaIdx);
+    try {
+      await refineParagraph(selectedPara.id, selectedParaIdx);
+    } finally {
+      inFlightEvalRef.current.delete(selectedParaIdx);
+    }
   }
 
-  function handleEvaluate() {
+  async function handleEvaluate() {
     if (!selectedPara) return;
-    void evaluateParagraph(selectedPara.id, selectedParaIdx);
+    if (inFlightEvalRef.current.has(selectedParaIdx)) return;
+    inFlightEvalRef.current.add(selectedParaIdx);
+    try {
+      await evaluateParagraph(selectedPara.id, selectedParaIdx);
+    } finally {
+      inFlightEvalRef.current.delete(selectedParaIdx);
+    }
   }
 
   function handleRetryFailed(criterionIds: string[]) {

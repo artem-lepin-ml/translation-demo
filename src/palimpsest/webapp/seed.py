@@ -236,11 +236,16 @@ def _seed_refiner_config(conn) -> None:
     """Mirrors _seed_translator_config — the refiner role (paper: "a dedicated
     refiner LLM integrates aggregated corrections in a single pass") is a
     singleton config exactly like the translator's, just for a rewrite-style
-    call instead of a first-pass draft."""
+    call instead of a first-pass draft.
+
+    max_tokens=4096 (was 2048, 2026-07-16) — mirrors migrate.py's
+    REFINER_DEFAULT_PARAMS; see docs/known_issues.md for why the refiner role
+    also moved off qwen (forced-thinking, empty output/timeout) onto the
+    gemini DEFAULT_CRITERION_MODEL the same day."""
     prompt = (paths.PROMPTS / "refiner" / "default.md").read_text(encoding="utf-8")
     conn.execute(
         "INSERT INTO refiner_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
-        (DEFAULT_CRITERION_MODEL, prompt, json.dumps({"max_tokens": 2048, "temperature": 0.2})))
+        (DEFAULT_CRITERION_MODEL, prompt, json.dumps({"max_tokens": 4096, "temperature": 0.2})))
 
 
 def _seed_glossary(conn) -> None:

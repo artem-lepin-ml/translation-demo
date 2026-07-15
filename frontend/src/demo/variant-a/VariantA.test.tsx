@@ -237,3 +237,42 @@ describe('Export control (audit-fix HIGH: dropdown items were unclickable)', () 
     expect(menuZ).toBeGreaterThan(backdropZ);
   });
 });
+
+describe('VariantA Refine/Evaluate double-submit guard (paid-LLM-call race)', () => {
+  it('fires evaluateParagraph exactly once for 3 synchronous clicks on Evaluate ↻', () => {
+    const evaluateParagraph = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([makeParagraph(1)])),
+      evaluateParagraph,
+    });
+    render(<VariantA />);
+
+    // Raw DOM .click() (not RTL's act()-wrapped fireEvent) reproduces the real
+    // race: 3 rapid clicks land before React commits the `loading` state that
+    // disables the button — same repro shape as UploadModal Step2's submit guard.
+    const btn = screen.getByTestId('evaluate-para') as HTMLButtonElement;
+    btn.click();
+    btn.click();
+    btn.click();
+
+    expect(evaluateParagraph).toHaveBeenCalledTimes(1);
+  });
+
+  it('fires refineParagraph exactly once for 3 synchronous clicks on Refine paragraph ✦', () => {
+    const refineParagraph = vi.fn().mockResolvedValue(undefined);
+    const paragraph = { ...makeParagraph(1), issues: [iss('1')] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+      refineParagraph,
+    });
+    render(<VariantA />);
+
+    const btn = screen.getByTestId('refine-paragraph') as HTMLButtonElement;
+    btn.click();
+    btn.click();
+    btn.click();
+
+    expect(refineParagraph).toHaveBeenCalledTimes(1);
+  });
+});

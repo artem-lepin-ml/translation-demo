@@ -300,7 +300,9 @@ def test_get_refiner_config_returns_seeded_default(seeded):
     out = get_refiner_config()
     assert out["modelName"] == DEFAULT_CRITERION_MODEL
     assert "expert translation editor" in out["prompt"]
-    assert out["params"] == {"max_tokens": 2048, "temperature": 0.2}
+    # max_tokens=4096 (was 2048): 2026-07-16 gemini-everywhere durability sprint
+    # — see docs/known_issues.md "qwen as refiner returns empty output".
+    assert out["params"] == {"max_tokens": 4096, "temperature": 0.2}
 
 
 def test_put_refiner_config_updates_and_get_reflects(seeded):

@@ -250,15 +250,6 @@ export interface ApplyEditResponse {
   siblingIssues: Issue[];
 }
 
-// ─── §2 budget snapshot ──────────────────────────────────────────────────────
-
-export interface BudgetSnapshot {
-  spentUsd: number;
-  capUsd: number;
-  calls: number;
-  callCap: number;
-}
-
 // ─── fetch helpers ───────────────────────────────────────────────────────────
 
 const BASE = '/api';
@@ -423,12 +414,6 @@ export function deleteModel(name: string): Promise<void> {
 
 export function testModel(name: string, effort?: string): Promise<TestModelResult> {
   return post(`/models/${encodeURIComponent(name)}/test`, effort ? { effort } : undefined);
-}
-
-// ─── §2 budget endpoint ──────────────────────────────────────────────────────
-
-export function getBudget(): Promise<BudgetSnapshot> {
-  return get('/budget');
 }
 
 // ─── §2 grounding-config endpoint ─────────────────────────────────────────────

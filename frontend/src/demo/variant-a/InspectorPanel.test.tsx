@@ -5,8 +5,8 @@ import * as apiClient from '../api-client';
 import type { Paragraph, Revision } from '../api-client';
 
 // HistoryBlock fetches GET /paragraphs/{id}/revisions on mount (component-owned
-// fetch, same pattern as SettingsTab's getBudget) — default to empty so tests
-// that don't care about revision history don't hit real fetch() in jsdom.
+// fetch) — default to empty so tests that don't care about revision history
+// don't hit real fetch() in jsdom.
 vi.mock('../api-client', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../api-client')>();
   return { ...actual, getRevisions: vi.fn().mockResolvedValue({ revisions: [] }) };

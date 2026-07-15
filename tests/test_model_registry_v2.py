@@ -165,6 +165,40 @@ def test_owner_edited_api_key_not_clobbered_on_second_run(prod_conn):
     assert row["params_json"] == '{"temperature":0.9}'
 
 
+def test_operator_set_current_matrix_criterion_model_survives_migrate(prod_conn):
+    """Durability fix (2026-07-16, CRITICAL): _upsert_model_registry_and_remap
+    used to test `model_name != DEFAULT_CRITERION_MODEL`, so an operator's
+    deliberate choice of any OTHER current-MATRIX model (e.g. qwen, kept in
+    place after gemini became the default) was silently reverted back to the
+    default on the very next migrate() run — and migrate() runs on every app
+    startup (app.py lifespan), i.e. every restart/redeploy. The fixed
+    predicate (`model_name NOT IN (<MATRIX names>)`) must leave it alone."""
+    migrate.migrate(prod_conn)  # first run: bootstraps the default onto every role
+    other_matrix_model = next(name for name in MATRIX if name != DEFAULT_CRITERION_MODEL)
+    prod_conn.execute("UPDATE criterion SET model_name=? WHERE id='accuracy'", (other_matrix_model,))
+    prod_conn.commit()
+    migrate.migrate(prod_conn)  # simulates a container restart/redeploy
+    row = prod_conn.execute("SELECT model_name FROM criterion WHERE id='accuracy'").fetchone()
+    assert row["model_name"] == other_matrix_model, \
+        "operator's current-MATRIX model choice must survive a migrate() restart"
+
+
+def test_operator_set_current_matrix_model_survives_migrate(prod_conn):
+    """Same durability fix as above, for the singleton configs
+    (translator_config/grounding_config/refiner_config via
+    _remap_singleton_config_model_refs) — an operator's current-MATRIX model
+    choice for grounding (e.g. gemini, distinct from a non-gemini default)
+    must survive a migrate() re-run, not just the first one."""
+    migrate.migrate(prod_conn)
+    other_matrix_model = next(name for name in MATRIX if name != DEFAULT_CRITERION_MODEL)
+    prod_conn.execute("UPDATE grounding_config SET model_name=? WHERE id=1", (other_matrix_model,))
+    prod_conn.commit()
+    migrate.migrate(prod_conn)  # simulates a container restart/redeploy
+    row = prod_conn.execute("SELECT model_name FROM grounding_config WHERE id=1").fetchone()
+    assert row["model_name"] == other_matrix_model, \
+        "operator's current-MATRIX model choice must survive a migrate() restart"
+
+
 def test_idempotent_double_run_registry(prod_conn):
     migrate.migrate(prod_conn)
     models_1 = {dict(r)["name"]: dict(r) for r in prod_conn.execute("SELECT * FROM model")}
