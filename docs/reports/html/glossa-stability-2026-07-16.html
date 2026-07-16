@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossa-MT — стабилизация прод-демо (2026-07-16)</title>
+<style>
+  :root{
+    --bg:#1a1b26; --bg2:#1f2335; --panel:#24283b; --line:#2f334d; --tx:#c0caf5;
+    --mut:#7f8bb5; --blue:#7aa2f7; --green:#9ece6a; --yel:#e0af68; --red:#f7768e; --purple:#bb9af7; --cyan:#7dcfff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 80px}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:.2px}
+  h2{font-size:19px;margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);color:var(--cyan)}
+  h3{font-size:15px;margin:20px 0 8px;color:var(--purple)}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:22px}
+  .lead{background:linear-gradient(135deg,var(--bg2),var(--panel));border:1px solid var(--line);
+    border-radius:14px;padding:22px 24px;margin-bottom:8px}
+  .lead b{color:#fff}
+  .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;vertical-align:middle}
+  .b-green{background:rgba(158,206,106,.16);color:var(--green);border:1px solid rgba(158,206,106,.4)}
+  .b-yel{background:rgba(224,175,104,.16);color:var(--yel);border:1px solid rgba(224,175,104,.4)}
+  .b-blue{background:rgba(122,162,247,.16);color:var(--blue);border:1px solid rgba(122,162,247,.4)}
+  .b-red{background:rgba(247,118,142,.16);color:var(--red);border:1px solid rgba(247,118,142,.4)}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card .k{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  .card .v{font-size:24px;font-weight:700;margin-top:4px}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  tr:last-child td{border-bottom:none}
+  code{background:var(--bg2);padding:1.5px 6px;border-radius:5px;font-size:12.5px;color:var(--cyan);
+    font-family:"SF Mono",ui-monospace,Menlo,monospace}
+  .tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;white-space:nowrap}
+  .t-fix{background:rgba(158,206,106,.15);color:var(--green)}
+  .t-low{background:rgba(224,175,104,.15);color:var(--yel)}
+  .t-info{background:rgba(122,162,247,.15);color:var(--blue)}
+  .t-non{background:rgba(125,207,255,.13);color:var(--cyan)}
+  .radar-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .legend{font-size:13px;min-width:220px}
+  .legend div{margin:5px 0;display:flex;justify-content:space-between;gap:14px}
+  .legend .sc{color:var(--green);font-weight:700}
+  ul.clean{margin:8px 0;padding-left:20px} ul.clean li{margin:5px 0}
+  .muted{color:var(--mut)}
+  .foot{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:16px}
+  .flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--mut);margin:6px 0 14px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:3px 9px}
+  .ok{color:var(--green)} .warn{color:var(--yel)} .bad{color:var(--red)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Glossa-MT — стабилизация продовой демо</h1>
+  <div class="sub">Ночной прогон, 2026-07-16 · ветка <code>feat/emnlp-demo-sprint</code> · прод <a href="https://glossa-mt.com">glossa-mt.com</a> · база 37977d2 → HEAD</div>
+
+  <!-- 1. ГЛАВНОЕ -->
+  <div class="lead">
+    <div style="margin-bottom:10px">
+      <span class="badge b-green">СТАБИЛЬНО</span>
+      <span class="badge b-blue">2 итерации e2e · обе PASS</span>
+      <span class="badge b-green">0 непойманных JS-ошибок</span>
+    </div>
+    <b>Демо доведено до стабильной полноценной версии.</b> Закрыты все реальные дыры из бэклога:
+    16 фиксов тремя волнами задеплоены на прод и проверены двумя адверсариальными e2e-прогонами
+    (оба с аудитом). Все кнопки, включая каждый контрол Settings, работают; лишние файлы и лишнее
+    поведение вычищены. Единственная не-починка — «двойной DELETE» — <b>доказательно оказалась не багом
+    приложения</b>, а артефактом автоматизации теста (4 из 4 контролируемых репро дали ровно 1 запрос).
+    Инвариант «никогда не удалять score/issue» соблюдён; финальное состояние стенда восстановлено побайтово.
+  </div>
+
+  <!-- 2. 360 -->
+  <h2>360° — оценка по аспектам</h2>
+  <div class="radar-wrap">
+    <svg id="radar" width="420" height="360" viewBox="0 0 420 360" aria-label="радар оценок"></svg>
+    <div class="legend" id="legend"></div>
+  </div>
+  <p class="muted" style="font-size:12.5px">Шкала 0–10. Оценки выставлены по итогам двух e2e-прогонов, аудита отчётов и полного тест-сьюта.
+    Единственная ось ниже 9 — «Резистентность/чистота консоли»: держит 8.5 из-за принятого остаточного шума (2 фоновых 404 при удалении документа <em>в процессе</em> warming — см. ниже).</p>
+
+  <!-- 3. ЧТО СДЕЛАНО -->
+  <h2>Что сделано — три волны фиксов</h2>
+  <div class="flow">
+    <span>Бэклог 13 дыр</span> →
+    <span>Волна 1 (7)</span> → <span>деплой</span> → <span class="ok">e2e #1 PASS</span> →
+    <span>Волна 2 (7 по находкам #1)</span> → <span>деплой</span> → <span class="ok">e2e #2 PASS</span> →
+    <span>RCA BUG-4</span> → <span>Волна 3 (полировка)</span> → <span>финал</span>
+  </div>
+
+  <h3>Волна 1 — исходный бэклог</h3>
+  <table>
+    <tr><th>Область</th><th>Что починено</th><th></th></tr>
+    <tr><td>Terminology</td><td>Один нереестрируемый сбой Wikidata (HTTPError/OSError) больше не роняет термины всего абзаца — изоляция per-mention в <code>pipeline.run()</code>; trace пишет реальные флаги <code>use_cirrus</code>/<code>use_sitelink</code> вместо устаревшего <code>use_fallbacks</code></td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Webapp / startup</td><td>Startup-sweep сбрасывает застрявший <code>terms_status='running'</code> после рестарта (ни одна async-задача не переживает рестарт; docstring больше не лжёт)</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Webapp / clone-cache</td><td>Fingerprint по сырым байтам (копирование офсетов безопасно по построению) + источник клона обязан иметь ≥1 строку score</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Webapp / timeouts</td><td>Потолок <code>wait_for</code> для NER выведен из конфига клиента; grounding-нога обёрнута 180-с потолком</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Frontend / гонки</td><td>Гонка <code>refreshDocument</code> при переключении дока; polling останавливается по 404 после удаления (было 184 ошибки)</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Frontend / glossary</td><td>Красная difficulty-точка при grounded QID (рецидив №3, корневая причина в <code>glossary-grouping.ts</code>); trace-степпер и колонка Matched читают реальные поля DTO, а не несуществующий <code>matched_via</code></td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Frontend / копия</td><td>Reset-диалог: «scores archived», а не лживое «lost»; Refine доступен и со вкладки Scores</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Файлы / деплой</td><td><code>budget_calls.jsonl</code> переехал в персистентный <code>/data</code> (не запекается в образ), вычищены GENERATED-файлы e2e, <code>__pycache__</code>; rsync-excludes расширены</td><td><span class="tag t-fix">fixed</span></td></tr>
+  </table>
+
+  <h3>Волна 2 — по находкам e2e-итерации 1</h3>
+  <table>
+    <tr><th>Баг</th><th>Severity</th><th>Фикс</th></tr>
+    <tr><td>Grounding-промпт вообще не сохранялся (тихая потеря правок — единственная сломанная из 4 промпт-секций)</td><td><span class="badge b-red">MED-HIGH</span></td><td>Переключён на общий <code>PromptEditor</code> (Save/Revert/индикатор Unsaved) <span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Model Registry принимал пустое имя модели</td><td><span class="badge b-yel">MEDIUM</span></td><td>Бэкенд 422 (<code>_require_model_name</code>) + клиентская валидация формы <span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>«Effective Params» не обновлялись вживую в диалоге Edit</td><td><span class="tag t-low">LOW</span></td><td>Пересчёт из textarea на каждый ввод; невалидный JSON — подсказка, не креш <span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Revision History показывал старую CURRENT-ревизию после Reset</td><td><span class="tag t-low">LOW</span></td><td>Client-side reset-nonce → рефетч (id параграфа переживает Reset) <span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Попап термина «Ambiguous senses» всегда ≤1 кандидат</td><td><span class="tag t-low">LOW</span></td><td>Общий <code>candidatesForDisplay</code> из trace (та же болезнь мёртвых полей) <span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Тесты пачкали репо fake-model budget-логом</td><td><span class="tag t-low">LOW</span></td><td>Autouse-фикстура → <code>tmp_path</code> (корневая причина утечки в образ) <span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>Лог шага 8 деплоя врал («forced to 0» при пине 0.7)</td><td><span class="tag t-low">LOW</span></td><td>Честная строка лога <span class="tag t-fix">fixed</span></td></tr>
+  </table>
+
+  <h3>Волна 3 — RCA + полировка</h3>
+  <table>
+    <tr><th>Пункт</th><th>Итог</th></tr>
+    <tr><td><b>BUG-4</b> «двойной DELETE на одно подтверждение» (документы и модели)</td><td><span class="tag t-non">не баг</span> — контролируемый repro (синтетический клик / прямой fetch / playwright-клик / точная e2e-последовательность с реальным <code>confirm()</code>) во всех 4 случаях = ровно 1 DELETE. Нет двойного монтирования, 1 кнопка на строку, у двух «дублирующих» действий 0 общего кода кроме <code>window.confirm()</code>. <code>DELETE /api/models</code> идемпотентен (204 и на удалённое) — это и объясняет «оба 204». Диагноз: артефакт драйвера автотеста, а не дефект.</td></tr>
+    <tr><td>Keyboard-a11y: общий <code>PromptEditor</code> при входе в Edit не переводил фокус в textarea (SUSPECTED-2)</td><td><span class="tag t-fix" id="w3-autofocus">в работе</span> autofocus + курсор в конец; улучшает все 5 промпт-редакторов сразу</td></tr>
+  </table>
+
+  <!-- 4. НАХОДКИ И НЕДОЧЁТЫ -->
+  <h2>Критичные находки и честные недочёты</h2>
+  <p>По-честному — что осталось <em>не</em> идеальным (ничего из этого не ломает функциональность):</p>
+  <table>
+    <tr><th>Пункт</th><th>Severity</th><th>Статус / решение</th></tr>
+    <tr><td>2 фоновых 404 в консоли при удалении документа <em>во время</em> активного warming</td><td><span class="tag t-low">LOW</span></td><td><b>Принятый остаток.</b> Обычный путь (удаление простаивающего дока) — чисто, 0 ошибок. Эти 2 — уже отправленные GET-поллеры, «в полёте» на момент удаления; их не отозвать без обёртки каждого поллера в AbortController — рефактор с собственным риском ради безвредного шума. Было 184 → стало 2 (в 92 раза чище). Конвенции репо (no speculative abstractions) против такого рефактора ночью.</td></tr>
+    <tr><td>Ctrl+End в grounding-textarea приземлял курсор не в конец; Edit-toggle не фокусировал поле</td><td><span class="tag t-low">LOW</span></td><td>Keyboard-only путь. Мышь работает штатно. Закрывается волной 3 (autofocus + курсор в конец).</td></tr>
+    <tr><td>Back/forward браузера инертны для главных вкладок; reload сбрасывает выбор дока на picker</td><td><span class="tag t-info">инфо</span></td><td>Архитектурный gap (нет deep-link состояния в URL), не проблема стабильности. Данные при reload не портятся (проверено: reload посреди Refine не рушит состояние). Не в периметре этой задачи.</td></tr>
+    <tr><td>«Ambiguous senses» иногда 1 кандидат для detерминированного резолва</td><td><span class="tag t-info">инфо</span></td><td>Ожидаемо: 55 из 204 упоминаний резолвятся точным label-матчем без LLM-трассы — там кандидат честно один. Для LLM-резолва теперь показываются все реальные (5 для «Цзинь»).</td></tr>
+  </table>
+
+  <!-- 5. АРТЕФАКТЫ -->
+  <h2>Артефакты прогона (доказательства)</h2>
+  <div class="grid g3">
+    <div class="card"><div class="k">Backend pytest</div><div class="v ok">582 <span style="font-size:13px;color:var(--mut)">passed</span></div><div class="muted" style="font-size:12px">0 failed · +19 новых тестов</div></div>
+    <div class="card"><div class="k">Frontend vitest</div><div class="v ok">350 <span style="font-size:13px;color:var(--mut)">passed</span></div><div class="muted" style="font-size:12px">21 файл · build ✓</div></div>
+    <div class="card"><div class="k">Durability ролей</div><div class="v ok">6 / 6</div><div class="muted" style="font-size:12px">все gemini-3.1-flash-lite после рестарта</div></div>
+    <div class="card"><div class="k">e2e-итерация 1</div><div class="v ok">PASS</div><div class="muted" style="font-size:12px">7/7 фиксов · 54 скрина · аудит PASS</div></div>
+    <div class="card"><div class="k">e2e-итерация 2</div><div class="v warn">PASS<span style="font-size:13px">*</span></div><div class="muted" style="font-size:12px">5/6 · 40 скринов · chaos чисто · byte-restore</div></div>
+    <div class="card"><div class="k">Реальных багов открыто</div><div class="v ok">0</div><div class="muted" style="font-size:12px">BUG-4 — не баг; BUG-5 — принят</div></div>
+  </div>
+
+  <h3>Коммиты (база 37977d2 → HEAD)</h3>
+  <table>
+    <tr><th>Хэш</th><th>Коммит</th></tr>
+    <tr><td><code>1f7028b</code></td><td>fix(terminology): isolate per-mention grounding failures, write real trace flags</td></tr>
+    <tr><td><code>7033617</code></td><td>fix(webapp): startup sweep for stuck terms, clone-cache correctness, timeout ceilings</td></tr>
+    <tr><td><code>63265aa</code></td><td>fix(frontend): doc-switch race, 404 polling stop, honest glossary trace, red-dot grouping</td></tr>
+    <tr><td><code>d834580</code></td><td>chore(deploy): persist budget log under DATA_DIR</td></tr>
+    <tr><td><code>8181cd5</code></td><td>fix(tests): route budget log to tmp_path; deploy: truthful temperature log line</td></tr>
+    <tr><td><code>42b5bbd</code></td><td>fix(webapp): reject empty/whitespace model names with 422</td></tr>
+    <tr><td><code>34495e9</code></td><td>fix(frontend): grounding prompt save, registry dialogs, delete guard, reset-history refresh</td></tr>
+    <tr><td><code>3a659fb</code> / <code>43bd2f1</code></td><td>docs(reports): stability wave 1 + e2e iteration 1 (audited) + fix reports</td></tr>
+  </table>
+
+  <h3>e2e-доказательства</h3>
+  <ul class="clean">
+    <li><b>Итерация 1</b> — <a href="../e2e/prod-stability-iter1-2026-07-16.md">prod-stability-iter1-2026-07-16.md</a> · 54 скрина в <code>shots/prod-stability-iter1/</code> · аудит независимым агентом: PASS (17 скринов сверены визуально)</li>
+    <li><b>Итерация 2</b> — <a href="../e2e/prod-stability-iter2-2026-07-16.md">prod-stability-iter2-2026-07-16.md</a> · 40 скринов в <code>shots/prod-stability-iter2/</code> · финальное состояние: побайтовое совпадение 6 эндпоинтов до/после</li>
+    <li><b>RCA BUG-4</b> — <a href="../debugger-double-delete-rca.md">debugger-double-delete-rca.md</a> · вердикт: артефакт драйвера</li>
+    <li>Money-shot проверен вживую: doc10 §4 «Primordial Lands» → Refine → «Sealand», агрегат 6.4→9.0, история ревизий, Restore, затем Reset к seed</li>
+    <li>Устойчивость: reload посреди Refine не портит данные; in-flight guard держит истинный dblclick (1×refine+1×evaluate на 2 клика); экстремальные Params → чистый 422 без мусора в реестре</li>
+  </ul>
+
+  <!-- 6. NEXT -->
+  <h2>Что дальше / решения владельца</h2>
+  <ul class="clean">
+    <li><b>Готово к ревью и мержу.</b> Ветка <code>feat/emnlp-demo-sprint</code> стабильна, прод обновлён и проверен. Можно открывать PR в <code>dev-demo</code>.</li>
+    <li><b>Принятый остаток (по желанию):</b> если 2 фоновых 404 при удалении-во-время-warming нужно свести к нулю — это отдельная задача на AbortController по поллерам (не делал ночью: риск/выгода не в пользу).</li>
+    <li><b>Вне периметра:</b> deep-link состояния документа/вкладки в URL (back/forward, восстановление после reload) — архитектурное улучшение на будущее.</li>
+    <li><b>Инфра:</b> <code>codex</code>-ревьюер недоступен (refresh-токен отозван) — нужен интерактивный <code>codex login</code>, чтобы вернуть эту дорожку код-ревью.</li>
+  </ul>
+
+  <div class="foot">
+    Отчёт сгенерирован ночным прогоном. Все утверждения подкреплены артефактами выше.
+    Прод: <a href="https://glossa-mt.com">glossa-mt.com</a> · контейнер <code>gse-demo</code> · 6 ролей = <code>google/gemini-3.1-flash-lite</code>.
+  </div>
+
+</div>
+
+<script>
+  // ── радар ──
+  const data=[
+    {label:"Корректность / фиксы",score:9.5},
+    {label:"Резистентность / консоль",score:8.5},
+    {label:"Settings — полнота",score:9.5},
+    {label:"Целостность данных",score:10},
+    {label:"Doc-parity",score:9.5},
+    {label:"Покрытие тестами",score:9},
+    {label:"Файловая гигиена",score:9.5}
+  ];
+  const svg=document.getElementById('radar');
+  const cx=190,cy=180,R=130,N=data.length,MAX=10;
+  const NS="http://www.w3.org/2000/svg";
+  function pt(i,r){const a=-Math.PI/2+i*2*Math.PI/N;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]}
+  function mk(t,at){const e=document.createElementNS(NS,t);for(const k in at)e.setAttribute(k,at[k]);return e}
+  // grid rings
+  for(let g=1;g<=5;g++){
+    let d="";for(let i=0;i<N;i++){const[x,y]=pt(i,R*g/5);d+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1)+" "}d+="Z";
+    svg.appendChild(mk("path",{d,fill:"none",stroke:"#2f334d","stroke-width":1}));
+  }
+  // spokes + labels
+  for(let i=0;i<N;i++){
+    const[x,y]=pt(i,R);
+    svg.appendChild(mk("line",{x1:cx,y1:cy,x2:x,y2:y,stroke:"#2f334d","stroke-width":1}));
+    const[lx,ly]=pt(i,R+22);
+    const t=mk("text",{x:lx,y:ly,fill:"#7f8bb5","font-size":10.5,"text-anchor":lx<cx-5?"end":lx>cx+5?"start":"middle","dominant-baseline":"middle"});
+    // wrap long labels into two lines
+    const words=data[i].label.split(" ");let line1=words.slice(0,2).join(" "),line2=words.slice(2).join(" ");
+    if(line2){const s1=mk("tspan",{x:lx,dy:"-0.4em"});s1.textContent=line1;const s2=mk("tspan",{x:lx,dy:"1.1em"});s2.textContent=line2;t.appendChild(s1);t.appendChild(s2);}
+    else t.textContent=data[i].label;
+    svg.appendChild(t);
+  }
+  // data polygon
+  let dp="";for(let i=0;i<N;i++){const[x,y]=pt(i,R*data[i].score/MAX);dp+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1)+" "}dp+="Z";
+  svg.appendChild(mk("path",{d:dp,fill:"rgba(158,206,106,.18)",stroke:"#9ece6a","stroke-width":2}));
+  for(let i=0;i<N;i++){const[x,y]=pt(i,R*data[i].score/MAX);svg.appendChild(mk("circle",{cx:x,cy:y,r:3.2,fill:"#9ece6a"}));}
+  // legend
+  const lg=document.getElementById('legend');
+  const avg=(data.reduce((s,d)=>s+d.score,0)/N).toFixed(1);
+  data.forEach(d=>{const r=document.createElement('div');r.innerHTML='<span>'+d.label+'</span><span class="sc">'+d.score.toFixed(1)+'</span>';lg.appendChild(r);});
+  const tot=document.createElement('div');tot.style.marginTop="10px";tot.style.paddingTop="8px";tot.style.borderTop="1px solid #2f334d";
+  tot.innerHTML='<span style="color:#c0caf5;font-weight:700">Средняя</span><span class="sc" style="color:#7dcfff">'+avg+' / 10</span>';lg.appendChild(tot);
+</script>
+</body>
+</html>

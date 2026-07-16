@@ -617,6 +617,18 @@ describe('SettingsTab PromptEditor (S1 §2.3, shared by evaluator + translator)'
     expect(screen.queryByTestId('evaluator-prompt-preview')).toBeNull();
   });
 
+  it('moves focus into the textarea (cursor at end) on the preview -> edit transition (keyboard a11y)', async () => {
+    renderSettings({ criteria: [{ ...criterion, prompt: 'Rate accuracy.' }] });
+    fireEvent.click(await screen.findByText('Accuracy'));
+
+    fireEvent.click(within(screen.getByTestId('evaluator-prompt-toggle')).getByText('Edit'));
+    const textarea = screen.getByTestId('evaluator-prompt-editor') as HTMLTextAreaElement;
+
+    expect(document.activeElement).toBe(textarea);
+    expect(textarea.selectionStart).toBe(textarea.value.length);
+    expect(textarea.selectionEnd).toBe(textarea.value.length);
+  });
+
   it('Save prompt is disabled until the draft differs from the saved prompt, then calls onUpdateCriterion with the full body', async () => {
     const onUpdateCriterion = vi.fn().mockResolvedValue(undefined);
     renderSettings({ onUpdateCriterion, criteria: [{ ...criterion, prompt: 'Rate accuracy.' }] });

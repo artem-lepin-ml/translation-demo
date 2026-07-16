@@ -666,6 +666,7 @@ function PromptEditor({ prompt, testidPrefix, onSave }: PromptEditorProps) {
   const [mode, setMode] = useState<'edit' | 'preview'>('preview');
   const [draft, setDraft] = useState(prompt);
   const [saving, setSaving] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Re-sync when the saved prompt actually changes (successful save, or
   // switching to a different criterion) — but not while the user has unsaved
@@ -673,6 +674,20 @@ function PromptEditor({ prompt, testidPrefix, onSave }: PromptEditorProps) {
   useEffect(() => {
     setDraft(prompt);
   }, [prompt]);
+
+  // Preview -> edit transition: move focus into the textarea and place the
+  // cursor at the end, so a keyboard user who clicks Edit can type
+  // immediately and Ctrl/Cmd+navigation starts from a sane position. Fires
+  // only on the mode change (not on every keystroke) — `mode` is the only
+  // dependency.
+  useEffect(() => {
+    if (mode !== 'edit') return;
+    const el = textareaRef.current;
+    if (!el) return;
+    el.focus();
+    const end = el.value.length;
+    el.setSelectionRange(end, end);
+  }, [mode]);
 
   const dirty = draft !== prompt;
 
@@ -697,6 +712,7 @@ function PromptEditor({ prompt, testidPrefix, onSave }: PromptEditorProps) {
       </span>
       {mode === 'edit' ? (
         <textarea
+          ref={textareaRef}
           className="va-field-input va-prompt-textarea"
           data-testid={`${testidPrefix}-prompt-editor`}
           value={draft}
