@@ -109,6 +109,7 @@ fi
 docker run -d --name "$CONTAINER_NAME" \
     --network "$NETWORK_NAME" \
     -v "$DATA_DIR:/data" \
+    -e PALIMPSEST_BUDGET_LOG=/data/budget_calls.jsonl \
     "${ENV_ARGS[@]}" \
     "$IMAGE_NAME"
 

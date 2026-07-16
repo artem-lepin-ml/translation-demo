@@ -55,7 +55,7 @@ Environment variables (all optional, sane defaults for the current deployment):
 | `DEPLOY_BRANCH` | `dev-demo` | Branch to deploy (git-pull flow only) |
 | `SKIP_GIT` | `0` | `1` = skip step 1 (git pull) — for the rsync-deployed tree without a `.git` |
 | `SKIP_NPM` | `0` | `1` = skip step 2 (npm build) — for hosts without node/npm; requires a prebuilt `frontend/dist` in the tree |
-| `DATA_DIR` | `/opt/gse-demo/data` | Host dir mounted at `/data` in the container (holds `demo.db`, `budget_calls.jsonl`) — verified against the live `gse-demo` bind mount on 2026-07-06 |
+| `DATA_DIR` | `/opt/gse-demo/data` | Host dir mounted at `/data` in the container (holds `demo.db`, `budget_calls.jsonl`) — verified against the live `gse-demo` bind mount on 2026-07-06. The container is started with `-e PALIMPSEST_BUDGET_LOG=/data/budget_calls.jsonl` (stability fix, 2026-07-16) so the budget log persists on this volume across rebuilds; before that fix the var was unset and `budget.py`'s default (`budget_calls.jsonl`, relative to CWD) wrote it into the app tree instead, where a rebuild would discard it. |
 | `CONTAINER_NAME` | `gse-demo` | Container to rebuild/restart |
 | `IMAGE_NAME` | `gse-demo` | Docker image tag |
 | `NETWORK_NAME` | `grader-net` | Docker network the container joins |
