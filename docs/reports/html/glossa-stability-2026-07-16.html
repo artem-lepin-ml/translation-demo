@@ -123,7 +123,7 @@
   <table>
     <tr><th>Пункт</th><th>Итог</th></tr>
     <tr><td><b>BUG-4</b> «двойной DELETE на одно подтверждение» (документы и модели)</td><td><span class="tag t-non">не баг</span> — контролируемый repro (синтетический клик / прямой fetch / playwright-клик / точная e2e-последовательность с реальным <code>confirm()</code>) во всех 4 случаях = ровно 1 DELETE. Нет двойного монтирования, 1 кнопка на строку, у двух «дублирующих» действий 0 общего кода кроме <code>window.confirm()</code>. <code>DELETE /api/models</code> идемпотентен (204 и на удалённое) — это и объясняет «оба 204». Диагноз: артефакт драйвера автотеста, а не дефект.</td></tr>
-    <tr><td>Keyboard-a11y: общий <code>PromptEditor</code> при входе в Edit не переводил фокус в textarea (SUSPECTED-2)</td><td><span class="tag t-fix" id="w3-autofocus">в работе</span> autofocus + курсор в конец; улучшает все 5 промпт-редакторов сразу</td></tr>
+    <tr><td>Keyboard-a11y: общий <code>PromptEditor</code> при входе в Edit не переводил фокус в textarea (SUSPECTED-2)</td><td><span class="tag t-fix">fixed</span> autofocus + курсор в конец при переходе preview→edit; улучшает все 5 промпт-редакторов сразу (grounding, translator, refiner, 3 судьи) · коммит <code>e83a5bd</code></td></tr>
   </table>
 
   <!-- 4. НАХОДКИ И НЕДОЧЁТЫ -->
@@ -132,7 +132,7 @@
   <table>
     <tr><th>Пункт</th><th>Severity</th><th>Статус / решение</th></tr>
     <tr><td>2 фоновых 404 в консоли при удалении документа <em>во время</em> активного warming</td><td><span class="tag t-low">LOW</span></td><td><b>Принятый остаток.</b> Обычный путь (удаление простаивающего дока) — чисто, 0 ошибок. Эти 2 — уже отправленные GET-поллеры, «в полёте» на момент удаления; их не отозвать без обёртки каждого поллера в AbortController — рефактор с собственным риском ради безвредного шума. Было 184 → стало 2 (в 92 раза чище). Конвенции репо (no speculative abstractions) против такого рефактора ночью.</td></tr>
-    <tr><td>Ctrl+End в grounding-textarea приземлял курсор не в конец; Edit-toggle не фокусировал поле</td><td><span class="tag t-low">LOW</span></td><td>Keyboard-only путь. Мышь работает штатно. Закрывается волной 3 (autofocus + курсор в конец).</td></tr>
+    <tr><td>Ctrl+End в grounding-textarea приземлял курсор не в конец; Edit-toggle не фокусировал поле</td><td><span class="tag t-fix">fixed</span></td><td>Закрыто волной 3: autofocus + курсор в конец при входе в Edit (общий <code>PromptEditor</code>).</td></tr>
     <tr><td>Back/forward браузера инертны для главных вкладок; reload сбрасывает выбор дока на picker</td><td><span class="tag t-info">инфо</span></td><td>Архитектурный gap (нет deep-link состояния в URL), не проблема стабильности. Данные при reload не портятся (проверено: reload посреди Refine не рушит состояние). Не в периметре этой задачи.</td></tr>
     <tr><td>«Ambiguous senses» иногда 1 кандидат для detерминированного резолва</td><td><span class="tag t-info">инфо</span></td><td>Ожидаемо: 55 из 204 упоминаний резолвятся точным label-матчем без LLM-трассы — там кандидат честно один. Для LLM-резолва теперь показываются все реальные (5 для «Цзинь»).</td></tr>
   </table>
