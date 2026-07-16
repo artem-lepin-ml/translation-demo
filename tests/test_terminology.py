@@ -508,6 +508,21 @@ def test_candidates_wikipedia_langlink_last_resort():
     assert [c["qid"] for c in gen["candidates"]] == ["Q312060"]
 
 
+def test_candidates_query_strategy_labels_escalation_ladder():
+    # Same fixture as test_candidates_wikipedia_langlink_last_resort: prefix
+    # search misses both forms (lemma+surface -> 2 queries), CirrusSearch
+    # misses both forms too (2 more), sitelink finally resolves it (1 more)
+    # -- 5 queries for one 2-word mention, each carrying the backend that
+    # produced it so a trace UI can distinguish escalation from repetition.
+    wd = _FakeWD(search={}, cirrus={}, wiki={"Урукагина": "Q312060"},
+                 entities={"Q312060": _entity("Q312060", "Urukagina", "Урукагина", p31=("Q5",), enwiki="Urukagina")})
+    gen = generate_candidates(wd, TermMention(surface="Уруинимгину", lemma="Урукагина"), GroundingConfig())
+    assert gen["source"] == "wikipedia_langlink"
+    strategies = [q["strategy"] for q in gen["queries"]]
+    assert strategies == ["prefix", "prefix", "cirrus", "cirrus", "sitelink"]
+    assert all(q["strategy"] in {"prefix", "cirrus", "sitelink"} for q in gen["queries"])
+
+
 def test_candidates_use_sitelink_false_skips_wikipedia_rung_cirrus_still_fires():
     # sitelink rung disabled; the (independent) cirrus rung still recovers hits.
     wd = _FakeWD(search={}, cirrus={"Саргона": [{"id": "Q199461"}]},

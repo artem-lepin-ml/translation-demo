@@ -14,7 +14,11 @@ Search order, widening only when thin:
      because it shares its title->QID mapping with the wiki-eval reference
      annotations (evaluation circularity, see docs/stages/wiki-eval.md).
 
-Every search call is logged to ``queries`` (feeds ``GroundingTrace`` v1).
+Every search call is logged to ``queries`` (feeds ``GroundingTrace`` v1); each
+query dict carries ``"strategy"`` — ``"prefix"`` (rungs 1-2 and the widening
+tiers below, all ``wbsearchentities``), ``"cirrus"`` (rung 3), or
+``"sitelink"`` (rung 4) — so a trace UI can tell 5 escalating calls for one
+2-word mention apart from dumb repetition (owner UI review, 2026-07-16).
 Candidates are enriched, redirect-canonicalised, and returned as plain dicts
 plus a ``canon_by_qid`` map of canonical EN forms for pairing. No type
 filtering: the judge disambiguates from the description text instead of a
@@ -168,7 +172,8 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
     for q in forms:
         results = wd.search_entities(q, lang=mention.lang, limit=config.search_limit)
         queries.append({"q": q, "kind": "lemma" if q == mention.lemma else "surface",
-                         "mechanism": "wbsearchentities", "n_hits": len(results)})
+                         "mechanism": "wbsearchentities", "strategy": "prefix",
+                         "n_hits": len(results)})
         for h in results:
             if h["id"] not in seen_qid:
                 seen_qid.add(h["id"])
@@ -179,7 +184,8 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
         for q in forms:
             results = wd.search_cirrus(q, limit=config.search_limit)
             queries.append({"q": q, "kind": "lemma" if q == mention.lemma else "surface",
-                             "mechanism": "cirrus", "n_hits": len(results)})
+                             "mechanism": "cirrus", "strategy": "cirrus",
+                             "n_hits": len(results)})
             for h in results:
                 if h["id"] not in seen_qid:
                     seen_qid.add(h["id"])
@@ -189,8 +195,10 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
     if not hits and config.use_sitelink:  # last resort: RU Wikipedia page → Wikidata item
         wiki_title = mention.lemma or mention.surface
         qid = wd.wikipedia_wikibase_item(wiki_title, lang=mention.lang)
-        queries.append({"q": wiki_title, "kind": "lemma" if wiki_title == mention.lemma else "surface",
-                         "mechanism": "wikipedia_wikibase_item", "n_hits": 1 if qid else 0})
+        queries.append({"q": wiki_title,
+                         "kind": "lemma" if wiki_title == mention.lemma else "surface",
+                         "mechanism": "wikipedia_wikibase_item", "strategy": "sitelink",
+                         "n_hits": 1 if qid else 0})
         if qid:
             hits, source = [{"id": qid}], "wikipedia_langlink"
 
@@ -210,8 +218,12 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
                 if not q:
                     continue
                 results = wd.search_entities(q, lang=mention.lang, limit=config.search_limit)
+                # widening tiers ("alt"/"label_guess", search_mode != "baseline")
+                # hit the same wbsearchentities prefix-search backend as rung 1
+                # above, just with a derived form instead of surface/lemma --
+                # "strategy" tracks the BACKEND, "kind" already tracks the tier.
                 queries.append({"q": q, "kind": tier, "mechanism": "wbsearchentities",
-                                 "n_hits": len(results)})
+                                 "strategy": "prefix", "n_hits": len(results)})
                 for h in results:
                     if h["id"] not in seen_qid:
                         seen_qid.add(h["id"])
