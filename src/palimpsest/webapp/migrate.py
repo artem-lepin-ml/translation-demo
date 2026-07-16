@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import os
 import sqlite3
 from datetime import datetime, timezone
@@ -23,6 +24,8 @@ from ..terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_PROMPT
 from . import db
 from .aggregate import compute_aggregate
 from .model_matrix import DEFAULT_CRITERION_MODEL, MATRIX
+
+logger = logging.getLogger(__name__)
 
 TRANSLATOR_PROMPT_FILE = paths.PROMPTS / "translator" / "default.md"
 TRANSLATOR_DEFAULT_PARAMS = {"max_tokens": 2048, "temperature": 0.3}
@@ -191,6 +194,132 @@ def _backfill_seed_document_terms_status(conn: sqlite3.Connection) -> None:
     seeds above, since 'origin=seed' rows are safe to touch regardless of
     whether any model row exists yet."""
     conn.execute("UPDATE document SET terms_status='done' WHERE origin='seed' AND terms_status!='done'")
+
+
+# Owner picker curation (2026-07-16, UI review #1): keep only "World History —
+# Selected Passages" in the picker; hide the other two demo documents. Title
+# prefixes, not hardcoded ids — robust across a fresh-seed DB and an existing
+# prod DB alike (see _curate_demo_documents below).
+_DEMO_DOC_HIDE_TITLE_PREFIXES = ("Mesopotamia", "The Qin State")
+_DEMO_DOC_TITLE_SUFFIXES_TO_STRIP = (" (Draft Translation)", " (pilot)")
+
+
+def _add_document_hidden_column(conn: sqlite3.Connection) -> None:
+    """Picker curation flag (2026-07-16, UI review #1) — hides a retired demo
+    document from GET /api/documents (the picker list) while leaving it fully
+    intact: GET /api/documents/{id} (deep link) still returns it, and its
+    score/issue rows are never touched (owner hard invariant against deleting
+    predictions, .claude/rules/invariants.md). NOT NULL DEFAULT 0 matches
+    db.py SCHEMA and backfills every existing row to visible via the ALTER's
+    DEFAULT — same pattern as _add_term_trace_json_column/
+    _add_document_terms_status_column above."""
+    if not _has_column(conn, "document", "hidden"):
+        conn.execute("ALTER TABLE document ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0")
+
+
+def _curate_demo_documents(conn: sqlite3.Connection) -> None:
+    """Apply the owner's picker curation decision (2026-07-16, UI review #1):
+    hide "Mesopotamia ..." (the original seed.py document) and "The Qin
+    State ..." (a create_demo_docs.py upload), keep only "World History —
+    Selected Passages" visible. Matches by TITLE, never a hardcoded id — the
+    same title strings appear whether the DB came from a fresh seed.py +
+    create_demo_docs.py run (titles already clean at the source) or an
+    existing prod DB (may still carry a decorative "(Draft Translation)"/
+    "(pilot)" suffix predating this fix).
+
+    Idempotent both halves: the suffix-strip only rewrites a title that still
+    ends with a known decorative suffix (a no-op once stripped), and hiding
+    is a flag flip guarded by `hidden!=1` (a no-op once already hidden).
+    NEVER deletes or otherwise touches `score`/`issue` — hiding is purely a
+    `document.hidden` flag flip on the `document` row itself."""
+    # 1) General suffix strip -- not hardcoded to one document's title, so it
+    #    also cleans a pre-fix prod "... (pilot)" row from seed.py, not just
+    #    the World History upload's "... (Draft Translation)" title.
+    for row in conn.execute("SELECT id, title FROM document").fetchall():
+        title = row["title"] or ""
+        cleaned = title
+        for suffix in _DEMO_DOC_TITLE_SUFFIXES_TO_STRIP:
+            if cleaned.endswith(suffix):
+                cleaned = cleaned[: -len(suffix)]
+        if cleaned != title:
+            conn.execute("UPDATE document SET title=? WHERE id=?", (cleaned, row["id"]))
+
+    # 2) Hide by title prefix -- flag flip only, never a DELETE.
+    for prefix in _DEMO_DOC_HIDE_TITLE_PREFIXES:
+        conn.execute(
+            "UPDATE document SET hidden=1 WHERE title LIKE ? AND hidden!=1", (f"{prefix}%",))
+
+
+# Owner cleanup (2026-07-16, UI review #7): the curated demo document's title
+# AFTER _curate_demo_documents has run (must run first — this matches the
+# already-renamed canonical title, not the pre-rename "(Draft Translation)"
+# one). Gated to this ONE document, not all docs, per the owner's request.
+_REVISION_CLEANUP_DOC_TITLE = "World History — Selected Passages"
+
+
+def _prune_orphan_revisions(conn: sqlite3.Connection) -> None:
+    """Prune stale, never-scored ``target_revision`` rows for the curated
+    demo document's paragraphs only (owner UI review #7: "N hours ago · not
+    scored" test-edit revisions cluttering Revision History). Gated by TITLE
+    to ``_REVISION_CLEANUP_DOC_TITLE`` — not all documents.
+
+    A revision is pruned iff ALL of: (i) it is not the earliest (seed)
+    revision of its paragraph, (ii) it is not the LATEST revision of its
+    paragraph — ``db.latest_revision_id`` (MAX(id)) is what the API marks as
+    CURRENT in Revision History and ``paragraph.target`` carries that text,
+    so pruning it would leave the CURRENT badge pointing at an older row
+    whose text no longer matches the live paragraph — AND (iii) no
+    ``score.revision_id`` row points at it — i.e. it is a purely orphan
+    middle-of-history text edit nobody ever scored. A revision any
+    ``score`` row references is never touched, by construction — the query
+    that builds the candidate set explicitly excludes every id currently
+    referenced by ``score.revision_id`` (checked as a single global set, not
+    scoped to this document, so this can never race a scored revision from
+    being miscounted). This is the ONLY table with a foreign key into
+    ``target_revision`` (``db.py`` SCHEMA) — no other reference to check.
+
+    Predictions are irreproducible (owner hard invariant, .claude/rules/
+    invariants.md): this function deletes `target_revision` rows only, never
+    `score`/`issue`, and both connections this runs on (``db.connect()`` and
+    every ``sqlite3.connect()`` caller in this module's own tests) keep
+    ``PRAGMA foreign_keys=ON`` — if a future edit to this function's
+    candidate-set logic ever let a still-referenced revision slip through,
+    the ``DELETE`` would raise ``IntegrityError`` immediately rather than
+    silently orphaning a score row's FK.
+
+    Idempotent: once the orphans for this document are gone, a second run
+    finds none left to delete (a no-op) — safe to re-run every deploy."""
+    doc = conn.execute(
+        "SELECT id FROM document WHERE title=?", (_REVISION_CLEANUP_DOC_TITLE,)).fetchone()
+    if doc is None:
+        return
+    pids = [r["id"] for r in conn.execute(
+        "SELECT id FROM paragraph WHERE document_id=?", (doc["id"],))]
+    if not pids:
+        return
+    placeholders = ",".join("?" for _ in pids)
+    earliest_ids = {
+        r["earliest_id"] for r in conn.execute(
+            f"SELECT MIN(id) AS earliest_id FROM target_revision "
+            f"WHERE paragraph_id IN ({placeholders}) GROUP BY paragraph_id", pids)}
+    latest_ids = {
+        r["latest_id"] for r in conn.execute(
+            f"SELECT MAX(id) AS latest_id FROM target_revision "
+            f"WHERE paragraph_id IN ({placeholders}) GROUP BY paragraph_id", pids)}
+    scored_ids = {
+        r["revision_id"] for r in conn.execute(
+            "SELECT DISTINCT revision_id FROM score WHERE revision_id IS NOT NULL")}
+    orphans = [
+        r["id"] for r in conn.execute(
+            f"SELECT id FROM target_revision WHERE paragraph_id IN ({placeholders})", pids)
+        if r["id"] not in earliest_ids and r["id"] not in latest_ids
+        and r["id"] not in scored_ids]
+    if not orphans:
+        return
+    ph2 = ",".join("?" for _ in orphans)
+    conn.execute(f"DELETE FROM target_revision WHERE id IN ({ph2})", orphans)
+    logger.info("pruned %d orphan (never-scored) revision row(s) for document %r",
+                len(orphans), _REVISION_CLEANUP_DOC_TITLE)
 
 
 def _backfill_paragraph_revisions(conn: sqlite3.Connection) -> None:
@@ -410,6 +539,9 @@ def migrate(conn: sqlite3.Connection) -> None:
     _backfill_paragraph_revisions(conn)
     _add_document_terms_status_column(conn)
     _backfill_seed_document_terms_status(conn)
+    _add_document_hidden_column(conn)
+    _curate_demo_documents(conn)
+    _prune_orphan_revisions(conn)
     _remap_singleton_config_model_refs(conn)
     _reduce_to_three_criteria(conn)
     _prune_obsolete_model_rows(conn)

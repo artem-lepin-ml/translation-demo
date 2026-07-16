@@ -90,10 +90,20 @@ def seed() -> None:
 
     crit_rows = _criteria_rows(conn)
 
+    # Title cleaned at the source (2026-07-16, owner UI review #1) -- no
+    # "(pilot)" suffix, same reasoning as data/seed/demo_docs/mesopotamia-2
+    # .json's title. `hidden` is left at its schema default (0) here, same
+    # pattern as `terms_status` above it: migrate.py's `_curate_demo_documents`
+    # (title-prefix match) is the SINGLE place that decides hidden state, and
+    # it re-applies on every app startup (`_lifespan` -> `_migrate_db`) --
+    # exactly mirroring how `_backfill_seed_document_terms_status` finalizes
+    # this same seed row's `terms_status` to 'done' rather than seed.py
+    # setting it directly. See docs/superpowers/specs/
+    # 2026-06-30-demo-contracts.md "Document picker curation delta".
     doc_id = conn.execute(
         "INSERT INTO document(title,source_lang,target_lang,source_model,seed_model,"
         "seed_prompt_variant,version,origin,created_at) VALUES(?,?,?,?,?,?,0,'seed',?)",
-        ("Mesopotamia — ancient Near East (pilot)", "ru", "en", "gpt-5.4-mini",
+        ("Mesopotamia — ancient Near East", "ru", "en", "gpt-5.4-mini",
          "gpt-5.5-low", "v2", ts)).lastrowid
 
     rows = [json.loads(l) for l in SEED_FILE.read_text("utf-8").splitlines() if l.strip()]

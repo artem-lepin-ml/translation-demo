@@ -5,7 +5,7 @@ stdlib-only HTTP client (urllib) -- no requests/httpx needed for a one-shot
 demo-prep loader. Reads one or more ready-to-POST payload JSON files (see
 data/seed/demo_docs/*.json for the shape: title/sourceLang/targetLang/
 translate/precompute/paragraphs, matching CreateDocumentBody in
-src/palimpsest/webapp/app.py:282-288) and POSTs each to the target server.
+src/palimpsest/webapp/app.py:326-332) and POSTs each to the target server.
 With --poll, then tracks each created document's live translation,
 precompute, and terminology extraction to completion.
 

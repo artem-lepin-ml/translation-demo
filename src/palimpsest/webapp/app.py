@@ -300,8 +300,13 @@ def health() -> dict:
 
 @app.get("/api/documents")
 def list_documents() -> list:
+    """Picker list — excludes `hidden=1` documents (owner curation, 2026-07-16
+    UI review #1; see migrate.py's `_curate_demo_documents`). A hidden
+    document is still fully reachable via `GET /api/documents/{id}` below
+    (deep link) — only this list is filtered."""
     conn = db.connect()
-    return [_doc_summary(conn, d) for d in conn.execute("SELECT * FROM document ORDER BY id")]
+    return [_doc_summary(conn, d)
+            for d in conn.execute("SELECT * FROM document WHERE hidden=0 ORDER BY id")]
 
 
 @app.get("/api/documents/{doc_id}")

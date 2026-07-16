@@ -25,7 +25,8 @@ CREATE TABLE document (
   id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, source_lang TEXT, target_lang TEXT,
   source_model TEXT, seed_model TEXT, seed_prompt_variant TEXT,
   version INTEGER DEFAULT 0, origin TEXT DEFAULT 'seed', created_at TEXT,
-  terms_status TEXT NOT NULL DEFAULT 'none'
+  terms_status TEXT NOT NULL DEFAULT 'none',
+  hidden INTEGER NOT NULL DEFAULT 0   -- picker curation (2026-07-16); deep link ignores it
 );
 CREATE TABLE paragraph (
   id INTEGER PRIMARY KEY AUTOINCREMENT, document_id INTEGER REFERENCES document(id) ON DELETE CASCADE,
