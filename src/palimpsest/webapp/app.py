@@ -36,13 +36,48 @@ from .secrets_guard import is_secret_key, redact_error
 logger = logging.getLogger(__name__)
 
 
+def _reset_stuck_terms(conn: sqlite3.Connection) -> int:
+    """Startup-only recovery for ``document.terms_status='running'`` rows
+    (stability fix, 2026-07-16).
+
+    ``terminology_live.py``'s live pipeline runs as an in-process asyncio
+    task (``terminology_live._tasks``, never persisted) — a container
+    restart kills that task without it ever reaching ``_finish()``, but the
+    DB column it was updating stays exactly as it left it: ``'running'``.
+    Unlike ``precompute``/``translate``'s in-memory status dicts (which
+    simply forget the status on restart, see
+    docs/known_issues.md#translate-status-is-lost-on-server-restart), a
+    persisted DB column actively LIES to the frontend forever after a
+    restart — the document polls a `running` status that will never
+    resolve, since no task for that doc_id can possibly exist in the
+    freshly-started process.
+
+    Called once, right after ``_migrate_db``, before the app serves any
+    request — at that point NO in-process terminology task has been
+    launched for ANY doc_id yet, so unconditionally resetting every
+    ``'running'`` row back to ``'none'`` is always safe (this can never race
+    a task that is genuinely still running). Returns the number of rows
+    reset (0 in the common case)."""
+    with db._lock:
+        n = conn.execute(
+            "UPDATE document SET terms_status='none' WHERE terms_status='running'").rowcount
+        conn.commit()
+    return n
+
+
 @asynccontextmanager
 async def _lifespan(_app: FastAPI):
     # Bring an existing prod DB up to the current additive schema before the
     # app serves any request (spec 2026-07-05-score-history-best §2.4) — a
     # fresh dev/test DB (db.init_db) already has the full SCHEMA, so this is a
     # no-op there beyond the idempotent CREATE TABLE IF NOT EXISTS/backfill checks.
-    _migrate_db(db.connect())
+    conn = db.connect()
+    _migrate_db(conn)
+    n = _reset_stuck_terms(conn)
+    if n:
+        logger.info(
+            "startup sweep: reset terms_status 'running'->'none' for %d document(s) "
+            "(stale from a previous process's in-flight terminology task)", n)
     yield
 
 
@@ -341,30 +376,66 @@ def _terms_launch_after_translate(doc_id: int, client_for) -> None:
 
 # ─────────────────────── content-fingerprint clone cache ───────────────────────
 # EMNLP demo-video follow-up: a translate:false upload whose (source, target)
-# pairs match an existing terms_status='done' document byte-for-byte
-# (whitespace-run normalized) instantly inherits its terms/scores/issues
-# instead of spending LLM calls. See "Content clone cache" in
-# docs/subsystems/webapp.md for the full design.
-
-def _normalize_ws(text: str) -> str:
-    """Collapse every whitespace run (including newlines/tabs) to a single
-    space and strip the ends — the same "incidental formatting shouldn't
-    matter" normalization ``_sanitize_lang`` applies to language names,
-    reused here so the fingerprint matches across trivial paste differences
-    (double spaces, CRLF, a trailing blank line)."""
-    return " ".join((text or "").split())
+# pairs match an existing terms_status='done' document byte-for-byte instantly
+# inherits its terms/scores/issues instead of spending LLM calls. See
+# "Content clone cache" in docs/subsystems/webapp.md for the full design.
+#
+# Stability fix (2026-07-16): the fingerprint used to whitespace-normalize
+# each field before hashing ("trivial paste differences shouldn't matter"),
+# but _clone_predictions copies term.char_start/char_end verbatim onto the
+# NEW document's raw (un-normalized) text — a whitespace-only difference the
+# fingerprint deliberately ignored would silently shift every copied offset
+# onto the wrong characters. Fix: hash the RAW pairs directly (no
+# normalization at all). This is the simpler of the two options considered
+# (the other being "keep normalizing, then also compare raw text before
+# committing to clone") because a match on a raw-bytes hash already IS a
+# byte-exact match by construction — no separate raw-compare step is needed,
+# and no case is lost: any pair of documents that would have passed both the
+# old normalized-hash check AND a raw-exact check still matches under plain
+# raw hashing. The one real behavior change is that a whitespace-differing
+# paste no longer clones (falls through to the real pipeline instead) —
+# correct, since cloning it was never actually offset-safe.
 
 
 def _content_fingerprint(pairs: list[tuple[str, str]]) -> str:
-    """sha256 over the ordered ``(source, target)`` pairs, whitespace-run
-    normalized. Title/langs are deliberately excluded — the clone cache
-    matches on translation CONTENT only. Serializing as a JSON array (not a
-    raw concatenation) keeps pair count and order load-bearing in the hash
+    """sha256 over the ordered ``(source, target)`` pairs, RAW bytes (see the
+    module comment above for why — no whitespace normalization). Title and
+    languages are deliberately excluded — the clone cache matches on
+    translation CONTENT only. Serializing as a JSON array (not a raw
+    concatenation) keeps pair count and order load-bearing in the hash
     itself, so a different paragraph count or a reordering can never
-    collide by construction."""
-    normalized = [[_normalize_ws(s), _normalize_ws(t)] for s, t in pairs]
-    payload = json.dumps(normalized, ensure_ascii=False, separators=(",", ":"))
+    collide by construction. A fingerprint match therefore guarantees
+    byte-exact source/target text, which is what makes it safe for
+    ``_clone_predictions`` to copy ``term.char_start``/``char_end`` verbatim
+    onto the new document's paragraphs."""
+    payload = json.dumps(pairs, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _clone_source_eligible(conn, doc_id: int) -> bool:
+    """A ``terms_status='done'`` document only qualifies as a clone source if
+    it actually carries predictions worth cloning — otherwise the cache
+    would hand the new document an empty scores view while silently skipping
+    the real judge pipeline that would have produced real ones (stability
+    fix, 2026-07-16).
+
+    Score presence is the reliable signal: every paragraph that ever went
+    through precompute/``/evaluate`` gets exactly one ``score`` row per
+    enabled criterion (a criterion always writes a value, even for a
+    flawless translation), so zero score rows unambiguously means "never
+    scored". Term presence is deliberately NOT part of this gate the same
+    way: unlike scoring, term extraction is content-dependent — a paragraph
+    that genuinely has no extractable terminology legitimately ends with
+    zero ``term`` rows even after a full, successful ``terminology_live``
+    run, so "zero terms" cannot distinguish "never processed" from
+    "correctly found nothing" the way "zero scores" can; requiring term rows
+    too would wrongly reject a perfectly good clone source.
+
+    One indexed ``EXISTS``-shaped probe — cheap at this demo's scale (few
+    documents, no schema change needed)."""
+    return conn.execute(
+        "SELECT 1 FROM score s JOIN paragraph p ON p.id=s.paragraph_id "
+        "WHERE p.document_id=? LIMIT 1", (doc_id,)).fetchone() is not None
 
 
 def _find_clone_source(conn, new_doc_id: int, fingerprint: str) -> int | None:
@@ -372,15 +443,17 @@ def _find_clone_source(conn, new_doc_id: int, fingerprint: str) -> int | None:
     any other) whose CURRENT paragraph content hashes to ``fingerprint``,
     oldest match wins. Fingerprints are never stored — recomputed on the fly
     per candidate on every call; the demo has few documents, so this is
-    cheap and needs no schema change. Only a fully-processed source
-    (``terms_status='done'``) is eligible — a document still
-    none/running/failed has nothing worth cloning yet, and this also keeps
-    the brand-new document (still 'none' at this point) from matching
-    itself."""
+    cheap and needs no schema change. Only a fully-processed AND actually
+    scored source (``terms_status='done'`` and ``_clone_source_eligible``) is
+    eligible — a document still none/running/failed, or 'done' with nothing
+    ever scored, has nothing worth cloning yet, and this also keeps the
+    brand-new document (still 'none' at this point) from matching itself."""
     for row in conn.execute(
             "SELECT id FROM document WHERE id != ? AND terms_status='done' ORDER BY id",
             (new_doc_id,)):
         cand_id = row["id"]
+        if not _clone_source_eligible(conn, cand_id):
+            continue
         cand_rows = conn.execute(
             "SELECT source, target FROM paragraph WHERE document_id=? ORDER BY idx",
             (cand_id,)).fetchall()
@@ -397,6 +470,11 @@ def _clone_predictions(
     already matched paragraph counts via the fingerprint, and holds
     ``db._lock`` inside the same not-yet-committed transaction as the
     paragraph inserts).
+
+    Safe to copy ``term.char_start``/``char_end`` verbatim (see below) only
+    because the caller (``_find_clone_source``) already guarantees a
+    byte-exact raw-text match via ``_content_fingerprint`` — this function
+    does not re-verify that itself.
 
     ``term`` rows keep every column verbatim (difficulty/grounded_json/
     candidates_json/trace_json/target_surface/pair_accuracy/recommended/

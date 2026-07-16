@@ -61,12 +61,12 @@ written; historical pre-rev-5 rows stay `NULL` (never backfilled — honest, not
 | [`DocumentPicker.tsx`](../../frontend/src/demo/variant-a/DocumentPicker.tsx) | Landing view (EMNLP sprint) — one card per `DocumentSummary` (title, lang pair, paragraph count, a `termsStatus`-derived status dot/line via `termsStatusPresentation`) plus a trailing dashed "Blank document" card that opens `UploadModal` with AI-translate pre-selected (`openUploadModal({aiTranslateDefault: true})`). Card meta is derived from real `DocumentSummary` fields only — the DTO carries no per-document judge-score/finding counts, so the status line reflects `termsStatus`, not a fabricated count. Zero documents renders just the blank card (not an error — see "Subtleties"). |
 | [`lang.ts`](../../frontend/src/demo/lang.ts) | `langLabel`: dictionary → `Intl.DisplayNames` for BCP-47-like codes → free text passed through capitalized; `isBcp47Like` is the shared shape detector. |
 | [`EditorParagraph.tsx`](../../frontend/src/demo/variant-a/EditorParagraph.tsx) | Aligned paragraph row: read-only source text (`dir="auto"`) with term highlights; TipTap-editable translation (`dir="auto"`) with underline decorations from `review-extension`. Column language is per-document, not hardcoded. Source and translation use unified typography (15px / line-height 1.85) — shared baseline for the first line. Meta-strip with a compact horizontal chip (`§N + score + Δ + cached`, testid `para-meta`/`score-chip`) above the paragraph body — the left gutter is gone; chip band colours green/yellow/red are styled. Hovering the chip (native `title` tooltip, `buildScoreChipTooltip`) reveals the aggregate plus a per-enabled-criterion breakdown and cached/stale provenance notes; any criterion without a value yet shows `…` while a rescore is in flight or `—` once genuinely absent, never a blank/undefined line. |
-| [`InspectorPanel.tsx`](../../frontend/src/demo/variant-a/InspectorPanel.tsx) | Right-side panel for the selected paragraph — Issues / Scores tabs, per-criterion cards and score bars with prev/baseline deltas. Header carries "Refine paragraph ✦" (EMNLP sprint, `data-testid="refine-paragraph"`; replaces the old per-paragraph "Accept all" batch-splice button — the doc-level "Accept all across all paragraphs" chrome button is unchanged and still uses `acceptAllIssues`): disabled with tooltip "No open findings" when the paragraph has no open issues; otherwise calls `store.refineParagraph`, which shows "Refining…" then "Re-scoring…" (`evalState.refineStage`) and disables Accept/Dismiss/Evaluate/Retry-failed for the duration. |
+| [`InspectorPanel.tsx`](../../frontend/src/demo/variant-a/InspectorPanel.tsx) | Right-side panel for the selected paragraph — Issues / Scores tabs, per-criterion cards and score bars with prev/baseline deltas. Header carries "Refine paragraph ✦" (EMNLP sprint, `data-testid="refine-paragraph"`; replaces the old per-paragraph "Accept all" batch-splice button — the doc-level "Accept all across all paragraphs" chrome button is unchanged and still uses `acceptAllIssues`; shown on **both** the Issues and Scores tabs — stability fix, 2026-07-16, was gated to the Issues tab only, so a reviewer parked on Scores had no way to trigger a refine pass without switching tabs first): disabled with tooltip "No open findings" when the paragraph has no open issues; otherwise calls `store.refineParagraph`, which shows "Refining…" then "Re-scoring…" (`evalState.refineStage`) and disables Accept/Dismiss/Evaluate/Retry-failed for the duration. |
 | [`IssuePopover.tsx`](../../frontend/src/demo/variant-a/IssuePopover.tsx) | Floating popover on an underlined segment — shows issues for that span, Accept / Dismiss actions. |
 | [`IssuesPanel.tsx`](../../frontend/src/demo/variant-a/IssuesPanel.tsx) | Full-document issue list grouped by paragraph, filtered by active criteria. |
 | [`TermPopover.tsx`](../../frontend/src/demo/variant-a/TermPopover.tsx) | Floating popover for a hovered term — Wikidata grounding, difficulty signal, pair accuracy. |
-| [`GlossaryTab.tsx`](../../frontend/src/demo/variant-a/GlossaryTab.tsx) | Grouped glossary (wave-5 redesign, [spec](../superpowers/specs/2026-07-05-glossary-redesign-impl.md)): terms grouped by `(lemma, entity)` via [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts), 7 data columns + chevron (Difficulty/Pair/Source/Translation/Wikidata/Grounding/Mentions), accordion row expansion into Context RU/EN, a 4-step grounding-path stepper (QUERY→SEARCH→LABEL MATCH→DECISION, fed by the `Term.traceJson` wire field — [contracts spec §1](../superpowers/specs/2026-06-30-demo-contracts.md), degrades gracefully to a no-trace render when a term's `trace_json` is `{}`, e.g. rows never touched by `scripts/enrich_seed_terms.py`), candidates table, judge-decision card, and an all-mentions list with click-to-navigate to the paragraph. Empty state (zero terms) is `termsStatus`-aware (EMNLP sprint, `termsStatusEmptyMessage`, also reused for the top-chrome Terms chip tooltip — single source of truth): `running` → "Terminology pipeline is running — terms appear as paragraphs complete."; `failed` → "Terminology extraction failed for this document."; `none`/absent/zero-terms-on-`done` → "No terminology extracted for this document." (was an unconditional "precomputed offline… seeded pilot document" string). |
-| [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts) | Pure grouping/badge-resolution logic for `GlossaryTab`: `groupTerms` (lemma/stem-fallback grouping, worst-of difficulty/pair aggregation) and `resolveBadge` (strict rule-priority grounding badge: label-match / LLM / LLM-rejected / no-candidates). See [known_issues.md](../known_issues.md) "Glossary grouping's Russian stemmer fallback". |
+| [`GlossaryTab.tsx`](../../frontend/src/demo/variant-a/GlossaryTab.tsx) | Grouped glossary (wave-5 redesign, [spec](../superpowers/specs/2026-07-05-glossary-redesign-impl.md)): terms grouped by `(lemma, entity)` via [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts), 7 data columns + chevron (Difficulty/Pair/Source/Translation/Wikidata/Grounding/Mentions), accordion row expansion into Context RU/EN, a 4-step grounding-path stepper (SEARCH→CANDIDATES→EXACT→DECISION, fed by the `Term.traceJson` wire field — [contracts spec §1](../superpowers/specs/2026-06-30-demo-contracts.md), degrades gracefully to a no-trace render when a term's `trace_json` is `{}`, e.g. rows never touched by `scripts/enrich_seed_terms.py`), candidates table, judge-decision card, and an all-mentions list with click-to-navigate to the paragraph. **Trace shape fix (stability fix, 2026-07-16):** the stepper/Matched-column/judge-reason code originally read a nested `{query, search, label_match, decision}` shape (`TraceStep`) that the live pipeline never actually emits — `label_first.py::_result` writes a flat `{queries, search_source, candidates, exact_matches, judge, chosen_qid, ...}` shape instead (see `terminology.md`'s trace docs), so every one of those UI elements silently rendered "Skipped — no trace" / a permanent "—" Matched column for every real term. `stepPresentation`/`candidatesForDisplay`/the judge-reason lookup now read the real flat fields (`TraceJson`'s `queries`/`candidates`/`exact_matches`/`judge`); the old nested `TraceStep` type is kept only as `resolveBadge`'s heuristic fallback, not for rendering. The Candidates table's MATCHED column now reads `trace_json.candidates[].matched` (falls back to the plain `Term.candidates` `WikidataRef[]` list, with an honest "—" instead of a fake "none", only for legacy/seed rows with `trace_json={}`) — the previous `matched_via` field it read never existed on the wire DTO. Empty state (zero terms) is `termsStatus`-aware (EMNLP sprint, `termsStatusEmptyMessage`, also reused for the top-chrome Terms chip tooltip — single source of truth): `running` → "Terminology pipeline is running — terms appear as paragraphs complete."; `failed` → "Terminology extraction failed for this document."; `none`/absent/zero-terms-on-`done` → "No terminology extracted for this document." (was an unconditional "precomputed offline… seeded pilot document" string). |
+| [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts) | Pure grouping/badge-resolution logic for `GlossaryTab`: `groupTerms` (lemma/stem-fallback grouping, worst-of difficulty/pair aggregation) and `resolveBadge` (strict rule-priority grounding badge: label-match / LLM / LLM-rejected / no-candidates). **Red-dot poisoning fix (stability fix, 2026-07-16):** `groupTerms`' worst-of `difficulty` aggregation used to fold every mention merged into a group, including an ungrounded raw-lemma sibling pulled in purely for lemma-dedup — so a single-candidate merge could paint an otherwise-cleanly-grounded group's headline dot red/yellow even though every mention actually resolved to that group's `qid` was fine. `buildFields` now takes the group's `qid` and, when set, aggregates `difficulty` only over mentions whose own `grounded.qid` matches it (an ungrounded group, `qid=null`, is unaffected — still folds every mention as before); `pair` aggregation is untouched since a red-difficulty mention already has `pairAccuracy=null` by contract. See [known_issues.md](../known_issues.md) "Glossary grouping's Russian stemmer fallback". |
 | [`RankingTab.tsx`](../../frontend/src/demo/variant-a/RankingTab.tsx) | Sortable table of paragraphs by aggregate score, issue count, or per-criterion score. Click navigates to the paragraph. Column header `Translation snippet` (was `Target snippet`). |
 | [`SettingsTab.tsx`](../../frontend/src/demo/variant-a/SettingsTab.tsx) | Five titled sections — **1. Model Registry, 2. Translator, 3. Judges, 4. Grounding, 5. Refiner** — under a sticky left mini-nav (anchor links; collapses to a horizontal bar above the content under 900px). `BudgetLine` renders as a slim unnumbered status strip above the sections (`data-testid="budget-line"`, e.g. "Budget: $0.18 / $2.00 · 51/200 calls"; fetches `GET /api/budget` on mount; muted normally, yellow past 50% of either the $ cap or the call cap, red past 80% — `budgetBand`, `Math.max` of both shares). Criterion editor (prompt preview, scale, weight, color, enabled toggle) — section 3's user-visible copy reads "Judges" (was "Evaluators"; `data-testid`s and internal identifiers such as `EvaluatorEditor`/`AddEvaluatorModal` keep the old `evaluator*` names, so other tests referencing them are unaffected) — and model registry manager, both fully open to every caller, no lock state. "+ Add judge" and "+ Add model" open dedicated modals (see "Add Evaluator / Add Model modals" above) instead of a phantom row or `window.prompt`. Model Registry table adds a **Host** column (`deriveHost`: "openrouter" / "local vLLM" / raw hostname, derived from `baseUrl`, never hardcoded per model) and a **Roles** badge column (`modelRoleUsage`, computed live from criteria + translator/grounding/refiner config — "default · all roles" when a model backs all 4, else the referencing subset, else a dash). The new **Refiner** section mirrors the Translator card (model select from the registry, prompt via the shared `PromptEditor`, read-only params via `ParamsInline`) via `getRefinerConfig`/`updateRefinerConfig` (`GET`/`PUT /api/refiner-config`, mirrors `translator-config`'s client shape); like Translator/Grounding it degrades to an "unavailable" affordance on a null/failed fetch rather than blanking the tab. A 409 from Remove (criterion has score/issue history) is caught and rendered inline in the expanded editor via `va-inspector-warning`, suggesting disable instead. |
 | [`review-extension.ts`](../../frontend/src/demo/variant-a/review-extension.ts) | TipTap/ProseMirror extension. Computes stacked underline decorations for issues; click handler for segment selection. Renders EN term spans on the `pairAccuracy` traffic-light via `verdict-{color}` class + `data-verdict` attr (null verdict → neutral dotted span, no color, no dot — never coerced to green); the verdict dot itself is a separate `Decoration.widget` anchored at the term's end (not a span pseudo-element), so a judge underline that splits the span into multiple DOM fragments can't render the dot more than once. RU-side difficulty stays on `difficulty-*` in `SourceWithTerms`/`TermPopover` — a separate signal (Wikidata grounding vs. pair accuracy), not unified into one scheme. Repeated `targetSurface` occurrences anchor via a per-paragraph claim registry: terms are processed in array order and each claims the first free EN occurrence of its surface, skipping any occurrence that overlaps a range an earlier term already claimed (prevents a shorter surface, e.g. "York", from matching inside a longer already-decorated term, e.g. "New York"). |
@@ -74,7 +74,7 @@ written; historical pre-rev-5 rows stay `NULL` (never backfilled — honest, not
 | [`upload/file-ingest.ts`](../../frontend/src/demo/variant-a/upload/file-ingest.ts) | Client-side file → text ingestion: `.docx` via `POST /api/documents/extract-text`, `.txt`/`.md` via `FileReader` + UTF-8 with a `windows-1251` retry on mis-decode; `splitParagraphs` (blank-line split, SSOT for both the counters and the server payload). After decoding, `decodeText` rejects the result (throws the existing 422 "corrupted file" error) if more than 10% of characters (excluding `\n`/`\t`) are control/non-printable — catches binary files that decode without a `�` but aren't actually text. |
 | [`upload/md-strip.ts`](../../frontend/src/demo/variant-a/upload/md-strip.ts) | Markdown → plain text for `.md` uploads: strips headings/emphasis/links/images/HTML/quotes/rules/code-fence markers, converts table rows to `cell — cell`. |
 
-State management: Zustand store ([`store.ts`](../../frontend/src/demo/store.ts)) with actions including (non-exhaustive) `init` (documents/criteria/models only — no auto-open), `backToPicker`, `evaluateParagraph`, `refineParagraph` (EMNLP sprint — refiner pass + chained re-score), `acceptIssue`, `applyIssueEdit`, `acceptAllIssues` (now doc-level "Accept all" only), `dismissIssue`, `saveParagraphTarget`, `resetDoc`, `switchDocument`, `createDoc`, `deleteDoc`, `refreshDocument` (precompute/translation/terms-status badge polling), `startTermsPolling`/`stopTermsPolling` (store-owned single interval, idempotent — EMNLP sprint), `openUploadModal` (optional `{aiTranslateDefault}`)/`closeUploadModal`, and CRUD actions for criteria/models (`addCriterion`, `saveCriterion`, `removeCriterion`, `addModel`, `saveModel`, `removeModel`, `testModel`).
+State management: Zustand store ([`store.ts`](../../frontend/src/demo/store.ts)) with actions including (non-exhaustive) `init` (documents/criteria/models only — no auto-open), `backToPicker`, `evaluateParagraph`, `refineParagraph` (EMNLP sprint — refiner pass + chained re-score), `acceptIssue`, `applyIssueEdit`, `acceptAllIssues` (now doc-level "Accept all" only), `dismissIssue`, `saveParagraphTarget`, `resetDoc`, `switchDocument`, `createDoc`, `deleteDoc`, `refreshDocument` (precompute/translation/terms-status badge polling — stale-fetch guard and 404 handling, see Subtleties below), `startTermsPolling`/`stopTermsPolling` (store-owned single interval, idempotent — EMNLP sprint), `openUploadModal` (optional `{aiTranslateDefault}`)/`closeUploadModal`, and CRUD actions for criteria/models (`addCriterion`, `saveCriterion`, `removeCriterion`, `addModel`, `saveModel`, `removeModel`, `testModel`).
 API client functions: `getDocuments`, `getDocument`, `createDocument`, `deleteDocument`, `extractText`, `evaluate`, `applyEdit`, `refineParagraph` (EMNLP sprint), `resetDocument`, and the full CRUD surface for criteria and models.
 
 ## REST surface
@@ -220,16 +220,30 @@ internals (extractor prompt, `GroundingConfig`, `LabelFirstGrounding`'s decision
 table, `LinkLocatePairing`) are the [terminology stage doc](../stages/terminology.md)
 — this section covers only the webapp wiring.
 
-**Status column, not an in-memory registry.** Unlike `precompute`/`translate`,
-progress lives on `document.terms_status` (`'none'|'running'|'done'|'failed'`, a
-real DB column added by `migrate.py`/`db.py::SCHEMA`) — a process restart does not
-strand the frontend on a stale `running` the way precompute/translate's in-memory
-status dicts would. Exposed as `document.termsStatus` in the wire DTO (all
-documents, including `origin='seed'`, which the migration backfills to `'done'`
-since it already has precomputed terms). `terminology_live.try_start(conn, doc_id)`
+**Status column, not an in-memory registry — but restart recovery is an explicit
+startup sweep, not automatic.** Unlike `precompute`/`translate`, progress lives on
+`document.terms_status` (`'none'|'running'|'done'|'failed'`, a real DB column
+added by `migrate.py`/`db.py::SCHEMA`). Being a persisted column does NOT by
+itself make a restart safe: a restart kills the in-flight asyncio task before it
+ever reaches `_finish()`, and the column just keeps reporting the stale `running`
+value forever — actually worse than precompute/translate's in-memory status
+dicts, which merely forget the status on restart rather than actively lying about
+it (stability fix, 2026-07-16; the previous revision of this doc claimed restart
+safety came for free from the column being DB-backed — it did not). The real
+fix is `app._reset_stuck_terms`, called once from the FastAPI lifespan right
+after `_migrate_db`: since no in-process terminology task can possibly exist for
+any doc_id immediately after a fresh process start, every document still at
+`'running'` at that point is unconditionally stale and gets reset to `'none'`
+(logged via `logger.info` when it resets ≥1 row). Exposed as `document.termsStatus`
+in the wire DTO (all documents, including `origin='seed'`, which the migration
+backfills to `'done'` since it already has precomputed terms). `terminology_live.try_start(conn, doc_id)`
 is the sole 'none' → 'running' transition, atomic under `db._lock` — it returns
 `False` (no-op) when terms already started/finished for that document, guarding
 against a resumed `POST .../translate` re-triggering the pipeline a second time.
+A document reset to `'none'` by the startup sweep has no automatic re-trigger
+today — it simply stops lying about being `'running'`; a fresh re-launch needs a
+new document action (e.g. a future explicit "retry terms" affordance), not
+wired by this fix.
 
 **Two launch points, both eventually calling `terminology_live.launch(doc_id,
 client_for, grounding_judge_live)`:**
@@ -283,6 +297,25 @@ to read "no caller in the webapp yet") now sends
 string, so a live disambiguation call actually carries the Role/output-contract
 instructions the frozen module's decision table expects.
 
+**Timeout ceilings (stability fix, 2026-07-16).** Both legs are wrapped in
+`asyncio.wait_for`, and both ceilings are deliberately set to exceed whatever
+they wrap — a ceiling *shorter* than the call it bounds fires first and
+abandons a still-running call instead of ever letting it fail/succeed on its
+own. The NER leg's ceiling (`terminology_live._effective_ner_timeout`) is
+computed from the real `LLMClient.config.timeout` (30s default,
+`llm/client.py`) plus a 5s margin at call time, rather than a hardcoded
+duplicate of that 30s — it used to default to a flat 20s, shorter than the SDK
+timeout it wrapped. The grounding leg (`pipeline.run`, run inside
+`asyncio.to_thread`) previously had no ceiling at all; it now has one too
+(`_GROUNDING_TIMEOUT`, env `PALIMPSEST_TERMS_GROUNDING_TIMEOUT`, default 180s)
+— deliberately generous (defense-in-depth, not SDK-aligned like the NER leg)
+since it wraps a whole paragraph's WikidataClient network I/O plus zero or
+more judge calls, not a single SDK request. Either ceiling firing is just
+another per-paragraph failure under this module's existing failure contract
+(caught, logged, skipped) — it does not, by itself, stop the abandoned
+background thread (an inherent `asyncio.to_thread` limitation, pre-existing
+for the NER leg and now shared by the grounding leg too).
+
 ## Content clone cache
 
 EMNLP demo-video follow-up: `POST /api/documents` (`translate:false` only) now
@@ -293,27 +326,41 @@ call, no waiting — so a presenter can upload a source+translation pair that is
 byte-identical to a document already run through the pipeline and get terms +
 judge scores back in the same 201 response.
 
-**Fingerprint.** After paragraphs are inserted (still inside the same
+**Fingerprint — byte-exact, not whitespace-normalized (stability fix,
+2026-07-16).** After paragraphs are inserted (still inside the same
 `db._lock`/transaction, before the single `conn.commit()`), `app.py` hashes the
-ordered `(source, target)` pairs — `_content_fingerprint`: each field run through
-`_normalize_ws` (collapse whitespace runs, strip ends — the same normalization
-`_sanitize_lang` applies to language names) and the whole list serialized as
-JSON before `sha256`. Title and languages are deliberately excluded — the cache
-matches on translation content only. Serializing as a JSON array (not a raw
-string concatenation) keeps pair count and order load-bearing in the hash
-itself, so a different paragraph count or a reordering can never collide by
-construction — a mismatched count silently falls through to the normal
-(non-cloned) path, no special-case needed. No schema change and no persisted
-fingerprint column: `_find_clone_source` recomputes each candidate's fingerprint
-on the fly from its current `paragraph` rows on every call — the demo has few
-documents, so this is cheap.
+ordered `(source, target)` pairs — `_content_fingerprint`: the raw pairs
+serialized as JSON, then `sha256`, no normalization step. Title and languages
+are deliberately excluded — the cache matches on translation content only.
+Serializing as a JSON array (not a raw string concatenation) keeps pair count
+and order load-bearing in the hash itself, so a different paragraph count or a
+reordering can never collide by construction — a mismatched count silently
+falls through to the normal (non-cloned) path, no special-case needed. No
+schema change and no persisted fingerprint column: `_find_clone_source`
+recomputes each candidate's fingerprint on the fly from its current
+`paragraph` rows on every call — the demo has few documents, so this is cheap.
+This used to whitespace-normalize each field first ("trivial paste differences
+shouldn't matter") — removed because `_clone_predictions` copies
+`term.char_start`/`char_end` verbatim onto the new document's raw text: a
+normalized-only match could differ from the source in incidental whitespace,
+silently shifting every copied offset onto the wrong characters. A raw-bytes
+hash match is byte-exact by construction, which is what makes the offset copy
+safe; the tradeoff is that a whitespace-differing paste no longer clones (it
+falls through to the real pipeline instead, which is correct, just not free).
 
-**Match rule.** Only a document with `terms_status='done'` is eligible as a
-clone source (never a document that is itself `none`/`running`/`failed`) —
-oldest match wins if several qualify. Any `origin` qualifies, including the
-seed document. `translate:true` uploads are exempt outright — their targets are
-still empty at this point in `create_document`, so fingerprinting them would
-never usefully match anything real.
+**Match rule.** A candidate must satisfy ALL of: (1) `terms_status='done'`
+(never a document that is itself `none`/`running`/`failed`); (2) at least one
+`score` row somewhere in the document (`_clone_source_eligible`, stability fix
+2026-07-16 — a `'done'` document with zero scores means the judge pipeline
+never ran for it, so cloning it would hand the new document a permanently-empty
+scores view while skipping the real pipeline that would have produced real
+ones; term-row presence is deliberately NOT part of this gate, since a
+paragraph can legitimately end with zero terms on a fully successful run); (3)
+the fingerprint match itself (byte-exact, see above). Oldest match wins if
+several qualify. Any `origin` qualifies, including the seed document.
+`translate:true` uploads are exempt outright — their targets are still empty
+at this point in `create_document`, so fingerprinting them would never
+usefully match anything real.
 
 **Copy.** `_clone_predictions` copies, paragraph-by-paragraph in `idx` order
 (index-aligned against the source document's own `idx` order): every `term`
@@ -429,6 +476,8 @@ When `DEMO_STATIC_DIR` is set (the image sets it to `/app/frontend/dist`), [app.
 - **Term rows are live, not a stub (2026-07-11).** The former `POST /api/paragraphs/{pid}/terms` stub route is removed — it had zero frontend callers (terms have always travelled embedded in `GET /api/documents/{id}`, never via a standalone fetch). Term rows for an uploaded/AI-translated document are now populated automatically by the background [`terminology_live.py`](../../src/palimpsest/webapp/terminology_live.py) pipeline; see "Live terminology" below.
 
 - **`termsStatus` polling and the landing picker (2026-07-11, EMNLP sprint).** `Document`/`DocumentSummary` gain `termsStatus: 'none'|'running'|'done'|'failed'`, driving three frontend surfaces from one field: the top-chrome Terms chip (a non-interactive spinner + "Extracting terminology…" while `running`, instead of the old flat disabled look), `GlossaryTab`'s empty state (see its table row above), and `DocumentPicker`'s per-card status dot. The store polls `GET /api/documents/{id}` every 2.5s (`startTermsPolling`/`stopTermsPolling`, a single idempotent interval) while `termsStatus==='running'` OR translation is still filling targets (terms extraction follows it) — started/stopped by a `VariantA` effect keyed on `doc?.termsStatus`/`doc?.translation?.status`, so it tears down on done/failed/unmount/doc-switch the same way the existing precompute/translation badge polling does. Separately, `init()` no longer auto-opens the first document — `DocumentPicker` (docId=null) is the landing view; zero documents from `GET /documents` is a valid empty-picker state (just the blank-document card), not `documentError` (previously "No documents available" was a fatal error screen with no way to create a document — see `DocumentPicker.tsx` row above).
+
+- **`refreshDocument` stale-fetch and 404 guards (stability fix, 2026-07-16).** `refreshDocument` backs every poller (precompute/translation/terms-status), all firing every 2.5–3s. Two races fixed: (1) **stale-fetch** — if the user switches documents (or backs out to the picker) while a `GET /api/documents/{id}` for the PREVIOUS document is still in flight, the store now checks `get().document?.id` still equals the id that was requested before applying the response, so a slow response for a no-longer-active document can never clobber whatever is loaded now. (2) **deleted-document 404** — if the polled document was deleted server-side (e.g. from another tab), the fetch now 404s forever instead of ever resolving; `refreshDocument` catches that specific case, calls `stopTermsPolling()`, sets `document: null` (falls back to the picker) and refreshes the document list, instead of polling a dead id indefinitely. Any other fetch error (network blip, 5xx) leaves state untouched — pollers just retry next tick, matching `refreshDocument`'s pre-existing no-error-surfaced-to-UI contract.
 
 - **Params secret-key guard.** `POST/PUT /api/models` and `/api/criteria` reject any `params`/config dict whose keys look secret-like with HTTP 400, before touching the DB. The check (`_guard_params` in `app.py`) delegates to `secrets_guard.is_secret_key`, which is boundary-aware: strong indicators (`api_key`, `token`, `secret`, `password`, `bearer`, `authorization`, …) match anywhere in the key, while collision-prone short words (`token`, `auth`, `key`) match only as a delimited component — so `max_tokens`/`top_k` are never falsely flagged.
 

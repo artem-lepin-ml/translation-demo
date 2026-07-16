@@ -12,9 +12,11 @@ from __future__ import annotations
 
 import asyncio
 import json
+import time
 
 import pytest
 
+from palimpsest.llm.client import LLMClient, LLMConfig
 from palimpsest.webapp import app as app_mod
 from palimpsest.webapp import budget, db, terminology_live, translate
 
@@ -74,7 +76,11 @@ class _FakeClient:
             raise content
         return _FakeResult(content)
 
-    config = type("Cfg", (), {"max_tokens": 2048})()
+    # `timeout` mirrors LLMConfig.timeout's real default (30.0, llm/client.py)
+    # -- terminology_live._effective_ner_timeout reads client.config.timeout,
+    # so a fake missing this attribute would AttributeError, not just
+    # silently use a wrong value.
+    config = type("Cfg", (), {"max_tokens": 2048, "timeout": 30.0})()
 
 
 def _client_for_factory(client: _FakeClient):
@@ -361,3 +367,115 @@ def test_terms_stub_route_removed(client):
     pid = doc["paragraphs"][0]["id"]
     r = client.post(f"/api/paragraphs/{pid}/terms")
     assert r.status_code == 404
+
+
+# ── startup sweep for stuck terms_status='running' (stability fix: Issue A) ──
+
+def test_startup_sweep_resets_stuck_running_to_none(client):
+    """app._reset_stuck_terms recovers a document left at terms_status=
+    'running' by a killed process -- called once from the FastAPI lifespan
+    right after migrate(), before any request is served. A 'done' document
+    must be left untouched."""
+    conn = db.connect()
+    running_id = _mk_doc(client, [{"source": "s1", "target": "t1"}])["id"]
+    done_id = _mk_doc(client, [{"source": "s2", "target": "t2"}])["id"]
+    conn.execute("UPDATE document SET terms_status='running' WHERE id=?", (running_id,))
+    conn.execute("UPDATE document SET terms_status='done' WHERE id=?", (done_id,))
+    conn.commit()
+
+    n = app_mod._reset_stuck_terms(conn)
+
+    assert n == 1
+    row = conn.execute("SELECT terms_status FROM document WHERE id=?", (running_id,)).fetchone()
+    assert row["terms_status"] == "none"
+    row2 = conn.execute("SELECT terms_status FROM document WHERE id=?", (done_id,)).fetchone()
+    assert row2["terms_status"] == "done"           # untouched
+
+
+def test_startup_sweep_is_noop_when_nothing_stuck(client):
+    conn = db.connect()
+    doc_id = _mk_doc(client, [{"source": "s", "target": "t"}])["id"]
+    conn.execute("UPDATE document SET terms_status='done' WHERE id=?", (doc_id,))
+    conn.commit()
+
+    assert app_mod._reset_stuck_terms(conn) == 0
+    row = conn.execute("SELECT terms_status FROM document WHERE id=?", (doc_id,)).fetchone()
+    assert row["terms_status"] == "done"
+
+
+def test_startup_sweep_leaves_failed_and_none_alone(client):
+    conn = db.connect()
+    doc_id = _mk_doc(client, [{"source": "s", "target": "t"}])["id"]
+    conn.execute("UPDATE document SET terms_status='failed' WHERE id=?", (doc_id,))
+    conn.commit()
+
+    assert app_mod._reset_stuck_terms(conn) == 0
+    row = conn.execute("SELECT terms_status FROM document WHERE id=?", (doc_id,)).fetchone()
+    assert row["terms_status"] == "failed"           # sweep only ever touches 'running'
+
+
+# ── timeout race fixes (stability fix: Issue C) ──────────────────────────────
+
+def test_ner_timeout_exceeds_sdk_client_timeout():
+    """The NER leg's wait_for ceiling must always exceed the real SDK client
+    timeout it wraps (LLMConfig.timeout, 30s default) -- otherwise wait_for
+    fires first and abandons a still-running SDK call. Exercised against a
+    REAL LLMConfig/LLMClient (no network call: constructing openai.OpenAI
+    does not touch the network), not a hardcoded number, so this stays
+    correct if either default changes."""
+    default_client = LLMClient(LLMConfig(model="m", base_url="http://x", api_key="k"))
+    assert default_client.config.timeout == 30.0    # sanity: pin the value this test reasons about
+    eff = terminology_live._effective_ner_timeout(default_client)
+    assert eff > default_client.config.timeout
+
+    # Even a client explicitly configured with a SMALL SDK timeout must not
+    # collapse the ceiling below the env-configured NER floor.
+    small_cfg = LLMConfig(model="m", base_url="http://x", api_key="k", timeout=5.0)
+    small_timeout_client = LLMClient(small_cfg)
+    eff_small = terminology_live._effective_ner_timeout(small_timeout_client)
+    assert eff_small > small_timeout_client.config.timeout
+    assert eff_small >= terminology_live._NER_TIMEOUT
+
+    # And a LARGE SDK timeout must still be cleared with the same margin.
+    large_cfg = LLMConfig(model="m", base_url="http://x", api_key="k", timeout=120.0)
+    large_timeout_client = LLMClient(large_cfg)
+    eff_large = terminology_live._effective_ner_timeout(large_timeout_client)
+    assert eff_large > large_timeout_client.config.timeout
+
+
+def test_grounding_timeout_constant_is_generous():
+    """The grounding leg's ceiling (previously absent entirely) must be
+    generous enough to comfortably outlast a normal paragraph run (NER's own
+    ceiling alone can reach ~35s; the grounding leg additionally makes
+    Wikidata network calls and zero or more judge calls) -- this is a
+    defense-in-depth ceiling, not a tight SDK-aligned one."""
+    assert terminology_live._GROUNDING_TIMEOUT >= 60.0
+
+
+def test_grounding_leg_timeout_fires_and_paragraph_fails_gracefully(client, monkeypatch):
+    """A pipeline.run() call that outlives _GROUNDING_TIMEOUT must not stall
+    the whole run forever -- the wait_for added around the to_thread call
+    fires, gets caught by _run's existing per-paragraph except, and the run
+    finishes with that paragraph simply skipped (same per-paragraph failure
+    contract the NER leg already had). Only the paragraph's OWN pipeline.run
+    is slow here; the ceiling is monkeypatched way down so the test itself
+    stays fast."""
+    monkeypatch.setattr(terminology_live, "_GROUNDING_TIMEOUT", 0.05)
+
+    def _hang(*a, **kw):
+        time.sleep(0.3)                              # outlives the 0.05s ceiling above
+        return []
+
+    monkeypatch.setattr(terminology_live.pipeline, "run", _hang)
+    conn = db.connect()
+    _seed_grounding_config(conn)
+    doc = _mk_doc(client, [{"source": "Вавилон.", "target": "Babylon."}])
+
+    fake_client = _FakeClient([NER_ONE_TERM])
+    client_for = _client_for_factory(fake_client)
+    judge = asyncio.run(_judge_picks("Q1"))
+    asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    got = client.get(f"/api/documents/{doc['id']}").json()
+    assert got["termsStatus"] == "failed"            # only paragraph timed out -> nothing succeeded
+    assert got["paragraphs"][0]["terms"] == []

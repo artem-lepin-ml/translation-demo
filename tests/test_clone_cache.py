@@ -128,19 +128,90 @@ def test_clone_on_identical_content_instant_terms_and_no_launch(client, monkeypa
     assert len(got["paragraphs"][0]["terms"]) == 1
 
 
-def test_clone_normalizes_whitespace_runs(client, launches):
+def test_clone_refused_when_raw_whitespace_differs(client, launches):
+    """Stability fix (2026-07-16): the fingerprint used to whitespace-
+    normalize before hashing, so this exact scenario (source has a double
+    space, upload has a single space) used to clone -- but _clone_predictions
+    copies term.char_start/char_end VERBATIM onto the new document's raw
+    text, so a whitespace-only difference the fingerprint ignored would
+    silently shift every copied offset onto the wrong characters. The fix
+    hashes raw bytes directly: this upload's raw text differs from the
+    source's, so the fingerprint no longer matches at all and the upload
+    correctly falls through to the normal (non-cloned) pipeline."""
     conn = db.connect()
     _seed_criterion(conn)
-    # source doc has a double space + the upload has a single space -> same
-    # normalized fingerprint (design bullet 1: "normalize whitespace runs").
     _seed_processed_doc(conn, [("Hello  world.", "Bonjour   le monde.")])
 
     body = _body(sourceLang="ru", targetLang="en", precompute=False,
                  paragraphs=[{"source": "Hello world.", "target": "Bonjour le monde."}])
     r = client.post("/api/documents", json=body)
     assert r.status_code == 201
-    assert r.json()["termsStatus"] == "done"
+    doc = r.json()
+
+    assert doc["termsStatus"] == "running"           # normal path, not an offset-unsafe clone
+    assert doc["paragraphs"][0]["terms"] == []
+    assert launches["terminology_live"] != [], "must fall through to the real pipeline, not clone"
+
+
+def test_clone_succeeds_on_byte_exact_raw_match(client, launches):
+    """Positive control for the fix above: a re-upload whose raw text is
+    BYTE-IDENTICAL to the source (no whitespace difference at all) must
+    still clone -- the raw-exact requirement does not regress the intended
+    common case, only the offset-unsafe whitespace-differing one."""
+    conn = db.connect()
+    _seed_criterion(conn)
+    _seed_processed_doc(conn, PAIRS)
+
+    body = _body(sourceLang="ru", targetLang="en", precompute=False,
+                 paragraphs=[{"source": s, "target": t} for s, t in PAIRS])
+    r = client.post("/api/documents", json=body)
+    assert r.status_code == 201
+    doc = r.json()
+
+    assert doc["termsStatus"] == "done"
+    assert len(doc["paragraphs"][0]["terms"]) == 1
     assert launches["precompute"] == [] and launches["terminology_live"] == []
+
+
+def test_clone_refused_when_source_has_no_scores(client, launches):
+    """Stability fix (2026-07-16), Issue B part 1: a terms_status='done'
+    document with terms but ZERO score rows (e.g. precompute was skipped)
+    must NOT be used as a clone source -- cloning it would hand the new
+    document a permanently-empty scores view while silently skipping the
+    real judge pipeline that would have produced real ones. This also
+    demonstrates that TERM presence alone is not sufficient for eligibility
+    (this source has a term row but no score row, and is still refused)."""
+    conn = db.connect()
+    _seed_criterion(conn)
+    doc_id = conn.execute(
+        "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,"
+        "created_at,terms_status) VALUES(?,?,?,'user',0,'upload',?,'done')",
+        ("No-scores source", "ru", "en", SOURCE_TS)).lastrowid
+    for idx, (source, target) in enumerate(PAIRS):
+        pid = conn.execute(
+            "INSERT INTO paragraph(document_id,idx,source,target,seed_target) VALUES(?,?,?,?,?)",
+            (doc_id, idx, source, target, target)).lastrowid
+        db.write_revision(conn, pid, target, "upload", SOURCE_TS)
+        # A real term row exists -- proves eligibility hinges on SCORE
+        # presence specifically, not merely "some prediction exists".
+        conn.execute(
+            "INSERT INTO term(paragraph_id,source_surface,source_lemma,context,char_start,char_end,"
+            "difficulty,grounded_json,candidates_json,target_surface,pair_accuracy,recommended,"
+            "note,trace_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (pid, source[:4], source[:4], source, 0, min(4, len(source)), "green",
+             None, "[]", target, "green", None, "a term", "{}"))
+        # deliberately NO score/issue rows inserted
+    conn.commit()
+
+    body = _body(sourceLang="ru", targetLang="en", precompute=False,
+                 paragraphs=[{"source": s, "target": t} for s, t in PAIRS])
+    r = client.post("/api/documents", json=body)
+    assert r.status_code == 201
+    doc = r.json()
+
+    assert doc["termsStatus"] == "running"           # own run, not a clone of the scoreless source
+    assert doc["paragraphs"][0]["terms"] == []
+    assert launches["terminology_live"] != []
 
 
 def test_different_content_takes_normal_path(client, launches):

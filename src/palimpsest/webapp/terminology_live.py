@@ -4,10 +4,17 @@ newly-created document (2026-07-11 EMNLP-sprint lane B2).
 
 Mirrors ``precompute.py``'s/``translate.py``'s async launch/status pattern,
 with one deliberate difference: ``document.terms_status`` is a persisted DB
-column (see ``migrate.py``), not an in-memory dict -- so, unlike
-precompute/translate's accepted "status lost on restart" risk, the frontend
-never gets stuck reading a stale ``running`` after a process restart kills
-the in-flight asyncio task.
+column (see ``migrate.py``), not an in-memory dict. That does NOT make a
+restart free of risk on its own (stability fix, 2026-07-16): a restart kills
+the in-flight asyncio task without ever reaching ``_finish()``, and the
+persisted column just keeps reporting the stale ``running`` value forever --
+worse than precompute/translate's in-memory dicts, which merely forget the
+status on restart rather than actively lying about it. The actual recovery
+is a startup sweep in ``app.py``'s lifespan (``_reset_stuck_terms``, runs
+right after ``migrate()``): no in-process terminology task can possibly
+exist for any doc_id immediately after a fresh process start, so every
+document still at 'running' at that point is unconditionally stale and gets
+reset to 'none'.
 
 Every grounding/pairing decision reuses the FROZEN terminology module
 unmodified (``extract.py``, ``grounding/label_first.py``,
@@ -82,6 +89,32 @@ _NER_TIMEOUT = float(os.environ.get("PALIMPSEST_TERMS_TIMEOUT", "20"))
 _NER_RETRIES = int(os.environ.get("PALIMPSEST_TERMS_RETRIES", "2"))
 _NER_BACKOFF = float(os.environ.get("PALIMPSEST_TERMS_BACKOFF", "0.5"))
 
+# Margin the NER leg's wait_for ceiling must clear above the actual SDK
+# client timeout (LLMConfig.timeout, 30s default in llm/client.py) -- stability
+# fix (2026-07-16): the env-overridable default above (20s) used to be
+# SHORTER than the SDK timeout, so asyncio.wait_for fired first and abandoned
+# a still-running SDK call (the retry loop then started a SECOND concurrent
+# call against the same provider instead of actually giving up). See
+# ``_effective_ner_timeout``, which enforces the ordering at call time against
+# the REAL client instead of hardcoding a duplicate "30" here -- single
+# source of truth stays ``LLMConfig.timeout``.
+_TIMEOUT_MARGIN = 5.0
+
+# Per-paragraph ceiling on the whole grounding+pairing pipeline call (NER is
+# already extracted and timed separately above; this wraps the SEPARATE
+# ``pipeline.run`` call -- WikidataClient network I/O, own 15s-timeout x
+# 5-attempt retry loop per fetch, see wikidata.py -- plus zero or more
+# disambiguation judge calls, each already individually bounded by
+# app.py's EVAL_TIMEOUT/EVAL_RETRIES). Stability fix (2026-07-16): this leg
+# previously had NO ceiling at all, so a hung/deadlocked worker thread (or a
+# pathological paragraph with many ambiguous mentions) could block a
+# paragraph -- and therefore the whole document's terms_status='running' --
+# indefinitely. Deliberately generous (unlike the NER leg's SDK-aligned
+# ceiling above): nothing here should legitimately take this long, this is
+# defense-in-depth only, matching the "never stuck at running forever"
+# invariant the app.py startup sweep also enforces at the document level.
+_GROUNDING_TIMEOUT = float(os.environ.get("PALIMPSEST_TERMS_GROUNDING_TIMEOUT", "180"))
+
 # Safety floor for the NER call's max_tokens: grounding_config's own params
 # are tuned for the disambiguation judge's short {"qid":...,"reason":...}
 # reply (webapp default 512, see migrate.py's GROUNDING_DEFAULT_PARAMS) --
@@ -128,6 +161,11 @@ def try_start(conn, doc_id: int) -> bool:
     brand-new never-raced ``doc_id``) must NOT call this -- ``db._lock`` is
     a plain ``threading.Lock``, not reentrant; write the column directly
     instead (see ``app.py``'s ``create_document``).
+
+    This function only handles the 'none' -> 'running' edge -- it has no
+    opinion about a doc stuck at 'running' from a dead process. That
+    recovery is a separate, startup-only sweep (``app._reset_stuck_terms``,
+    called from the lifespan right after ``migrate()``), not this function.
     """
     with db._lock:
         row = conn.execute("SELECT terms_status FROM document WHERE id=?", (doc_id,)).fetchone()
@@ -169,6 +207,18 @@ async def run(doc_id: int, client_for, grounding_judge_live) -> None:
         _finish(db.connect(), doc_id, "failed")
 
 
+def _effective_ner_timeout(client) -> float:
+    """The ``asyncio.wait_for`` ceiling for the NER call, always kept above
+    ``client.config.timeout`` (the actual SDK per-request wall clock the
+    ``client.complete`` call underneath is bound by) -- otherwise wait_for
+    fires first and abandons a still-running SDK call instead of the SDK's
+    own timeout ever getting a chance to raise. Derived from the REAL client
+    at call time rather than a hardcoded duplicate of ``LLMConfig.timeout``'s
+    default, so this stays correct even if that default changes or a caller
+    passes a client configured with a non-default timeout."""
+    return max(_NER_TIMEOUT, client.config.timeout + _TIMEOUT_MARGIN)
+
+
 async def _extract_mentions_live(conn, client_for, source: str) -> list[TermMention]:
     """One budget-guarded NER call against the grounding_config model (no
     dedicated NER-config DB surface exists -- the task reuses
@@ -200,11 +250,12 @@ async def _extract_mentions_live(conn, client_for, source: str) -> list[TermMent
     rmt = additive_reasoning_tokens(name, ner_params)
     est = budget.estimate(name, prompt_tok, client.config.max_tokens, rmt)
     gen = await budget.reserve(est)
+    ner_timeout = _effective_ner_timeout(client)
     attempt = 0
     while True:
         try:
             res = await asyncio.wait_for(
-                asyncio.to_thread(client.complete, NER_SYSTEM_PROMPT, user), _NER_TIMEOUT)
+                asyncio.to_thread(client.complete, NER_SYSTEM_PROMPT, user), ner_timeout)
             break
         except Exception as exc:
             if is_transient_error(exc) and attempt < _NER_RETRIES:
@@ -301,12 +352,23 @@ async def _run(doc_id: int, client_for, grounding_judge_live) -> None:
             continue
         try:
             mentions = await _extract_mentions_live(conn, client_for, p["source"])
-            terms = await asyncio.to_thread(
-                pipeline.run, p["source"], p["target"] or "", mentions,
-                grounder=grounder, pairer=pairer, judge=sync_judge,
-                scope_id=doc_id, judge_cache=judge_cache,
+            terms = await asyncio.wait_for(
+                asyncio.to_thread(
+                    pipeline.run, p["source"], p["target"] or "", mentions,
+                    grounder=grounder, pairer=pairer, judge=sync_judge,
+                    scope_id=doc_id, judge_cache=judge_cache,
+                ),
+                _GROUNDING_TIMEOUT,
             )
         except Exception:
+            # Covers a genuine pipeline error AND asyncio.TimeoutError from the
+            # wait_for ceiling above — both are per-paragraph failures under
+            # this module's failure contract (skip, keep going). Note: like
+            # the NER leg, a fired wait_for does not actually stop the
+            # abandoned worker thread (an inherent asyncio.to_thread
+            # limitation) — it keeps running in the background and any
+            # eventual sync_judge callback it makes is harmless (just a
+            # wasted call), never touches `terms_status` again.
             logger.exception("terms pipeline failed doc_id=%s paragraph_id=%s", doc_id, p["id"])
             continue                             # per-paragraph failure: skip, keep going
         _write_paragraph_terms(conn, doc_id, p["id"], terms)
