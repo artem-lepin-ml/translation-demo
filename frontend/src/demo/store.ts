@@ -449,8 +449,34 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   refreshDocument: async () => {
     const cur = get().document;
     if (!cur) return;
-    const doc = await getDocument(cur.id);
-    set({ document: doc });                             // paraEvalState is preserved
+    try {
+      const doc = await getDocument(cur.id);
+      // Stale-fetch guard: this action is polled every 2.5-3s (precompute /
+      // translation / terms-status pollers below all funnel through it). If
+      // the user switched documents (or backed out to the picker) while this
+      // request was in flight, a slow response for the no-longer-active
+      // document must never clobber whatever is loaded now.
+      if (get().document?.id !== cur.id) return;
+      set({ document: doc });                           // paraEvalState is preserved
+    } catch (e) {
+      // The document was deleted server-side while a poller was still
+      // hitting it — every poller above would otherwise 404 forever. Stop
+      // the store-owned terms-status interval directly (idempotent); the two
+      // setInterval-based pollers in VariantA.tsx clear themselves on their
+      // own next render once `document` goes null (their effect deps
+      // include `doc?.id`). Guarded by the same stale-fetch check so a
+      // late-arriving 404 for a document the user already left never blanks
+      // whatever they've since switched to.
+      if (String(e).includes('→ 404') && get().document?.id === cur.id) {
+        get().stopTermsPolling();
+        set({ document: null });                        // → falls back to the picker
+        void get().refreshDocuments();                   // drop the deleted doc from the list
+        return;
+      }
+      // Any other error (network blip / 5xx): leave state untouched —
+      // pollers retry on their next tick; refreshDocument has never
+      // surfaced errors to the UI.
+    }
   },
 
   // ── evaluate helpers ──────────────────────────────────────────────────────

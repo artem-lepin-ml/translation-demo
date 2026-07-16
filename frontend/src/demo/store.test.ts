@@ -57,13 +57,13 @@ function issue(id: string, over: Partial<Issue> = {}): Issue {
   };
 }
 
-function makeDoc(issues: Issue[]): Document {
+function makeDoc(issues: Issue[], id = 1): Document {
   const para: Paragraph = {
     id: 1, idx: 0, source: 'ru', target: 'aaa bbb', scores: [], scoresPrev: null,
     scoresBaseline: null, aggregate: null, aggregateBaseline: null, best: null, issues, terms: [],
   };
   return {
-    id: 1, title: 't', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1,
+    id, title: 't', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1,
     sourceModel: 'm', aggregate: null, origin: 'seed', paragraphs: [para],
   };
 }
@@ -418,6 +418,84 @@ describe('retryTranslate (S4 §3.3)', () => {
   });
 });
 
+describe('refreshDocument (BUG-1 stale-fetch race / BUG-3 404 handling, frontend-developer-stability-wave1)', () => {
+  it('BUG-1: discards a resolved refresh for a document the user has already switched away from', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1) });
+    let resolveDoc1: (doc: Document) => void = () => {};
+    vi.mocked(getDocument).mockImplementation((id: number) => {
+      if (id === 1) return new Promise((res) => { resolveDoc1 = res; });
+      return Promise.resolve(makeDoc([], id));
+    });
+
+    const inFlight = useDemoStore.getState().refreshDocument();   // starts fetching doc 1
+    await useDemoStore.getState().switchDocument(2);               // user switches away mid-flight
+    expect(useDemoStore.getState().document?.id).toBe(2);
+
+    resolveDoc1(makeDoc([], 1));                                   // the stale doc-1 response finally lands
+    await inFlight;
+
+    expect(useDemoStore.getState().document?.id).toBe(2);          // never clobbered back to the stale doc
+  });
+
+  it('BUG-1: a same-document refresh still applies normally (guard does not block the common case)', async () => {
+    const fresh = makeDoc([issue('9', { status: 'accepted' })], 1);
+    useDemoStore.setState({ document: makeDoc([], 1) });
+    vi.mocked(getDocument).mockResolvedValue(fresh);
+
+    await useDemoStore.getState().refreshDocument();
+
+    expect(useDemoStore.getState().document).toEqual(fresh);
+  });
+
+  it('BUG-3: a 404 on the active document clears it (falls back to the picker) and refreshes the doc list', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1) });
+    vi.mocked(getDocument).mockRejectedValue(new Error('GET /documents/1 → 404'));
+    vi.mocked(getDocuments).mockResolvedValue([]);
+
+    await useDemoStore.getState().refreshDocument();
+
+    const state = useDemoStore.getState();
+    expect(state.document).toBeNull();
+    expect(state.documentError).toBeNull();   // neutral state, not an error banner
+    expect(getDocuments).toHaveBeenCalled();
+  });
+
+  it('BUG-3: a stale 404 for a document the user already left never blanks the newly-switched-to document', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1) });
+    let rejectDoc1: (e: Error) => void = () => {};
+    vi.mocked(getDocument).mockImplementation((id: number) => {
+      if (id === 1) return new Promise((_res, rej) => { rejectDoc1 = rej; });
+      return Promise.resolve(makeDoc([], id));
+    });
+
+    const inFlight = useDemoStore.getState().refreshDocument();
+    await useDemoStore.getState().switchDocument(2);
+
+    rejectDoc1(new Error('GET /documents/1 → 404'));   // doc 1's stale 404 lands after the switch
+    await inFlight;
+
+    expect(useDemoStore.getState().document?.id).toBe(2);   // untouched
+  });
+
+  it('a non-404 failure (network/5xx) leaves state untouched — pollers just retry next tick', async () => {
+    const before = makeDoc([], 1);
+    useDemoStore.setState({ document: before });
+    vi.mocked(getDocument).mockRejectedValue(new Error('GET /documents/1 → 500'));
+
+    await useDemoStore.getState().refreshDocument();
+
+    const state = useDemoStore.getState();
+    expect(state.document).toEqual(before);
+    expect(state.documentError).toBeNull();
+  });
+
+  it('is a no-op when no document is loaded', async () => {
+    useDemoStore.setState({ document: null });
+    await useDemoStore.getState().refreshDocument();
+    expect(getDocument).not.toHaveBeenCalled();
+  });
+});
+
 describe('runFirstParagraphsEvaluate (S4 §3.3 — reuses the existing per-paragraph evaluate path)', () => {
   it('evaluates each paragraph of the document in order', async () => {
     const doc = makeDoc([]);
@@ -676,5 +754,21 @@ describe('terms-status polling (store-owned single interval, S? live terminology
 
   it('stop is a safe no-op when nothing is polling', () => {
     expect(() => useDemoStore.getState().stopTermsPolling()).not.toThrow();
+  });
+
+  it('BUG-3: a 404 mid-poll (document deleted) stops the interval instead of spinning forever ' +
+    'on repeated 404s', async () => {
+    vi.mocked(getDocument).mockRejectedValue(new Error('GET /documents/1 → 404'));
+    vi.mocked(getDocuments).mockResolvedValue([]);
+
+    useDemoStore.getState().startTermsPolling();
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getDocument).toHaveBeenCalledTimes(1);
+    expect(useDemoStore.getState().document).toBeNull();   // fell back to the picker
+
+    // Without the fix this would keep firing every 2.5s forever (the 184
+    // console-404s observed in the field) — prove it genuinely stopped.
+    await vi.advanceTimersByTimeAsync(20000);
+    expect(getDocument).toHaveBeenCalledTimes(1);
   });
 });

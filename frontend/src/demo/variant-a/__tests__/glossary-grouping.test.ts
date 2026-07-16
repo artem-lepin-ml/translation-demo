@@ -89,7 +89,13 @@ describe('groupTerms (S2 §2.1)', () => {
     expect(groups.find((g) => g.qid === null)?.mentions).toHaveLength(2);
   });
 
-  it('group difficulty is the worst among mentions (red > yellow > green)', () => {
+  it('group difficulty is the worst among mentions, for an ungrounded group (no qid to gate on)', () => {
+    // Both mentions here are ungrounded (grounded: null, buildTerm's default)
+    // — they land in the same qid-less bucket, so every mention legitimately
+    // describes the same (failed) grounding attempt and worst-of applies
+    // uncritically. This is NOT the red-dot-with-QID scenario (see the
+    // dedicated regression test below) — a grounded group instead folds
+    // difficulty only across mentions that share ITS qid.
     const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
     const terms = [
       buildTerm({ id: 'a', paragraphId: 1, sourceLemma: 'x', difficulty: 'green' }),
@@ -154,7 +160,9 @@ describe('groupTerms (S2 §2.1)', () => {
 });
 
 describe('groupTerms — display-level stemmer fallback (wave5 §5, unnormalized source_lemma)', () => {
-  it('merges "Тигр" (grounded) with "Тигра" (ungrounded) when source_lemma === source_surface for both', () => {
+  it('merges "Тигр" (grounded) with "Тигра" (ungrounded) when source_lemma === source_surface for both, ' +
+    'WITHOUT letting the ungrounded sibling paint the group\'s difficulty red (red-dot-with-QID regression, ' +
+    'debugger-glossary-reddot-trace.md Defect 1)', () => {
     const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
     const terms = [
       buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Тигр', sourceLemma: 'Тигр', grounded: wd({ qid: 'Q35591', label: 'Tigris' }), difficulty: 'yellow' }),
@@ -163,8 +171,36 @@ describe('groupTerms — display-level stemmer fallback (wave5 §5, unnormalized
     const groups = groupTerms(terms, paragraphs);
     expect(groups).toHaveLength(1);
     expect(groups[0].qid).toBe('Q35591'); // merged group shows the grounded qid
-    expect(groups[0].mentions).toHaveLength(2);
-    expect(groups[0].difficulty).toBe('red'); // worst-of across the merged mentions
+    expect(groups[0].mentions).toHaveLength(2); // the ungrounded mention is still listed ("All mentions" panel)
+    // The headline dot reflects the GROUNDED mention's own difficulty (yellow),
+    // not the worst-of across every raw-lemma sibling folded in for dedup —
+    // a QID-bearing group must never render a red dot next to a live
+    // Wikidata link (real prod repro: doc 1's "Месопотамия", see the report).
+    expect(groups[0].difficulty).toBe('yellow');
+  });
+
+  it('red-dot-with-QID regression: a grounded group keeps its own worst-of difficulty across ' +
+    'MULTIPLE same-qid mentions, still ignoring an unrelated ungrounded raw-lemma sibling ' +
+    '(real prod repro: doc 1 "Месопотамия", debugger-glossary-reddot-trace.md §c)', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1), buildParagraph(3, 2)];
+    // All three are raw-lemma inflected forms of "Месопотамия" (sourceLemma
+    // === sourceSurface for each) that the heuristic stemmer folds to the
+    // same stem "месопотами" — a and b share qid Q11767 directly (same
+    // initial bucket); c only joins via the wave5 raw-lemma merge pass.
+    const terms = [
+      // Two occurrences that both actually grounded to Q11767 — worst-of
+      // between THEM (yellow) must still apply.
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Месопотамия', sourceLemma: 'Месопотамия', grounded: wd({ qid: 'Q11767', label: 'Mesopotamia' }), difficulty: 'green' }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Месопотамии', sourceLemma: 'Месопотамии', grounded: wd({ qid: 'Q11767', label: 'Mesopotamia' }), difficulty: 'yellow' }),
+      // A third, raw-lemma occurrence that failed to ground at all — folded
+      // in for dedup only, must not drag the group to red.
+      buildTerm({ id: 'c', paragraphId: 3, sourceSurface: 'Месопотамию', sourceLemma: 'Месопотамию', grounded: null, difficulty: 'red' }),
+    ];
+    const groups = groupTerms(terms, paragraphs);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].qid).toBe('Q11767');
+    expect(groups[0].mentions).toHaveLength(3);
+    expect(groups[0].difficulty).toBe('yellow'); // worst-of among the two Q11767 mentions only, never 'red'
   });
 
   it('merges "Евфрат" (grounded) with "Евфрата" (ungrounded) the same way', () => {

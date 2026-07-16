@@ -97,7 +97,7 @@ export default function InspectorPanel({
               {isLoading ? '…' : 'Evaluate ↻'}
             </button>
           )}
-          {!isCollapsed && tab === 'issues' && (
+          {!isCollapsed && (
             <button
               className="va-btn-refine"
               data-testid="refine-paragraph"

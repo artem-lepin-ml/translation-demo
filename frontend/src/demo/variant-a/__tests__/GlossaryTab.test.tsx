@@ -133,3 +133,94 @@ describe('GlossaryTab grouped table', () => {
     expect(screen.queryByText(/Grounding path|Context/)).toBeNull();
   });
 });
+
+// ─── Real flat trace_json rendering (debugger-glossary-reddot-trace.md §2) ──
+//
+// The backend's real `trace_json` shape is flat: {v, config, queries,
+// search_source, candidates, exact_matches, resolved_by, judge, chosen_qid,
+// canon_en, n_api_calls, latency_ms} (label_first.py::_result). These tests
+// use that real shape (not the earlier forward-looking nested guess) to
+// prove the Matched column, the Grounding-path steps, and the Judge decision
+// block all render live data instead of "none" / "Skipped — no trace".
+describe('GlossaryTab — real flat trace_json rendering (BUG-6 / debugger fixes)', () => {
+  function buildLiveTerm(overrides: Partial<TermWithTrace> = {}): TermWithTrace {
+    return buildTerm({
+      id: 'qin',
+      sourceSurface: 'Цинь',
+      sourceLemma: 'Цинь',
+      difficulty: 'yellow',
+      grounded: { qid: 'Q7181', label: 'Qin dynasty', description: 'Chinese dynasty', url: 'https://www.wikidata.org/wiki/Q7181' },
+      candidates: [
+        { qid: 'Q7181', label: 'Qin dynasty', description: 'Chinese dynasty', url: 'https://www.wikidata.org/wiki/Q7181' },
+        { qid: 'Q49751', label: 'Guqin', description: 'Chinese string instrument', url: 'https://www.wikidata.org/wiki/Q49751' },
+      ],
+      traceJson: {
+        resolved_by: 'llm_disambiguation',
+        queries: [{ q: 'Цинь', kind: 'lemma', mechanism: 'wbsearchentities', n_hits: 2 }],
+        search_source: 'wbsearchentities',
+        candidates: [
+          { qid: 'Q7181', label_ru: 'Цинь', label_en: 'Qin dynasty', description: 'Chinese dynasty',
+            matched: { kind: 'label_ru', value: 'Цинь', query: 'Цинь' } },
+          { qid: 'Q49751', label_ru: 'Цинь (инструмент)', label_en: 'Guqin', description: 'Chinese string instrument',
+            matched: null },
+        ],
+        exact_matches: [
+          { qid: 'Q7181', label_ru: 'Цинь', matched: { kind: 'label_ru', value: 'Цинь', query: 'Цинь' } },
+        ],
+        judge: {
+          response: { qid: 'Q7181', reason: 'The sentence discusses the historical Chinese state, not the instrument.' },
+          error: null, latency_ms: 812, cache_hit: false,
+        },
+        chosen_qid: 'Q7181',
+        n_api_calls: 2,
+        latency_ms: 950,
+      },
+      ...overrides,
+    });
+  }
+
+  function renderAndExpand() {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildLiveTerm()];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+  }
+
+  it('Matched column shows the real match kind, and "—" (not "none") for a candidate that never matched', () => {
+    renderAndExpand();
+    expect(screen.getByText('label')).toBeTruthy();     // Q7181's real matched.kind
+    expect(screen.queryByText('none')).toBeNull();       // the old always-on fallback must be gone
+    expect(screen.getAllByTitle('No match provenance recorded for this candidate').length).toBe(1);
+  });
+
+  it('Grounding-path panel renders live search/candidate/decision data instead of "Skipped — no trace" for every step', () => {
+    renderAndExpand();
+    // Each step's title (.va-gl-step-t) is real, live-pipeline content — not
+    // the dead nested-shape fallback that rendered "Skipped" for every one of
+    // the 4 steps on every live-pipeline term before this fix.
+    expect(screen.getByText('wbsearchentities')).toBeTruthy();        // search step: real search_source
+    expect(screen.getByText('2 candidates found')).toBeTruthy();      // candidates step: real count
+    expect(screen.getByText('Exactly 1 exact match')).toBeTruthy();   // exact step: real exact_matches
+    expect(screen.getByText('llm disambiguation')).toBeTruthy();      // decision step: real resolved_by
+    expect(screen.getByText(/resolved_by: llm_disambiguation/)).toBeTruthy();
+    expect(screen.queryAllByText('Skipped').length).toBe(0);
+  });
+
+  it('Judge decision block shows the real reason from traceJson.judge.response.reason', () => {
+    renderAndExpand();
+    expect(screen.getByText(/historical Chinese state/)).toBeTruthy();
+  });
+
+  it('falls back to the plain candidates list (all "—" Matched) for legacy/seed rows with trace_json={}', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildLiveTerm({ traceJson: {} })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    // Grounding path is not shown at all for empty trace_json (hasTrace gate,
+    // unchanged behavior) but the Candidates table still renders from the
+    // top-level `candidates` field, honestly reporting no match provenance.
+    expect(screen.queryByText(/Grounding path/)).toBeNull();
+    expect(screen.getAllByTitle('No match provenance recorded for this candidate').length).toBe(2);
+    expect(screen.queryByText('none')).toBeNull();
+  });
+});

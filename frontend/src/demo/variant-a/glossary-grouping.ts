@@ -28,6 +28,41 @@ export interface TraceStep {
   elapsed_s?: number;
 }
 
+/** One candidate as delivered inside `trace_json.candidates`
+ *  (`label_first.py`'s `candidates_traced`) — richer than the top-level
+ *  `Term.candidates` (`WikidataRef[]`, wire-DTO): it carries a real `matched`
+ *  verdict per candidate (label/alias match, or `null` when that candidate
+ *  never matched anything). The top-level field has no such provenance, and
+ *  for a `judge_rejected` term it can even be `[]` while this array still
+ *  holds every candidate that was actually considered and rejected (BUG-6,
+ *  frontend-developer-stability-wave1). */
+export interface TraceCandidate {
+  qid: string;
+  label_ru?: string | null;
+  label_en?: string | null;
+  description?: string;
+  matched?: { kind: string; value: string; query: string } | null;
+}
+
+/** One entry of `trace_json.queries` (`generate_candidates`'s `queries` list,
+ *  `terminology/grounding/candidates.py`) — a single Wikidata search call. */
+export interface TraceQueryEntry {
+  q: string;
+  kind: string;
+  mechanism: string;
+  n_hits: number;
+}
+
+/** `trace_json.judge` (label_first.py's `judge_trace`) — present only when a
+ *  judge call was actually made (absent for `exact_label`/`no_candidates`/
+ *  `wikidata_unavailable`, which never escalate). */
+export interface TraceJudge {
+  response?: { qid?: string | null; reason?: string } | null;
+  error?: string | null;
+  latency_ms?: number;
+  cache_hit?: boolean;
+}
+
 export interface TraceJson {
   resolved_by?: string;
   model?: string;
@@ -36,6 +71,27 @@ export interface TraceJson {
   search?: TraceStep;
   label_match?: TraceStep;
   decision?: TraceStep;
+  /** Full candidate list with per-item match provenance (see
+   *  `TraceCandidate`) — absent on legacy/seed rows shipping `trace_json={}`. */
+  candidates?: TraceCandidate[];
+  // ─── real flat fields (`label_first.py::_result`) — confirmed against live
+  // prod trace_json, docs/reports/debugger-glossary-reddot-trace.md §2c. The
+  // fields above this line (`query`/`search`/`label_match`/`decision`/`model`/
+  // `judge_reason`) are a nested shape that was written *ahead of* the
+  // real backend and never matches live-pipeline output — kept only because
+  // `resolveBadge`'s heuristic fallback path and its tests still exercise
+  // them; the "Grounding path" panel below reads the real fields instead. ──
+  queries?: TraceQueryEntry[];
+  search_source?: string;
+  /** Subset of `candidates` that exact-matched a query (`match.py::exact_match`),
+   *  each annotated with its own `matched` (never `null` here, unlike the
+   *  general `TraceCandidate.matched`). */
+  exact_matches?: (TraceCandidate & { matched: NonNullable<TraceCandidate['matched']> })[];
+  judge?: TraceJudge | null;
+  chosen_qid?: string | null;
+  canon_en?: string[];
+  n_api_calls?: number;
+  latency_ms?: number;
 }
 
 /** `Term` once the backend lane adds `traceJson` to the DTO. A plain `Term`
@@ -275,12 +331,24 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
     else byKey.set(key, [term]);
   }
 
-  function buildFields(mentions: TermWithTrace[]) {
+  // `qid`: the group's own grounded qid (null for an ungrounded group). When
+  // set, `difficulty` folds only mentions that actually grounded to THAT
+  // entity — an ungrounded raw-lemma sibling merged in purely for dedup (see
+  // the merge pass below) must never paint a grounded group's headline
+  // dot red (red-dot-with-QID bug, 3rd recurrence — see
+  // docs/reports/debugger-glossary-reddot-trace.md Defect 1). `pair` is
+  // exempt from this gate: a red-difficulty mention already has
+  // `pairAccuracy=null` by contract (Term dataclass, terminology/base.py),
+  // so it can never itself skew `pair` — no separate filtering needed there.
+  function buildFields(mentions: TermWithTrace[], qid: string | null) {
     const primary = mentions[0];
-    let difficulty: Verdict = primary.difficulty;
+    const difficultySource = qid ? mentions.filter((m) => m.grounded?.qid === qid) : mentions;
+    let difficulty: Verdict = (difficultySource[0] ?? primary).difficulty;
+    for (const m of difficultySource) {
+      difficulty = worseVerdict(difficulty, m.difficulty);
+    }
     let pair: Verdict | null = null;
     for (const m of mentions) {
-      difficulty = worseVerdict(difficulty, m.difficulty);
       if (m.pairAccuracy) pair = pair ? worseVerdict(pair, m.pairAccuracy) : m.pairAccuracy;
     }
     // Translation = recommended||targetSurface of the first mention that has
@@ -296,13 +364,14 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
   for (const [key, bucket] of byKey) {
     const mentions = [...bucket].sort(compareByAppearance);
     const primary = mentions[0];
-    const { difficulty, pair, translation } = buildFields(mentions);
+    const draftQid = primary.grounded?.qid ?? null;
+    const { difficulty, pair, translation } = buildFields(mentions, draftQid);
     const grounded = mentions.find((m) => m.grounded)?.grounded ?? null;
 
     const draft: GlossaryGroup = {
       key,
       lemma: (primary.sourceLemma || primary.sourceSurface).toLowerCase(),
-      qid: primary.grounded?.qid ?? null,
+      qid: draftQid,
       category: titleCase(primary.note),
       sourceSurface: primary.sourceSurface,
       translation,
@@ -334,7 +403,7 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
     if (candidates && candidates.length === 1) {
       const target = candidates[0];
       const allMentions = [...target.mentions, ...d.mentions].sort(compareByAppearance);
-      const { difficulty, pair, translation } = buildFields(allMentions);
+      const { difficulty, pair, translation } = buildFields(allMentions, target.qid);
       target.mentions = allMentions;
       target.difficulty = difficulty;
       target.pair = pair;

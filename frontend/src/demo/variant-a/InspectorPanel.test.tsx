@@ -270,6 +270,60 @@ describe('InspectorPanel Refine paragraph (EMNLP sprint — replaces per-paragra
     );
     expect(screen.getByTestId('refine-paragraph').textContent).toBe('Re-scoring…');
   });
+
+  it('BUG-5: Refine is also present (and clickable) on the Scores tab, not just Issues', () => {
+    const onRefine = vi.fn();
+    render(
+      <InspectorPanel
+        {...baseProps}
+        tab="scores"
+        onRefine={onRefine}
+        visibleIssues={[openIssueWithSuggestion as never]}
+        evalState={idleEval}
+      />,
+    );
+    const btn = screen.getByTestId('refine-paragraph') as HTMLButtonElement;
+    expect(btn.disabled).toBe(false);
+    fireEvent.click(btn);
+    expect(onRefine).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('InspectorPanel tab isolation (BUG-2: non-active tab body is unmounted, not merely hidden, ' +
+  'frontend-developer-stability-wave1)', () => {
+  const criteria = [
+    { id: 'accuracy', name: 'Accuracy', modelName: 'm', prompt: '', scaleMin: 1, scaleMax: 10,
+      weight: 1, color: '#888', enabled: true },
+  ] as never;
+  const evalState = { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false };
+  const paragraph = {
+    id: 1, idx: 0, source: 's', target: 't',
+    issues: [{ id: '1', paragraphId: 1, criterionId: 'accuracy', targetFragment: '', sourceFragment: '',
+      explanation: 'x', suggestion: 'fix', severity: 'minor', mqmCategory: null, status: 'open' }],
+    scores: [{ criterionId: 'accuracy', value: 8, summary: '' }],
+    scoresPrev: null, scoresBaseline: null, aggregate: 8, aggregateBaseline: null, aggregatePrev: null,
+  } as unknown as Paragraph;
+  const base = {
+    onTabChange: vi.fn(), activeCriteria: new Set<string>(['accuracy']), criteria,
+    isCollapsed: false, onToggleCollapse: vi.fn(), onAccept: vi.fn(),
+    onDismiss: vi.fn(), onRefine: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
+    onRestoreRevision: vi.fn(), evalState, paragraph, visibleIssues: paragraph.issues,
+  };
+
+  it('Scores tab: the Issues body (Accept/Dismiss buttons) is not in the DOM at all', () => {
+    render(<InspectorPanel {...base} tab="scores" />);
+    expect(screen.queryByText('Dismiss')).toBeNull();
+    expect(screen.queryByText('Accept')).toBeNull();
+    // The Scores body IS present.
+    expect(screen.getByText('Aggregate')).toBeTruthy();
+  });
+
+  it('Issues tab: the Scores body (Aggregate row) is not in the DOM at all', () => {
+    render(<InspectorPanel {...base} tab="issues" />);
+    expect(screen.queryByText('Aggregate')).toBeNull();
+    // The Issues body IS present.
+    expect(screen.getByText('Accept')).toBeTruthy();
+  });
 });
 
 describe('InspectorPanel resolved/passive-note visibility (Б2)', () => {

@@ -276,3 +276,59 @@ describe('VariantA Refine/Evaluate double-submit guard (paid-LLM-call race)', ()
     expect(refineParagraph).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('Reset confirm dialog (BUG-4: truthful archive copy, frontend-developer-stability-wave1)', () => {
+  it('tells the truth: live scores/issues are archived, not lost — and drops the old "will be lost" claim', () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);   // don't actually reset
+    renderVariantA([makeParagraph(1)]);
+
+    fireEvent.click(screen.getByText('Reset'));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    const message = confirmSpy.mock.calls[0][0] as string;
+    expect(message).toContain('archived');
+    expect(message).not.toContain('will be lost');
+    confirmSpy.mockRestore();
+  });
+});
+
+describe('Refine button available from both inspector tabs (BUG-5, frontend-developer-stability-wave1)', () => {
+  it('is present when the inspector is on the Scores tab, not just Issues', () => {
+    const paragraph = { ...makeParagraph(1), issues: [iss('1')] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+      inspectorTab: 'scores',
+    });
+    render(<VariantA />);
+
+    expect(screen.getByTestId('refine-paragraph')).toBeTruthy();
+  });
+});
+
+describe('Tab isolation (BUG-2: non-active tab content is unmounted, not merely hidden, ' +
+  'frontend-developer-stability-wave1)', () => {
+  it('unmounts the Document-tab body (paragraphs + inspector) when switching to another main tab', () => {
+    renderVariantA([makeParagraph(1)]);
+    expect(screen.getByTestId('evaluate-para')).toBeTruthy();       // Document tab active by default
+    expect(screen.getByTestId('refine-paragraph')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Glossary' }));
+
+    // A stray click on where these controls used to be must hit nothing —
+    // the whole Document-tab subtree is gone from the DOM, not just hidden.
+    expect(screen.queryByTestId('evaluate-para')).toBeNull();
+    expect(screen.queryByTestId('refine-paragraph')).toBeNull();
+  });
+
+  it('unmounts the Glossary tab body when switching back to Document', () => {
+    renderVariantA([makeParagraph(1)]);
+    fireEvent.click(screen.getByRole('button', { name: 'Glossary' }));
+    expect(screen.getByText('Terminology Glossary')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Document' }));
+
+    expect(screen.queryByText('Terminology Glossary')).toBeNull();
+    expect(screen.getByTestId('evaluate-para')).toBeTruthy();
+  });
+});

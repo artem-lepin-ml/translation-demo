@@ -379,7 +379,8 @@ export default function VariantA() {
     const resetTarget = doc?.origin === 'upload' ? 'its originally uploaded state' : 'its seed state';
     const ok = window.confirm(
       `Reset the document to ${resetTarget}?\n` +
-      'All accepted edits, dismissals and live scores will be lost.',
+      'Live scores and issues will be archived (hidden, not deleted); ' +
+      'every paragraph reverts to its seed text.',
     );
     if (!ok) return;
     setResetting(true);
