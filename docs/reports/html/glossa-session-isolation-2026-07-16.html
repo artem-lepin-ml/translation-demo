@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossa-MT — изоляция сессий + ревью-раунд 2 (2026-07-16)</title>
+<style>
+  :root{
+    --bg:#1a1b26; --bg2:#1f2335; --panel:#24283b; --line:#2f334d; --tx:#c0caf5;
+    --mut:#7f8bb5; --blue:#7aa2f7; --green:#9ece6a; --yel:#e0af68; --red:#f7768e; --purple:#bb9af7; --cyan:#7dcfff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 80px}
+  h1{font-size:25px;margin:0 0 4px}
+  h2{font-size:19px;margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);color:var(--cyan)}
+  h3{font-size:15px;margin:20px 0 8px;color:var(--purple)}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:22px}
+  .lead{background:linear-gradient(135deg,var(--bg2),var(--panel));border:1px solid var(--line);
+    border-radius:14px;padding:22px 24px;margin-bottom:8px}
+  .lead b{color:#fff}
+  .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;margin-right:6px}
+  .b-green{background:rgba(158,206,106,.16);color:var(--green);border:1px solid rgba(158,206,106,.4)}
+  .b-blue{background:rgba(122,162,247,.16);color:var(--blue);border:1px solid rgba(122,162,247,.4)}
+  .b-yel{background:rgba(224,175,104,.16);color:var(--yel);border:1px solid rgba(224,175,104,.4)}
+  .grid{display:grid;gap:16px} .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card .k{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  .card .v{font-size:23px;font-weight:700;margin-top:4px}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  tr:last-child td{border-bottom:none}
+  code{background:var(--bg2);padding:1.5px 6px;border-radius:5px;font-size:12.5px;color:var(--cyan);
+    font-family:"SF Mono",ui-monospace,Menlo,monospace}
+  .tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;white-space:nowrap}
+  .t-fix{background:rgba(158,206,106,.15);color:var(--green)}
+  .t-low{background:rgba(224,175,104,.15);color:var(--yel)}
+  .t-info{background:rgba(122,162,247,.15);color:var(--blue)}
+  .flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--mut);margin:6px 0 14px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:3px 9px}
+  ul.clean{margin:8px 0;padding-left:20px} ul.clean li{margin:5px 0}
+  .muted{color:var(--mut)}
+  .ok{color:var(--green)}
+  .arch{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;overflow-x:auto;white-space:pre}
+  .foot{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Glossa-MT — изоляция сессий + второй визуальный ревью</h1>
+  <div class="sub">2026-07-16 · ветка <code>feat/emnlp-demo-sprint</code> · прод <a href="https://glossa-mt.com">glossa-mt.com</a></div>
+
+  <div class="lead">
+    <div style="margin-bottom:10px">
+      <span class="badge b-green">ИЗОЛЯЦИЯ: ISOLATED 5/5</span>
+      <span class="badge b-green">635 + 378 тестов</span>
+      <span class="badge b-blue">golden неприкосновенен</span>
+    </div>
+    <b>Каждый рецензент теперь работает в собственной эфемерной копии демо.</b>
+    Параллельные браузеры не видят правок друг друга (подтверждено двумя реальными
+    playwright-профилями по 5 типам мутаций), канонический golden не мутирует в рантайме,
+    а все 5 находок твоего второго визуального ревью закрыты и проверены на живых данных:
+    Париж грундится в Q90, Wikinews-мусор отфильтрован, трейсы читаемы. «HIGH-баг» финального
+    e2e оказался курационной аномалией данных, а не кодом — по твоему решению golden приведён
+    к чистому черновику целиком.
+  </div>
+
+  <!-- Architecture -->
+  <h2>Изоляция сессий — как устроено</h2>
+  <div class="flow">
+    <span>Spec</span> → <span>Verify-spec ×2 (3 CRITICAL пойманы до кода)</span> → <span>Имплементация (sonnet)</span> → <span>635 тестов</span> → <span>деплой</span> → <span class="ok">API-верификация</span> → <span class="ok">2-браузерный e2e</span>
+  </div>
+  <div class="arch">браузер ──glossa_sid cookie──▶ ASGI middleware ──contextvar──▶ db.connect()
+                                     │
+                    X-Golden-Session == DEMO_ADMIN_TOKEN ──▶ golden (канон-обновления владельца)
+                                     │
+      /data/demo.db (golden, только чтение в рантайме) ──sqlite backup──▶ /data/sessions/&lt;sid&gt;.db
+      wipe на старте · TTL 4ч (живые фоновые задачи щадятся) · 37 call-sites connect() не изменились</div>
+  <table>
+    <tr><th>Свойство</th><th>Как достигнуто</th></tr>
+    <tr><td>Полная изоляция данных и Settings</td><td>Клон SQLite на сессию (2.4 MB, мгновенно); 7 in-memory структур ключованы <code>(sid, doc_id)</code> — иначе сессия A могла отменить живой перевод B (у клонов одинаковые doc id)</td></tr>
+    <tr><td>Golden не мутирует</td><td>Все записи уходят в клоны; fail-loud RuntimeError при обращении без sid; пин температуры переехал из деплой-скрипта в migrate (шаг criterion-disable оказался дублем — удалён); деплой больше не делает пост-стартовых API-мутаций</td></tr>
+    <tr><td>Канонические обновления владельца</td><td><code>X-Golden-Session</code>-заголовок (constant-time против <code>DEMO_ADMIN_TOKEN</code>) → golden; <code>create_demo_docs.py --golden-token</code> работает как раньше</td></tr>
+    <tr><td>Конкурентность</td><td>Двойная блокировка клонирования (гонка первых параллельных запросов), per-session lock вместо глобального (27 call-sites), contextvars корректно текут в create_task / to_thread / anyio-пул (проверено ревьюером по коду)</td></tr>
+    <tr><td>Обратная совместимость</td><td>Фронтенд не менялся вообще; 17 легаси-тестовых файлов работают без правок (legacy-шим)</td></tr>
+  </table>
+
+  <!-- Verification -->
+  <h2>Верификация (доказательства)</h2>
+  <div class="grid g3">
+    <div class="card"><div class="k">Изоляция (2 браузера)</div><div class="v ok">5 / 5</div><div class="muted" style="font-size:12px">dismiss · settings · refine · upload · picker</div></div>
+    <div class="card"><div class="k">Backend pytest</div><div class="v ok">635</div><div class="muted" style="font-size:12px">+36 тестов изоляции · 0 failed</div></div>
+    <div class="card"><div class="k">Frontend vitest</div><div class="v ok">378</div><div class="muted" style="font-size:12px">0 failed · build ✓</div></div>
+    <div class="card"><div class="k">Golden md5</div><div class="v ok">стабилен</div><div class="muted" style="font-size:12px">после всех сессионных мутаций</div></div>
+    <div class="card"><div class="k">Golden-token</div><div class="v ok">✓</div><div class="muted" style="font-size:12px">200 · без Set-Cookie · без клона</div></div>
+    <div class="card"><div class="k">Скриншоты финального e2e</div><div class="v">26</div><div class="muted" style="font-size:12px">shots/session-isolation-final/</div></div>
+  </div>
+
+  <!-- Owner review round 2 -->
+  <h2>Твои 5 находок — закрыты и проверены на живых данных</h2>
+  <table>
+    <tr><th>#</th><th>Находка</th><th>Корень и фикс</th><th></th></tr>
+    <tr><td>1</td><td>LLM отказалась резолвить «Париж»</td><td>Судья видел Q90, но принял дату артефакта из музейной подписи («Конец XXIII в. до н.э.») за ограничение на референт. Оговорка в промпте (общая, не спецкейс) → после перегенерации <b>Париж = Q90 Paris</b>, живьём</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>2</td><td>Пустое описание кандидата; QID некликабелен</td><td>QID — ссылка на Wikidata; без описания рендерится только label (без висячего тире)</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>3</td><td>Дубли лемм в трейсе</td><td>Это была эскалация prefix→full-text→sitelink без ярлыков (старые трейсы). Двойной фикс: ярлык стратегии на каждой строке + группировка идентичных строк ×N + перегенерация термов дока 10</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>4</td><td>Жёлтая плашка «model: LLM · Settings › Grounding»</td><td>Удалена вместе с акцент-рамкой — осталась только цитата обоснования</td><td><span class="tag t-fix">fixed</span></td></tr>
+    <tr><td>5</td><td>Wikinews-статьи в кандидатах</td><td>P31-блоклист (Wikinews article, disambiguation, категории, шаблоны, списки) на уже скачанных claims + дедуп почти-одинаковых кандидатов. После перегенерации: <b>0 Wikinews</b> в 119 термах</td><td><span class="tag t-fix">fixed</span></td></tr>
+  </table>
+  <p class="muted" style="font-size:12.5px">Перегенерация термов дока 10 выполнена с твоего разрешения (бэкап golden снят): 124 → 119 термов, все три стратегии в трейсах, Париж резолвится.</p>
+
+  <!-- Findings -->
+  <h2>Находки финального e2e — честный разбор</h2>
+  <table>
+    <tr><th>Находка</th><th>Разбор</th><th>Статус</th></tr>
+    <tr><td>«HIGH: Reset вернул §1 к неверной ревизии (Ur-Nanshe, 6.9)»</td><td>Не баг кода: Reset по контракту возвращает seed, а §1 в golden был давно отрефайнен до-изоляционными прогонами (9.7/Uruinimgina) — его seed всегда был черновиком Андрея. По твоему решению golden целиком приведён к чистому черновику (штатный Reset с golden-token): рецензенты видят черновик с issues и сами гоняют Refine; Reset теперь консистентен</td><td><span class="tag t-fix">решено</span></td></tr>
+    <tr><td>LOW: транзиентная 404 при удалении активного документа</td><td>Хвост знакомого класса (поллер в полёте на момент DELETE); UI откатывается корректно, 1 строка в консоли. Принятый остаток (полный ноль = AbortController-рефактор)</td><td><span class="tag t-low">принято</span></td></tr>
+    <tr><td>Popover-скролл не перепроверен в этом прогоне</td><td>Не нашлось достаточно длинного списка кандидатов; сам фикс скролла был проверен в предыдущем прогоне (visual-verify)</td><td><span class="tag t-info">инфо</span></td></tr>
+    <tr><td>pairAccuracy-чипы термов §1 считались против отрефайненного таргета</td><td>После отката §1 к черновику точность пар термов может быть слегка стейл; самоизлечится при следующей перегенерации термов. Grounding (QID/difficulty) — source-side, не затронут</td><td><span class="tag t-low">принято</span></td></tr>
+  </table>
+
+  <!-- Artifacts -->
+  <h2>Артефакты</h2>
+  <ul class="clean">
+    <li>Spec (verify-spec'd ×2): <a href="../../superpowers/specs/2026-07-16-session-isolation.md">2026-07-16-session-isolation.md</a></li>
+    <li>Финальный e2e (2 профиля, 26 скринов): <a href="../e2e/session-isolation-final-2026-07-16.md">session-isolation-final-2026-07-16.md</a></li>
+    <li>Отчёты дорожек: <a href="../fastapi-developer-session-isolation.md">изоляция</a> · <a href="../python-pro-grounding-quality-paris-wikinews.md">Париж/Wikinews (с реальным трейсом-уликой)</a> · <a href="../frontend-developer-glossary-trace-polish.md">trace-полировка</a></li>
+    <li>Коммиты: <code>843aa08</code> terminology · <code>600ee5d</code> frontend · <code>2c07348</code> session isolation · <code>628088e</code>/<code>f3842d4</code> reports</li>
+  </ul>
+
+  <h2>Решения владельца, применённые в этом блоке</h2>
+  <ul class="clean">
+    <li>Изоляция — эфемерные клоны, правки рецензентов не сохраняются ✓</li>
+    <li>Перегенерация термов дока 10 на golden (с бэкапом) ✓</li>
+    <li>Golden = чистый черновик целиком (§1 как §4) ✓</li>
+  </ul>
+
+  <div class="foot">
+    Прод: <a href="https://glossa-mt.com">glossa-mt.com</a> · golden <code>/data/demo.db</code> · сессии <code>/data/sessions/</code> (TTL 4ч) ·
+    все 6 ролей <code>google/gemini-3.1-flash-lite</code>. Ничего из score/issue не удалялось; все мутации golden — только с твоей явной авторизацией.
+  </div>
+
+</div>
+</body>
+</html>
