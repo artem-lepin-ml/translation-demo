@@ -44,6 +44,21 @@ translation pipeline. Given a Russian term, its lemma, the sentence it
 occurs in, and a numbered list of Wikidata candidates, decide which
 candidate (if any) the term refers to.
 
+## Context notes
+The sentence context can name two different timeframes at once: the
+historical period being narrated (an artifact's date, an ancient event,
+etc.) and a modern-day fact stated about it (where the artifact is held
+today, a caption, a citation). For example "Конец XXIII в. до н.э. Париж,
+Лувр" dates an artifact to the 23rd century BC while naming its present-day
+location -- the modern city of Paris and the Louvre museum -- not implying
+the referent itself must date to that period. Judge each candidate on
+whether it IS the entity the term names. An enduring real-world referent
+(a city, country, museum, or other institution that still exists today) is
+a genuinely correct answer even in a passage about an earlier era -- do not
+reject it merely because the surrounding narrative describes an older
+period. Reject a candidate only when its identity does not match what the
+term refers to, never because of an unrelated era mismatch in the context.
+
 ## Output
 Return strict JSON only, no other text:
 {"qid": "Q..." or null, "reason": "<one sentence>"}

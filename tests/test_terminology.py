@@ -1296,3 +1296,179 @@ def test_wilson_ci_matches_known_reference_interval():
     lo, hi = wilson_ci(61, 78)
     assert 0.67 < lo < 0.69
     assert 0.85 < hi < 0.87
+
+
+# ── grounding quality fix: junk-P31 candidate filtering + near-dup dedup ─────
+# Regression for the owner-reported prod defects (2026-07-16): «Египтяне»
+# candidates included Wikinews-article items (Q99042315 etc.) reaching the
+# judge via the CirrusSearch full-text tier, and «Париж» got judge_rejected
+# on document 10 despite Q90 being a slam-dunk exact match (real trace pulled
+# from https://glossa-mt.com/api/documents/10 -- see the investigation report).
+def _with_desc(entity: dict, en_desc: str = "", ru_desc: str = "") -> dict:
+    if en_desc:
+        entity["descriptions"]["en"] = {"value": en_desc}
+    if ru_desc:
+        entity["descriptions"]["ru"] = {"value": ru_desc}
+    return entity
+
+
+def test_candidates_filters_wikinews_article_via_p31():
+    # Real shape of the DEFECT 2 report: a Wikinews-article item surfaces via
+    # CirrusSearch full-text alongside the genuine entity.
+    wd = _FakeWD(
+        search={},
+        cirrus={"Египтяне": [{"id": "Q41616"}, {"id": "Q99042315"}]},
+        entities={
+            "Q41616": _with_desc(_entity("Q41616", "Egyptians", "Египтяне", p31=("Q41710",)),
+                                  "ethnic group"),
+            "Q99042315": _with_desc(_entity("Q99042315", "Египтяне", "Египтяне", p31=("Q17633526",)),
+                                     "Wikinews article"),
+        },
+    )
+    gen = generate_candidates(wd, TermMention(surface="Египтяне", lemma="Египтяне"), GroundingConfig())
+    qids = [c["qid"] for c in gen["candidates"]]
+    assert qids == ["Q41616"]
+    assert "Q99042315" not in qids
+
+
+def test_candidates_filters_each_non_entity_p31_blocklist_value():
+    # All 5 blocklisted P31 values are dropped, not just the Wikinews case.
+    blocklisted = {
+        "QW": "Q17633526",   # Wikinews article
+        "QD": "Q4167410",    # Wikimedia disambiguation page
+        "QC": "Q4167836",    # Wikimedia category
+        "QT": "Q11266439",   # Wikimedia template
+        "QL": "Q13406463",   # Wikimedia list article
+    }
+    entities = {"Q_GOOD": _entity("Q_GOOD", "Real Entity", "РеальнаяСущность", p31=("Q5",))}
+    for qid, p31 in blocklisted.items():
+        entities[qid] = _entity(qid, f"Meta {qid}", "Мета", p31=(p31,))
+    wd = _FakeWD(search={"Тест": [{"id": qid} for qid in ["Q_GOOD", *blocklisted]]}, entities=entities)
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["Q_GOOD"]
+
+
+def test_candidates_wikinews_description_fallback_when_p31_missing():
+    # No P31 claim at all (defensive fallback path): description text alone
+    # still catches the single documented "Wikinews article" pattern.
+    wd = _FakeWD(
+        search={"Тест": [{"id": "Q1"}]},
+        entities={"Q1": _with_desc(_entity("Q1", "Тест", "Тест"), "Wikinews article")},
+    )
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert gen["candidates"] == []
+
+
+def test_candidates_legitimate_entity_with_no_p31_is_not_dropped():
+    # No P31 + an unrelated description must NOT be treated as junk -- the
+    # filter is narrowly targeted, not "reject anything without P31".
+    wd = _FakeWD(search={"Тест": [{"id": "Q1"}]},
+                 entities={"Q1": _with_desc(_entity("Q1", "Тест", "Тест"), "a plain entity")})
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["Q1"]
+
+
+def test_candidates_dedup_identical_label_and_description():
+    # Two candidates with the exact same (label_ru, description) offered to
+    # the judge are pure noise -- keep only the first.
+    wd = _FakeWD(
+        search={"Париж": [{"id": "QDUPA"}, {"id": "QDUPB"}]},
+        entities={
+            "QDUPA": _with_desc(_entity("QDUPA", "Paris FC", "Париж"), "football club in France"),
+            "QDUPB": _with_desc(_entity("QDUPB", "Paris FC", "Париж"), "football club in France"),
+        },
+    )
+    gen = generate_candidates(wd, TermMention(surface="Париж", lemma="Париж"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["QDUPA"]
+
+
+def test_candidates_dedup_keeps_distinct_descriptions_for_same_label():
+    # Men's vs women's Paris FC share a label but differ in description --
+    # both are genuinely distinct candidates and must both survive.
+    wd = _FakeWD(
+        search={"Париж": [{"id": "QMEN"}, {"id": "QWOMEN"}]},
+        entities={
+            "QMEN": _with_desc(_entity("QMEN", "Paris FC", "Париж"), "football club in France"),
+            "QWOMEN": _with_desc(_entity("QWOMEN", "Paris FC", "Париж"), "women's association football club"),
+        },
+    )
+    gen = generate_candidates(wd, TermMention(surface="Париж", lemma="Париж"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["QMEN", "QWOMEN"]
+
+
+def test_candidates_dedup_does_not_merge_homonyms_with_empty_descriptions():
+    # Safety regression: two GENUINELY DIFFERENT entities sharing a Russian
+    # label but carrying no description (a routine real-world data gap, not
+    # an edge case) must never be collapsed by the dedup fix -- that's
+    # exactly the ">=2 exact matches" homonym case G6's judge escalation
+    # exists to disambiguate (e.g. two rulers of the same name).
+    wd = _FakeWD(
+        search={"Тутмос": [{"id": "Q1"}, {"id": "Q2"}]},
+        entities={"Q1": _entity("Q1", "Thutmose I", "Тутмос"),
+                  "Q2": _entity("Q2", "Thutmose II", "Тутмос")},
+    )
+    gen = generate_candidates(wd, TermMention(surface="Тутмос", lemma="Тутмос"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["Q1", "Q2"]
+
+
+def test_candidates_dedup_does_not_merge_candidates_without_a_label():
+    # Two label-less candidates are never collapsed together just because
+    # both keys happen to be falsy -- dedup only fires on a real label match.
+    wd = _FakeWD(
+        search={"Тест": [{"id": "Q1"}, {"id": "Q2"}]},
+        entities={"Q1": _entity("Q1", "Q1", None), "Q2": _entity("Q2", "Q2", None)},
+    )
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["Q1", "Q2"]
+
+
+def test_grounding_judge_system_prompt_has_temporal_context_caveat():
+    # DEFECT 1 fix marker: the judge must be told not to reject an enduring
+    # real-world referent merely because the surrounding narrative describes
+    # an earlier historical period (the root cause of the «Париж»
+    # judge_rejected defect -- real trace reason: "the provided candidates
+    # refer to modern entities" although Q90 IS the correct referent).
+    from palimpsest.terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
+    assert "enduring real-world referent" in DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
+    assert "era mismatch" in DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
+
+
+def test_label_first_paris_class_scenario_filters_junk_and_judge_grounds_city():
+    # End-to-end regression for the real defect: 5 raw hits include a
+    # Wikinews-article item (must be filtered) and a near-duplicate club pair
+    # (must be deduped to 1), leaving a clean candidate set that still needs
+    # the judge (2 genuine exact matches on "Париж": the city + the club) --
+    # the mocked judge picks the city, proving the mechanism (clean candidate
+    # list reaching the judge) works, independent of any specific LLM call.
+    wd = _FakeWD(
+        search={"Париж": [
+            {"id": "Q90"},        # Paris, the city -- the correct referent
+            {"id": "QJUNK"},      # Wikinews article titled "Париж" -- filtered
+            {"id": "QDUPA"},      # Paris FC (men's)
+            {"id": "QDUPB"},      # identical (label_ru, description) -- deduped
+            {"id": "Q830149"},    # Paris, Texas -- legitimate distinct candidate
+        ]},
+        entities={
+            "Q90": _with_desc(_entity("Q90", "Paris", "Париж", p31=("Q515",)),
+                               "capital and most populous city in France"),
+            "QJUNK": _with_desc(_entity("QJUNK", "Париж", "Париж", p31=("Q17633526",)),
+                                 "Wikinews article"),
+            "QDUPA": _with_desc(_entity("QDUPA", "Paris FC", "Париж"), "football club in France"),
+            "QDUPB": _with_desc(_entity("QDUPB", "Paris FC", "Париж"), "football club in France"),
+            "Q830149": _with_desc(_entity("Q830149", "Paris, TX", "Парис"),
+                                   "city in Texas, United States"),
+        },
+    )
+    judge, calls = _judge_counter({"qid": "Q90", "reason": "modern Paris is the museum's location"})
+    strategy = LabelFirstGrounding(wd)
+    mention = TermMention(surface="Париж", lemma="Париж",
+                           context="Конец XXIII в. до н.э. Париж, Лувр")
+    result = strategy.ground(mention, judge=judge)
+
+    trace_qids = {c["qid"] for c in result.trace["candidates"]}
+    assert trace_qids == {"Q90", "QDUPA", "Q830149"}   # junk + dup never reach the trace/judge
+    assert len(calls) == 1                             # 2 exact matches (Q90, QDUPA) -> escalation
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "llm_disambiguation"
+    assert result.grounded is not None
+    assert result.grounded.qid == "Q90"

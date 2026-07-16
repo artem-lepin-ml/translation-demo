@@ -19,10 +19,29 @@ query dict carries ``"strategy"`` — ``"prefix"`` (rungs 1-2 and the widening
 tiers below, all ``wbsearchentities``), ``"cirrus"`` (rung 3), or
 ``"sitelink"`` (rung 4) — so a trace UI can tell 5 escalating calls for one
 2-word mention apart from dumb repetition (owner UI review, 2026-07-16).
-Candidates are enriched, redirect-canonicalised, and returned as plain dicts
-plus a ``canon_by_qid`` map of canonical EN forms for pairing. No type
-filtering: the judge disambiguates from the description text instead of a
-type blocklist (spec D3/Q1).
+Candidates are filtered for Wikidata "meta" items (Wikinews articles,
+disambiguation/category/template/list *pages* -- see
+``_NON_ENTITY_P31_BLOCKLIST``) via their already-fetched P31 claim, then
+enriched, redirect-canonicalised, and returned as plain dicts plus a
+``canon_by_qid`` map of canonical EN forms for pairing; candidates that share
+an identical ``(label_ru, label_en, description)`` signature (i.e. render
+100% identically to the judge, see ``_format_judge_prompt`` in
+``label_first.py``) are also deduped, keeping the first (owner fix,
+2026-07-16 -- Wikinews items from CirrusSearch full-text reaching the
+candidate list for "Египтяне", plus a hypothetical Paris FC men's/women's
+near-duplicate pair). Deliberately requires the FULL signature, not just
+label_ru: two distinct entities sharing a Russian label but differing in
+label_en or description are exactly the homonym case G6's judge escalation
+exists to disambiguate, and must never be silently collapsed to 1 candidate.
+This dedup is deliberately narrower than the entity-*type*
+filter D3/Q1 removed: that filter tried to guess which *kind* of entity
+("city" vs "football club" vs "person") best fits, which is exactly the
+judge's disambiguation job (spec 2026-07-03-grounding-label-first-design.md
+D3/Q1) -- it is NOT reintroduced here. The items dropped by
+``_NON_ENTITY_P31_BLOCKLIST`` are never a valid grounding target under ANY
+context (a Wikinews *article*, a disambiguation *page* as a wiki-structure
+object, not any particular sense it disambiguates between); keeping them out
+is pure candidate-list noise removal, not a type-disambiguation heuristic.
 
 ``config.search_mode`` (wiki-eval experiment, 2026-07-10) cumulatively widens
 rungs 1-4 above when they find nothing, entirely deterministic aside from the
@@ -89,6 +108,48 @@ Sentence context: {context}
 
 def _description(entity: dict, lang: str = "en") -> str:
     return entity.get("descriptions", {}).get(lang, {}).get("value", "")
+
+
+# Wikidata items that are wiki-maintenance structure, never a real-world
+# grounding target under any context -- see the module docstring for why this
+# is distinct from the removed D3/Q1 entity-type filter.
+_NON_ENTITY_P31_BLOCKLIST = frozenset({
+    "Q17633526",  # Wikinews article
+    "Q4167410",   # Wikimedia disambiguation page
+    "Q4167836",   # Wikimedia category
+    "Q11266439",  # Wikimedia template
+    "Q13406463",  # Wikimedia list article
+})
+
+
+def _p31_qids(entity: dict) -> set[str]:
+    """QIDs from the entity's P31 (instance of) claims.
+
+    Defensive against missing claims, a ``novalue``/``somevalue`` snak, or any
+    other malformed shape -- never raises, just yields fewer/no QIDs.
+    """
+    out: set[str] = set()
+    for stmt in entity.get("claims", {}).get("P31", []):
+        try:
+            out.add(stmt["mainsnak"]["datavalue"]["value"]["id"])
+        except (KeyError, TypeError):
+            continue
+    return out
+
+
+def _is_non_entity(entity: dict, description: str) -> bool:
+    """True for a Wikidata "meta" item that must never reach exact-match/judge.
+
+    P31 is the principled check -- ``claims`` is already in the props
+    ``get_entities`` fetches for every candidate, so this costs zero extra
+    network calls. Falls back to a description-text match for the single
+    "Wikinews article" pattern only when the entity carries no P31 claim at
+    all (the fallback case this module's docstring flags as acceptable).
+    """
+    p31 = _p31_qids(entity)
+    if p31:
+        return bool(p31 & _NON_ENTITY_P31_BLOCKLIST)
+    return description.strip().lower() == "wikinews article"
 
 
 # Splits a parenthesized alternates group on a comma or the RU conjunction
@@ -248,16 +309,42 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
     entities = wd.get_entities(qids)
     candidates: list[dict] = []
     canon_by_qid: dict[str, list[str]] = {}
+    seen_dedup_keys: set[tuple[str, str]] = set()
     for qid in qids:
         ent = entities.get(qid)
         if not ent:
             continue
         cqid = ent.get("id", qid)  # canonicalise redirects to the target QID
+        description = _description(ent, "en") or _description(ent, "ru")
+        if _is_non_entity(ent, description):
+            continue
+        label_ru = label_of(ent, "ru")
+        label_en = label_of(ent, "en")
+        # Near-duplicate noise (e.g. two clubs/pages that render identically
+        # to the judge): dedup only when the FULL displayed signature
+        # matches -- label_ru AND label_en AND a real (non-empty)
+        # description, not just label_ru+description. Two distinct entities
+        # that legitimately share a Russian label (the exact ">=2 exact
+        # matches" homonym case G6's judge escalation exists for, e.g. two
+        # rulers of the same name) routinely differ only in label_en, or
+        # carry no description at all in some data paths -- a looser key
+        # silently collapsed that genuine disambiguation case down to 1
+        # candidate before the judge ever saw it, caught by this module's own
+        # test suite (test_label_first_two_exact_matches_escalates_to_judge_*
+        # and the live-pipeline equivalent in test_terminology_live.py, whose
+        # fixture gives every entity the same placeholder description).
+        # Requiring a non-empty description also means "nothing to compare
+        # on" (both descriptions blank) never counts as a match.
+        dedup_key = (label_ru, label_en, description) if description and (label_ru or label_en) else None
+        if dedup_key is not None:
+            if dedup_key in seen_dedup_keys:
+                continue
+            seen_dedup_keys.add(dedup_key)
         candidate = {
             "qid": cqid,
-            "label_ru": label_of(ent, "ru"),
+            "label_ru": label_ru,
             "label_en": label_of(ent, "en"),
-            "description": _description(ent, "en") or _description(ent, "ru"),
+            "description": description,
             "aliases_ru": aliases_of(ent, "ru"),
             "aliases_en": aliases_of(ent, "en"),
         }
