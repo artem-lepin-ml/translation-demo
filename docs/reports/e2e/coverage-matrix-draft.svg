@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1020" height="686" viewBox="0 0 1020 686">
+<rect width="1020" height="686" fill="#1a1b26"/>
+<text x="20" y="34" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="17" font-weight="bold">Glossa-MT · e2e mega-campaign — coverage matrix (draft, pre-run)</text>
+<text x="20" y="54" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="11">20 components × 10 scenarios · ● primary · ○ secondary · cells turn green/yellow/red after the run</text>
+<text x="372" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T1</text>
+<text x="372" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">author cycle</text>
+<text x="436" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T2</text>
+<text x="436" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">Chinese</text>
+<text x="500" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T3</text>
+<text x="500" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">edit storm</text>
+<text x="564" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T4</text>
+<text x="564" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">broken model</text>
+<text x="628" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T5</text>
+<text x="628" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">Paris traps</text>
+<text x="692" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T6</text>
+<text x="692" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">export</text>
+<text x="756" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T7</text>
+<text x="756" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">isolation x-fire</text>
+<text x="820" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T8</text>
+<text x="820" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">custom judge</text>
+<text x="884" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T9</text>
+<text x="884" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">40-para max</text>
+<text x="948" y="74" fill="#7aa2f7" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="bold" text-anchor="middle">T10</text>
+<text x="948" y="87" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="8" text-anchor="middle">revisions</text>
+<rect x="14" y="96" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="114" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Upload: paste/file/alignment</text>
+<circle cx="372" cy="109" r="6.5" fill="#7dcfff"/>
+<circle cx="436" cy="109" r="6.5" fill="#7dcfff"/>
+<circle cx="628" cy="109" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="756" cy="109" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="884" cy="109" r="6.5" fill="#7dcfff"/>
+<text x="328" y="140" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">AI-translate (§2.3)</text>
+<circle cx="372" cy="135" r="6.5" fill="#7dcfff"/>
+<rect x="14" y="148" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="166" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Recognition (§2.1-i)</text>
+<circle cx="372" cy="161" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="436" cy="161" r="6.5" fill="#7dcfff"/>
+<circle cx="628" cy="161" r="6.5" fill="#7dcfff"/>
+<circle cx="884" cy="161" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<text x="328" y="192" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Candidate search + label-guess</text>
+<circle cx="436" cy="187" r="6.5" fill="#7dcfff"/>
+<circle cx="628" cy="187" r="6.5" fill="#7dcfff"/>
+<rect x="14" y="200" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="218" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Disambiguation judge (§2.1-iii)</text>
+<circle cx="436" cy="213" r="6.5" fill="#7dcfff"/>
+<circle cx="628" cy="213" r="6.5" fill="#7dcfff"/>
+<text x="328" y="244" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">3 confidence states</text>
+<circle cx="372" cy="239" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="436" cy="239" r="6.5" fill="#7dcfff"/>
+<circle cx="628" cy="239" r="6.5" fill="#7dcfff"/>
+<rect x="14" y="252" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="270" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Glossary + traces</text>
+<circle cx="436" cy="265" r="6.5" fill="#7dcfff"/>
+<circle cx="628" cy="265" r="6.5" fill="#7dcfff"/>
+<text x="328" y="296" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Judges Acc/Flu/Sty (§2.2)</text>
+<circle cx="372" cy="291" r="6.5" fill="#7dcfff"/>
+<circle cx="436" cy="291" r="6.5" fill="#7dcfff"/>
+<circle cx="500" cy="291" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="564" cy="291" r="6.5" fill="#7dcfff"/>
+<circle cx="820" cy="291" r="6.5" fill="#7dcfff"/>
+<circle cx="884" cy="291" r="6.5" fill="#7dcfff"/>
+<circle cx="948" cy="291" r="6.5" fill="#7dcfff"/>
+<rect x="14" y="304" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="322" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Custom criteria (§2.2)</text>
+<circle cx="820" cy="317" r="6.5" fill="#7dcfff"/>
+<text x="328" y="348" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Issues: accept/dismiss/overlap</text>
+<circle cx="500" cy="343" r="6.5" fill="#7dcfff"/>
+<circle cx="756" cy="343" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="820" cy="343" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="948" cy="343" r="6.5" fill="#7dcfff"/>
+<rect x="14" y="356" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="374" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Refine (§2.3)</text>
+<circle cx="500" cy="369" r="6.5" fill="#7dcfff"/>
+<circle cx="564" cy="369" r="6.5" fill="#7dcfff"/>
+<circle cx="692" cy="369" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="756" cy="369" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="884" cy="369" r="6.5" fill="#7dcfff"/>
+<circle cx="948" cy="369" r="6.5" fill="#7dcfff"/>
+<text x="328" y="400" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Revisions/Restore/Reset</text>
+<circle cx="500" cy="395" r="6.5" fill="#7dcfff"/>
+<circle cx="564" cy="395" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="692" cy="395" r="6.5" fill="#7dcfff"/>
+<circle cx="756" cy="395" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="948" cy="395" r="6.5" fill="#7dcfff"/>
+<rect x="14" y="408" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="426" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">TipTap editor (§2.4)</text>
+<circle cx="372" cy="421" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="948" cy="421" r="6.5" fill="#7dcfff"/>
+<text x="328" y="452" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Ranking (§2.4)</text>
+<circle cx="820" cy="447" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<circle cx="884" cy="447" r="6.5" fill="#7dcfff"/>
+<rect x="14" y="460" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="478" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Settings: registry/params</text>
+<circle cx="564" cy="473" r="6.5" fill="#7dcfff"/>
+<circle cx="756" cy="473" r="6.5" fill="#7dcfff"/>
+<circle cx="820" cy="473" r="6.5" fill="#7dcfff"/>
+<text x="328" y="504" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Export</text>
+<circle cx="436" cy="499" r="6.5" fill="#7dcfff"/>
+<circle cx="692" cy="499" r="6.5" fill="#7dcfff"/>
+<circle cx="948" cy="499" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<rect x="14" y="512" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="530" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Limits/validation</text>
+<circle cx="372" cy="525" r="6.5" fill="#7dcfff"/>
+<circle cx="564" cy="525" r="6.5" fill="#7dcfff"/>
+<circle cx="692" cy="525" r="6.5" fill="#7dcfff"/>
+<circle cx="884" cy="525" r="6.5" fill="#7dcfff"/>
+<text x="328" y="556" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Session isolation</text>
+<circle cx="756" cy="551" r="6.5" fill="#7dcfff"/>
+<circle cx="948" cy="551" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<rect x="14" y="564" width="992" height="26" fill="#24283b" opacity="0.45"/>
+<text x="328" y="582" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Double-submit guards</text>
+<circle cx="500" cy="577" r="6.5" fill="#7dcfff"/>
+<circle cx="756" cy="577" r="6.5" fill="#7dcfff"/>
+<text x="328" y="608" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="end">Budget logging</text>
+<circle cx="564" cy="603" r="6.5" fill="#7dcfff"/>
+<circle cx="756" cy="603" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/>
+<line x1="340" y1="92" x2="340" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="404" y1="92" x2="404" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="468" y1="92" x2="468" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="532" y1="92" x2="532" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="596" y1="92" x2="596" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="660" y1="92" x2="660" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="724" y1="92" x2="724" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="788" y1="92" x2="788" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="852" y1="92" x2="852" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="916" y1="92" x2="916" y2="616" stroke="#2f334d" stroke-width="1"/>
+<line x1="980" y1="92" x2="980" y2="616" stroke="#2f334d" stroke-width="1"/>
+<circle cx="26" cy="642" r="6.5" fill="#7dcfff"/><text x="40" y="646" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11">primary coverage</text>
+<circle cx="196" cy="642" r="5.5" fill="none" stroke="#e0af68" stroke-width="1.6"/><text x="210" y="646" fill="#c0caf5" font-family="ui-monospace,Menlo,monospace" font-size="11">secondary</text>
+<text x="996" y="646" fill="#7f8bb5" font-family="ui-monospace,Menlo,monospace" font-size="10" text-anchor="end">spec: 2026-07-17-e2e-mega-campaign.md</text>
+</svg>
