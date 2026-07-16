@@ -129,6 +129,7 @@ def _no_auto_launch(monkeypatch):
 NER_ONE_TERM = '[{"surface":"Вавилон","lemma":"Вавилон","category":"place"}]'
 NER_AMBIGUOUS_TERM = '[{"surface":"Тутмос","lemma":"Тутмос","category":"person"}]'
 NER_EMPTY = "[]"
+NER_HANA_TERM = '[{"surface":"Ханейское царство","lemma":"Ханейское царство","category":"place"}]'
 
 
 # ── happy path: exact-label green, no judge call needed ────────────────────
@@ -193,6 +194,139 @@ def test_run_disambiguation_judge_bridge_resolves_yellow(client):
     grounded = json.loads(row["grounded_json"])
     assert grounded["qid"] == "Q2"                  # the FAKE judge's choice was honored end-to-end
     assert row["pair_accuracy"] == "green"           # "Thutmose II" located verbatim in the target
+
+
+# ── label-guess tier (live wiring, owner-approved 2026-07-17) ───────────────
+# Enables candidates.py's "label-guess" search_mode in the live pipeline: when
+# lemma/surface/cirrus/sitelink all find 0 candidates, one extra LLM call
+# guesses the entity's exact Wikidata label before the mention is given up as
+# no_candidates. Reference case: the paper's own Figure 1, «Ханейское
+# царство» (canonical Wikidata label «Хана» / "Kingdom of Hana", Q425405).
+
+def test_run_label_guess_tier_resolves_no_candidates_mention(client):
+    """All deterministic tiers find 0 hits for the raw surface/lemma; the
+    label-guess tier's guessed label ("Хана") reaches search and resolves a
+    mention that used to die as no_candidates. The guessed label doesn't
+    lexically match the surface, so this also exercises the disambiguation
+    judge escalation on top of the label-guess widened candidate."""
+    wd = _FakeWD(
+        hits={"Хана": [{"id": "Q425405"}]},          # only the GUESSED label has a hit
+        entities={"Q425405": _entity("Q425405", "Hana", "Хана", enwiki="Hana")},
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [{"source": "Ханейское царство было соседом Мари.",
+                                 "target": "The Kingdom of Hana bordered Mari."}])
+
+        guess_reply = json.dumps({"label_ru": "Хана", "label_en": None})
+        fake_client = _FakeClient([NER_HANA_TERM, guess_reply])
+        client_for = _client_for_factory(fake_client)
+        judge = asyncio.run(_judge_picks("Q425405"))  # guessed label != surface, judge escalates
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    pid = doc["paragraphs"][0]["id"]
+    row = conn.execute("SELECT * FROM term WHERE paragraph_id=?", (pid,)).fetchone()
+    assert row is not None
+    assert row["difficulty"] == "yellow"                # llm_disambiguation, not no_candidates/red
+    trace = json.loads(row["trace_json"])
+    assert trace["resolved_by"] == "llm_disambiguation"
+    assert trace["chosen_qid"] == "Q425405"
+    guess_queries = [q for q in trace["queries"] if q["kind"] == "label_guess"]
+    assert guess_queries, "expected a label_guess-tier query in the trace"
+    assert all(q["strategy"] == "guess" for q in guess_queries)   # distinguishable from "prefix"
+    # the fake LLM client is called exactly twice: NER extract, then the guess
+    assert len(fake_client.calls) == 2
+    assert fake_client.calls[1][0] == terminology_live.DEFAULT_LABEL_GUESS_SYSTEM_PROMPT
+
+
+def test_run_label_guesser_not_called_when_normal_tiers_find_candidates(client):
+    """The label-guess tier must only fire on a genuine 0-candidates miss --
+    a mention resolved by the deterministic prefix-search tier (rung 1) must
+    never reach the (LLM-backed) guesser at all."""
+    wd = _FakeWD(
+        hits={"Вавилон": [{"id": "Q23522"}]},
+        entities={"Q23522": _entity("Q23522", "Babylon", "Вавилон", enwiki="Babylon")},
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [{"source": "Вавилон был велик.", "target": "Babylon was great."}])
+
+        fake_client = _FakeClient([NER_ONE_TERM])        # only ONE reply configured -- NER
+        client_for = _client_for_factory(fake_client)
+        judge = asyncio.run(_judge_picks("Q23522"))
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    # If the guesser had been invoked it would have called .complete() a
+    # second time (returning the clamped last/only reply) -- exactly one call
+    # proves the guesser was never reached.
+    assert len(fake_client.calls) == 1
+    pid = doc["paragraphs"][0]["id"]
+    row = conn.execute("SELECT * FROM term WHERE paragraph_id=?", (pid,)).fetchone()
+    assert row["difficulty"] == "green"
+
+
+def test_run_builds_and_passes_label_guesser_into_grounder(client):
+    """Unit-level wiring check: _run constructs LabelFirstGrounding with
+    search_mode='label-guess' and a callable label_guesser -- both built from
+    the same client_for the disambiguation judge/NER call already use."""
+    captured: dict = {}
+    real_cls = terminology_live.LabelFirstGrounding
+
+    class _CapturingGrounding(real_cls):
+        def __init__(self, wd, config=None, *, label_guesser=None):
+            captured["config"] = config
+            captured["label_guesser"] = label_guesser
+            super().__init__(wd, config=config, label_guesser=label_guesser)
+
+    wd = _FakeWD()
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        mp.setattr(terminology_live, "LabelFirstGrounding", _CapturingGrounding)
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [{"source": "Ничего не найдено.", "target": "Nothing found."}])
+
+        fake_client = _FakeClient([NER_EMPTY])
+        client_for = _client_for_factory(fake_client)
+        judge = asyncio.run(_judge_picks("Q1"))
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    assert captured["config"].search_mode == "label-guess"
+    assert callable(captured["label_guesser"])
+
+
+def test_label_guess_call_logged_under_distinct_budget_endpoint(client):
+    """The label-guess LLM call is logged to the budget under its own
+    'label_guess' endpoint tag -- distinct from the disambiguation judge's
+    'terms_grounding' tag and the NER call's 'terms_extract' tag -- so
+    spend/call-count stay separately attributable (see
+    terminology_live._grounding_label_guess_live)."""
+    wd = _FakeWD(
+        hits={"Хана": [{"id": "Q425405"}]},
+        entities={"Q425405": _entity("Q425405", "Hana", "Хана", enwiki="Hana")},
+    )
+    logged: list[dict] = []
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        mp.setattr(terminology_live.budget, "log_call", lambda rec: logged.append(rec))
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [{"source": "Ханейское царство было соседом Мари.",
+                                 "target": "The Kingdom of Hana bordered Mari."}])
+
+        guess_reply = json.dumps({"label_ru": "Хана", "label_en": None})
+        fake_client = _FakeClient([NER_HANA_TERM, guess_reply])
+        client_for = _client_for_factory(fake_client)
+        judge = asyncio.run(_judge_picks("Q425405"))
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    endpoints = {rec["endpoint"] for rec in logged}
+    assert "label_guess" in endpoints
+    assert "terms_extract" in endpoints              # NER's own tag, sanity check they coexist
 
 
 # ── per-paragraph failure handling ──────────────────────────────────────────

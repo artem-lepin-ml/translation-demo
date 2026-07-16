@@ -15,10 +15,14 @@ Search order, widening only when thin:
      annotations (evaluation circularity, see docs/stages/wiki-eval.md).
 
 Every search call is logged to ``queries`` (feeds ``GroundingTrace`` v1); each
-query dict carries ``"strategy"`` — ``"prefix"`` (rungs 1-2 and the widening
-tiers below, all ``wbsearchentities``), ``"cirrus"`` (rung 3), or
-``"sitelink"`` (rung 4) — so a trace UI can tell 5 escalating calls for one
-2-word mention apart from dumb repetition (owner UI review, 2026-07-16).
+query dict carries ``"strategy"`` — ``"prefix"`` (rungs 1-2 and the alt-names
+widening tier, all ``wbsearchentities``), ``"cirrus"`` (rung 3), ``"sitelink"``
+(rung 4), or ``"guess"`` (the label-guess widening tier's queries — same
+``wbsearchentities`` backend as ``"prefix"``, but flagged distinctly so a
+trace UI can visually tell an LLM-guessed query apart from an ordinary
+widening call at a glance; live-pipeline wiring, owner-approved 2026-07-17)
+— so a trace UI can tell 5+ escalating calls for one 2-word mention apart
+from dumb repetition (owner UI review, 2026-07-16).
 Candidates are filtered for Wikidata "meta" items (Wikinews articles,
 disambiguation/category/template/list *pages* -- see
 ``_NON_ENTITY_P31_BLOCKLIST``) via their already-fetched P31 claim, then
@@ -279,12 +283,18 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
                 if not q:
                     continue
                 results = wd.search_entities(q, lang=mention.lang, limit=config.search_limit)
-                # widening tiers ("alt"/"label_guess", search_mode != "baseline")
-                # hit the same wbsearchentities prefix-search backend as rung 1
-                # above, just with a derived form instead of surface/lemma --
-                # "strategy" tracks the BACKEND, "kind" already tracks the tier.
+                # Both widening tiers ("alt"/"label_guess", search_mode !=
+                # "baseline") hit the same wbsearchentities prefix-search
+                # backend as rung 1 above, just with a derived form instead of
+                # surface/lemma. "alt" keeps "strategy": "prefix" (zero-LLM,
+                # already distinguishable via "kind"); "label_guess" gets its
+                # own "guess" strategy so a trace UI can flag an LLM-guessed
+                # query distinctly at a glance (live-pipeline wiring,
+                # owner-approved 2026-07-17) -- "kind" still separately
+                # tracks the tier either way.
+                strategy = "guess" if tier == "label_guess" else "prefix"
                 queries.append({"q": q, "kind": tier, "mechanism": "wbsearchentities",
-                                 "strategy": "prefix", "n_hits": len(results)})
+                                 "strategy": strategy, "n_hits": len(results)})
                 for h in results:
                     if h["id"] not in seen_qid:
                         seen_qid.add(h["id"])

@@ -20,8 +20,19 @@ Every grounding/pairing decision reuses the FROZEN terminology module
 unmodified (``extract.py``, ``grounding/label_first.py``,
 ``pairing/link_locate.py``, ``pipeline.py``) -- this module is glue only
 (LLM/DB wiring), per the project convention "reuse, never reimplement".
-Grounding uses plain ``GroundingConfig()`` defaults (``search_mode`` stays
-``"baseline"`` -- the pinned config, see ``grounding/candidates.py``).
+Grounding runs ``GroundingConfig(search_mode="label-guess")`` (owner-approved
+2026-07-17, EMNLP-sprint recall fix -- Figure 1 of the published paper,
+«Ханейское царство»/Hana Q425405, used to die as ``no_candidates`` here):
+when the deterministic tiers (lemma/surface prefix search, CirrusSearch,
+sitelink) all find 0 candidates, the zero-LLM alt-names widening tier tries
+first, and only if THAT also finds nothing does ``generate_candidates``
+consult the injected ``label_guesser`` for one extra LLM call guessing the
+entity's exact Wikidata label (see ``grounding/candidates.py``'s module
+docstring for the full escalation order, unchanged by this wiring). The
+guesser is built here (``_make_sync_label_guesser``/
+``_grounding_label_guess_live`` below) from the SAME ``grounding_config``
+model/client as the disambiguation judge, and logged to the budget under its
+own ``"label_guess"`` endpoint tag.
 Pairing uses ``LinkLocatePairing`` (P1, deterministic, no extra judge call)
 -- the same strategy ``scripts/term_pipeline.py``'s ``cmd_run`` used to
 build ``data/seed/terminology_out.json`` (loaded into the ``term`` table by
@@ -52,7 +63,17 @@ pairing, including WikidataClient's blocking ``urllib`` calls) runs inside
 it receives schedules the async ``grounding_judge_live`` coroutine back onto
 the ORIGINAL event loop via ``asyncio.run_coroutine_threadsafe(...).result()``
 -- the standard pattern for a worker thread calling back into loop-owned
-async primitives.
+async primitives. The label-guess tier's ``label_guesser`` callable
+(``_make_sync_label_guesser`` below) bridges the exact same way, onto its own
+``_grounding_label_guess_live`` coroutine -- a separate function from
+``grounding_judge_live`` because it needs a different system prompt
+(``candidates.DEFAULT_LABEL_GUESS_SYSTEM_PROMPT``, not the disambiguation
+judge's) and its own budget endpoint tag, even though it is built from the
+SAME ``grounding_config`` model/client and reuses ``client_for`` (already
+threaded through ``run``/``_run`` for the NER call) rather than a second
+injected callable -- ``app.py``'s ``_grounding_judge_live`` hardcodes the
+disambiguation system prompt and is outside this module's edit lane, so it is
+mirrored here, not extended.
 """
 from __future__ import annotations
 
@@ -73,6 +94,7 @@ from ..terminology.extract import (
     validate_surfaces,
 )
 from ..terminology.grounding import LabelFirstGrounding
+from ..terminology.grounding.candidates import DEFAULT_LABEL_GUESS_SYSTEM_PROMPT
 from ..terminology.pairing import LinkLocatePairing
 from ..terminology.wikidata import WikidataClient
 from . import budget, db
@@ -88,6 +110,15 @@ TERMS_PARAS = int(os.environ.get("PALIMPSEST_TERMS_PARAS", "12"))
 _NER_TIMEOUT = float(os.environ.get("PALIMPSEST_TERMS_TIMEOUT", "20"))
 _NER_RETRIES = int(os.environ.get("PALIMPSEST_TERMS_RETRIES", "2"))
 _NER_BACKOFF = float(os.environ.get("PALIMPSEST_TERMS_BACKOFF", "0.5"))
+
+# The label-guess tier's one-shot call (candidates.py's "label-guess"
+# search_mode) -- same env-overridable shape as the NER leg above, a single
+# short call so the same conservative defaults apply. Independent constants
+# (not a reuse of _NER_*) so either leg can be tuned without affecting the
+# other, even though the defaults start identical.
+_LABEL_GUESS_TIMEOUT = float(os.environ.get("PALIMPSEST_TERMS_LABEL_GUESS_TIMEOUT", "20"))
+_LABEL_GUESS_RETRIES = int(os.environ.get("PALIMPSEST_TERMS_LABEL_GUESS_RETRIES", "2"))
+_LABEL_GUESS_BACKOFF = float(os.environ.get("PALIMPSEST_TERMS_LABEL_GUESS_BACKOFF", "0.5"))
 
 # Margin the NER leg's wait_for ceiling must clear above the actual SDK
 # client timeout (LLMConfig.timeout, 30s default in llm/client.py) -- stability
@@ -209,16 +240,25 @@ async def run(doc_id: int, client_for, grounding_judge_live) -> None:
         _finish(db.connect(), doc_id, "failed")
 
 
+def _effective_call_timeout(client, floor: float) -> float:
+    """Shared shape behind ``_effective_ner_timeout`` (and the label-guess
+    call's own ceiling below): the ``asyncio.wait_for`` ceiling for a single
+    LLM call, always kept above ``client.config.timeout`` (the actual SDK
+    per-request wall clock ``client.complete`` is bound by) -- otherwise
+    wait_for fires first and abandons a still-running SDK call instead of the
+    SDK's own timeout ever getting a chance to raise. Derived from the REAL
+    client at call time rather than a hardcoded duplicate of
+    ``LLMConfig.timeout``'s default, so this stays correct even if that
+    default changes or a caller passes a client configured with a
+    non-default timeout."""
+    return max(floor, client.config.timeout + _TIMEOUT_MARGIN)
+
+
 def _effective_ner_timeout(client) -> float:
-    """The ``asyncio.wait_for`` ceiling for the NER call, always kept above
-    ``client.config.timeout`` (the actual SDK per-request wall clock the
-    ``client.complete`` call underneath is bound by) -- otherwise wait_for
-    fires first and abandons a still-running SDK call instead of the SDK's
-    own timeout ever getting a chance to raise. Derived from the REAL client
-    at call time rather than a hardcoded duplicate of ``LLMConfig.timeout``'s
-    default, so this stays correct even if that default changes or a caller
-    passes a client configured with a non-default timeout."""
-    return max(_NER_TIMEOUT, client.config.timeout + _TIMEOUT_MARGIN)
+    """The NER call's ceiling -- see ``_effective_call_timeout`` for the
+    full rationale, kept as its own named function (rather than inlined)
+    because ``tests/test_terminology_live.py`` asserts against it directly."""
+    return _effective_call_timeout(client, _NER_TIMEOUT)
 
 
 async def _extract_mentions_live(conn, client_for, source: str) -> list[TermMention]:
@@ -308,6 +348,95 @@ def _make_sync_judge(conn, grounding_judge_live, loop: asyncio.AbstractEventLoop
     return judge
 
 
+async def _grounding_label_guess_live(conn, client_for, prompt: str,
+                                       endpoint: str = "label_guess") -> dict:
+    """Async, budget-guarded label-guess call for the ``label_guesser``
+    injected into ``LabelFirstGrounding`` (candidates.py's ``"label-guess"``
+    tier). Mirrors ``app._grounding_judge_live``'s reserve/settle/retry/
+    timeout shape (same ``grounding_config`` row/model, same
+    reserve->call->settle->log_call sequence) rather than reusing that
+    function directly: it hardcodes ``DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT``
+    as its system message, a genuinely different call than this tier's own
+    system prompt (``candidates.DEFAULT_LABEL_GUESS_SYSTEM_PROMPT``) -- and
+    ``app.py`` is outside this module's edit lane. ``endpoint`` defaults to
+    ``"label_guess"`` so ``budget.log_call`` records are distinguishable from
+    the disambiguation judge's own ``"terms_grounding"`` tag.
+
+    Any exception (missing config/key, transient-exhausted, malformed JSON)
+    propagates to the caller -- ``candidates._guess_labels`` already degrades
+    any non-fatal one to "no guess" (``{}``); this function never raises
+    ``FatalGroundingJudgeError``, mirroring ``_grounding_judge_live``.
+    """
+    row = conn.execute("SELECT * FROM grounding_config WHERE id=1").fetchone()
+    if row is None or not row["model_name"]:
+        raise RuntimeError("grounding_config not set")
+    name = row["model_name"]
+    raw = json.loads(row["params_json"] or "{}")
+    client = client_for(conn, name, raw)
+    if client is None:
+        raise RuntimeError("no api key for model")
+    prompt_tok = budget.count_tokens(prompt)
+    rmt = additive_reasoning_tokens(name, raw)
+    est = budget.estimate(name, prompt_tok, client.config.max_tokens, rmt)
+    gen = await budget.reserve(est)
+    timeout = _effective_call_timeout(client, _LABEL_GUESS_TIMEOUT)
+    attempt = 0
+    while True:
+        try:
+            res = await asyncio.wait_for(
+                asyncio.to_thread(client.complete, DEFAULT_LABEL_GUESS_SYSTEM_PROMPT, prompt),
+                timeout)
+            break
+        except Exception as exc:
+            if is_transient_error(exc) and attempt < _LABEL_GUESS_RETRIES:
+                err = redact_error(f"{type(exc).__name__}: {exc}")
+                budget.log_call({"model": name, "endpoint": endpoint, "status": "retry",
+                                 "attempt": attempt, "error": err, "costUsd": None})
+                logger.warning("label guess retry: model=%s attempt=%d error=%s",
+                                name, attempt, err)
+                await asyncio.sleep(_LABEL_GUESS_BACKOFF * (2 ** attempt))
+                attempt += 1
+                continue
+            await budget.settle(est, 0.0, gen)
+            err = redact_error(f"{type(exc).__name__}: {exc}")
+            budget.log_call({"model": name, "endpoint": endpoint, "status": "error",
+                             "attempts": attempt + 1, "error": err, "costUsd": None})
+            logger.warning("label guess failed terminally: model=%s attempts=%d error=%s",
+                            name, attempt + 1, err)
+            raise
+    await budget.settle(est, res.usage.cost_usd, gen)
+    budget.log_call({"model": name, "endpoint": endpoint, "status": "ok",
+                     "tokens": {"prompt": res.usage.prompt_tokens,
+                                "completion": res.usage.completion_tokens,
+                                "reasoning": res.usage.reasoning_tokens},
+                     "costUsd": res.usage.cost_usd})
+    try:
+        data = json.loads(res.content)
+    except json.JSONDecodeError as exc:
+        # malformed JSON is terminal, same policy as the disambiguation judge
+        # (label_first.py's documented error policy) -- candidates._guess_labels
+        # already degrades this to "no guess" for the caller.
+        budget.log_call({"model": name, "endpoint": endpoint, "status": "malformed_json",
+                         "error": redact_error(str(exc)), "costUsd": res.usage.cost_usd})
+        raise ValueError(f"malformed label-guess JSON: {exc}") from exc
+    return data
+
+
+def _make_sync_label_guesser(conn, client_for, loop: asyncio.AbstractEventLoop):
+    """Bridge ``candidates.py``'s sync ``Judge``-shaped ``label_guesser``
+    callable to the async ``_grounding_label_guess_live`` above -- the exact
+    same ``run_coroutine_threadsafe`` pattern as ``_make_sync_judge`` (see its
+    docstring and the module docstring's Async/sync bridge section). Any
+    exception the coroutine raises propagates through ``.result()``
+    unchanged; ``candidates._guess_labels`` is what degrades a non-fatal one
+    to "no guess" rather than this bridge."""
+    def guess(prompt: str) -> dict:
+        future = asyncio.run_coroutine_threadsafe(
+            _grounding_label_guess_live(conn, client_for, prompt), loop)
+        return future.result()
+    return guess
+
+
 def _write_paragraph_terms(conn, doc_id: int, paragraph_id: int, terms) -> None:
     """Paragraph-atomic write, one transaction. ``INSERT OR REPLACE`` on the
     ``term`` table's ``UNIQUE(paragraph_id, char_start, char_end)`` — same
@@ -337,11 +466,16 @@ async def _run(doc_id: int, client_for, grounding_judge_live) -> None:
 
     loop = asyncio.get_running_loop()
     # One WikidataClient instance for the whole document run — warm cache across
-    # its paragraphs. Plain GroundingConfig() defaults: search_mode stays
-    # "baseline" (pinned). LinkLocatePairing (P1) is deterministic — the same
-    # pairing strategy term_pipeline.py used to build the seed's term rows.
+    # its paragraphs. search_mode="label-guess" (owner-approved 2026-07-17):
+    # the deterministic tiers/escalation order are unchanged, the LLM label
+    # guess only fires after they (and the zero-cost alt-names widening) all
+    # find 0 candidates — see module docstring. LinkLocatePairing (P1) is
+    # deterministic — the same pairing strategy term_pipeline.py used to
+    # build the seed's term rows.
     wd = WikidataClient()
-    grounder = LabelFirstGrounding(wd, config=GroundingConfig())
+    sync_guesser = _make_sync_label_guesser(conn, client_for, loop)
+    grounder = LabelFirstGrounding(
+        wd, config=GroundingConfig(search_mode="label-guess"), label_guesser=sync_guesser)
     pairer = LinkLocatePairing(wd)
     sync_judge = _make_sync_judge(conn, grounding_judge_live, loop)
     judge_cache: dict = {}          # "one sense per discourse" cache, scoped to scope_id=doc_id
