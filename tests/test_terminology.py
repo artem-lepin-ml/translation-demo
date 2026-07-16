@@ -668,6 +668,41 @@ def test_candidates_label_guess_tier_fires_only_after_alt_names_also_empty():
     assert any(q["kind"] == "label_guess" for q in gen["queries"])
 
 
+def test_candidates_label_guess_variants_reach_search_khana_class():
+    """The Ханейское-царство class (2026-07-17): the common guesses
+    («Хана»/"Hana") find nothing, but a scholarly-romanization variant
+    ("Khana") from the new `variants` field must be queried and win."""
+    wd = _FakeWD(search={"Khana": [{"id": "Q425405"}]},
+                 entities={"Q425405": _entity("Q425405", "Kingdom of Khana")})
+
+    def fake_guesser(prompt):
+        return {"label_ru": "Хана", "label_en": "Hana", "variants": ["Khana", "Хана", None, 42]}
+
+    mention = TermMention(surface="Ханейское царство", lemma="Ханейское царство",
+                          context="покорила Ханейское царство, распространив власть.")
+    config = GroundingConfig(search_mode="label-guess")
+    gen = generate_candidates(wd, mention, config, label_guesser=fake_guesser)
+
+    queried = [q["q"] for q in gen["queries"] if q["kind"] == "label_guess"]
+    assert queried == ["Хана", "Hana", "Khana"]  # deduped, junk types dropped
+    assert all(q["strategy"] == "guess" for q in gen["queries"] if q["kind"] == "label_guess")
+    assert gen["candidates"][0]["qid"] == "Q425405"
+    assert gen["candidates"][0]["source"] == "label_guess"
+
+
+def test_candidates_label_guess_variants_capped_at_five_forms():
+    wd = _FakeWD(search={}, entities={})
+
+    def fake_guesser(prompt):
+        return {"label_ru": "а", "label_en": "b", "variants": ["c", "d", "e", "f", "g"]}
+
+    mention = TermMention(surface="Нечто", lemma="Нечто", context="Нечто случилось, без скобок.")
+    gen = generate_candidates(wd, mention, GroundingConfig(search_mode="label-guess"),
+                              label_guesser=fake_guesser)
+    queried = [q["q"] for q in gen["queries"] if q["kind"] == "label_guess"]
+    assert queried == ["а", "b", "c", "d", "e"]  # hard cap of 5 widening searches
+
+
 def test_candidates_label_guess_not_called_when_alt_names_already_succeeded():
     # cumulation: alt-names success short-circuits the (more expensive)
     # label-guess tier entirely.

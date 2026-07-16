@@ -97,11 +97,19 @@ filed under -- in Russian and/or English.
 
 ## Output
 Return strict JSON only, no other text:
-{"label_ru": "<exact label>" or null, "label_en": "<exact label>" or null}
+{"label_ru": "<exact label>" or null, "label_en": "<exact label>" or null,
+ "variants": ["<alternative exact label>", ...] or []}
 
 Guess a plausible EXACT Wikidata label string (e.g. a standard
 transliteration or the common English name), never a description or
 paraphrase. Use null for a language you cannot confidently guess.
+
+In "variants" add up to 3 ALTERNATIVE exact-label spellings that Wikidata
+might file the entity under instead: the scholarly (Library of Congress)
+romanization of a Russian name when it differs from the common one (х->kh,
+ц->ts, дж->j: «Хана» -> "Khana" as well as "Hana"), and the bare canonical
+proper noun without generic type words («Ханейское царство» -> "Khana", not
+"Khana kingdom"). Empty list if no distinct variant comes to mind.
 """
 
 DEFAULT_LABEL_GUESS_USER_TEMPLATE = """Surface form: {surface}
@@ -307,7 +315,18 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
 
         if not hits and config.search_mode == "label-guess" and label_guesser is not None:
             guess = _guess_labels(label_guesser, mention)
-            guess_forms = [g for g in (guess.get("label_ru"), guess.get("label_en")) if g]
+            # label_ru/label_en plus up to 3 "variants" (scholarly LoC
+            # romanization, bare canonical noun — 2026-07-17: «Ханейское
+            # царство» guessed "Хана"/"Hana" but Q425405 is only reachable
+            # via the "Khana" spelling). Dedup preserves guess order; cap
+            # keeps the widening tier bounded at 5 prefix searches.
+            raw_variants = guess.get("variants")
+            variants = [v for v in raw_variants if isinstance(v, str)] if isinstance(raw_variants, list) else []
+            seen_guess: set[str] = set()
+            guess_forms = [
+                g for g in (guess.get("label_ru"), guess.get("label_en"), *variants)
+                if g and not (g in seen_guess or seen_guess.add(g))
+            ][:5]
             if guess_forms:
                 _widen(guess_forms, "label_guess")
 
