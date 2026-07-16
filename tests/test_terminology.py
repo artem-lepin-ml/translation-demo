@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import json
+import logging
 import sys
+import urllib.error
 from pathlib import Path
 
 import pytest
@@ -362,6 +364,71 @@ def test_pipeline_threads_judge_scope_and_cache_to_grounder():
     assert grounder.calls[0]["judge"] is fake_judge
     assert grounder.calls[0]["scope_id"] == "para-1"
     assert grounder.calls[0]["judge_cache"] is cache
+
+
+# ── per-mention isolation (defense-in-depth on top of a grounding strategy's
+# own error handling -- see grounding/label_first.py's broadened catch) ──────
+class _FlakyGrounder:
+    """green for every mention except one whose surface triggers a raised
+    exception -- simulates a grounding strategy that lets an error escape
+    uncaught, independent of any particular strategy's own error handling."""
+    name = "flaky"
+
+    def __init__(self, raise_on: str, exc: Exception):
+        self.raise_on = raise_on
+        self.exc = exc
+        self.calls: list[str] = []
+
+    def ground(self, mention, *, judge=None, scope_id=None, judge_cache=None):
+        self.calls.append(mention.surface)
+        if mention.surface == self.raise_on:
+            raise self.exc
+        ref = WikidataRef.from_qid("Q1", "X")
+        return GroundingResult("green", ref, [ref], trace={"canon_en": ["X"]})
+
+
+def test_pipeline_isolates_mention_whose_grounder_raises_and_keeps_the_rest():
+    # Regression: pipeline.run() used to have no per-mention try/except, so one
+    # raised lookup error killed the whole paragraph's extraction (0 terms back
+    # instead of just dropping the one bad mention).
+    mentions = [
+        TermMention("BADterm", char_start=0, char_end=7),
+        TermMention("GOODterm", char_start=12, char_end=20),
+    ]
+    grounder = _FlakyGrounder(raise_on="BADterm", exc=RuntimeError("boom"))
+    terms = pipeline.run("BADterm and GOODterm", "X here", mentions, grounder=grounder, pairer=_Pairer())
+
+    assert grounder.calls == ["BADterm", "GOODterm"]              # loop continued past the raise
+    assert [t.source_surface for t in terms] == ["GOODterm"]      # bad mention dropped, not the paragraph
+    assert terms[0].difficulty == "green"
+
+
+def test_pipeline_logs_skipped_mention_at_warning_level_no_secrets(caplog):
+    mentions = [TermMention("BADterm", char_start=0, char_end=7)]
+    grounder = _FlakyGrounder(raise_on="BADterm", exc=RuntimeError("wikidata unavailable"))
+
+    with caplog.at_level(logging.WARNING, logger="palimpsest.terminology.pipeline"):
+        terms = pipeline.run("BADterm", "X", mentions, grounder=grounder, pairer=_Pairer())
+
+    assert terms == []
+    assert caplog.records                                          # something was logged
+    assert all(rec.levelno == logging.WARNING for rec in caplog.records)
+    assert any("BADterm" in rec.getMessage() for rec in caplog.records)
+
+
+def test_pipeline_does_not_swallow_fatal_grounding_judge_error():
+    # FatalGroundingJudgeError is an explicit halt marker (token-limit overflow,
+    # per-call gate violations) -- the per-mention isolation must NOT treat it
+    # like an ordinary lookup failure; it has to propagate and stop the run.
+    mentions = [
+        TermMention("HALTterm", char_start=0, char_end=8),
+        TermMention("GOODterm", char_start=12, char_end=20),
+    ]
+    grounder = _FlakyGrounder(raise_on="HALTterm", exc=FatalGroundingJudgeError("token-limit overflow"))
+
+    with pytest.raises(FatalGroundingJudgeError):
+        pipeline.run("HALTterm and GOODterm", "X here", mentions, grounder=grounder, pairer=_Pairer())
+    assert grounder.calls == ["HALTterm"]  # halted before reaching the next mention
 
 
 def test_db_tuple_candidates_never_null():
@@ -955,6 +1022,22 @@ def test_label_first_trace_complete_on_no_candidates_path():
     assert result.trace["resolved_by"] == "no_candidates"
 
 
+def test_label_first_trace_config_writes_split_fields_not_deprecated_use_fallbacks():
+    # GroundingConfig split use_fallbacks -> use_cirrus/use_sitelink (2026-07-06,
+    # see base.py's docstring); the trace's "config" block must reflect the
+    # actual current toggles, not the deprecated combined name -- no consumer
+    # (frontend GlossaryTab/glossary-grouping, the demo contracts spec) reads
+    # trace.config, so this is a straight rename, not a compat shim.
+    wd = _FakeWD(search={"Саргон": [{"id": "Q1"}]},
+                 entities={"Q1": _entity("Q1", "Sargon of Akkad", "Саргон")})
+    strategy = LabelFirstGrounding(wd, config=GroundingConfig(use_cirrus=False, use_sitelink=True))
+    result = strategy.ground(TermMention(surface="Саргон", lemma="Саргон"))
+
+    assert result.trace["config"]["use_cirrus"] is False
+    assert result.trace["config"]["use_sitelink"] is True
+    assert "use_fallbacks" not in result.trace["config"]
+
+
 # ── Task 12: error policy ───────────────────────────────────────────────────
 class _RaisingWD:
     """Fake WikidataClient whose search methods raise, simulating an unavailable API."""
@@ -983,6 +1066,111 @@ def test_label_first_wikidata_unavailable_is_red_and_distinct_from_no_candidates
     assert result.trace["resolved_by"] == "wikidata_unavailable"
     assert result.trace["resolved_by"] != "no_candidates"
     assert calls == []  # candidate-gen failure short-circuits before any judge call
+
+
+# ── HTTPError/OSError catch broadening (per-mention isolation root cause) ────
+class _RaisingOnceWD:
+    """Fake WikidataClient whose search methods raise a single injected
+    exception -- used to prove label_first.py's catch is broad enough for
+    non-RuntimeError failures (urllib.error.HTTPError, OSError) that
+    WikidataClient's own retry loop lets escape bare (see wikidata.py::_fetch
+    -- a non-retryable HTTPError, or a retryable one whose retries are
+    exhausted, is re-raised unwrapped, not as RuntimeError)."""
+    n_calls = 0
+
+    def __init__(self, exc: Exception):
+        self._exc = exc
+
+    def search_entities(self, term, lang="ru", limit=7):
+        raise self._exc
+
+    def search_cirrus(self, term, limit=7):
+        raise self._exc
+
+    def wikipedia_wikibase_item(self, title, lang="ru"):
+        raise self._exc
+
+    def get_entities(self, qids, **kw):
+        return {}
+
+
+def _http_error(code: int = 503) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError("https://www.wikidata.org/w/api.php", code, "err", {}, None)
+
+
+def test_label_first_http_error_resolves_wikidata_unavailable_not_crash():
+    wd = _RaisingOnceWD(_http_error(503))
+    judge, calls = _judge_counter({"qid": "Q1", "reason": "n/a"})
+    strategy = LabelFirstGrounding(wd)
+    result = strategy.ground(TermMention(surface="Саргон", lemma="Саргон"), judge=judge)
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "wikidata_unavailable"
+    assert calls == []  # candidate-gen failure short-circuits before any judge call
+
+
+def test_label_first_os_error_resolves_wikidata_unavailable_not_crash():
+    wd = _RaisingOnceWD(ConnectionResetError("connection reset by peer"))
+    strategy = LabelFirstGrounding(wd)
+    result = strategy.ground(TermMention(surface="Саргон", lemma="Саргон"))
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "wikidata_unavailable"
+
+
+class _PartialFailureWD:
+    """_FakeWD-style lookup table that raises for one specific query term and
+    resolves the rest normally -- reproduces 'one bad Wikidata call mid-
+    paragraph', distinct from _RaisingOnceWD/_RaisingWD which simulate the
+    whole client being down for every mention."""
+
+    def __init__(self, search=None, entities=None, raise_on=(), exc=None):
+        self.n_calls = 0
+        self._search = search or {}
+        self._entities = entities or {}
+        self._raise_on = set(raise_on)
+        self._exc = exc
+
+    def search_entities(self, term, lang="ru", limit=7):
+        if term in self._raise_on:
+            raise self._exc
+        return list(self._search.get(term, []))
+
+    def search_cirrus(self, term, limit=7):
+        return []
+
+    def wikipedia_wikibase_item(self, title, lang="ru"):
+        return None
+
+    def get_entities(self, qids, **kw):
+        return {q: self._entities[q] for q in qids if q in self._entities}
+
+
+def test_pipeline_survives_one_mention_wikidata_http_error_mid_paragraph():
+    # Full-stack regression for the bug this fix addresses: a single
+    # non-retryable Wikidata HTTPError on one mention used to propagate
+    # uncaught through label_first.ground() (RuntimeError-only catch) and then
+    # through pipeline.run()'s mention loop (no per-mention try/except),
+    # dropping every term of the paragraph -- not just the one bad lookup.
+    wd = _PartialFailureWD(
+        search={"Саргон": [{"id": "Q1"}]},
+        entities={"Q1": _entity("Q1", "Sargon of Akkad", "Саргон")},
+        raise_on={"Навуходоносор"},
+        exc=_http_error(500),
+    )
+    grounder = LabelFirstGrounding(wd)
+    mentions = [
+        TermMention(surface="Навуходоносор", lemma="Навуходоносор", char_start=0, char_end=13),
+        TermMention(surface="Саргон", lemma="Саргон", char_start=18, char_end=24),
+    ]
+    terms = pipeline.run("Навуходоносор ... Саргон ...", "... ...", mentions,
+                          grounder=grounder, pairer=_Pairer())
+
+    assert [t.source_surface for t in terms] == ["Навуходоносор", "Саргон"]  # both mentions survive
+    bad, good = terms
+    assert bad.difficulty == "red"
+    assert bad.trace["resolved_by"] == "wikidata_unavailable"
+    assert good.difficulty == "green"
 
 
 def test_label_first_judge_raises_resolves_judge_unavailable_called_once_not_retried():

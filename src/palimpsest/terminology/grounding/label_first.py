@@ -7,7 +7,9 @@ Decision table:
   candidates present, 0 exact      -> judge -> yellow/llm_disambiguation or red/judge_rejected
   0 candidates after fallbacks     -> red, resolved_by=no_candidates, no judge call
 
-Error policy: candidate-gen RuntimeError -> red/wikidata_unavailable (not
+Error policy: candidate-gen failure (``RuntimeError`` -- e.g. Wikidata retries
+exhausted -- or a bare non-retryable ``urllib.error.HTTPError``/``OSError``
+that escaped the client's own retry loop) -> red/wikidata_unavailable (not
 no_candidates -- a network failure must not masquerade as an honest miss).
 judge=None, judge raising, or malformed judge output (missing/invalid ``qid``
 key) on escalation all collapse to yellow/judge_unavailable -- terminal, no
@@ -22,8 +24,16 @@ collapsing to judge_unavailable -- it must stop the run, not be tolerated
 from __future__ import annotations
 
 import time
+import urllib.error
 
-from ..base import FatalGroundingJudgeError, GroundingConfig, GroundingResult, Judge, TermMention, WikidataRef
+from ..base import (
+    FatalGroundingJudgeError,
+    GroundingConfig,
+    GroundingResult,
+    Judge,
+    TermMention,
+    WikidataRef,
+)
 from ..wikidata import WikidataClient
 from .candidates import generate_candidates
 from .match import exact_match, norm
@@ -100,7 +110,13 @@ class LabelFirstGrounding:
 
         try:
             gen = generate_candidates(self.wd, mention, config, label_guesser=self.label_guesser)
-        except RuntimeError as exc:
+        except (RuntimeError, urllib.error.HTTPError, OSError) as exc:
+            # RuntimeError: WikidataClient retries exhausted (see wikidata.py::_fetch).
+            # urllib.error.HTTPError: a non-retryable 4xx (or a retryable one whose
+            # retries were exhausted) that the client re-raises bare -- retryable
+            # errors are still retried inside the client before ever reaching here.
+            # OSError: defense-in-depth for any other transport-level failure that
+            # isn't already normalized to one of the two above.
             return self._result(
                 "red", None, [], t0, calls0,
                 queries=[], search_source=None, candidates=[], exact_matches=[],
@@ -294,8 +310,13 @@ class LabelFirstGrounding:
         n_api_calls = self.wd.n_calls - calls0
         trace = {
             "v": 1,
-            "config": {"use_lemma": self.config.use_lemma, "use_fallbacks": self.config.use_fallbacks,
-                       "match_aliases": self.config.match_aliases},
+            # use_cirrus/use_sitelink (split from the deprecated use_fallbacks
+            # 2026-07-06, see GroundingConfig's docstring in base.py) -- no
+            # trace consumer (frontend GlossaryTab/glossary-grouping, the demo
+            # contracts spec) reads trace.config, so this is a straight rename,
+            # not a compat shim.
+            "config": {"use_lemma": self.config.use_lemma, "use_cirrus": self.config.use_cirrus,
+                       "use_sitelink": self.config.use_sitelink, "match_aliases": self.config.match_aliases},
             "queries": queries,
             "search_source": search_source,
             "candidates": candidates,
