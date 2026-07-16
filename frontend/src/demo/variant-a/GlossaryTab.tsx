@@ -75,6 +75,7 @@ const SEARCH_STRATEGY_LABEL: Record<string, string> = {
   prefix: 'prefix',
   cirrus: 'full-text',
   sitelink: 'sitelink',
+  guess: 'AI guess',
 };
 
 function viaChipClass(matchKind: string | null): string {
@@ -86,13 +87,13 @@ function viaChipClass(matchKind: string | null): string {
 function pathHeading(tone: BadgeTone): string {
   switch (tone) {
     case 'det':
-      return 'Grounding path — resolved deterministically, no LLM call';
+      return 'Grounding path — unambiguous, no LLM call';
     case 'llm':
-      return 'Grounding path — ambiguous, resolved by LLM';
+      return 'Grounding path — context-resolved by AI';
     case 'rej':
-      return 'Grounding path — candidates found, rejected by LLM';
+      return 'Grounding path — unresolved, candidates found but rejected by AI';
     default:
-      return 'Grounding path — nothing found, no LLM call';
+      return 'Grounding path — unresolved, nothing found, no LLM call';
   }
 }
 
@@ -103,6 +104,17 @@ interface StepPresentation {
 }
 
 type StepKey = 'search' | 'candidates' | 'exact' | 'decision';
+
+/** Step-stepper header text (paper §2.1's mechanism naming: SEARCH →
+ *  CANDIDATES → EXACT → DISAMBIGUATION, step iii). `key` stays `'decision'`
+ *  everywhere else (StepKey/StepPresentation/trace shape) — only the
+ *  rendered header text follows the paper's vocabulary. */
+const STEP_HEADER_LABEL: Record<StepKey, string> = {
+  search: 'SEARCH',
+  candidates: 'CANDIDATES',
+  exact: 'EXACT',
+  decision: 'DISAMBIGUATION',
+};
 
 /** Renders the "Grounding path" panel from `trace_json`'s REAL flat shape
  *  (`label_first.py::_result` — `{v, config, queries, search_source,
@@ -352,7 +364,7 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
                   return (
                     <div key={key} className={`va-gl-step ${p.state}`}>
                       <div className="va-gl-step-n">
-                        {i + 1} · {key.replace('_', ' ').toUpperCase()}
+                        {i + 1} · {STEP_HEADER_LABEL[key]}
                       </div>
                       <div className="va-gl-step-t">{p.title}</div>
                       <div className="va-gl-step-b">{p.body}</div>
@@ -427,6 +439,9 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
                   {/* Owner: drop the "model: … · Settings › Grounding" line and
                       its accent box — keep only the judge's reasoning quote,
                       rendered plain per the design system. */}
+                  {/* Paper Figure 1 shows the selection "alongside the model's
+                      justification" — plain muted label, no box/accent. */}
+                  <div className="va-gl-judge-label">Justification</div>
                   <div className="va-gl-judge-r">&ldquo;{judgeReason}&rdquo;</div>
                 </div>
               )}
@@ -499,8 +514,8 @@ export default function GlossaryTab({
     <div className="va-tab-content">
       <div className="va-section-title">Terminology Glossary</div>
       <div className="va-gl-summary">
-        Grouped by lemma + entity · {summary.groups} terms · {summary.mentions} mentions · resolved deterministically:{' '}
-        {summary.deterministic} · via LLM: {summary.llm} · not grounded: {summary.notGrounded}
+        Grouped by lemma + entity · {summary.groups} terms · {summary.mentions} mentions · unambiguous:{' '}
+        {summary.deterministic} · context-resolved: {summary.llm} · unresolved: {summary.notGrounded}
       </div>
       <table className="va-gl-table">
         <thead>
@@ -529,10 +544,10 @@ export default function GlossaryTab({
         </tbody>
       </table>
       <div className="va-gl-legend">
-        ◆ label match — deterministic exact-label decision, no LLM · ◇ resolved by AI — judge disambiguated among
-        candidates (model name shown when known) · ◇ LLM rejected all — candidates existed, none fit the context ·
-        ◇ ambiguous — candidates found, no exact match and no judge run · ○ no candidates — search + enabled
-        fallbacks returned nothing.
+        ◆ unambiguous · label match — exact Wikidata label/alias match, no LLM call · ◇ context-resolved · AI — judge
+        disambiguated among candidates by paragraph context (model name shown when known) · ◇ unresolved · AI
+        abstained — candidates existed, none fit the context · ◇ unresolved · N candidates — candidates found, no
+        exact match and no judge run · ○ unresolved · no candidates — search + enabled fallbacks returned nothing.
         <br />
         Row = unique (lemma, entity); Mentions ×N aggregates per-occurrence rows. Click any row to expand context,
         path, candidates and all mentions.

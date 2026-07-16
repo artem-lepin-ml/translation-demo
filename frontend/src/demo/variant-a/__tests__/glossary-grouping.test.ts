@@ -308,35 +308,35 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
   it('rule 1: resolved_by exact_label / label_match → det, "label match"', () => {
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'exact_label' } }))).toEqual({
       tone: 'det',
-      label: '◆ label match',
+      label: '◆ unambiguous · label match',
     });
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'label_match' } }))).toEqual({
       tone: 'det',
-      label: '◆ label match',
+      label: '◆ unambiguous · label match',
     });
   });
 
-  it('rule 1: llm_disambiguation → llm badge with model, "resolved by AI" (no redundant "LLM") when model absent', () => {
+  it('rule 1: llm_disambiguation → llm badge with model, "context-resolved · AI" (no redundant "LLM") when model absent', () => {
     expect(
       resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation', model: 'gpt-5.5-low' } })),
-    ).toEqual({ tone: 'llm', label: '◇ AI · gpt-5.5-low' });
+    ).toEqual({ tone: 'llm', label: '◇ context-resolved · gpt-5.5-low' });
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation' } }))).toEqual({
       tone: 'llm',
-      label: '◇ resolved by AI',
+      label: '◇ context-resolved · AI',
     });
   });
 
   it('rule 1: llm_rejected → rej badge', () => {
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_rejected' } }))).toEqual({
       tone: 'rej',
-      label: '◇ LLM rejected all',
+      label: '◇ unresolved · AI abstained',
     });
   });
 
   it('rule 1: no_candidates → none badge', () => {
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'no_candidates' } }))).toEqual({
       tone: 'none',
-      label: '○ no candidates',
+      label: '○ unresolved · no candidates',
     });
   });
 
@@ -359,7 +359,7 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
       candidates: [wd({ qid: 'Q1' }), wd({ qid: 'Q2' })],
       traceJson: { query: { lemma_hits: 1 } },
     });
-    expect(resolveBadge(term)).toEqual({ tone: 'llm', label: '◇ resolved by AI' });
+    expect(resolveBadge(term)).toEqual({ tone: 'llm', label: '◇ context-resolved · AI' });
   });
 
   it('rule 3 heuristic: trace non-empty, no resolved_by, qid + exactly one candidate → det', () => {
@@ -368,7 +368,7 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
       candidates: [wd()],
       traceJson: { query: { lemma_hits: 1 } },
     });
-    expect(resolveBadge(term)).toEqual({ tone: 'det', label: '◆ label match' });
+    expect(resolveBadge(term)).toEqual({ tone: 'det', label: '◆ unambiguous · label match' });
   });
 
   it('rule 3 heuristic: trace non-empty, no resolved_by, no qid but candidates existed → rej', () => {
@@ -377,11 +377,11 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
       candidates: [wd(), wd({ qid: 'Q2' })],
       traceJson: { search: { hits: 2 } },
     });
-    expect(resolveBadge(term)).toEqual({ tone: 'rej', label: '◇ LLM rejected all' });
+    expect(resolveBadge(term)).toEqual({ tone: 'rej', label: '◇ unresolved · AI abstained' });
   });
 
   it('rule 4: nothing at all (no trace, no qid, no candidates) → none', () => {
-    expect(resolveBadge(buildTerm())).toEqual({ tone: 'none', label: '○ no candidates' });
+    expect(resolveBadge(buildTerm())).toEqual({ tone: 'none', label: '○ unresolved · no candidates' });
   });
 
   it('never throws on an unrecognized resolved_by value', () => {
@@ -397,26 +397,26 @@ describe('resolveBadge — 3-state re-verification after the #5 badge-label fix'
   it('green (det): deterministic exact-label match, glyph ◆', () => {
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'exact_label' } }))).toEqual({
       tone: 'det',
-      label: '◆ label match',
+      label: '◆ unambiguous · label match',
     });
   });
 
-  it('yellow (llm): AI-resolved with a known model name → "◇ AI · <model>"', () => {
+  it('yellow (llm): AI-resolved with a known model name → "◇ context-resolved · <model>"', () => {
     expect(
       resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation', model: 'gpt-5.5-low' } })),
-    ).toEqual({ tone: 'llm', label: '◇ AI · gpt-5.5-low' });
+    ).toEqual({ tone: 'llm', label: '◇ context-resolved · gpt-5.5-low' });
   });
 
-  it('yellow (llm): AI-resolved with no known model name → "◇ resolved by AI", never "LLM · LLM"', () => {
+  it('yellow (llm): AI-resolved with no known model name → "◇ context-resolved · AI", never "LLM · LLM"', () => {
     const badge = resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation' } }));
-    expect(badge).toEqual({ tone: 'llm', label: '◇ resolved by AI' });
+    expect(badge).toEqual({ tone: 'llm', label: '◇ context-resolved · AI' });
     expect(badge.label).not.toContain('LLM · LLM');
   });
 
   it('red/gray (none): nothing grounded at all, glyph ○', () => {
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'no_candidates' } }))).toEqual({
       tone: 'none',
-      label: '○ no candidates',
+      label: '○ unresolved · no candidates',
     });
   });
 
@@ -427,7 +427,7 @@ describe('resolveBadge — 3-state re-verification after the #5 badge-label fix'
       traceJson: { resolved_by: 'ambiguous_candidates' },
     }));
     expect(badge.tone).toBe('rej');
-    expect(badge.label).toMatch(/^◇ ambiguous · \d+ candidates$/);
+    expect(badge.label).toMatch(/^◇ unresolved · \d+ candidates$/);
   });
 });
 
@@ -475,7 +475,7 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
       traceJson: { decision: { resolved_by: 'ambiguous_candidates' } },
     } as never);
     expect(badge.tone).toBe('rej');
-    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+    expect(badge.label).toBe('◇ unresolved · 2 candidates');
   });
 
   it('maps judge_unavailable to the ambiguous badge', () => {
@@ -484,7 +484,7 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
       traceJson: { decision: { resolved_by: 'judge_unavailable' } },
     } as never);
     expect(badge.tone).toBe('rej');
-    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+    expect(badge.label).toBe('◇ unresolved · 2 candidates');
   });
 
   it('unknown resolved_by with candidates degrades to ambiguous, not "no candidates"', () => {
@@ -493,7 +493,7 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
       traceJson: { decision: { resolved_by: 'mystery_future_value' } },
     } as never);
     expect(badge.tone).toBe('rej');
-    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+    expect(badge.label).toBe('◇ unresolved · 2 candidates');
   });
 
   it('unknown resolved_by without candidates stays "no candidates"', () => {
@@ -502,7 +502,7 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
       traceJson: { decision: { resolved_by: 'mystery_future_value' } },
     } as never);
     expect(badge.tone).toBe('none');
-    expect(badge.label).toBe('○ no candidates');
+    expect(badge.label).toBe('○ unresolved · no candidates');
   });
 });
 

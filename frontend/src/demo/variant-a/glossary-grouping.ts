@@ -217,7 +217,7 @@ function isEmptyTrace(trace: TraceJson | undefined): boolean {
  *  When a real model name IS known, show it, with "AI" (not "LLM") as the
  *  leading word so a known model never reads "LLM · LLM" again either. */
 function llmBadgeLabel(model: string): string {
-  return model === DEFAULT_MODEL_LABEL ? '◇ resolved by AI' : `◇ AI · ${model}`;
+  return model === DEFAULT_MODEL_LABEL ? '◇ context-resolved · AI' : `◇ context-resolved · ${model}`;
 }
 
 /**
@@ -253,24 +253,24 @@ export function resolveBadge(term: TermWithTrace): Badge {
     switch (resolvedBy) {
       case 'exact_label':
       case 'label_match':
-        return { tone: 'det', label: '◆ label match' };
+        return { tone: 'det', label: '◆ unambiguous · label match' };
       case 'llm_disambiguation':
         return { tone: 'llm', label: llmBadgeLabel(model) };
       case 'llm_rejected':
-        return { tone: 'rej', label: '◇ LLM rejected all' };
+        return { tone: 'rej', label: '◇ unresolved · AI abstained' };
       // Deterministic enrichment stops here: candidates found but no exact
       // label match and no judge was run — honest "unresolved", NOT "none".
       case 'ambiguous_candidates':
       case 'judge_unavailable':
-        return { tone: 'rej', label: `◇ ambiguous · ${knownCandidates || '?'} candidates` };
+        return { tone: 'rej', label: `◇ unresolved · ${knownCandidates || '?'} candidates` };
       case 'no_candidates':
-        return { tone: 'none', label: '○ no candidates' };
+        return { tone: 'none', label: '○ unresolved · no candidates' };
       default:
         // Defensive: unrecognized value from a future backend — degrade
         // honestly by what the data shows rather than always claiming "none".
         return knownCandidates > 0
-          ? { tone: 'rej', label: `◇ ambiguous · ${knownCandidates} candidates` }
-          : { tone: 'none', label: '○ no candidates' };
+          ? { tone: 'rej', label: `◇ unresolved · ${knownCandidates} candidates` }
+          : { tone: 'none', label: '○ unresolved · no candidates' };
     }
   }
 
@@ -278,7 +278,7 @@ export function resolveBadge(term: TermWithTrace): Badge {
     if (term.grounded?.qid) {
       return { tone: 'det', label: '◆ grounded' };
     }
-    return { tone: 'none', label: '○ no candidates' };
+    return { tone: 'none', label: '○ unresolved · no candidates' };
   }
 
   const hasQid = Boolean(term.grounded?.qid);
@@ -288,12 +288,12 @@ export function resolveBadge(term: TermWithTrace): Badge {
     return { tone: 'llm', label: llmBadgeLabel(model) };
   }
   if (hasQid && candidateCount === 1) {
-    return { tone: 'det', label: '◆ label match' };
+    return { tone: 'det', label: '◆ unambiguous · label match' };
   }
   if (!hasQid && candidateCount > 0) {
-    return { tone: 'rej', label: '◇ LLM rejected all' };
+    return { tone: 'rej', label: '◇ unresolved · AI abstained' };
   }
-  return { tone: 'none', label: '○ no candidates' };
+  return { tone: 'none', label: '○ unresolved · no candidates' };
 }
 
 // ─── Grouping (§2.1) ─────────────────────────────────────────────────────────
@@ -524,9 +524,12 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
   return groups;
 }
 
-/** Summary-line counters (spec §2.1): "resolved deterministically / via LLM /
- *  not grounded" — the latter folds both `rej` and `none` badge tones since
- *  the summary line has no separate "rejected" bucket. */
+/** Summary-line counters (spec §2.1): "unambiguous / context-resolved /
+ *  unresolved" (paper §2.1 vocabulary) — the latter folds both `rej` and
+ *  `none` badge tones since the summary line has no separate "rejected"
+ *  bucket. Field names (`deterministic`/`llm`/`notGrounded`) are internal
+ *  API and intentionally unchanged — only the rendered copy follows the
+ *  paper's terms. */
 export function summarizeGroups(groups: GlossaryGroup[]): GlossarySummary {
   let mentions = 0;
   let deterministic = 0;

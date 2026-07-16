@@ -2184,6 +2184,17 @@ table.va-gl-cand {
   font-style: italic;
 }
 
+/* "Justification" micro-label above the judge quote (paper Figure 1: the
+   selection is shown "alongside the model's justification") — plain muted
+   text, no box/accent, matching .va-gl-lang's micro-label styling. */
+.va-gl-judge-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--va-text-dim);
+  margin-bottom: 4px;
+}
+
 .va-gl-occ {
   max-height: 120px;
   overflow-y: auto;

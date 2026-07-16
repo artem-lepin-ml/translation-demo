@@ -8,9 +8,9 @@ interface Props {
 }
 
 const difficultyLabel: Record<string, string> = {
-  green: '🟢 Confirmed (Wikidata)',
-  yellow: '🟡 Ambiguous (multiple senses)',
-  red: '🔴 Not found in Wikidata',
+  green: '🟢 Unambiguous (exact label match)',
+  yellow: '🟡 Context-resolved (AI-disambiguated)',
+  red: '🔴 Unresolved (not grounded)',
 };
 
 const pairLabel: Record<string, string> = {
