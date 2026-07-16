@@ -690,6 +690,35 @@ def test_candidates_label_guess_variants_reach_search_khana_class():
     assert gen["candidates"][0]["source"] == "label_guess"
 
 
+def test_candidates_label_guess_later_form_rank2_survives_junk_rich_first_form():
+    """Prod 2026-07-17, «Ханейское царство» round 2: the first guess form
+    («Хана») returned 7 junk hits that filled ``hits[:enrich_top=5]``, so
+    "Khana" rank 2 = Q425405 never reached enrichment or the judge. The
+    rank-wise interleave in ``_widen`` plus the widened-tier enrich cap must
+    let a later form's top-2 hit through."""
+    junk = [{"id": f"Q_J{i}"} for i in range(7)]
+    wd = _FakeWD(
+        search={"Хана": junk, "Khana": [{"id": "Q_J0"}, {"id": "Q425405"}]},
+        entities={
+            "Q425405": _entity("Q425405", "Kingdom of Khana"),
+            **{f"Q_J{i}": _entity(f"Q_J{i}", f"Junk {i}") for i in range(7)},
+        },
+    )
+
+    def fake_guesser(prompt):
+        return {"label_ru": "Хана", "label_en": None, "variants": ["Khana"]}
+
+    mention = TermMention(surface="Ханейское царство", lemma="Ханейское царство",
+                          context="покорила Ханейское царство, распространив власть.")
+    gen = generate_candidates(wd, mention, GroundingConfig(search_mode="label-guess"),
+                              label_guesser=fake_guesser)
+
+    qids = [c["qid"] for c in gen["candidates"]]
+    assert "Q425405" in qids
+    # interleave puts each form's rank-1 first: Хана#1, Khana#1(dup), then rank 2
+    assert qids[:3] == ["Q_J0", "Q_J1", "Q425405"]
+
+
 def test_candidates_label_guess_variants_capped_at_five_forms():
     wd = _FakeWD(search={}, entities={})
 

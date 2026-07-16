@@ -73,6 +73,7 @@ that tier's provenance).
 from __future__ import annotations
 
 import re
+from itertools import zip_longest
 
 from ..base import FatalGroundingJudgeError, GroundingConfig, Judge, TermMention
 from ..wikidata import (
@@ -81,6 +82,13 @@ from ..wikidata import (
     canonical_en_forms,
     label_of,
 )
+
+# Enrichment head-cut for hits that came from a widening tier (alt-names /
+# label-guess). Sized so that with the rank-wise interleave in ``_widen``
+# every one of up to 5 query forms gets its top-2 hits enriched (5 forms x
+# rank 2 = position 10); the baseline single-form path keeps the tighter
+# ``config.enrich_top``.
+_WIDEN_ENRICH_TOP = 10
 
 # Role + strict-JSON output contract for the "label-guess" tier's one-shot
 # call (spec: "guess the exact Wikidata label ... given {surface, lemma,
@@ -287,6 +295,7 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
             return empty_result
 
         def _widen(q_list: list[str], tier: str) -> None:
+            per_form: list[list[dict]] = []
             for q in q_list:
                 if not q:
                     continue
@@ -303,8 +312,17 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
                 strategy = "guess" if tier == "label_guess" else "prefix"
                 queries.append({"q": q, "kind": tier, "mechanism": "wbsearchentities",
                                  "strategy": strategy, "n_hits": len(results)})
-                for h in results:
-                    if h["id"] not in seen_qid:
+                per_form.append(results)
+            # Rank-wise interleave across forms. Appending form-by-form lets a
+            # junk-rich FIRST form starve a later one under the hits[:...]
+            # head-cut below -- prod 2026-07-17: «Хана»'s 7 hits (given name,
+            # Hawaii CDP, football club...) filled the head while "Khana"
+            # rank 2 = Q425405 (Kingdom of Hana, the right entity) never
+            # reached enrichment or the judge. zip_longest keeps each form's
+            # own ranking while giving every form a fair slot per rank.
+            for rank_slice in zip_longest(*per_form):
+                for h in rank_slice:
+                    if h is not None and h["id"] not in seen_qid:
                         seen_qid.add(h["id"])
                         hits.append(h)
                         hit_tier[h["id"]] = tier
@@ -334,7 +352,13 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
             return empty_result
         source = "alt" if any(t == "alt" for t in hit_tier.values()) else "label_guess"
 
-    qids = [h["id"] for h in hits[:config.enrich_top]]
+    # Widened hits interleave several query forms (up to 5 at the label-guess
+    # tier), so config.enrich_top=5 -- sized for the single-form baseline --
+    # would re-truncate the interleave: 3 productive forms reach rank 2 only
+    # at position 6. One wbgetentities call batches all ids anyway, and the
+    # non-entity / near-dup filters below prune before the judge sees them.
+    enrich_top = _WIDEN_ENRICH_TOP if hit_tier else config.enrich_top
+    qids = [h["id"] for h in hits[:enrich_top]]
     entities = wd.get_entities(qids)
     candidates: list[dict] = []
     canon_by_qid: dict[str, list[str]] = {}
