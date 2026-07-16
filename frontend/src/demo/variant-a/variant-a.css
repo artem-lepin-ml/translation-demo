@@ -1094,7 +1094,12 @@
 
 .va-term-popover-label {
   color: var(--va-text-muted);
-  flex: 0 0 80px;
+  /* row-mode: min-width keeps the 80px label column; column-mode sections
+   * (inline flexDirection:'column') must NOT inherit an 80px flex-BASIS —
+   * in a column that basis becomes an 80px-tall label, i.e. a blank gap
+   * before the content (visual-verify 2026-07-16 finding). */
+  flex: 0 0 auto;
+  min-width: 80px;
   font-weight: 500;
 }
 
