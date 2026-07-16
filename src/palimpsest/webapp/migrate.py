@@ -370,9 +370,11 @@ def _upsert_model_registry_and_remap(conn: sqlite3.Connection) -> None:
 
 def _pin_demo_model_temperature(conn: sqlite3.Connection) -> None:
     """Force each MATRIX model's registry row to its OWN `default_params`
-    temperature (currently 0.7 on all 4 rows — owner 2026-07-11, judge/
-    refiner determinism note for the recorded demo), idempotently, on every
-    migrate() run. Mirrors `_upsert_model_registry_and_remap`'s JSON-merge-
+    temperature (0.7 on 3 of the 4 rows — owner 2026-07-11, judge/refiner
+    determinism note for the recorded demo — except `deepseek/deepseek-v4-
+    flash`, pinned to its vendor-recommended 1.0 per the published paper
+    §3.3 Implementation Details; paper-parity fix, 2026-07-17), idempotently,
+    on every migrate() run. Mirrors `_upsert_model_registry_and_remap`'s JSON-merge-
     into-params_json style and its `MATRIX.values()` iteration — reads the
     target temperature from MATRIX itself rather than hardcoding it a second
     time, so this stays correct if MATRIX's defaults ever change.

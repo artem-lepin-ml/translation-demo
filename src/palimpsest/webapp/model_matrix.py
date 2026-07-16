@@ -9,7 +9,11 @@ mirrors that live prod state, not the paper's original 5-row draft.
 `default_params` mirror the owner's live prod finalization (2026-07-11 UI edit):
 a generous 20000-token ceiling and temperature=0.7 (natural, non-deterministic
 judge/refiner output) on every row, superseding this module's earlier
-cheap/deterministic defaults. Reasoning effort is OMITTED where the provider has
+cheap/deterministic defaults — EXCEPT `deepseek/deepseek-v4-flash`, pinned to
+its vendor-recommended temperature=1.0 per the published paper (§3.3
+Implementation Details: "DeepSeek-V4-Flash uses its vendor-recommended
+temperature of 1.0, and all other models use temperature 0.7"; paper-parity
+fix, 2026-07-17). Reasoning effort is OMITTED where the provider has
 a usable default (owner: "run on default effort"); sent only where obligatory
 (gemini, set to "medium" — not the cheaper "low" tier). Pricing is fetched live
 from OpenRouter at runtime (see budget.py), so no prices are hardcoded here.
@@ -52,10 +56,13 @@ _SPECS = [
     # Demo-matrix temperature: 0.7 on all 4 rows (owner-finalized live on prod
     # via the Settings UI, 2026-07-11) — retires the earlier 2026-07-05
     # settings-fixes §2.4 "forced to 0" determinism policy in favor of
-    # natural, non-deterministic judge/refiner output. A no-op where
-    # supports_temperature=False (ModelParams.for_model strips the key before
-    # the call — see model_params.py), but kept on the row so the raw params
-    # vs `effective_params` distinction is visible in Settings.
+    # natural, non-deterministic judge/refiner output — EXCEPT
+    # deepseek/deepseek-v4-flash, pinned to 1.0 (its vendor-recommended
+    # temperature per the published paper §3.3 Implementation Details;
+    # paper-parity fix, 2026-07-17). A no-op where supports_temperature=False
+    # (ModelParams.for_model strips the key before the call — see
+    # model_params.py), but kept on the row so the raw params vs
+    # `effective_params` distinction is visible in Settings.
     #
     # supports_seed: OpenRouter's `seed` param is accepted by every OR route
     # here per the live metadata fetch (best-effort determinism hint
@@ -71,10 +78,12 @@ _SPECS = [
     _or("google/gemma-3-27b-it", temp=True, top_k=True, min_p=True, seed=True,
         reasoning="none",
         default_params={"max_tokens": 20000, "temperature": 0.7}),
-    # effort omitted → provider default (fast/cheap tier)
+    # effort omitted → provider default (fast/cheap tier); temperature=1.0 is
+    # DeepSeek-V4-Flash's vendor-recommended value, per the published paper
+    # §3.3 (the demo's only departure from the uniform 0.7 default)
     _or("deepseek/deepseek-v4-flash", temp=True, top_k=True, min_p=True, seed=True,
         reasoning="effort",
-        default_params={"max_tokens": 20000, "temperature": 0.7}),
+        default_params={"max_tokens": 20000, "temperature": 1.0}),
     # demo default model — everywhere (criteria, translator, grounding,
     # refiner; EMNLP demo sprint, 2026-07-16 gemini-everywhere config); effort
     # obligatory, mirrors the retired gemini-3.5-flash row; owner set "medium"
