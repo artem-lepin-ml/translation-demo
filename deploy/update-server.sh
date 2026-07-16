@@ -191,7 +191,7 @@ else:
         f'{api}/api/models/{name}', data=body, method='PUT',
         headers={'Content-Type': 'application/json'})
     urllib.request.urlopen(req)
-    print(f'  {name}: temperature forced to 0')
+    print(f'  {name}: temperature pinned to 0.7')
 "
 done
 
