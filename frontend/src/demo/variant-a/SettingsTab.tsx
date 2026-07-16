@@ -1423,7 +1423,7 @@ function AddModelModal({ onClose, onSave }: AddModelModalProps) {
           <textarea
             className="va-field-input"
             style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, minHeight: 100, resize: 'vertical' }}
-            placeholder='{"max_tokens": 1536}'
+            placeholder='{"max_tokens": 20000}'
             value={paramsText}
             onChange={(e) => setParamsText(e.target.value)}
           />

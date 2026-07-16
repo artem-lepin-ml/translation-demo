@@ -313,13 +313,13 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
     });
   });
 
-  it('rule 1: llm_disambiguation → llm badge with model, fallback "LLM" when model absent', () => {
+  it('rule 1: llm_disambiguation → llm badge with model, "resolved by AI" (no redundant "LLM") when model absent', () => {
     expect(
       resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation', model: 'gpt-5.5-low' } })),
-    ).toEqual({ tone: 'llm', label: '◇ LLM · gpt-5.5-low' });
+    ).toEqual({ tone: 'llm', label: '◇ AI · gpt-5.5-low' });
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation' } }))).toEqual({
       tone: 'llm',
-      label: '◇ LLM · LLM',
+      label: '◇ resolved by AI',
     });
   });
 
@@ -356,7 +356,7 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
       candidates: [wd({ qid: 'Q1' }), wd({ qid: 'Q2' })],
       traceJson: { query: { lemma_hits: 1 } },
     });
-    expect(resolveBadge(term)).toEqual({ tone: 'llm', label: '◇ LLM · LLM' });
+    expect(resolveBadge(term)).toEqual({ tone: 'llm', label: '◇ resolved by AI' });
   });
 
   it('rule 3 heuristic: trace non-empty, no resolved_by, qid + exactly one candidate → det', () => {
@@ -384,6 +384,47 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
   it('never throws on an unrecognized resolved_by value', () => {
     expect(() => resolveBadge(buildTerm({ traceJson: { resolved_by: 'something_future' } }))).not.toThrow();
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'something_future' } })).tone).toBe('none');
+  });
+});
+
+// #5 owner review re-verification: "проверь снова хорошо все 3 вида
+// состояния: красный, желтый, зеленый" — one focused audit per tone,
+// specifically guarding against the "◇ LLM · LLM" double the fix removed.
+describe('resolveBadge — 3-state re-verification after the #5 badge-label fix', () => {
+  it('green (det): deterministic exact-label match, glyph ◆', () => {
+    expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'exact_label' } }))).toEqual({
+      tone: 'det',
+      label: '◆ label match',
+    });
+  });
+
+  it('yellow (llm): AI-resolved with a known model name → "◇ AI · <model>"', () => {
+    expect(
+      resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation', model: 'gpt-5.5-low' } })),
+    ).toEqual({ tone: 'llm', label: '◇ AI · gpt-5.5-low' });
+  });
+
+  it('yellow (llm): AI-resolved with no known model name → "◇ resolved by AI", never "LLM · LLM"', () => {
+    const badge = resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation' } }));
+    expect(badge).toEqual({ tone: 'llm', label: '◇ resolved by AI' });
+    expect(badge.label).not.toContain('LLM · LLM');
+  });
+
+  it('red/gray (none): nothing grounded at all, glyph ○', () => {
+    expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'no_candidates' } }))).toEqual({
+      tone: 'none',
+      label: '○ no candidates',
+    });
+  });
+
+  it('red/gray (rej): ambiguous — candidates existed, no exact match and no judge run, glyph ◇', () => {
+    const badge = resolveBadge(buildTerm({
+      grounded: null,
+      candidates: [wd(), wd({ qid: 'Q2' })],
+      traceJson: { resolved_by: 'ambiguous_candidates' },
+    }));
+    expect(badge.tone).toBe('rej');
+    expect(badge.label).toMatch(/^◇ ambiguous · \d+ candidates$/);
   });
 });
 

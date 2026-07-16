@@ -75,7 +75,6 @@ export function SidePanel(props: {
 
       {active ? (
         <div className="va-ai-translate-card" data-testid="ai-translate-card">
-          <span className="glyph">✦</span>
           <div className="msg">
             Will be translated by <b>{aiTranslate!.modelName ?? 'the configured model'}</b> after upload
           </div>

@@ -224,7 +224,7 @@ describe('SettingsTab Add Model modal', () => {
   it('shows inline error on invalid params JSON and does not save', async () => {
     const props = await openAddModel();
     fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: 'foo/bar' } });
-    fireEvent.change(screen.getByPlaceholderText('{"max_tokens": 1536}'), { target: { value: '{not json' } });
+    fireEvent.change(screen.getByPlaceholderText('{"max_tokens": 20000}'), { target: { value: '{not json' } });
     fireEvent.click(screen.getByText('Save'));
 
     expect(await screen.findByTestId('add-model-error')).toBeTruthy();

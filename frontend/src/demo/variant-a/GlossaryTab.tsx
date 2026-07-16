@@ -65,6 +65,17 @@ function highlighted(text: string, needle: string, markClass?: string): ReactNod
   );
 }
 
+/** `trace_json.queries[].strategy` → short display label (#4, grounding
+ *  trace) — names which escalating Wikidata search backend made the call, so
+ *  5 query rows read as distinct strategies instead of repeated
+ *  "lemma «…»" noise. Unrecognized values pass through as-is (defensive: a
+ *  future backend strategy still shows *something* rather than disappearing). */
+const SEARCH_STRATEGY_LABEL: Record<string, string> = {
+  prefix: 'prefix',
+  cirrus: 'full-text',
+  sitelink: 'sitelink',
+};
+
 function viaChipClass(matchKind: string | null): string {
   if (!matchKind) return 'va-gl-via no';
   if (matchKind === 'alias') return 'va-gl-via al';
@@ -118,6 +129,9 @@ function stepPresentation(tone: BadgeTone, key: StepKey, trace: TraceJson | unde
           <>
             {queries.map((q, i) => (
               <div key={i}>
+                {q.strategy && (
+                  <span className="va-gl-strategy">{SEARCH_STRATEGY_LABEL[q.strategy] ?? q.strategy} · </span>
+                )}
                 {q.kind} <code>{q.q}</code>{' '}
                 <span className={q.n_hits ? 'va-gl-hit' : 'va-gl-miss'}>{q.n_hits ?? 0} hits</span>
               </div>
@@ -496,9 +510,10 @@ export default function GlossaryTab({
         </tbody>
       </table>
       <div className="va-gl-legend">
-        ◆ label match — deterministic exact-label decision, no LLM · ◇ LLM — judge disambiguated among candidates
-        (model shown) · ◇ LLM rejected all — candidates existed, none fit the context · ◇ ambiguous — candidates
-        found, no exact match and no judge run · ○ no candidates — search + enabled fallbacks returned nothing.
+        ◆ label match — deterministic exact-label decision, no LLM · ◇ resolved by AI — judge disambiguated among
+        candidates (model name shown when known) · ◇ LLM rejected all — candidates existed, none fit the context ·
+        ◇ ambiguous — candidates found, no exact match and no judge run · ○ no candidates — search + enabled
+        fallbacks returned nothing.
         <br />
         Row = unique (lemma, entity); Mentions ×N aggregates per-occurrence rows. Click any row to expand context,
         path, candidates and all mentions.

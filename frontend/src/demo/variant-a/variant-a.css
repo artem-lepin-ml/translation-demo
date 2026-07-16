@@ -624,7 +624,7 @@
 
 /* Refine paragraph ✦ — replaces the old per-paragraph "Accept all" batch
    splice (EMNLP sprint). Accent2 (purple) matches the codebase's existing
-   AI/LLM-action color (va-ai-translate-card .glyph, terms-chip.on). */
+   AI/LLM-action color (terms-chip.on). */
 .va-btn-refine {
   padding: 4px 10px;
   border-radius: var(--va-radius-sm);
@@ -978,7 +978,13 @@
   box-shadow: 0 8px 40px rgba(0,0,0,0.5);
   min-width: 320px;
   max-width: 460px;
-  max-height: 60vh;
+  /* Owner review: popover content got clipped below the fold with no way to
+     scroll to the rest ("окно до конца не листается") — the fixed 60vh cap
+     combined with the JS top-offset clamp (TermPopover.tsx) assumed a short,
+     ~320px-tall popover and no longer fit once content grew. Raise the cap so
+     more content fits before scrolling kicks in; `overflow-y: auto` (already
+     present) then scrolls whatever still overflows. */
+  max-height: min(80vh, calc(100vh - 2rem));
   overflow-y: auto;
   padding: 16px;
   display: flex;
@@ -1062,6 +1068,14 @@
 }
 
 /* ─── Term popover ────────────────────────────────────────────────────────── */
+
+/* Owner review: the popover read "разреженное" (sparse) — tighten the
+   between-row rhythm for the term popover specifically (`.va-popover`'s base
+   12px row gap is shared with IssuePopover / the Add Model popover, which
+   the owner did not flag, so scope the tightening to this variant only). */
+.va-term-popover {
+  gap: 6px;
+}
 
 .va-term-popover-header {
   display: flex;
@@ -2065,6 +2079,15 @@ tr.va-gl-detail > td {
   opacity: 0.55;
 }
 
+/* Search-strategy label (prefix / full-text / sitelink) prefixing a query
+   row (#4, grounding trace) — dim, so 5 escalating queries read as distinct
+   strategies rather than repeated "lemma «…»" noise. */
+.va-gl-strategy {
+  color: var(--va-text-dim);
+  font-family: var(--va-font-mono);
+  font-size: 10px;
+}
+
 .va-gl-hit {
   color: var(--va-green);
   font-family: var(--va-font-mono);
@@ -2350,11 +2373,6 @@ table.va-gl-cand {
   background: var(--va-bg);
   min-height: 150px;
   text-align: center;
-}
-
-.va-ai-translate-card .glyph {
-  font-size: 20px;
-  color: var(--va-accent2);
 }
 
 .va-ai-translate-card .msg {

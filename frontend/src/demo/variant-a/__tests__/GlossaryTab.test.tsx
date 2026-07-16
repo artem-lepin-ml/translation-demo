@@ -211,6 +211,37 @@ describe('GlossaryTab — real flat trace_json rendering (BUG-6 / debugger fixes
     expect(screen.getByText(/historical Chinese state/)).toBeTruthy();
   });
 
+  it('#4: renders a query row\'s search strategy as a distinct dim label (prefix/full-text/sitelink map)', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildLiveTerm({
+      traceJson: {
+        resolved_by: 'llm_disambiguation',
+        queries: [
+          { q: 'приевфратский', kind: 'lemma', mechanism: 'wbsearchentities', n_hits: 0, strategy: 'prefix' },
+          { q: 'Цинь', kind: 'surface', mechanism: 'cirrussearch', n_hits: 3, strategy: 'cirrus' },
+          { q: 'Q7181', kind: 'lemma', mechanism: 'sitelinks', n_hits: 1, strategy: 'sitelink' },
+        ],
+        search_source: 'wbsearchentities',
+        candidates: [],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+
+    // All three strategy labels are distinct and visible — not 3 identical rows.
+    expect(screen.getByText('prefix ·')).toBeTruthy();
+    expect(screen.getByText('full-text ·')).toBeTruthy();
+    expect(screen.getByText('sitelink ·')).toBeTruthy();
+  });
+
+  it('#4: defensive fallback — a query row without `strategy` (older trace) renders kind+q as before, no stray label', () => {
+    renderAndExpand(); // buildLiveTerm's default queries carry no `strategy` field
+    expect(screen.getByText('lemma')).toBeTruthy();
+    expect(screen.queryByText('prefix ·')).toBeNull();
+    expect(screen.queryByText('full-text ·')).toBeNull();
+    expect(screen.queryByText('sitelink ·')).toBeNull();
+  });
+
   it('falls back to the plain candidates list (all "—" Matched) for legacy/seed rows with trace_json={}', () => {
     const paragraphs = [buildParagraph(1, 0)];
     const terms = [buildLiveTerm({ traceJson: {} })];

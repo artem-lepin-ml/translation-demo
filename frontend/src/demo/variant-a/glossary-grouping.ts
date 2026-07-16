@@ -45,12 +45,17 @@ export interface TraceCandidate {
 }
 
 /** One entry of `trace_json.queries` (`generate_candidates`'s `queries` list,
- *  `terminology/grounding/candidates.py`) — a single Wikidata search call. */
+ *  `terminology/grounding/candidates.py`) — a single Wikidata search call.
+ *  `strategy` names which of the escalating search backends made this call
+ *  ("prefix" | "cirrus" | "sitelink" — added alongside the fastapi-developer
+ *  lane's grounding-pipeline work); optional because older trace rows were
+ *  written before the field existed and callers must degrade gracefully. */
 export interface TraceQueryEntry {
   q: string;
   kind: string;
   mechanism: string;
   n_hits: number;
+  strategy?: string;
 }
 
 /** `trace_json.judge` (label_first.py's `judge_trace`) — present only when a
@@ -169,6 +174,16 @@ function isEmptyTrace(trace: TraceJson | undefined): boolean {
   return !trace || Object.keys(trace).length === 0;
 }
 
+/** Yellow (AI-resolved) badge label (#5, owner review: "◇ LLM · LLM" read as
+ *  a confusing double). When the per-term model name isn't in the trace,
+ *  `model` falls back to `DEFAULT_MODEL_LABEL` ('LLM') — in that case drop
+ *  the now-redundant "· LLM" suffix entirely instead of doubling the word.
+ *  When a real model name IS known, show it, with "AI" (not "LLM") as the
+ *  leading word so a known model never reads "LLM · LLM" again either. */
+function llmBadgeLabel(model: string): string {
+  return model === DEFAULT_MODEL_LABEL ? '◇ resolved by AI' : `◇ AI · ${model}`;
+}
+
 /**
  * Grounding badge — STRICT priority order (spec §2.2, the §2.2/§6 ambiguity
  * closed by review). First matching rule wins:
@@ -204,7 +219,7 @@ export function resolveBadge(term: TermWithTrace): Badge {
       case 'label_match':
         return { tone: 'det', label: '◆ label match' };
       case 'llm_disambiguation':
-        return { tone: 'llm', label: `◇ LLM · ${model}` };
+        return { tone: 'llm', label: llmBadgeLabel(model) };
       case 'llm_rejected':
         return { tone: 'rej', label: '◇ LLM rejected all' };
       // Deterministic enrichment stops here: candidates found but no exact
@@ -234,7 +249,7 @@ export function resolveBadge(term: TermWithTrace): Badge {
   const candidateCount = term.candidates.length;
   const model = trace?.model ?? DEFAULT_MODEL_LABEL;
   if (hasQid && candidateCount > 1) {
-    return { tone: 'llm', label: `◇ LLM · ${model}` };
+    return { tone: 'llm', label: llmBadgeLabel(model) };
   }
   if (hasQid && candidateCount === 1) {
     return { tone: 'det', label: '◆ label match' };
