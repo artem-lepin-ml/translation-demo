@@ -185,6 +185,29 @@ def test_post_model_params_valid_dict_accepted(client):
     assert r.json()["params"] == {"max_tokens": 512}
 
 
+def test_post_model_empty_name_is_422(client):
+    """e2e iter1 BUG-2: an empty name used to create an unusable registry row
+    with "name": "" — the name field must be validated like any other."""
+    c, _ = client
+    r = c.post("/api/models", json={"name": "", **_model_payload()})
+    assert r.status_code == 422, r.text
+
+
+def test_post_model_whitespace_name_is_422(client):
+    c, _ = client
+    r = c.post("/api/models", json={"name": "   ", **_model_payload()})
+    assert r.status_code == 422, r.text
+
+
+def test_post_model_valid_name_still_works(client):
+    c, _ = client
+    r = c.post("/api/models", json={"name": "valid/new-model", **_model_payload()})
+    assert r.status_code == 200, r.text
+    assert r.json()["name"] == "valid/new-model"
+    got = c.get("/api/models").json()
+    assert any(row["name"] == "valid/new-model" for row in got)
+
+
 def test_put_model_params_array_is_422(client):
     c, _ = client
     r = c.put("/api/models/qwen/qwen3.6-27b", json=_model_payload(params=[1, 2, 3]))

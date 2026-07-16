@@ -123,6 +123,7 @@ interface Document extends DocumentSummary {
 // LLMClient.complete(**params) как есть. Так гетерогенные модели не ломают контракт.
 interface ModelRegistryEntry {       // тело POST/PUT (с ключом)
   name: string;        // PK = wire model id (e.g. "openai/gpt-5.5"); неизменяем на PUT
+                        // POST: непустая после strip() строка (422 иначе) — без whitelist на формат id
   baseUrl: string;     // https://openrouter.ai/api/v1
   apiKey: string;      // write-only — НИКОГДА не возвращается в GET
   params: Record<string, unknown>;   // моки: {temperature, max_tokens}; позже — реальные per-model

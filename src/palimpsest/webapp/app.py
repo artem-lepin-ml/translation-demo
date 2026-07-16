@@ -1267,6 +1267,17 @@ def _require_params_object(m: dict) -> dict:
     return params
 
 
+def _require_model_name(m: dict) -> str:
+    """``name`` must be non-empty after stripping surrounding whitespace — an
+    empty/blank name previously created an unusable, unselectable registry row
+    (e2e iter1 BUG-2, docs/reports/e2e/prod-stability-iter1-2026-07-16.md §4).
+    No format whitelist: an operator may legitimately use unusual provider ids."""
+    name = m.get("name")
+    if not isinstance(name, str) or not name.strip():
+        raise HTTPException(422, "name must not be empty")
+    return name.strip()
+
+
 @app.get("/api/models")
 def list_models() -> list:
     conn = db.connect()
@@ -1275,15 +1286,16 @@ def list_models() -> list:
 
 @app.post("/api/models")
 def create_model(m: dict = Body(...)) -> dict:
+    name = _require_model_name(m)
     params = _require_params_object(m)
     _guard_params(params)
     _validate_params_whitelist(params)
     conn = db.connect()
     with db._lock:
         conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
-                     (m["name"], m["baseUrl"], m.get("apiKey", ""), json.dumps(params)))
+                     (name, m["baseUrl"], m.get("apiKey", ""), json.dumps(params)))
         conn.commit()
-        return _model_public(conn.execute("SELECT * FROM model WHERE name=?", (m["name"],)).fetchone())
+        return _model_public(conn.execute("SELECT * FROM model WHERE name=?", (name,)).fetchone())
 
 
 @app.put("/api/models/{name:path}")
