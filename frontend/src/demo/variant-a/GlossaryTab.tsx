@@ -5,6 +5,7 @@ import {
   candidatesForDisplay,
   findMatchSpan,
   findSentenceContaining,
+  groupSearchQueries,
   groupTerms,
   resolveBadge,
   summarizeGroups,
@@ -122,18 +123,26 @@ function stepPresentation(tone: BadgeTone, key: StepKey, trace: TraceJson | unde
     case 'search': {
       const queries = trace?.queries ?? [];
       if (queries.length === 0) return { state: 'skip', title: 'Skipped', body: 'no trace' };
+      // Collapse true duplicate rows (same strategy+kind+q+hits) into one row
+      // with a ×N multiplier — old traces predating the `strategy` field (or
+      // repeated fallback escalations) otherwise render several visually
+      // identical "lemma «…» 0 hits" lines (owner screenshots: 3× for
+      // "Ханейское царство", 5× for «царя Приморья»). Distinct strategies stay
+      // their own labeled rows since those ARE informative.
+      const groupedQueries = groupSearchQueries(queries);
       return {
         state,
         title: trace?.search_source && trace.search_source !== 'none' ? trace.search_source : 'No hits',
         body: (
           <>
-            {queries.map((q, i) => (
+            {groupedQueries.map((q, i) => (
               <div key={i}>
                 {q.strategy && (
                   <span className="va-gl-strategy">{SEARCH_STRATEGY_LABEL[q.strategy] ?? q.strategy} · </span>
                 )}
                 {q.kind} <code>{q.q}</code>{' '}
                 <span className={q.n_hits ? 'va-gl-hit' : 'va-gl-miss'}>{q.n_hits ?? 0} hits</span>
+                {q.count > 1 && <span className="va-gl-qmult"> ×{q.count}</span>}
               </div>
             ))}
           </>
@@ -383,9 +392,19 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
                                 <span className="va-gl-rejx">✗</span>
                               ) : null}
                             </td>
-                            <td>{c.qid}</td>
                             <td>
-                              <b>{c.label}</b> — {c.description}
+                              <a
+                                className="va-gl-wd"
+                                href={c.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {c.qid}
+                              </a>
+                            </td>
+                            <td>
+                              <b>{c.label}</b>
+                              {c.description ? <> — {c.description}</> : null}
                             </td>
                             <td>
                               {c.matchKind ? (
@@ -405,10 +424,10 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
               {showJudge && (
                 <div className="va-gl-blk">
                   <h4>Judge decision</h4>
-                  <div className="va-gl-judge">
-                    <div className="va-gl-judge-m">model: {trace?.model ?? 'LLM'} · Settings › Grounding</div>
-                    <div className="va-gl-judge-r">&ldquo;{judgeReason}&rdquo;</div>
-                  </div>
+                  {/* Owner: drop the "model: … · Settings › Grounding" line and
+                      its accent box — keep only the judge's reasoning quote,
+                      rendered plain per the design system. */}
+                  <div className="va-gl-judge-r">&ldquo;{judgeReason}&rdquo;</div>
                 </div>
               )}
 

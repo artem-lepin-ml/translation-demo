@@ -2105,6 +2105,15 @@ tr.va-gl-detail > td {
   font-size: 11px;
 }
 
+/* Duplicate-query multiplier (×N) — collapsed identical SEARCH rows (owner
+   screenshots: repeated "lemma «…» 0 hits" lines predating the strategy
+   field). Dim, mono, matches .va-gl-strategy's supplementary-info weight. */
+.va-gl-qmult {
+  color: var(--va-text-dim);
+  font-family: var(--va-font-mono);
+  font-size: 10px;
+}
+
 /* candidates */
 table.va-gl-cand {
   border-collapse: collapse;
@@ -2166,24 +2175,13 @@ table.va-gl-cand {
   font-weight: 700;
 }
 
-/* judge card */
-.va-gl-judge {
-  background: rgba(224, 175, 104, 0.06);
-  border: 1px solid rgba(224, 175, 104, 0.35);
-  border-radius: var(--va-radius);
-  padding: 10px 14px;
-  font-size: 12.5px;
-}
-
-.va-gl-judge .va-gl-judge-m {
-  font-family: var(--va-font-mono);
-  font-size: 11px;
-  color: var(--va-yellow);
-}
-
-.va-gl-judge .va-gl-judge-r {
+/* judge quote — plain text, no accent box (owner: drop the "model: … ·
+   Settings › Grounding" line and its highlighted border entirely, keep only
+   the judge's reasoning). */
+.va-gl-judge-r {
   color: var(--va-text-muted);
-  margin-top: 4px;
+  font-size: 12.5px;
+  font-style: italic;
 }
 
 .va-gl-occ {

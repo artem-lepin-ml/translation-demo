@@ -58,6 +58,42 @@ export interface TraceQueryEntry {
   strategy?: string;
 }
 
+// ─── SEARCH-step query grouping (FIX 2, glossary trace polish) ─────────────
+// Old traces predating `strategy` (or repeated fallback escalations) render
+// several visually identical rows — e.g. three "lemma «Ханейское царство» 0
+// hits" rows (prefix→cirrus→sitelink escalation with no strategy label), or
+// five alternating lemma/surface rows for «царя Приморья». Collapse rows
+// that are true duplicates (same strategy+kind+q+n_hits) into one, tagged
+// with a ×N count; distinct strategies/kinds/queries stay their own rows
+// since those genuinely differ.
+
+/** One collapsed SEARCH-step row: `count` is 1 for a unique query, >1 when N
+ *  identical entries were folded together. */
+export interface GroupedSearchQuery {
+  strategy?: string;
+  kind: string;
+  q: string;
+  n_hits: number;
+  count: number;
+}
+
+/** Groups `trace_json.queries` for display, preserving first-seen order. */
+export function groupSearchQueries(queries: TraceQueryEntry[]): GroupedSearchQuery[] {
+  const order: string[] = [];
+  const byKey = new Map<string, GroupedSearchQuery>();
+  for (const entry of queries) {
+    const key = `${entry.strategy ?? ''}::${entry.kind}::${entry.q}::${entry.n_hits}`;
+    const existing = byKey.get(key);
+    if (existing) {
+      existing.count += 1;
+      continue;
+    }
+    byKey.set(key, { strategy: entry.strategy, kind: entry.kind, q: entry.q, n_hits: entry.n_hits, count: 1 });
+    order.push(key);
+  }
+  return order.map((key) => byKey.get(key)!);
+}
+
 /** `trace_json.judge` (label_first.py's `judge_trace`) — present only when a
  *  judge call was actually made (absent for `exact_label`/`no_candidates`/
  *  `wikidata_unavailable`, which never escalate). */

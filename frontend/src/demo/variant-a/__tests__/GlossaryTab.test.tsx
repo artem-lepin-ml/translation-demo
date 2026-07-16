@@ -211,6 +211,24 @@ describe('GlossaryTab — real flat trace_json rendering (BUG-6 / debugger fixes
     expect(screen.getByText(/historical Chinese state/)).toBeTruthy();
   });
 
+  it('FIX 3: Judge decision panel drops the "model: … · Settings › Grounding" line and its accent box, ' +
+    'keeping only the plain reasoning quote', () => {
+    renderAndExpand();
+    expect(screen.queryByText(/model:/)).toBeNull();
+    expect(screen.queryByText(/Settings › Grounding/)).toBeNull();
+    expect(document.querySelector('.va-gl-judge')).toBeNull();
+    expect(document.querySelector('.va-gl-judge-m')).toBeNull();
+    expect(document.querySelector('.va-gl-judge-r')).not.toBeNull();
+  });
+
+  it('FIX 1a: the QID cell in the Candidates table links to Wikidata (target=_blank, rel=noopener)', () => {
+    renderAndExpand();
+    const qidLink = screen.getByRole('link', { name: 'Q7181' });
+    expect(qidLink.getAttribute('href')).toBe('https://www.wikidata.org/wiki/Q7181');
+    expect(qidLink.getAttribute('target')).toBe('_blank');
+    expect(qidLink.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
   it('#4: renders a query row\'s search strategy as a distinct dim label (prefix/full-text/sitelink map)', () => {
     const paragraphs = [buildParagraph(1, 0)];
     const terms = [buildLiveTerm({
@@ -253,5 +271,85 @@ describe('GlossaryTab — real flat trace_json rendering (BUG-6 / debugger fixes
     expect(screen.queryByText(/Grounding path/)).toBeNull();
     expect(screen.getAllByTitle('No match provenance recorded for this candidate').length).toBe(2);
     expect(screen.queryByText('none')).toBeNull();
+  });
+});
+
+// ─── FIX 1b: no dangling "Label — " separator when description is empty ───
+describe('GlossaryTab — Candidates table, empty-description rendering (FIX 1, glossary trace polish)', () => {
+  it('a candidate with no description renders just the label — no trailing "— " (owner screenshot: "Эйягамиль — ")', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm({
+      traceJson: {
+        resolved_by: 'llm_disambiguation',
+        candidates: [
+          { qid: 'Q1', label_en: 'Эйягамиль', description: '', matched: null },
+        ],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    const labelCell = screen.getByText('Эйягамиль').closest('td');
+    expect(labelCell?.textContent).toBe('Эйягамиль');
+  });
+
+  it('a candidate WITH a description keeps the "Label — description" rendering', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm({
+      traceJson: {
+        resolved_by: 'llm_disambiguation',
+        candidates: [
+          { qid: 'Q1', label_en: 'Ur', description: 'ancient Sumerian city-state', matched: null },
+        ],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    const labelCell = screen.getByText('Ur').closest('td');
+    expect(labelCell?.textContent).toBe('Ur — ancient Sumerian city-state');
+  });
+});
+
+// ─── FIX 2: SEARCH-step duplicate query rows collapse with a ×N marker ────
+describe('GlossaryTab — SEARCH step query grouping (FIX 2, glossary trace polish)', () => {
+  it('3 identical unlabeled query rows (no `strategy`) collapse into one row with a ×3 marker', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm({
+      traceJson: {
+        resolved_by: 'no_candidates',
+        queries: [
+          { q: 'Ханейское царство', kind: 'lemma', mechanism: 'wbsearchentities', n_hits: 0 },
+          { q: 'Ханейское царство', kind: 'lemma', mechanism: 'cirrussearch', n_hits: 0 },
+          { q: 'Ханейское царство', kind: 'lemma', mechanism: 'sitelinks', n_hits: 0 },
+        ],
+        candidates: [],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    expect(screen.getAllByText(/Ханейское царство/).length).toBe(1); // one row, not three identical lines
+    expect(screen.getByText('×3')).toBeTruthy();
+  });
+
+  it('distinct labeled strategies stay separate, un-multiplied rows', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm({
+      traceJson: {
+        resolved_by: 'no_candidates',
+        queries: [
+          { q: 'x', kind: 'lemma', mechanism: 'wbsearchentities', n_hits: 0, strategy: 'prefix' },
+          { q: 'x', kind: 'lemma', mechanism: 'cirrussearch', n_hits: 0, strategy: 'cirrus' },
+          { q: 'x', kind: 'lemma', mechanism: 'sitelinks', n_hits: 0, strategy: 'sitelink' },
+        ],
+        candidates: [],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    expect(screen.getByText('prefix ·')).toBeTruthy();
+    expect(screen.getByText('full-text ·')).toBeTruthy();
+    expect(screen.getByText('sitelink ·')).toBeTruthy();
+    // No ×N multiplier marker anywhere — all three rows are distinct
+    // (the mentions column's own "×1" is unrelated and must not confuse this).
+    expect(document.querySelectorAll('.va-gl-qmult').length).toBe(0);
   });
 });

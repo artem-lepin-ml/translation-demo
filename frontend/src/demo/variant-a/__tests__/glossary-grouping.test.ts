@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
+  candidatesForDisplay,
   findMatchSpan,
   findSentenceContaining,
+  groupSearchQueries,
   groupTerms,
   resolveBadge,
   summarizeGroups,
   titleCase,
   type TermWithTrace,
+  type TraceQueryEntry,
 } from '../glossary-grouping';
 import type { Paragraph, WikidataRef } from '../../api-client';
 
@@ -500,5 +503,98 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
     } as never);
     expect(badge.tone).toBe('none');
     expect(badge.label).toBe('○ no candidates');
+  });
+});
+
+// ─── FIX 1: candidate display shaping — no dangling "Label — " separator ───
+describe('candidatesForDisplay — empty-description rendering (FIX 1, glossary trace polish)', () => {
+  it('a WikidataRef candidate with an empty description keeps description as "" (caller drops the separator)', () => {
+    const term = buildTerm({
+      candidates: [{ qid: 'Q1', label: 'Эйягамиль', description: '', url: 'https://www.wikidata.org/wiki/Q1' }],
+    });
+    const [c] = candidatesForDisplay(term);
+    expect(c.label).toBe('Эйягамиль');
+    expect(c.description).toBe('');
+  });
+
+  it('a trace candidate with no `description` field at all normalizes to "" (not undefined/null)', () => {
+    const term = buildTerm({
+      traceJson: {
+        candidates: [{ qid: 'Q2', label_en: 'No Desc', matched: null }],
+      },
+    });
+    const [c] = candidatesForDisplay(term);
+    expect(c.label).toBe('No Desc');
+    expect(c.description).toBe('');
+  });
+
+  it('a candidate WITH a description is unaffected', () => {
+    const term = buildTerm({
+      candidates: [{ qid: 'Q3', label: 'Ур', description: 'ancient Sumerian city-state', url: 'https://www.wikidata.org/wiki/Q3' }],
+    });
+    const [c] = candidatesForDisplay(term);
+    expect(c.description).toBe('ancient Sumerian city-state');
+  });
+});
+
+// ─── FIX 2: SEARCH-step query row grouping (glossary trace polish) ────────
+describe('groupSearchQueries (FIX 2, glossary trace polish)', () => {
+  const q = (over: Partial<TraceQueryEntry> = {}): TraceQueryEntry => ({
+    q: 'Ханейское царство',
+    kind: 'lemma',
+    mechanism: 'wbsearchentities',
+    n_hits: 0,
+    ...over,
+  });
+
+  it('3 identical unlabeled rows collapse to 1 row ×3 (prefix→cirrus→sitelink escalation, no strategy field)', () => {
+    const grouped = groupSearchQueries([q(), q(), q()]);
+    expect(grouped).toHaveLength(1);
+    expect(grouped[0]).toMatchObject({ kind: 'lemma', q: 'Ханейское царство', n_hits: 0, count: 3 });
+  });
+
+  it('labeled distinct strategies stay 3 distinct rows, none collapsed', () => {
+    const grouped = groupSearchQueries([
+      q({ strategy: 'prefix', n_hits: 0 }),
+      q({ strategy: 'cirrus', n_hits: 3 }),
+      q({ strategy: 'sitelink', n_hits: 1 }),
+    ]);
+    expect(grouped).toHaveLength(3);
+    expect(grouped.every((g) => g.count === 1)).toBe(true);
+    expect(grouped.map((g) => g.strategy)).toEqual(['prefix', 'cirrus', 'sitelink']);
+  });
+
+  it('mixed: alternating lemma/surface rows collapse per (kind, q) pair — «царя Приморья»-style', () => {
+    const lemma = q({ q: 'царь Приморья', kind: 'lemma' });
+    const surface = q({ q: 'царя Приморья', kind: 'surface' });
+    const grouped = groupSearchQueries([lemma, surface, lemma, surface, lemma]);
+    expect(grouped).toHaveLength(2);
+    const byKind = Object.fromEntries(grouped.map((g) => [g.kind, g.count]));
+    expect(byKind).toEqual({ lemma: 3, surface: 2 });
+  });
+
+  it('mixed: a labeled strategy row and unlabeled duplicates of a DIFFERENT query never merge with each other', () => {
+    const grouped = groupSearchQueries([
+      q({ strategy: 'prefix' }),
+      q({ q: 'other lemma' }),
+      q({ q: 'other lemma' }),
+    ]);
+    expect(grouped).toHaveLength(2);
+    expect(grouped.find((g) => g.strategy === 'prefix')?.count).toBe(1);
+    expect(grouped.find((g) => g.q === 'other lemma')?.count).toBe(2);
+  });
+
+  it('same kind+q but different n_hits stays distinct (never silently merges different results)', () => {
+    const grouped = groupSearchQueries([q({ n_hits: 0 }), q({ n_hits: 2 })]);
+    expect(grouped).toHaveLength(2);
+  });
+
+  it('empty input returns an empty array', () => {
+    expect(groupSearchQueries([])).toEqual([]);
+  });
+
+  it('preserves first-seen order', () => {
+    const grouped = groupSearchQueries([q({ q: 'b' }), q({ q: 'a' }), q({ q: 'b' })]);
+    expect(grouped.map((g) => g.q)).toEqual(['b', 'a']);
   });
 });
