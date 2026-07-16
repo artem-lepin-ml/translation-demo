@@ -7,7 +7,7 @@ Tight (~20 tool-call) read-only visual verification of a just-shipped visual-pol
 ## Files changed
 
 - Created `docs/reports/e2e/visual-verify-2026-07-16.md` (owner-facing report, Russian) — this is the primary deliverable.
-- Created 14 screenshots under `docs/reports/e2e/shots/visual-verify/` (01–14, one file `03b-...` is a discarded/unused crop attempt, not referenced in the report).
+- Created 15 screenshots under `docs/reports/e2e/shots/visual-verify/` (01–15, one file `03b-...` is a discarded/unused crop attempt, not referenced in the report). `15-popover-gap-fixed.png` was added in the re-check pass below.
 - This file (internal report).
 
 ## Decisions & rationale
@@ -30,6 +30,10 @@ Tight (~20 tool-call) read-only visual verification of a just-shipped visual-pol
 - Did not verify mobile/narrow layout beyond the one deliberate viewport shrink used to force popover scroll (item 3d), restored immediately after.
 - Did not audit this report myself — per the global CLAUDE.md loop, a Sonnet auditor pass over this e2e report is the next step owned by the orchestrator, not by this agent.
 
+## Re-check (same session, after prod deploy of commit `5f20c3c`)
+
+Coordinator deployed a fix (`.va-term-popover-label` changed from `flex: 0 0 80px` to `flex: 0 0 auto; min-width: 80px`) and asked for a one-item re-verify without ending the session. Reopened the `visual-verify` playwright-cli session, reloaded prod, reopened the same Babylonia term popover on the same seed document (§1). Confirmed via `getComputedStyle`: the "Disambiguating context" label's computed height dropped from 80px (first run) to 18px (matches natural line-height) — the dead gap is gone, label sits directly above its text. Cross-checked the four row-mode labels (Difficulty/Pair accuracy/Source lemma/Wikidata) still hold an ~80px column via the new `min-width: 80px` (rectW 80–82px), so the fix didn't regress the row layout. Screenshot `15-popover-gap-fixed.png`. Popover closed via Escape, session closed, nothing saved/mutated. Appended a confirmation section to the owner-facing Russian report and flipped its top verdict from PASS-with-findings to PASS.
+
 ## Verdict handed to caller
 
-PASS-with-findings: 6/7 items fully confirmed fixed; item 3 (term-popover spacing) is NOT fully fixed — a genuine, code-traced CSS bug remains (see report). 0 console errors across the whole run. Nothing was saved/mutated.
+**PASS** (updated from PASS-with-findings after the re-check above): all 7/7 items now confirmed fixed on prod, including the term-popover spacing bug found in the first pass. 0 console errors across the whole run. Nothing was saved/mutated at any point.
