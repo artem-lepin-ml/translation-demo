@@ -21,18 +21,20 @@ RETRY_ONCE_BACKOFF = 1.0
 CONTEXT_CHAR_BUDGET = 2000
 ROLLING_CONTEXT_PARAS = 2
 
-# In-memory status per document; absent after restart (same accepted risk as
-# precompute.py — a restart resets 'running' to nothing, a fresh POST resumes
-# idempotently since already-translated paragraphs are skipped).
-_status: dict[int, dict] = {}
+# In-memory status per (session_id, doc_id); absent after restart (same
+# accepted risk as precompute.py — a restart resets 'running' to nothing, a
+# fresh POST resumes idempotently since already-translated paragraphs are
+# skipped). Rekeyed for session isolation (2026-07-16) — see db.current_sid().
+_status: dict[tuple[str, int], dict] = {}
 
-# Strong references to in-flight translate tasks, keyed by doc_id (mirrors
-# precompute._tasks) — required so DELETE can cancel a running task.
-_tasks: dict[int, asyncio.Task] = {}
+# Strong references to in-flight translate tasks, keyed by (session_id,
+# doc_id) (mirrors precompute._tasks) — required so DELETE can cancel a
+# running task.
+_tasks: dict[tuple[str, int], asyncio.Task] = {}
 
-# doc ids with a translate run in flight — evaluate/reset 409 against these
-# (mirrors app._evaluating).
-_translating: set[int] = set()
+# (session_id, doc_id) pairs with a translate run in flight — evaluate/reset
+# 409 against these (mirrors app._evaluating).
+_translating: set[tuple[str, int]] = set()
 
 _LEADING_LABEL_RE = re.compile(r"^\s*(translation|translated text)\s*:\s*", re.IGNORECASE)
 
@@ -42,18 +44,18 @@ def _now() -> str:
 
 
 def status_for(doc_id: int) -> dict | None:
-    return _status.get(doc_id)
+    return _status.get((db.current_sid(), doc_id))
 
 
 def mark_started(doc_id: int, total: int) -> None:
     """Pre-set status so the caller's response already carries it — same
     reasoning as precompute.mark_started (the background task's own first
     write happens after this function returns, on the next event-loop tick)."""
-    _status[doc_id] = {"status": "running", "done": 0, "total": total}
+    _status[(db.current_sid(), doc_id)] = {"status": "running", "done": 0, "total": total}
 
 
 def is_translating(doc_id: int) -> bool:
-    return doc_id in _translating
+    return (db.current_sid(), doc_id) in _translating
 
 
 def _document_exists(conn, doc_id: int) -> bool:
@@ -77,18 +79,23 @@ def _strip_label(text: str) -> str:
 
 
 def launch(doc_id: int, client_for, terms_launch=None) -> None:
+    key = (db.current_sid(), doc_id)
     t = asyncio.create_task(run_translation(doc_id, client_for, terms_launch))
-    _tasks[doc_id] = t
-    t.add_done_callback(lambda _: _tasks.pop(doc_id, None))
+    _tasks[key] = t
+    t.add_done_callback(lambda _: _tasks.pop(key, None))
 
 
 def cancel(doc_id: int) -> None:
-    """Stop an in-flight translate run for ``doc_id`` (called from DELETE) —
-    mirrors precompute.cancel."""
-    t = _tasks.get(doc_id)
+    """Stop an in-flight translate run for ``doc_id`` in the CURRENT session
+    (called from DELETE) — mirrors precompute.cancel. Session-scoped by
+    construction (the key includes db.current_sid()), so a delete in one
+    session can never cancel another session's live translate task for the
+    same doc_id (session isolation, 2026-07-16)."""
+    key = (db.current_sid(), doc_id)
+    t = _tasks.get(key)
     if t is not None:
         t.cancel()
-    _translating.discard(doc_id)
+    _translating.discard(key)
 
 
 async def _translate_one(client: LLMClient, system: str, user: str) -> str | None:
@@ -134,25 +141,28 @@ async def run_translation(doc_id: int, client_for, terms_launch=None) -> None:
         raise                                  # propagate — do not touch _status further
     except Exception:
         logging.exception("translate.run_translation failed for doc_id=%s", doc_id)
-        _status[doc_id] = {**_status.get(doc_id, {"done": 0, "total": 0}),
-                            "status": "failed", "error_reason": "all_failed"}
+        key = (db.current_sid(), doc_id)
+        _status[key] = {**_status.get(key, {"done": 0, "total": 0}),
+                         "status": "failed", "error_reason": "all_failed"}
     finally:
-        _translating.discard(doc_id)
+        _translating.discard((db.current_sid(), doc_id))
 
 
 async def _run(doc_id: int, client_for, terms_launch=None) -> None:
     conn = db.connect()
+    sid = db.current_sid()
+    key = (sid, doc_id)
     d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
     if d is None:
         return
     cfg = conn.execute("SELECT * FROM translator_config WHERE id=1").fetchone()
     if cfg is None or not cfg["model_name"]:
-        _status[doc_id] = {"status": "failed", "done": 0, "total": 0, "error_reason": "no_api_key"}
+        _status[key] = {"status": "failed", "done": 0, "total": 0, "error_reason": "no_api_key"}
         return
     params = json.loads(cfg["params_json"] or "{}")
     client = client_for(conn, cfg["model_name"], params)
     if client is None:
-        _status[doc_id] = {"status": "failed", "done": 0, "total": 0, "error_reason": "no_api_key"}
+        _status[key] = {"status": "failed", "done": 0, "total": 0, "error_reason": "no_api_key"}
         return
     system = (cfg["prompt"] or "").format(
         source_lang=d["source_lang"], target_lang=d["target_lang"])
@@ -160,7 +170,7 @@ async def _run(doc_id: int, client_for, terms_launch=None) -> None:
     paras = conn.execute(
         "SELECT * FROM paragraph WHERE document_id=? ORDER BY idx", (doc_id,)).fetchall()
     total = len(paras)
-    _status[doc_id] = {"status": "running", "done": 0, "total": total}
+    _status[key] = {"status": "running", "done": 0, "total": total}
 
     ctx: list[str] = []
     failed = 0
@@ -171,7 +181,7 @@ async def _run(doc_id: int, client_for, terms_launch=None) -> None:
             # Already translated (idempotent re-POST resumes only empty
             # paragraphs) — feed it as rolling context and count it done.
             ctx = (ctx + [p["target"]])[-ROLLING_CONTEXT_PARAS:]
-            _status[doc_id]["done"] += 1
+            _status[key]["done"] += 1
             continue
 
         ctx_block = "\n".join(ctx)[-CONTEXT_CHAR_BUDGET:]
@@ -183,29 +193,32 @@ async def _run(doc_id: int, client_for, terms_launch=None) -> None:
         except budget.BudgetExceeded:
             # Hard per-call guard tripped mid-run — stop immediately, don't
             # keep counting the untried remainder as "done".
-            _status[doc_id]["status"] = "failed"
-            _status[doc_id]["error_reason"] = "budget_exhausted"
+            _status[key]["status"] = "failed"
+            _status[key]["error_reason"] = "budget_exhausted"
             return
         if text is None:
             failed += 1
-            _status[doc_id]["done"] += 1
+            _status[key]["done"] += 1
             continue
 
         ts = _now()
-        with db._lock:
+        with db.current_lock():
             if not _document_exists(conn, doc_id):
                 return                          # deleted while the call was in flight
             conn.execute("UPDATE paragraph SET target=?, seed_target=? WHERE id=?",
                          (text, text, p["id"]))
             db.write_revision(conn, p["id"], text, "translate", ts)
             conn.commit()
+            db.touch(sid)                       # background task never re-calls connect()/
+                                                 # current_lock() from a fresh contextvar read,
+                                                 # so the TTL sweep needs this explicit bump
         ctx = (ctx + [text])[-ROLLING_CONTEXT_PARAS:]
-        _status[doc_id]["done"] += 1
+        _status[key]["done"] += 1
 
     if total and failed == total:
-        _status[doc_id]["status"] = "failed"
-        _status[doc_id].setdefault("error_reason", "all_failed")
+        _status[key]["status"] = "failed"
+        _status[key].setdefault("error_reason", "all_failed")
     else:
-        _status[doc_id]["status"] = "done"
+        _status[key]["status"] = "done"
         if terms_launch is not None:
             terms_launch(doc_id, client_for)

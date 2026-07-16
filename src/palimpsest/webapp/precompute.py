@@ -18,27 +18,31 @@ from .aggregate import compute_aggregate
 PRECOMPUTE_PARAS = 12
 _CALL_CAP = int(os.environ.get("PALIMPSEST_PRECOMPUTE_CALLS", "80"))
 
-# In-memory status per document; absent after restart (accepted risk, spec §5.6).
-_status: dict[int, dict] = {}
+# In-memory status per (session_id, doc_id); absent after restart (accepted
+# risk, spec §5.6). Rekeyed for session isolation (2026-07-16) — see
+# db.current_sid().
+_status: dict[tuple[str, int], dict] = {}
 
-# Strong references to in-flight precompute tasks, keyed by doc_id — required
-# so DELETE can cancel a running task (asyncio.create_task's return value is
-# otherwise the only reference, and it's discarded at the call site).
-_tasks: dict[int, asyncio.Task] = {}
+# Strong references to in-flight precompute tasks, keyed by (session_id,
+# doc_id) — required so DELETE can cancel a running task (asyncio.create_task's
+# return value is otherwise the only reference, and it's discarded at the call
+# site).
+_tasks: dict[tuple[str, int], asyncio.Task] = {}
 
 
 def status_for(doc_id: int) -> dict | None:
-    return _status.get(doc_id)
+    return _status.get((db.current_sid(), doc_id))
 
 
 def mark_skipped(doc_id: int) -> None:
-    _status[doc_id] = {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0}
+    _status[(db.current_sid(), doc_id)] = {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0}
 
 
 def mark_started(doc_id: int, n_paragraphs: int) -> None:
     """Pre-set status so the 201 body already carries it; run() refines later."""
-    _status[doc_id] = {"status": "running", "done": 0,
-                        "planned": min(n_paragraphs, PRECOMPUTE_PARAS), "succeeded": 0}
+    _status[(db.current_sid(), doc_id)] = {
+        "status": "running", "done": 0,
+        "planned": min(n_paragraphs, PRECOMPUTE_PARAS), "succeeded": 0}
 
 
 def _classify_failure(exc: Exception) -> str:
@@ -52,18 +56,23 @@ def _classify_failure(exc: Exception) -> str:
 
 
 def launch(doc_id: int, judge_live) -> None:
+    key = (db.current_sid(), doc_id)
     t = asyncio.create_task(run(doc_id, judge_live))
-    _tasks[doc_id] = t
-    t.add_done_callback(lambda _: _tasks.pop(doc_id, None))
+    _tasks[key] = t
+    t.add_done_callback(lambda _: _tasks.pop(key, None))
 
 
 def cancel(doc_id: int) -> None:
-    """Stop an in-flight precompute run for ``doc_id`` (called from DELETE).
-    Cancels the task if still running and drops its status entry."""
-    t = _tasks.get(doc_id)
+    """Stop an in-flight precompute run for ``doc_id`` in the CURRENT session
+    (called from DELETE). Cancels the task if still running and drops its
+    status entry — session-scoped by construction (session isolation,
+    2026-07-16), so this can never touch another session's task for the same
+    doc_id."""
+    key = (db.current_sid(), doc_id)
+    t = _tasks.get(key)
     if t is not None:
         t.cancel()
-    _status.pop(doc_id, None)
+    _status.pop(key, None)
 
 
 def _now() -> str:
@@ -99,7 +108,7 @@ def _write_paragraph(conn, doc_id: int, pid: int, enabled, results: dict) -> boo
     values = {cid: r["value"] for cid, r in results.items()}
     aggregate, criteria_key = compute_aggregate(values, enabled)
     ts = _now()
-    with db._lock:
+    with db.current_lock():
         if not _document_exists(conn, doc_id):
             return False                       # document deleted mid-flight, discard write
         if _already_scored(conn, pid):
@@ -119,6 +128,7 @@ def _write_paragraph(conn, doc_id: int, pid: int, enabled, results: dict) -> boo
                     (pid, cid, it["targetFragment"], it["sourceFragment"], it["explanation"],
                      it["suggestion"], it["severity"], it["mqmCategory"], ts))
         conn.commit()                          # единственный commit на границе абзаца (M3)
+        db.touch(db.current_sid())              # background task, see translate.py's _run for why
     return True
 
 
@@ -134,11 +144,13 @@ async def run(doc_id: int, judge_live) -> None:
         raise                                  # propagate — do not touch _status further
     except Exception:
         logging.exception("precompute.run failed for doc_id=%s", doc_id)
-        _status[doc_id] = {**_status.get(doc_id, {"done": 0, "planned": 0}), "status": "stopped"}
+        key = (db.current_sid(), doc_id)
+        _status[key] = {**_status.get(key, {"done": 0, "planned": 0}), "status": "stopped"}
 
 
 async def _run(doc_id: int, judge_live) -> None:
     conn = db.connect()
+    key = (db.current_sid(), doc_id)
     d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
     if d is None:
         return
@@ -146,21 +158,21 @@ async def _run(doc_id: int, judge_live) -> None:
         "SELECT * FROM paragraph WHERE document_id=? ORDER BY idx LIMIT ?",
         (doc_id, PRECOMPUTE_PARAS)).fetchall()
     enabled = conn.execute("SELECT * FROM criterion WHERE enabled=1").fetchall()
-    _status[doc_id] = {"status": "running", "done": 0, "planned": len(paras), "succeeded": 0}
+    _status[key] = {"status": "running", "done": 0, "planned": len(paras), "succeeded": 0}
     for p in paras:
         if not _document_exists(conn, doc_id):
-            _status.pop(doc_id, None)          # документ удалён во время прогрева
+            _status.pop(key, None)             # документ удалён во время прогрева
             return
         if _already_scored(conn, p["id"]):     # дешёвый пре-чек: не тратить деньги
-            _status[doc_id]["done"] += 1
-            _status[doc_id]["succeeded"] += 1
+            _status[key]["done"] += 1
+            _status[key]["succeeded"] += 1
             continue
         results: dict[str, dict] = {}
         failed = False
         for c in enabled:
             if not await _take_call_slot():
-                _status[doc_id]["status"] = "stopped"
-                _status[doc_id].setdefault("error_reason", "budget_exhausted")
+                _status[key]["status"] = "stopped"
+                _status[key].setdefault("error_reason", "budget_exhausted")
                 return
             try:
                 results[c["id"]] = await judge_live(
@@ -171,11 +183,11 @@ async def _run(doc_id: int, judge_live) -> None:
                     "precompute judge call failed doc_id=%s paragraph_id=%s criterion=%s",
                     doc_id, p["id"], c["id"])
                 failed = True                  # BudgetExceeded/сеть → абзац не пишется
-                _status[doc_id].setdefault("error_reason", _classify_failure(exc))
+                _status[key].setdefault("error_reason", _classify_failure(exc))
                 break
         if not failed and _write_paragraph(conn, doc_id, p["id"], enabled, results):
-            _status[doc_id]["succeeded"] += 1
-        _status[doc_id]["done"] += 1
-    if _status[doc_id]["succeeded"] == 0 and _status[doc_id]["planned"] > 0:
-        _status[doc_id].setdefault("error_reason", "all_failed")
-    _status[doc_id]["status"] = "done"
+            _status[key]["succeeded"] += 1
+        _status[key]["done"] += 1
+    if _status[key]["succeeded"] == 0 and _status[key]["planned"] > 0:
+        _status[key].setdefault("error_reason", "all_failed")
+    _status[key]["status"] = "done"

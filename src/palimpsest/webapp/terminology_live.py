@@ -126,14 +126,15 @@ _GROUNDING_TIMEOUT = float(os.environ.get("PALIMPSEST_TERMS_GROUNDING_TIMEOUT", 
 # grounding_config row itself or the disambiguation judge's own call.
 _NER_MIN_MAX_TOKENS = 2048
 
-# Strong references to in-flight terms tasks, keyed by doc_id (mirrors
-# precompute._tasks/translate._tasks). Not currently wired to DELETE
-# (app.py's DELETE route is outside this task's authorized edit scope --
-# see the delta note in docs/superpowers/specs/2026-06-30-demo-contracts.md
-# and the shipped report's "NOT done" list); kept so that wiring is a
-# localized future change (``cancel()`` would just do what
-# precompute.cancel()/translate.cancel() already do).
-_tasks: dict[int, asyncio.Task] = {}
+# Strong references to in-flight terms tasks, keyed by (session_id, doc_id)
+# (mirrors precompute._tasks/translate._tasks — rekeyed for session isolation,
+# 2026-07-16, see db.current_sid()). Not currently wired to DELETE (app.py's
+# DELETE route is outside this task's authorized edit scope -- see the delta
+# note in docs/superpowers/specs/2026-06-30-demo-contracts.md and the shipped
+# report's "NOT done" list); kept so that wiring is a localized future change
+# (``cancel()`` would just do what precompute.cancel()/translate.cancel()
+# already do).
+_tasks: dict[tuple[str, int], asyncio.Task] = {}
 
 
 def _now() -> str:
@@ -157,17 +158,17 @@ def try_start(conn, doc_id: int) -> bool:
     for this doc (idempotent no-op -- e.g. a resumed ``POST
     .../translate`` completing a second time must not re-launch terms).
 
-    Callers that already hold ``db._lock`` (``create_document``, on a
-    brand-new never-raced ``doc_id``) must NOT call this -- ``db._lock`` is
-    a plain ``threading.Lock``, not reentrant; write the column directly
-    instead (see ``app.py``'s ``create_document``).
+    Callers that already hold ``db.current_lock()`` (``create_document``, on
+    a brand-new never-raced ``doc_id``) must NOT call this -- each session's
+    lock is a plain ``threading.Lock``, not reentrant; write the column
+    directly instead (see ``app.py``'s ``create_document``).
 
     This function only handles the 'none' -> 'running' edge -- it has no
     opinion about a doc stuck at 'running' from a dead process. That
     recovery is a separate, startup-only sweep (``app._reset_stuck_terms``,
     called from the lifespan right after ``migrate()``), not this function.
     """
-    with db._lock:
+    with db.current_lock():
         row = conn.execute("SELECT terms_status FROM document WHERE id=?", (doc_id,)).fetchone()
         if row is None or row["terms_status"] != "none":
             return False
@@ -177,7 +178,7 @@ def try_start(conn, doc_id: int) -> bool:
 
 
 def _finish(conn, doc_id: int, status: str) -> None:
-    with db._lock:
+    with db.current_lock():
         if not _document_exists(conn, doc_id):
             return
         conn.execute("UPDATE document SET terms_status=? WHERE id=?", (status, doc_id))
@@ -185,9 +186,10 @@ def _finish(conn, doc_id: int, status: str) -> None:
 
 
 def launch(doc_id: int, client_for, grounding_judge_live) -> None:
+    key = (db.current_sid(), doc_id)
     t = asyncio.create_task(run(doc_id, client_for, grounding_judge_live))
-    _tasks[doc_id] = t
-    t.add_done_callback(lambda _: _tasks.pop(doc_id, None))
+    _tasks[key] = t
+    t.add_done_callback(lambda _: _tasks.pop(key, None))
 
 
 async def run(doc_id: int, client_for, grounding_judge_live) -> None:
@@ -310,7 +312,7 @@ def _write_paragraph_terms(conn, doc_id: int, paragraph_id: int, terms) -> None:
     """Paragraph-atomic write, one transaction. ``INSERT OR REPLACE`` on the
     ``term`` table's ``UNIQUE(paragraph_id, char_start, char_end)`` — same
     convention ``scripts/load_terms.py`` uses to seed the same table."""
-    with db._lock:
+    with db.current_lock():
         if not _document_exists(conn, doc_id):
             return                              # document deleted mid-flight, discard write
         for t in terms:
@@ -321,6 +323,7 @@ def _write_paragraph_terms(conn, doc_id: int, paragraph_id: int, terms) -> None:
                 t.db_tuple(paragraph_id),
             )
         conn.commit()
+        db.touch(db.current_sid())              # background task, see translate.py's _run for why
 
 
 async def _run(doc_id: int, client_for, grounding_judge_live) -> None:

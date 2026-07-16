@@ -368,6 +368,39 @@ def _upsert_model_registry_and_remap(conn: sqlite3.Connection) -> None:
         (DEFAULT_CRITERION_MODEL, *matrix_names))
 
 
+def _pin_demo_model_temperature(conn: sqlite3.Connection) -> None:
+    """Force each MATRIX model's registry row to its OWN `default_params`
+    temperature (currently 0.7 on all 4 rows — owner 2026-07-11, judge/
+    refiner determinism note for the recorded demo), idempotently, on every
+    migrate() run. Mirrors `_upsert_model_registry_and_remap`'s JSON-merge-
+    into-params_json style and its `MATRIX.values()` iteration — reads the
+    target temperature from MATRIX itself rather than hardcoding it a second
+    time, so this stays correct if MATRIX's defaults ever change.
+
+    Moved here from update-server.sh's former step 8 (session isolation,
+    2026-07-16, docs/superpowers/specs/2026-07-16-session-isolation.md
+    CRITICAL finding): that step PUT the pin through the live HTTP API,
+    AFTER the container started serving — under session isolation an
+    unauthenticated (no golden-token) API write like that would silently
+    land in a one-off session clone instead of the canonical golden DB.
+    Running it here, inside migrate() (golden-only, pre-serving), pins the
+    real canonical rows every deploy, exactly like the original step 8
+    intended. A name absent from `model` (e.g. a bare pre-seed DB) is simply
+    skipped — same guard style as the other config seeds in this module."""
+    for spec in MATRIX.values():
+        target_temp = spec.default_params.get("temperature")
+        if target_temp is None:
+            continue
+        row = conn.execute("SELECT params_json FROM model WHERE name=?", (spec.name,)).fetchone()
+        if row is None:
+            continue
+        params = json.loads(row["params_json"] or "{}")
+        if params.get("temperature") == target_temp:
+            continue
+        params["temperature"] = target_temp
+        conn.execute("UPDATE model SET params_json=? WHERE name=?", (json.dumps(params), spec.name))
+
+
 def _remap_singleton_config_model_refs(conn: sqlite3.Connection) -> None:
     """translator_config/grounding_config/refiner_config.model_name each FK to
     model(name) — repoint any of them still pointing at a RETIRED (not in the
@@ -529,6 +562,7 @@ def _prune_obsolete_model_rows(conn: sqlite3.Connection) -> None:
 def migrate(conn: sqlite3.Connection) -> None:
     """Run every additive step, in order, and commit once at the end."""
     _upsert_model_registry_and_remap(conn)
+    _pin_demo_model_temperature(conn)
     _create_target_revision(conn)
     _create_translator_config(conn)
     _create_grounding_config(conn)

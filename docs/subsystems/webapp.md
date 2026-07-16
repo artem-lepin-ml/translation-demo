@@ -26,7 +26,7 @@ for academic and industry audiences.
 | Module | Responsibility |
 |---|---|
 | [`app.py`](../../src/palimpsest/webapp/app.py) | FastAPI entry point. Defines all HTTP routes, serialization helpers, and the async `/evaluate` loop. Orchestrates `db`, `aggregate`, and `judge`; enforces append-only score writes and the cache-fallback protocol. |
-| [`db.py`](../../src/palimpsest/webapp/db.py) | SQLite persistence. Single shared connection, threading lock, schema constant `SCHEMA`, `connect()`, `init_db()`. All writes in `app.py` are serialized through `db._lock`. |
+| [`db.py`](../../src/palimpsest/webapp/db.py) | SQLite persistence + session routing (2026-07-16, see "Session isolation" below): `connect()`/`current_lock()` resolve against a `contextvars.ContextVar` sid set by `app.py`'s ASGI middleware — golden DB, a per-session clone, or (legacy test compat) the module-global `_conn`/`_lock` pair a test monkeypatched directly. Schema constant `SCHEMA`, `init_db()` (legacy/build-time, untouched). |
 | [`aggregate.py`](../../src/palimpsest/webapp/aggregate.py) | Computes a single 0–10 aggregate from per-criterion values. Each criterion is normalized to its own `[scaleMin, scaleMax]` before weighted averaging. Used identically by seed and `/evaluate` so baseline and latest are always comparable. |
 | [`judge.py`](../../src/palimpsest/webapp/judge.py) | LLM-as-judge for a single criterion. Reads `prompts/scoring/<id>.md`, calls `LLMClient.complete()`, parses JSON (strips fences tolerantly, drops trailing commas before `}`/`]`, else falls back to the outermost `{...}` — see `_parse_json` and [known_issues.md](../known_issues.md)), returns `{value, summary, issues}` with camelCase wire shapes. `judge_one`/`scoring_system_prompt` take `source_lang`/`target_lang` (ISO code or free-text name — `lang_name` maps the 12 known codes to full names and passes anything else through as typed): every scoring prompt is prefixed with "You are evaluating a translation from {X} into {Y}." — including `(ru, en)`, which used to be byte-for-byte. Any pair other than Russian→English also gets a one-line adapter preamble ("This rubric was written for Russian→English…"); the user message labels source/translation with full language names (`[SOURCE — German]`/`[TRANSLATION — French]`). |
 | [`seed.py`](../../src/palimpsest/webapp/seed.py) | One-shot DB seeder. Drops and recreates the schema, inserts the default model, four criteria (Cultural Adaptation dropped wave-4), one document, 15 paragraphs (rebuilt by [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md)) with `kind='seed'` baseline scores/issues, `kind='cache'` uplift scores, mock terms, and three glossary entries. `_seed_terms` still writes a placeholder `VERDICTS[i % 3]` rotation for `difficulty`/`pairAccuracy` regardless of seed content — real term verdicts only reach the `term` table via the separate `scripts/load_terms.py` step (or `make reseed`, which chains both) run after seeding; current difficulty distribution (single source of truth) is in [e2e-data.md](../testing/e2e-data.md) (see also [terminology stage doc](../stages/terminology.md)). |
@@ -52,6 +52,89 @@ lets SQLite reuse a deleted row's rowid for the next insert, which would let an 
 (see Precompute below) write scores against a recycled id belonging to an unrelated new document.
 `score.revision_id` (rev-5, nullable) points at the `target_revision` row current when that score was
 written; historical pre-rev-5 rows stay `NULL` (never backfilled — honest, not guessed).
+
+## Session isolation (2026-07-16)
+
+Full design: [docs/superpowers/specs/2026-07-16-session-isolation.md](../superpowers/specs/2026-07-16-session-isolation.md).
+Every browser hitting `glossa-mt.com` gets its **own ephemeral copy** of the demo data, so
+parallel EMNLP reviewers never see or mutate each other's documents/scores/settings, and
+never touch the owner's canonical content.
+
+**Golden + clones.** `/data/demo.db` is the **golden** template — mutated only by startup
+procedures (migrate/curate/sweep/seed) and by golden-token requests (below). A regular
+browser session gets `/data/sessions/<sid>.db`, a lazy `sqlite3` backup-API clone of golden
+(a few MB, effectively instant), opened on that session's first request and cached in
+`db._sessions: dict[sid, SessionConn(conn, lock, last_used)]`. `db._sessions_guard`
+double-checked-locks the clone-on-first-use path (real sync endpoints run in real
+anyio-pool threads, so the race on a brand-new sid's first request is real). Every session
+also gets its OWN write lock (`SessionConn.lock`, via `db.current_lock()`) instead of one
+global lock — two sessions' writes never block each other.
+
+**Routing: cookie → contextvar → `db.connect()`.** A raw ASGI middleware
+(`app.SessionMiddleware`, scoped to `/api/*` — NOT `@app.middleware("http")`/
+`BaseHTTPMiddleware`, which historically muddied contextvar propagation by running
+`call_next` in a separate task) reads/mints the `glossa_sid` cookie (UUID; missing/invalid →
+fresh `uuid4()` + `Set-Cookie: HttpOnly; Path=/; SameSite=lax; Secure; Max-Age=14400`) and
+sets it on a `contextvars.ContextVar` BEFORE the route handler runs. `db.connect()`/
+`db.current_lock()` resolve against `db.current_sid()` (the single source of truth every
+module reads for rekeying its own in-memory state too, see below): startup phase (before
+`db.set_startup_done()`) or sid `"__golden__"` → golden; a real sid → the session cache
+(clone on miss); **no sid after startup → `RuntimeError`** (fail-loud, replacing a silent
+write into golden); and — load-bearing for the existing test suite — **if the legacy
+module-global `db._conn` is not `None`** (17 test files monkeypatch `db.DB_PATH`/`db._conn`
+directly), that connection wins unconditionally, so every existing fixture keeps working
+unmodified and an entire test collapses onto one shared "session" exactly like before this
+feature existed.
+
+**Golden-token (owner's canonical-update path).** A request carrying header
+`X-Golden-Session` equal (constant-time, `hmac.compare_digest`) to env `DEMO_ADMIN_TOKEN`
+routes to sid `"__golden__"` (no cookie set) instead of a session clone — this is what keeps
+[`scripts/create_demo_docs.py`](../../scripts/create_demo_docs.py) able to add canonical
+documents through the real API+LLM pipeline (`--golden-token`/env `GLOSSA_GOLDEN_TOKEN`,
+sent on every request it makes, create AND poll). `DEMO_ADMIN_TOKEN` unset → the header is
+silently ignored, ordinary per-sid routing applies. Logs record only the FACT of a
+golden-token request, never the token value.
+
+**In-memory state, rekeyed to `(sid, doc_id)`.** Doc ids collide across sessions by
+construction (every clone starts from the same golden autoincrement counter) — the seven
+module-level dicts/sets that used to key on `doc_id` alone now key on
+`(db.current_sid(), doc_id)`: `translate._status`/`_translating`/`_tasks`,
+`precompute._status`/`_tasks`, `terminology_live._tasks`, `app._evaluating`. Without this, a
+DELETE in session B could cancel session A's live translate task for the "same" doc_id, or
+one session's evaluate-in-flight guard could false-positive/leak against another's.
+Background pipelines (translate/precompute/terminology_live) capture `conn = db.connect()`
+once at task start and thread it through explicitly — `asyncio.create_task`/
+`asyncio.to_thread`/the anyio sync-endpoint pool all copy contextvars, so a second
+`db.current_sid()` call deep inside a background task still resolves to the SAME session
+that launched it.
+
+**TTL sweep + startup wipe.** The FastAPI lifespan wipes `/data/sessions/*` (glob
+`<sid>.db*`, including `-wal`/`-shm`) before flipping `db.set_startup_done()` — "restart = a
+fresh stand for everyone" (owner decision). A background task then sweeps every 15 minutes:
+a session idle (`SessionConn.last_used`) over 4 hours is closed + unlinked, UNLESS its sid
+appears in any of `translate._tasks`/`_translating`/`terminology_live._tasks`/
+`precompute._tasks` (a live background task) — this is a timeout-margin + task-skip
+heuristic, not a structural lock guarantee, documented honestly as such in the spec. A
+closed session's `(sid, doc_id)` keys are purged from all seven structures above
+(`app._purge_session_state`). Since a long-running background task doesn't naturally
+re-trigger `connect()`/`current_lock()`'s own `last_used` bump between paragraphs, each
+module's per-paragraph write helper calls `db.touch(sid)` explicitly.
+
+**What stays global (deliberately).** Budget tracking (spend cap, call cap — one shared
+OpenRouter key), LLM clients/HTTP pools, and the Wikidata client's politeness/rate-limit
+state are NOT session-scoped — see the spec's "Что остаётся глобальным" section for why.
+
+**Data invariant.** "Never delete score/issue" (`.claude/rules/invariants.md`) applies to
+GOLDEN in full force — golden mutates only via startup procedures and golden-token
+requests. A session clone's deletion on TTL/restart is not a deletion of canonical
+predictions (owner decision, 2026-07-16); within a session the existing semantics are
+unchanged (Reset archives, no `DELETE FROM score/issue` anywhere).
+
+**Ops.** Deploy (`rsync`) is unaffected — `/data` stays excluded, session clones live under
+`/data/sessions` and are wiped on every restart/redeploy anyway. See
+[deploy/README.md](../../deploy/README.md) for the env vars and the former deploy-script
+steps this feature moved into `migrate.py` (temperature pin) or found already redundant
+(criterion retirement).
 
 ### Frontend (`frontend/src/demo/variant-a/`)
 
@@ -134,7 +217,7 @@ Both modals surface server errors inline in the modal body rather than failing s
 
 Rolling the settings-rework branch onto the live server **never reseeds the DB** — `seed()` drops the whole SQLite file, destroying uploads, history, and any keys stored in model rows. The registry is cleaned with a targeted DELETE instead. Full procedure and rationale: [settings-rework spec §6](../superpowers/specs/2026-07-02-settings-rework.md).
 
-**Current update procedure (rev-5, wave-5):** [deploy/update-server.sh](../../deploy/update-server.sh) automates a `dev-demo` rollout onto the owner's server (`72.56.109.228`) — git pull, frontend build, `demo.db` backup, image rebuild + restart of ONLY the `gse-demo` container, running `python -m palimpsest.webapp.migrate` against the live DB before it starts serving, disabling the retired `cultural` criterion (`UPDATE`, never `DELETE`), and forcing `temperature: 0` on the demo model rows via the live API. See [deploy/README.md](../../deploy/README.md) for the full step list and env vars.
+**Current update procedure (rev-5, wave-5; steps re-scoped 2026-07-16 for session isolation):** [deploy/update-server.sh](../../deploy/update-server.sh) automates a `dev-demo` rollout onto the owner's server (`72.56.109.228`) — git pull, frontend build, `demo.db` backup, image rebuild, running `python -m palimpsest.webapp.migrate` against the live DB before the new container starts serving, restart of ONLY the `gse-demo` container, and a boot-critical smoke test. Migrate itself now retires the `cultural` criterion (`_reduce_to_three_criteria`, `UPDATE`/archive, never `DELETE`) AND pins `temperature: 0.7` on the demo model rows (`_pin_demo_model_temperature`, idempotent, every run) — both used to be separate post-serving steps in this script (a live-API `UPDATE`/`PUT` loop with no cookie), moved into `migrate.py` because under session isolation an unauthenticated post-serving write like that would silently land in a one-off session clone instead of golden. The script has NO post-serving API mutations left. See [deploy/README.md](../../deploy/README.md) for the full step list, env vars, and `/data/sessions`.
 
 1. **Backup first** (cheap, one file): `cp /opt/gse-demo/data/demo.db /opt/gse-demo/data/demo.db.bak`.
 2. **FK pre-check — must return 0, otherwise stop:**
@@ -207,7 +290,7 @@ See [contracts spec §5.6](../superpowers/specs/2026-07-02-custom-pair-upload-de
 
 `translate.run_translation(doc_id, client_for)` (module `translate.py`) walks paragraphs in order, skipping any that already have a `target` (idempotent resume — a repeat `POST .../translate` only fills in what's still empty). Context is a rolling window of the last 2 translated paragraphs (trimmed to 2000 chars), fed into the user prompt as "Context — previous translation". Each call goes through `budget.reserve()`/`settle()` like `_judge_live`, retries once on a transient error (`is_transient_error`), and a hard `BudgetExceeded` mid-run stops the loop immediately (`status='failed', errorReason='budget_exhausted'`) rather than marking the untried remainder "done". `POST /api/documents/{doc_id}/translate` does a rough pre-check (`budget.estimate` against the configured model+params) before even launching the background task, so an already-exhausted budget never starts one; the per-call `reserve()` remains the hard guarantee regardless.
 
-Concurrency: `translate._translating: set[int]` mirrors `app._evaluating` — while a doc_id is in it, `POST /api/paragraphs/{pid}/evaluate` and `POST /api/documents/{doc_id}/reset` both 409 `translation_in_progress`, and `DELETE /api/documents/{doc_id}` calls `translate.cancel(doc_id)` (same pattern as `precompute.cancel`) to stop the background task and discard it from the set.
+Concurrency: `translate._translating: set[tuple[str, int]]` (keyed `(sid, doc_id)`, session isolation 2026-07-16 — see that section above) mirrors `app._evaluating` — while a `(sid, doc_id)` pair is in it, `POST /api/paragraphs/{pid}/evaluate` and `POST /api/documents/{doc_id}/reset` both 409 `translation_in_progress`, and `DELETE /api/documents/{doc_id}` calls `translate.cancel(doc_id)` (same pattern as `precompute.cancel`, resolving the CURRENT session's own key) to stop the background task and discard it from the set — session-scoped by construction, so one session's delete can never cancel another session's live translate task for the same doc_id.
 
 `app._client_for(conn, model_name, params_override=None)` grew a third parameter for this: `translate.py` and `_grounding_judge_live` pass their own config's `params_json` as `params_override`, which REPLACES the model registry row's own params entirely (the registry-row params are still what `_judge_live`/the Test probe use — no override there). Before this, `_grounding_judge_live` computed its budget estimate from `grounding_config.params_json` but built the actual client from the model row's own params — a no-op-params bug now fixed by the same mechanism (see [known_issues.md](../known_issues.md)).
 
@@ -471,7 +554,7 @@ When `DEMO_STATIC_DIR` is set (the image sets it to `/app/frontend/dist`), [app.
 
 - **Boundary-word de-duplication on apply.** A judge suggestion sometimes repeats the word immediately before or after the target fragment (fragment `drawn into buying and selling`, suggestion `partly incorporated into the land market`, with an existing `partly` just before). `apply-edit` (`_splice_suggestion`) drops that duplicated boundary word so the result reads `…were partly incorporated…`, never `…partly partly…`. A non-numeric `issueId` returns 404 (it can match no row), not 500.
 
-- **Single-writer concurrency.** All DB writes are serialized by a single `threading.Lock`. The app is designed to run under `uvicorn --workers 1`. Multiple workers would bypass the lock and corrupt state.
+- **Single-writer concurrency, per session (2026-07-16).** Each session's writes are serialized by its OWN `threading.Lock` (`db.current_lock()`, see "Session isolation" above) — two sessions no longer contend on one global lock. Golden (startup procedures, golden-token requests) and the legacy single-DB test mode both still serialize on one shared `db._lock`, matching the pre-session-isolation single-writer design for those cases. The app is designed to run under `uvicorn --workers 1`. Multiple workers would bypass the locks and corrupt state.
 
 - **Criterion deletion blocked by history.** `DELETE /api/criteria/{cid}` returns 409 if any `score` or `issue` rows reference that `criterion_id`. Callers must disable the criterion instead of deleting it once it has history.
 

@@ -8,6 +8,40 @@ Up-link: [docs/subsystems/webapp.md](../subsystems/webapp.md) · process: global
 - Backend (FastAPI): `http://localhost:8000`, proxied under `/api`.
 - DB: SQLite at `data/demo.db`, populated by `python -m palimpsest.webapp.seed`.
 
+**Session isolation (2026-07-16) — each browser profile is its own ephemeral session.**
+Full design: [2026-07-16-session-isolation.md](../superpowers/specs/2026-07-16-session-isolation.md).
+The FIRST `/api/*` request from a browser/Playwright profile without a `glossa_sid` cookie
+transparently gets one (`Set-Cookie`, same-origin — the Vite dev proxy carries it, no test
+change needed) and, on its first DB touch, a lazy `sqlite3`-backup-API clone of `demo.db`
+under `data/sessions/<sid>.db`. Practical consequences for e2e runs:
+
+- **Two Playwright profiles running in parallel are automatically isolated** — a document
+  created/edited in profile A is invisible to profile B, by construction (each clones
+  `demo.db` independently). This is the FEATURE this manifest's journeys can now use to
+  verify real multi-reviewer isolation (two profiles, one dismisses an issue / edits
+  Settings / refines a paragraph in A, confirm B sees none of it) — not previously testable
+  since there was only one shared DB.
+- **A single profile's own run is unaffected** — all its requests reuse the SAME cookie, so
+  the canonical journeys above (seeded document, upload modal, translate/history/export) all
+  still work exactly as documented, just against that profile's own clone instead of the
+  literal `data/demo.db` file on disk.
+- **A server restart wipes every session clone** (`data/sessions/*`) — a long-running local
+  dev session or a restarted backend mid-e2e-run means every profile's in-progress edits are
+  gone and it gets a fresh clone on its next request; this mirrors "restart = a fresh stand
+  for everyone" and is not a bug to chase if a run spans a backend restart.
+- **`scripts/create_demo_docs.py`** (used to seed `data/seed/demo_docs/*.json` uploads like
+  "World History — Selected Passages") now needs `--golden-token`/env `GLOSSA_GOLDEN_TOKEN`
+  (matching the server's `DEMO_ADMIN_TOKEN`) to land in the canonical `demo.db` any e2e
+  profile's clone can see — see [deploy/README.md](../../deploy/README.md) "Session
+  isolation". **Without a matching token** (e.g. local dev with `DEMO_ADMIN_TOKEN` unset,
+  where the header is a no-op), the script falls back to tracking its own session cookie
+  across the process's own requests, so a single `create_demo_docs.py --poll` invocation
+  still correctly polls the document it just created — but that document only exists in
+  THAT one throwaway session's clone, invisible to a real browser/Playwright profile
+  (a different session entirely). For seeding data any e2e profile must see, the server
+  needs `DEMO_ADMIN_TOKEN` set and the script needs the matching `--golden-token`; a plain
+  no-token run is only useful for smoke-testing the script/pipeline itself.
+
 ## Real seed data (single source)
 
 `data/seed/seed_paragraphs.jsonl` — 15 body paragraphs from the book opening (RU source `data/pilot/pilot_original.md`, EN target the `gemma_par_by_par` translation), rebuilt by [scripts/rebuild_seed_texts.py](../../scripts/rebuild_seed_texts.py) as part of [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md) (was: 16 curated paragraphs from the pilot run, `gpt-5.4-mini` par-by-par, top-by-issue-density). Seed-refresh Phases A–C are complete: each record carries genuine LLM-judge baselines (`openai/gpt-5.4-mini`) for 4 seeded criteria plus real terminology (haiku-4.5 extract + G6 `label_first` grounding/pairing, 204 terms — see [terminology stage doc](../stages/terminology.md) Status). The `term` table's real difficulty/pairAccuracy verdicts reach the DB via a separate step, `uv run python scripts/load_terms.py` (or `make reseed`, which chains both steps), run **after** `python -m palimpsest.webapp.seed` — `seed.py` alone still writes its placeholder `VERDICTS[i % 3]` rotation for difficulty/pairAccuracy (see [webapp.md](../subsystems/webapp.md) `seed.py` row and [known_issues.md](../known_issues.md)).

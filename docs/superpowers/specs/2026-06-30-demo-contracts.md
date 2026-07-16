@@ -508,3 +508,43 @@ Owner decision from a screenshot review of the live picker: of the 3 documents t
 Owner decision from the same screenshot review: repeated manual testing on the curated demo document ("World History — Selected Passages", the sole survivor of the picker curation delta above) left `target_revision` rows nobody ever scored, showing up in `GET /api/paragraphs/{pid}/revisions` (§2) as "N hours ago · not scored" clutter.
 
 **Mechanism (no DTO/DDL change — `RevisionEntry`'s shape is untouched, this is a data-cleanliness fix, not a contract change):** `migrate.py`'s `_prune_orphan_revisions`, gated by exact document TITLE match to the curated document (runs strictly after `_curate_demo_documents` in `migrate()`'s step order, so it always sees the already-renamed canonical title), deletes every `target_revision` row for that document's paragraphs that is BOTH (i) not the paragraph's earliest (seed) revision AND (ii) not referenced by any `score.revision_id` row anywhere. Score/issue rows are **never** touched or deleted (owner hard invariant, `.claude/rules/invariants.md`) — a revision any `score` row points at is excluded from the delete candidate set by construction (not merely by an FK error being caught), with `PRAGMA foreign_keys=ON` as a second line of defense on the connection. Idempotent (a second run finds nothing left to prune) and logs the pruned row count. Runs on every app startup, same as the picker curation step. See `docs/subsystems/webapp.md` "Revision history & best" and `migrate.py::_prune_orphan_revisions`.
+
+## Session isolation delta (2026-07-16, EMNLP-demo sprint — parallel reviewers)
+
+Full design: [2026-07-16-session-isolation.md](2026-07-16-session-isolation.md). Resolves the
+"deferred idea" flagged in the document-picker-curation delta above (per-session document
+isolation) — every browser session now transparently works against its own ephemeral SQLite
+clone of the golden DB, so uploads/edits/settings from one reviewer are invisible to another,
+and only the owner's golden-token path (below) reaches the canonical DB the picker-curation
+delta operates on.
+
+**REST-level behavior change (no DTO/DDL change — every existing request/response shape in
+§1/§2 is byte-identical):**
+
+- Every `/api/*` request now carries/receives a `glossa_sid` cookie (`HttpOnly; Path=/;
+  SameSite=lax; Secure; Max-Age=14400`) — set by the server on the first request without one
+  (or with a malformed value), reused after that. Frontend needs no change: same-origin
+  cookies are sent automatically by the browser, and the Vite dev proxy carries them too.
+- New request header `X-Golden-Session`, checked constant-time against env
+  `DEMO_ADMIN_TOKEN`: when it matches, the request routes to the canonical golden DB instead
+  of a session clone and no `Set-Cookie` is issued. `DEMO_ADMIN_TOKEN` unset → the header is
+  silently ignored (an ordinary session is created as if the header were absent) — this is
+  the ONLY way to add a document/setting that every session's clone inherits, besides a
+  redeploy's own migrate/seed/curation steps.
+- No new/changed JSON fields, status codes, or routes. `GET /api/documents/{id}` for a
+  doc_id that exists in golden but not (yet) in the caller's session clone behaves exactly
+  like a doc_id that was never created — `404`, same as always (the clone simply doesn't
+  have that autoincrement row).
+
+**Data invariant (extends, does not relax, the existing one):** golden's `score`/`issue`
+rows remain governed by the "never delete predictions" invariant in full force. A session
+clone's file is deleted on TTL/restart — this is explicitly NOT a deletion of canonical
+predictions (owner decision, 2026-07-16): the clone was never canonical to begin with, and
+nothing a reviewer does in their own session can ever reach a golden `score`/`issue` row.
+
+**`scripts/create_demo_docs.py`** (the owner's only path to add canonical documents through
+the real API+LLM pipeline, referenced by the document-picker-curation delta above as
+producing the `mesopotamia-2`/`qin-state` uploads) gains `--golden-token`/env
+`GLOSSA_GOLDEN_TOKEN`, sent on every request it makes (create + poll) — without it, a plain
+unauthenticated run against a session-isolated server would create documents nobody else
+(including a re-run of the script itself) can ever see again.

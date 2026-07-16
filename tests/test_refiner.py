@@ -211,19 +211,20 @@ def test_refine_no_api_key_is_503(seeded, monkeypatch):
 
 
 def test_refine_translation_in_progress_is_503(seeded):
-    from palimpsest.webapp import translate
+    from palimpsest.webapp import db, translate
     from palimpsest.webapp.app import refine_paragraph
 
     conn = seeded.connect()
     pid = conn.execute("SELECT id FROM paragraph ORDER BY id LIMIT 1").fetchone()["id"]
     doc_id = conn.execute("SELECT document_id FROM paragraph WHERE id=?", (pid,)).fetchone()["document_id"]
-    translate._translating.add(doc_id)
+    key = (db.current_sid(), doc_id)
+    translate._translating.add(key)
     try:
         with pytest.raises(HTTPException) as ei:
             asyncio.run(refine_paragraph(pid))
         assert ei.value.status_code == 503
     finally:
-        translate._translating.discard(doc_id)
+        translate._translating.discard(key)
 
 
 def test_refine_budget_exhausted_is_429(seeded, monkeypatch):

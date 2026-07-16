@@ -114,10 +114,12 @@ def test_reset_409s_against_in_flight_evaluate(eval_client, monkeypatch):
 
     results = {}
 
+    eval_key = (db.current_sid(), doc_id)
+
     async def scenario():
         ev_task = asyncio.create_task(evaluate(pid, EvaluateBody()))
         await asyncio.wait_for(backoff_entered.wait(), timeout=2.0)
-        assert doc_id in app_mod._evaluating, "evaluate() should still be in flight during its backoff sleep"
+        assert eval_key in app_mod._evaluating, "evaluate() should still be in flight during its backoff sleep"
         try:
             reset_document(doc_id)
             results["reset_status"] = 200
@@ -127,7 +129,7 @@ def test_reset_409s_against_in_flight_evaluate(eval_client, monkeypatch):
 
     asyncio.run(scenario())
     assert results["reset_status"] == 409
-    assert doc_id not in app_mod._evaluating              # cleared after gather, no leak
+    assert eval_key not in app_mod._evaluating              # cleared after gather, no leak
     assert results["ev"]["failedCriterionIds"] == []       # evaluate itself still completed successfully
 
 
@@ -168,7 +170,7 @@ def test_delete_during_retrying_evaluate_precompute_cancel_not_blocked_by_backof
 
     async def scenario():
         pc_task = asyncio.create_task(precompute.run(precompute_doc["id"], slow_precompute_judge))
-        precompute._tasks[precompute_doc["id"]] = pc_task
+        precompute._tasks[(db.current_sid(), precompute_doc["id"])] = pc_task
         await asyncio.sleep(0.01)
 
         ev_task = asyncio.create_task(

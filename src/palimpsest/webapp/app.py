@@ -6,7 +6,9 @@ API-only: the React/TipTap frontend is served separately by Vite (which proxies
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import hashlib
+import hmac
 import io
 import json
 import logging
@@ -14,6 +16,7 @@ import os
 import re
 import sqlite3
 import time
+import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
@@ -58,11 +61,150 @@ def _reset_stuck_terms(conn: sqlite3.Connection) -> int:
     ``'running'`` row back to ``'none'`` is always safe (this can never race
     a task that is genuinely still running). Returns the number of rows
     reset (0 in the common case)."""
-    with db._lock:
+    with db.current_lock():
         n = conn.execute(
             "UPDATE document SET terms_status='none' WHERE terms_status='running'").rowcount
         conn.commit()
     return n
+
+
+# ─────────────────────────── session isolation: ASGI middleware ───────────────────────────
+# docs/superpowers/specs/2026-07-16-session-isolation.md. A raw ASGI middleware
+# (not @app.middleware("http")/BaseHTTPMiddleware — that runs the downstream
+# call in a separate task via a queue relay, which has historically muddied
+# contextvar propagation; a plain ASGI class awaits self.app(...) directly in
+# the SAME task, which is what db._session_id.set() below needs to reliably
+# reach the route handler and everything it calls).
+GLOSSA_SID_COOKIE = "glossa_sid"
+SESSION_MAX_AGE_S = 4 * 60 * 60          # 4h, mirrors the TTL sweep idle window below
+GOLDEN_TOKEN_HEADER = "x-golden-session"
+
+
+def _resolve_sid(raw_cookie: str | None) -> tuple[str, bool]:
+    """(sid, is_fresh) — a present, well-formed UUID cookie is reused as-is;
+    anything else (absent/malformed) mints a fresh uuid4."""
+    if raw_cookie:
+        try:
+            uuid.UUID(raw_cookie)
+            return raw_cookie, False
+        except ValueError:
+            pass
+    return str(uuid.uuid4()), True
+
+
+class SessionMiddleware:
+    """Scoped to ``/api/*`` only — the static frontend mount and the JSON
+    ``/`` health stub never need a session. ``X-Golden-Session`` (checked
+    constant-time against env ``DEMO_ADMIN_TOKEN``) routes the owner's
+    canonical-update traffic (``scripts/create_demo_docs.py --golden-token``)
+    straight to the golden DB, no cookie issued. Otherwise: reuse a
+    well-formed ``glossa_sid`` cookie, or mint+``Set-Cookie`` a fresh one."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http" or not scope["path"].startswith("/api/"):
+            await self.app(scope, receive, send)
+            return
+
+        request = Request(scope, receive=receive)
+        admin_token = os.environ.get("DEMO_ADMIN_TOKEN", "")
+        golden_header = request.headers.get(GOLDEN_TOKEN_HEADER)
+        if admin_token and golden_header and hmac.compare_digest(golden_header, admin_token):
+            # Log only the FACT of a golden-token request — never the token value.
+            logger.info("golden-token request: %s %s", request.method, request.url.path)
+            token = db._session_id.set(db.GOLDEN_SID)
+            try:
+                await self.app(scope, receive, send)
+            finally:
+                db._session_id.reset(token)
+            return
+
+        sid, is_fresh = _resolve_sid(request.cookies.get(GLOSSA_SID_COOKIE))
+        token = db._session_id.set(sid)
+        if not is_fresh:
+            try:
+                await self.app(scope, receive, send)
+            finally:
+                db._session_id.reset(token)
+            return
+
+        cookie_value = (
+            f"{GLOSSA_SID_COOKIE}={sid}; HttpOnly; Path=/; SameSite=lax; "
+            f"Secure; Max-Age={SESSION_MAX_AGE_S}"
+        ).encode("latin-1")
+
+        async def send_with_cookie(message):
+            if message["type"] == "http.response.start":
+                message = dict(message)
+                message["headers"] = [*message.get("headers", []), (b"set-cookie", cookie_value)]
+            await send(message)
+
+        try:
+            await self.app(scope, receive, send_with_cookie)
+        finally:
+            db._session_id.reset(token)
+
+
+# ─────────────────────────── session isolation: TTL sweep ───────────────────────────
+SESSION_SWEEP_INTERVAL_S = 15 * 60
+SESSION_IDLE_TTL_S = 4 * 60 * 60
+
+
+def _session_has_live_task(sid: str) -> bool:
+    """True iff `sid` shows up in any of the three background-task registries
+    -- a sweep must never close out from under a running translate/precompute/
+    terms task (spec: skip-by-task, a timeout-margin heuristic, not a
+    structural lock guarantee -- documented honestly there)."""
+    return (
+        any(k[0] == sid for k in translate._tasks)
+        or any(k[0] == sid for k in translate._translating)
+        or any(k[0] == sid for k in terminology_live._tasks)
+        or any(k[0] == sid for k in precompute._tasks)
+    )
+
+
+def _purge_session_state(sid: str) -> None:
+    """Drop every `(sid, doc_id)` key belonging to `sid` from ALL SEVEN
+    in-memory structures rekeyed by session isolation (spec's full list)."""
+    for store in (translate._status, translate._tasks, precompute._status,
+                  precompute._tasks, terminology_live._tasks):
+        for key in [k for k in store if k[0] == sid]:
+            store.pop(key, None)
+    translate._translating.difference_update(
+        {k for k in translate._translating if k[0] == sid})
+    _evaluating.difference_update({k for k in _evaluating if k[0] == sid})
+
+
+async def _sweep_sessions_once() -> int:
+    """One TTL pass: close+unlink every session idle > SESSION_IDLE_TTL_S
+    (unless it has a live background task), purging its in-memory state too.
+    Returns the number of sessions closed (0 in the common case)."""
+    with db._sessions_guard:
+        snapshot = list(db._sessions.items())
+    now = time.monotonic()
+    closed = 0
+    for sid, entry in snapshot:
+        if now - entry.last_used <= SESSION_IDLE_TTL_S:
+            continue
+        if _session_has_live_task(sid):
+            continue
+        db.close_session(sid)
+        _purge_session_state(sid)
+        closed += 1
+    if closed:
+        logger.info("session TTL sweep: closed %d idle session(s)", closed)
+    return closed
+
+
+async def _session_sweeper() -> None:
+    while True:
+        await asyncio.sleep(SESSION_SWEEP_INTERVAL_S)
+        try:
+            await _sweep_sessions_once()
+        except Exception:
+            logger.exception("session TTL sweep failed")
 
 
 @asynccontextmanager
@@ -71,6 +213,7 @@ async def _lifespan(_app: FastAPI):
     # app serves any request (spec 2026-07-05-score-history-best §2.4) — a
     # fresh dev/test DB (db.init_db) already has the full SCHEMA, so this is a
     # no-op there beyond the idempotent CREATE TABLE IF NOT EXISTS/backfill checks.
+    # All of this runs against GOLDEN (db._startup_done is still False).
     conn = db.connect()
     _migrate_db(conn)
     n = _reset_stuck_terms(conn)
@@ -78,10 +221,32 @@ async def _lifespan(_app: FastAPI):
         logger.info(
             "startup sweep: reset terms_status 'running'->'none' for %d document(s) "
             "(stale from a previous process's in-flight terminology task)", n)
-    yield
+    # Session isolation (2026-07-16): wipe any session clones a prior process
+    # left on disk ("restart = a fresh stand for everyone"), THEN open the
+    # gate that makes connect()/current_lock() require a real session id.
+    db.wipe_sessions()
+    db.set_startup_done()
+    sweep_task = asyncio.create_task(_session_sweeper())
+    try:
+        yield
+    finally:
+        sweep_task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await sweep_task
+        # Reset process-global session state so a SECOND lifespan cycle in the
+        # same Python process (only happens in tests that use `with
+        # TestClient(app) as client:` more than once) starts clean rather than
+        # inheriting a stale "already past startup" flag or golden connection
+        # pinned to a since-monkeypatched-away DB_PATH.
+        db._startup_done = False
+        if db._golden_conn is not None:
+            db._golden_conn.close()
+        db._golden_conn = None
+        db._golden_conn_path = None
 
 
 app = FastAPI(title="Glossa-MT demo", lifespan=_lifespan)
+app.add_middleware(SessionMiddleware)
 
 
 @app.exception_handler(sqlite3.IntegrityError)
@@ -101,8 +266,9 @@ EVAL_BACKOFF = float(os.environ.get("PALIMPSEST_EVAL_BACKOFF", "0.5"))
 MAX_PARAGRAPHS = 40
 MAX_PARA_CHARS = 4000
 
-# doc ids with an /evaluate in flight — reset 409s against these.
-_evaluating: set[int] = set()
+# (session_id, doc_id) pairs with an /evaluate in flight — reset 409s against
+# these (rekeyed for session isolation, 2026-07-16 — see db.current_sid()).
+_evaluating: set[tuple[str, int]] = set()
 
 
 def _now() -> str:
@@ -473,8 +639,8 @@ def _clone_predictions(
     """Copy every term/score/issue row from ``source_doc_id`` onto the
     freshly-inserted paragraphs in ``new_pids``, index-aligned (caller
     already matched paragraph counts via the fingerprint, and holds
-    ``db._lock`` inside the same not-yet-committed transaction as the
-    paragraph inserts).
+    ``db.current_lock()`` inside the same not-yet-committed transaction as
+    the paragraph inserts).
 
     Safe to copy ``term.char_start``/``char_end`` verbatim (see below) only
     because the caller (``_find_clone_source``) already guarantees a
@@ -574,7 +740,7 @@ async def create_document(request: Request) -> dict:
     run_precompute = body.precompute and not body.translate
 
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         ts = _now()
         doc_id = conn.execute(
             "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,created_at) "
@@ -623,7 +789,7 @@ async def create_document(request: Request) -> dict:
         else:
             precompute.mark_skipped(doc_id)
         if body.translate:
-            translate._translating.add(doc_id)
+            translate._translating.add((db.current_sid(), doc_id))
             translate.mark_started(doc_id, len(body.paragraphs))
         elif cloned_from is not None:
             conn.execute("UPDATE document SET terms_status='done' WHERE id=?", (doc_id,))
@@ -651,9 +817,9 @@ async def create_document(request: Request) -> dict:
 @app.delete("/api/documents/{doc_id}", status_code=204)
 def delete_document_route(doc_id: int):
     conn = db.connect()
-    if doc_id in _evaluating:
+    if (db.current_sid(), doc_id) in _evaluating:
         return JSONResponse({"error": "evaluate_in_flight"}, status_code=409)
-    with db._lock:
+    with db.current_lock():
         d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
         if not d:
             raise HTTPException(404, "document not found")
@@ -696,7 +862,7 @@ def _para_or_404(conn, pid: int):
 @app.patch("/api/paragraphs/{pid}")
 def patch_paragraph(pid: int, target: str = Body(..., embed=True)) -> dict:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         p = _para_or_404(conn, pid)
         conn.execute("UPDATE paragraph SET target=? WHERE id=?", (target, pid))
         if target != p["target"]:
@@ -805,14 +971,15 @@ async def evaluate(pid: int, body: EvaluateBody = EvaluateBody()) -> dict:
     target_ids = set(body.criterionIds) if body.criterionIds else {c["id"] for c in enabled}
     crits = [c for c in enabled if c["id"] in target_ids]
 
-    _evaluating.add(doc_id)
+    eval_key = (db.current_sid(), doc_id)
+    _evaluating.add(eval_key)
     try:
         results = await asyncio.gather(
             *[_judge_live(conn, c, p["source"], p["target"],
                           doc["source_lang"], doc["target_lang"]) for c in crits],
             return_exceptions=True)
     finally:
-        _evaluating.discard(doc_id)
+        _evaluating.discard(eval_key)
 
     succeeded = {c["id"]: r for c, r in zip(crits, results) if not isinstance(r, Exception)}
     failed = [c["id"] for c, r in zip(crits, results) if isinstance(r, Exception)]
@@ -823,7 +990,7 @@ async def evaluate(pid: int, body: EvaluateBody = EvaluateBody()) -> dict:
             return cached
         # no cache and nothing succeeded → empty live result (all failed)
 
-    with db._lock:
+    with db.current_lock():
         # values for ALL enabled = latest, overridden by fresh successes
         latest, _, _, agg_prev, _ = _para_score_views(conn, pid)
         values = {cid: row["value"] for cid, row in latest.items()}
@@ -923,7 +1090,7 @@ def _splice_suggestion(target: str, frag: str, suggestion: str) -> str | None:
 @app.post("/api/paragraphs/{pid}/apply-edit")
 def apply_edit(pid: int, body: ApplyEditBody) -> dict:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         p = _para_or_404(conn, pid)
         try:
             iid = int(body.issueId)
@@ -994,7 +1161,7 @@ def patch_issue_status(iid: int, body: IssueStatusBody) -> dict:
         # 'outdated' = the fragment was overlapped by an earlier accepted edit
         raise HTTPException(422, {"error": "invalid_status"})
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         iss = conn.execute("SELECT * FROM issue WHERE id=?", (iid,)).fetchone()
         if not iss:
             raise HTTPException(404, "issue not found")
@@ -1008,11 +1175,11 @@ def patch_issue_status(iid: int, body: IssueStatusBody) -> dict:
 @app.post("/api/documents/{doc_id}/reset")
 def reset_document(doc_id: int) -> dict:
     conn = db.connect()
-    if doc_id in _evaluating:
+    if (db.current_sid(), doc_id) in _evaluating:
         raise HTTPException(409, "evaluate in flight")
     if translate.is_translating(doc_id):
         raise HTTPException(409, "translation_in_progress")
-    with db._lock:
+    with db.current_lock():
         d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
         if not d:
             raise HTTPException(404, "document not found")
@@ -1062,7 +1229,7 @@ class RestoreBody(BaseModel):
 @app.post("/api/paragraphs/{pid}/restore")
 def restore_paragraph(pid: int, body: RestoreBody) -> dict:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         _para_or_404(conn, pid)
         rev = conn.execute("SELECT * FROM target_revision WHERE id=?", (body.revisionId,)).fetchone()
         if not rev:
@@ -1103,7 +1270,7 @@ async def translate_document(doc_id: int) -> dict:
         return JSONResponse({"detail": "budget_exhausted"}, status_code=409)
 
     total = conn.execute("SELECT COUNT(*) n FROM paragraph WHERE document_id=?", (doc_id,)).fetchone()["n"]
-    translate._translating.add(doc_id)
+    translate._translating.add((db.current_sid(), doc_id))
     translate.mark_started(doc_id, total)
     translate.launch(doc_id, _client_for)
     return {"status": "started", "total": total}
@@ -1172,7 +1339,7 @@ def create_criterion(c: CriterionBody) -> dict:
     if not c.prompt.strip():
         raise HTTPException(422, "prompt must not be empty")
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute(
             "INSERT INTO criterion(id,name,model_name,prompt,scale_min,scale_max,weight,color,enabled) "
             "VALUES(?,?,?,?,?,?,?,?,?)",
@@ -1185,7 +1352,7 @@ def create_criterion(c: CriterionBody) -> dict:
 @app.put("/api/criteria/{cid}")
 def update_criterion(cid: str, c: CriterionBody) -> dict:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         if not conn.execute("SELECT 1 FROM criterion WHERE id=?", (cid,)).fetchone():
             raise HTTPException(404, "criterion not found")
         conn.execute(
@@ -1200,7 +1367,7 @@ def update_criterion(cid: str, c: CriterionBody) -> dict:
 @app.delete("/api/criteria/{cid}", status_code=204)
 def delete_criterion(cid: str) -> None:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         refs = conn.execute("SELECT 1 FROM score WHERE criterion_id=? UNION SELECT 1 FROM issue WHERE criterion_id=? LIMIT 1",
                             (cid, cid)).fetchone()
         if refs:
@@ -1296,7 +1463,7 @@ def create_model(m: dict = Body(...)) -> dict:
     _guard_params(params)
     _validate_params_whitelist(params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
                      (name, m["baseUrl"], m.get("apiKey", ""), json.dumps(params)))
         conn.commit()
@@ -1309,7 +1476,7 @@ def update_model(name: str, m: dict = Body(...)) -> dict:
     _guard_params(params)
     _validate_params_whitelist(params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         row = conn.execute("SELECT * FROM model WHERE name=?", (name,)).fetchone()
         if not row:
             raise HTTPException(404, "model not found")
@@ -1328,7 +1495,7 @@ def update_model(name: str, m: dict = Body(...)) -> dict:
 @app.delete("/api/models/{name:path}", status_code=204)
 def delete_model(name: str) -> None:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         if conn.execute("SELECT 1 FROM criterion WHERE model_name=? LIMIT 1", (name,)).fetchone():
             raise HTTPException(409, "model referenced by a criterion")
         conn.execute("DELETE FROM model WHERE name=?", (name,))
@@ -1357,7 +1524,7 @@ def update_grounding_config(gc: GroundingConfigBody) -> dict:
     _guard_params(gc.params)
     _validate_params_whitelist(gc.params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute(
             "INSERT INTO grounding_config(id,model_name,prompt,params_json) VALUES(1,?,?,?) "
             "ON CONFLICT(id) DO UPDATE SET model_name=excluded.model_name, "
@@ -1396,7 +1563,7 @@ def update_translator_config(tc: TranslatorConfigBody) -> dict:
     _guard_params(tc.params)
     _validate_params_whitelist(tc.params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute(
             "INSERT INTO translator_config(id,model_name,prompt,params_json) VALUES(1,?,?,?) "
             "ON CONFLICT(id) DO UPDATE SET model_name=excluded.model_name, "
@@ -1435,7 +1602,7 @@ def update_refiner_config(rc: RefinerConfigBody) -> dict:
     _guard_params(rc.params)
     _validate_params_whitelist(rc.params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute(
             "INSERT INTO refiner_config(id,model_name,prompt,params_json) VALUES(1,?,?,?) "
             "ON CONFLICT(id) DO UPDATE SET model_name=excluded.model_name, "
@@ -1555,7 +1722,7 @@ async def refine_paragraph(pid: int) -> dict:
     if not revised:
         raise HTTPException(502, {"detail": "refine_failed", "error": "empty_output"})
 
-    with db._lock:
+    with db.current_lock():
         with conn:
             conn.execute("UPDATE paragraph SET target=? WHERE id=?", (revised, pid))
             for f in findings:

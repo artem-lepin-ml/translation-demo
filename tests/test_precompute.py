@@ -112,7 +112,7 @@ def test_delete_mid_run_cancels_task_no_further_judge_calls(scored_client):
 
     async def scenario():
         task = asyncio.create_task(precompute.run(doc["id"], slow_judge))
-        precompute._tasks[doc["id"]] = task
+        precompute._tasks[(db.current_sid(), doc["id"])] = task
         await asyncio.sleep(0.01)              # let the first call start
 
         r = scored_client.delete(f"/api/documents/{doc['id']}")
@@ -136,7 +136,7 @@ def test_delete_pops_status(scored_client):
 
     async def scenario():
         task = asyncio.create_task(precompute.run(doc["id"], slow_judge))
-        precompute._tasks[doc["id"]] = task
+        precompute._tasks[(db.current_sid(), doc["id"])] = task
         await asyncio.sleep(0.01)
         scored_client.delete(f"/api/documents/{doc['id']}")
         precompute.cancel(doc["id"])

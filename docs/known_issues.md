@@ -4,6 +4,25 @@ Up-link: [docs/README.md](README.md). Open limitations and non-obvious traps for
 
 ## Open
 
+### Two concurrent `starlette.testclient.TestClient` instances can deadlock inside `sqlite3.Connection.backup()` (session-isolation tests, 2026-07-16)
+Discovered writing `tests/test_session_isolation.py`: a document create launches a background
+asyncio task (`terminology_live.launch`); `TestClient` spins up a SEPARATE OS-thread "blocking
+portal" (its own private event loop) per instance/per un-entered call, so a SECOND, freshly-
+instantiated `TestClient` racing that background task's `db.current_lock()` acquisition (via
+`terminology_live._finish`) against the second client's own `db.connect()`-triggered
+`clone_golden()` reliably hung inside `golden.backup(dest_conn)` — confirmed via
+`faulthandler.dump_traceback(all_threads=True)` thread dumps during a bisection. Confirmed
+test-harness-only: the identical race through a single-event-loop `httpx.AsyncClient` +
+`httpx.ASGITransport` driving the SAME app never hangs — a real single-process `uvicorn`
+server has no multi-portal bridging, so this is not a production concern. **Workaround (not a
+code fix): any new test that creates a document via one client/session and then immediately
+touches it from a SECOND, separately-instantiated `TestClient` must drive that scenario
+through `httpx.AsyncClient(transport=httpx.ASGITransport(app=app))` + `async with
+app.router.lifespan_context(app):` instead of `starlette.testclient.TestClient` — see
+`tests/test_session_isolation.py`'s module docstring and its `_async_client` helper for the
+working pattern.** A single `TestClient` instance driving several sequential requests on its
+own is unaffected (no second portal in play).
+
 ### Translate status is lost on server restart (accepted, same class as precompute)
 `translate._status`/`translate._tasks` (2026-07-05-translator) are in-memory, keyed by `doc_id`, same as `precompute._status`. A restart mid-translation loses the visible `running`/`done`/`failed` badge and drops the reference to the asyncio task — the loop itself was already cancelled by the process exit. Recovery is a plain re-`POST /api/documents/{doc_id}/translate`: already-translated paragraphs (`target != ''`) are skipped, so it resumes rather than re-translating from scratch. Not fixed — same accepted risk as "Precompute sub-cap resets on server restart" below.
 

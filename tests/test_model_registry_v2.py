@@ -6,6 +6,7 @@ translator_config/grounding_config/refiner_config) to the new default, then
 prunes the 8 obsolete rows once nothing references them."""
 from __future__ import annotations
 
+import json
 import sqlite3
 
 import pytest
@@ -153,16 +154,29 @@ def test_translategemma_pruned_if_present_from_pre_finalization_snapshot(prod_co
 
 def test_owner_edited_api_key_not_clobbered_on_second_run(prod_conn):
     """INSERT OR IGNORE semantics: once the qwen row exists, migrate() must
-    never overwrite an api_key/params the owner set via Settings."""
+    never overwrite an api_key the owner set via Settings, nor any OTHER
+    params key -- EXCEPT `temperature`, which `_pin_demo_model_temperature`
+    (session isolation, 2026-07-16) deliberately re-pins to the MATRIX
+    default on EVERY migrate() run, by design: this moved former deploy-
+    script step 8's "pin temperature=0.7 on every deploy" (owner 2026-07-11,
+    judge/refiner determinism for the recorded demo) out of a live post-
+    serving API call and into migrate() itself -- see that function's
+    docstring. A non-temperature params key an owner adds still survives
+    untouched."""
     migrate.migrate(prod_conn)
-    prod_conn.execute("UPDATE model SET api_key='sk-owner-set', params_json='{\"temperature\":0.9}' "
-                       "WHERE name=?", (DEFAULT_CRITERION_MODEL,))
+    prod_conn.execute(
+        "UPDATE model SET api_key='sk-owner-set', "
+        "params_json='{\"temperature\":0.9,\"max_tokens\":999}' WHERE name=?",
+        (DEFAULT_CRITERION_MODEL,))
     prod_conn.commit()
     migrate.migrate(prod_conn)  # run again — must not clobber the owner's edit
     row = prod_conn.execute("SELECT api_key, params_json FROM model WHERE name=?",
                              (DEFAULT_CRITERION_MODEL,)).fetchone()
     assert row["api_key"] == "sk-owner-set"
-    assert row["params_json"] == '{"temperature":0.9}'
+    params = json.loads(row["params_json"])
+    assert params["max_tokens"] == 999, "a non-temperature params key survives migrate() untouched"
+    assert params["temperature"] == MATRIX[DEFAULT_CRITERION_MODEL].default_params["temperature"], \
+        "temperature is deliberately re-pinned to the MATRIX default on every migrate() run"
 
 
 def test_operator_set_current_matrix_criterion_model_survives_migrate(prod_conn):
