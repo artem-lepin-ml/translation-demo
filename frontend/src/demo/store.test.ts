@@ -22,6 +22,8 @@ vi.mock('./api-client', async (importOriginal) => {
     getGroundingConfig: vi.fn(),
     getTranslatorConfig: vi.fn(),
     getHealth: vi.fn(),
+    deleteDocument: vi.fn(),
+    resetDocument: vi.fn(),
   };
 });
 
@@ -43,6 +45,8 @@ import {
   getGroundingConfig,
   getTranslatorConfig,
   getHealth,
+  deleteDocument,
+  resetDocument,
 } from './api-client';
 import type {
   Criterion, DocumentSummary, GroundingConfig, ModelRegistryEntryPublic, TranslatorConfig,
@@ -770,5 +774,95 @@ describe('terms-status polling (store-owned single interval, S? live terminology
     // console-404s observed in the field) — prove it genuinely stopped.
     await vi.advanceTimersByTimeAsync(20000);
     expect(getDocument).toHaveBeenCalledTimes(1);
+  });
+
+  it('BUG-5 (wave2): deleteDoc stops the poller synchronously on a successful DELETE, instead of waiting for a trailing 404', async () => {
+    vi.mocked(getDocument).mockResolvedValue(makeDoc([]));
+    useDemoStore.setState({
+      documents: [{ id: 1, title: 'Doc', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1, origin: 'upload' }],
+    });
+    useDemoStore.getState().startTermsPolling();
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getDocument).toHaveBeenCalledTimes(1);   // one legitimate poll while the doc was still open
+
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    vi.mocked(getDocuments).mockResolvedValue([]);
+    await useDemoStore.getState().deleteDoc(1);
+
+    // Without the fix, the interval would still be running here and fire at
+    // least one more GET against the now-deleted id before a trailing 404
+    // eventually taught it to stop (the report observed exactly two).
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(getDocument).toHaveBeenCalledTimes(1);   // no further calls after delete
+  });
+});
+
+describe('deleteDoc (BUG-5 — clears `document` synchronously on a successful delete)', () => {
+  const summary: DocumentSummary = {
+    id: 1, title: 'Doc', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1, origin: 'upload',
+  };
+
+  it('sets document:null and documentLoading:true before refreshDocuments resolves (no picker flash)', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1), documents: [summary] });
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    let resolveGetDocuments!: (v: DocumentSummary[]) => void;
+    vi.mocked(getDocuments).mockImplementation(
+      () => new Promise((res) => { resolveGetDocuments = res; }),
+    );
+
+    const inFlight = useDemoStore.getState().deleteDoc(1);
+    await new Promise((r) => setTimeout(r, 0));   // let the DELETE's own microtasks settle
+    expect(useDemoStore.getState().document).toBeNull();
+    expect(useDemoStore.getState().documentLoading).toBe(true);
+
+    resolveGetDocuments([]);
+    await inFlight;
+  });
+
+  it('lands cleanly on the picker (loading cleared) when no documents remain after delete', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1), documents: [summary] });
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    vi.mocked(getDocuments).mockResolvedValue([]);
+
+    await useDemoStore.getState().deleteDoc(1);
+
+    const state = useDemoStore.getState();
+    expect(state.document).toBeNull();
+    expect(state.documentLoading).toBe(false);
+  });
+
+  it('switches to the first remaining document when one exists', async () => {
+    const other = { ...summary, id: 2 };
+    useDemoStore.setState({ document: makeDoc([], 1), documents: [summary, other] });
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    vi.mocked(getDocuments).mockResolvedValue([other]);
+    vi.mocked(getDocument).mockResolvedValue(makeDoc([], 2));
+
+    await useDemoStore.getState().deleteDoc(1);
+
+    expect(useDemoStore.getState().document?.id).toBe(2);
+  });
+});
+
+describe('resetDoc — documentResetNonce (SUSPECTED-1, wave2: History block staleness after Reset)', () => {
+  it('bumps documentResetNonce on every successful reset, so a paragraph.id-keyed History effect gets a reason to re-fire', async () => {
+    const fresh = makeDoc([], 1);
+    useDemoStore.setState({ document: makeDoc([], 1), documentResetNonce: 0 });
+    vi.mocked(resetDocument).mockResolvedValue(fresh);
+
+    await useDemoStore.getState().resetDoc();
+    expect(useDemoStore.getState().documentResetNonce).toBe(1);
+
+    await useDemoStore.getState().resetDoc();
+    expect(useDemoStore.getState().documentResetNonce).toBe(2);
+  });
+
+  it('does not bump documentResetNonce when the reset call fails', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1), documentResetNonce: 0 });
+    vi.mocked(resetDocument).mockRejectedValue(new Error('POST /documents/1/reset → 500'));
+
+    await useDemoStore.getState().resetDoc();
+
+    expect(useDemoStore.getState().documentResetNonce).toBe(0);
   });
 });

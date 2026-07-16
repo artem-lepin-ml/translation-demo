@@ -100,6 +100,62 @@ export interface TraceJson {
  *  landed yet in `api-client.ts`. */
 export type TermWithTrace = Term & { traceJson?: TraceJson };
 
+// ─── candidate display shaping ──────────────────────────────────────────────
+// Shared by GlossaryTab (Candidates table) and TermPopover ("Ambiguous senses")
+// — moved here from GlossaryTab.tsx (frontend-developer-stability-wave2) so a
+// second view doesn't have to import display-shaping logic out of another
+// React component. Single source of truth for "which candidate list is
+// actually true" (BUG-6, frontend-developer-stability-wave1).
+
+/** Normalized shape any "candidates" view renders, whichever backend field it
+ *  came from (see `candidatesForDisplay` — BUG-6, frontend-developer-stability-wave1).
+ *  `matchKind` is `null` when there is no real match provenance to report —
+ *  callers should render an honest "—", never a fabricated "none" (the old
+ *  bug: a `matched_via` field the backend never sends). `url` is always a
+ *  real or Wikidata-QID-derived link (`terminology/base.py`'s
+ *  `f"https://www.wikidata.org/wiki/{qid}"` convention). */
+export interface DisplayCandidate {
+  qid: string;
+  label: string;
+  description: string;
+  matchKind: string | null;
+  url: string;
+}
+
+/** `trace_json.candidates` (label_first.py's `candidates_traced`) is the
+ *  richer, ground-truth candidate list: same entities as the top-level
+ *  `Term.candidates` for most resolutions, but it never drops to `[]` for a
+ *  `judge_rejected` term (the top-level field does — see `TraceCandidate`'s
+ *  doc comment) and it carries real per-candidate match provenance. Prefer
+ *  it; fall back to the plain `WikidataRef` list only for legacy/seed rows
+ *  shipping `trace_json={}`, where match provenance honestly isn't known. */
+export function candidatesForDisplay(primary: TermWithTrace): DisplayCandidate[] {
+  const traced = primary.traceJson?.candidates;
+  if (traced && traced.length > 0) return traced.map(fromTraceCandidate);
+  return primary.candidates.map(fromWikidataRef);
+}
+
+function fromTraceCandidate(c: TraceCandidate): DisplayCandidate {
+  return {
+    qid: c.qid,
+    label: c.label_en || c.label_ru || c.qid,
+    description: c.description ?? '',
+    matchKind: c.matched ? matchKindLabel(c.matched.kind) : null,
+    url: `https://www.wikidata.org/wiki/${c.qid}`,
+  };
+}
+
+function fromWikidataRef(c: WikidataRef): DisplayCandidate {
+  return { qid: c.qid, label: c.label, description: c.description, matchKind: null, url: c.url };
+}
+
+/** `matched.kind` is `label_ru` | `alias_ru` | `alias_en` (match.py's
+ *  `exact_match`) — collapse the two alias kinds to one short "alias" label,
+ *  matching the "matched via" language `viaChipClass` was already styled for. */
+function matchKindLabel(kind: string): string {
+  return kind.startsWith('alias') ? 'alias' : 'label';
+}
+
 export type BadgeTone = 'det' | 'llm' | 'rej' | 'none';
 
 export interface Badge {

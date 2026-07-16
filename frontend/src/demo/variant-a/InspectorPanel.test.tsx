@@ -43,6 +43,7 @@ describe('InspectorPanel error banner (H3)', () => {
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
         onRestoreRevision={vi.fn()}
+        documentResetNonce={0}
       />,
     );
     expect(screen.getByText(/Evaluate failed/)).toBeTruthy();
@@ -84,6 +85,7 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
         onRestoreRevision={vi.fn()}
+        documentResetNonce={0}
       />,
     );
     fireEvent.click(screen.getByTestId('evaluate-para'));
@@ -112,6 +114,7 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         onRetryFailed={onRetryFailed}
         visibleIssues={[]}
         onRestoreRevision={vi.fn()}
+        documentResetNonce={0}
       />,
     );
     expect(screen.getByText(/Failed: style, cultural/)).toBeTruthy();
@@ -137,6 +140,7 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
         onRetryFailed={vi.fn()}
         visibleIssues={[]}
         onRestoreRevision={vi.fn()}
+        documentResetNonce={0}
       />,
     );
     expect((screen.getByTestId('evaluate-para') as HTMLButtonElement).disabled).toBe(true);
@@ -165,6 +169,7 @@ describe('InspectorPanel stale hint (explicit re-eval)', () => {
     onRetryFailed: vi.fn(),
     visibleIssues: [],
     onRestoreRevision: vi.fn(),
+    documentResetNonce: 0,
   };
 
   it('shows the stale hint when evalState.stale', () => {
@@ -198,6 +203,7 @@ describe('InspectorPanel Refine paragraph (EMNLP sprint — replaces per-paragra
     onEvaluate: vi.fn(),
     onRetryFailed: vi.fn(),
     onRestoreRevision: vi.fn(),
+    documentResetNonce: 0,
   };
 
   const openIssueWithSuggestion = {
@@ -308,6 +314,7 @@ describe('InspectorPanel tab isolation (BUG-2: non-active tab body is unmounted,
     isCollapsed: false, onToggleCollapse: vi.fn(), onAccept: vi.fn(),
     onDismiss: vi.fn(), onRefine: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
     onRestoreRevision: vi.fn(), evalState, paragraph, visibleIssues: paragraph.issues,
+    documentResetNonce: 0,
   };
 
   it('Scores tab: the Issues body (Accept/Dismiss buttons) is not in the DOM at all', () => {
@@ -336,6 +343,7 @@ describe('InspectorPanel resolved/passive-note visibility (Б2)', () => {
     onToggleCollapse: vi.fn(), onAccept: vi.fn(),
     onDismiss: vi.fn(), onRefine: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
     onRestoreRevision: vi.fn(),
+    documentResetNonce: 0,
     evalState: { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false },
   };
   const mk = (id: string, status: string, expl: string, suggestion = 's') => ({
@@ -434,6 +442,7 @@ describe('InspectorPanel criteria-key mismatch note (Б3.6)', () => {
     isCollapsed: false, onToggleCollapse: vi.fn(), onAccept: vi.fn(),
     onDismiss: vi.fn(), onRefine: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
     onRestoreRevision: vi.fn(),
+    documentResetNonce: 0,
     evalState, visibleIssues: [],
   };
   const mkParagraph = (latestKey: string, prevKey: string) => ({
@@ -481,6 +490,7 @@ describe('InspectorPanel Revision history (S5 §3.2-3.3)', () => {
     isCollapsed: false, onToggleCollapse: vi.fn(), onAccept: vi.fn(),
     onDismiss: vi.fn(), onRefine: vi.fn(), onEvaluate: vi.fn(), onRetryFailed: vi.fn(),
     evalState, visibleIssues: [],
+    documentResetNonce: 0,
   };
   const paragraph = {
     id: 1, idx: 0, source: 's', target: 't', issues: [],
@@ -599,5 +609,50 @@ describe('InspectorPanel Revision history (S5 §3.2-3.3)', () => {
     render(<InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} />);
     await waitFor(() => expect(apiClient.getRevisions).toHaveBeenCalled());
     expect(screen.queryByTestId('revision-history')).toBeNull();
+  });
+
+  it('SUSPECTED-1 (wave2): re-fetches revisions when documentResetNonce changes, even though paragraph.id stayed the same (Document Reset)', async () => {
+    // Reset rewrites the paragraph's target/revision but keeps the same
+    // paragraph id, so before this fix a plain `paragraph.id`-keyed effect
+    // never re-fired and the panel kept showing the stale pre-reset list.
+    const afterReset: Revision[] = [
+      { id: 5, origin: 'seed', createdAt: new Date().toISOString(), text: 'seed text', aggregate: null, isBest: false, isCurrent: true },
+    ];
+    vi.mocked(apiClient.getRevisions)
+      .mockResolvedValueOnce({ revisions })
+      .mockResolvedValueOnce({ revisions: afterReset });
+    const { rerender } = render(
+      <InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={0} />,
+    );
+    await screen.findByTestId('revision-history');
+    expect(screen.getAllByTestId(/^history-row-/).length).toBe(3);
+    const callsBeforeReset = vi.mocked(apiClient.getRevisions).mock.calls.length;
+
+    // Same paragraph object/id — only the nonce changes, simulating
+    // store.resetDoc()'s bump after a successful reset.
+    rerender(
+      <InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={1} />,
+    );
+
+    await waitFor(() => expect(vi.mocked(apiClient.getRevisions).mock.calls.length).toBe(callsBeforeReset + 1));
+    expect(screen.getAllByTestId(/^history-row-/).length).toBe(1);
+    expect(screen.getByTestId('history-row-5')).toBeTruthy();
+  });
+
+  it('does NOT re-fetch on an unrelated re-render where neither paragraph.id nor documentResetNonce changed', async () => {
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions });
+    const { rerender } = render(
+      <InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={0} />,
+    );
+    await screen.findByTestId('revision-history');
+    const callsBefore = vi.mocked(apiClient.getRevisions).mock.calls.length;
+
+    // Unrelated re-render (a fresh onAccept callback identity, same
+    // paragraph/nonce) — must not unmount/re-fetch HistoryBlock.
+    rerender(
+      <InspectorPanel {...base} onAccept={vi.fn()} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={0} />,
+    );
+
+    expect(vi.mocked(apiClient.getRevisions).mock.calls.length).toBe(callsBefore);
   });
 });

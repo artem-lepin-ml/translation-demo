@@ -241,6 +241,48 @@ describe('SettingsTab Add Model modal', () => {
     expect(arg.name).toBe('foo/bar');
     expect(arg.baseUrl).toBe('https://openrouter.ai/api/v1');
   });
+
+  it('BUG-2 (wave2): Save is disabled while Name is empty, and blurring an empty Name shows inline validation', async () => {
+    const props = await openAddModel();
+    const saveBtn = screen.getByText('Save') as HTMLButtonElement;
+    expect(saveBtn.disabled).toBe(true);
+    expect(screen.queryByTestId('add-model-name-error')).toBeNull();   // not shown on pristine open
+
+    fireEvent.blur(screen.getByPlaceholderText(/provider\/model-id/));
+    expect(await screen.findByTestId('add-model-name-error')).toBeTruthy();
+    expect(props.onAddModel).not.toHaveBeenCalled();
+  });
+
+  it('BUG-2 (wave2): Save stays disabled for a whitespace-only Name', async () => {
+    await openAddModel();
+    fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: '   ' } });
+    expect((screen.getByText('Save') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('BUG-2 (wave2): a non-empty Name re-enables Save and clears the inline error', async () => {
+    await openAddModel();
+    const nameInput = screen.getByPlaceholderText(/provider\/model-id/);
+    fireEvent.blur(nameInput);
+    expect(await screen.findByTestId('add-model-name-error')).toBeTruthy();
+
+    fireEvent.change(nameInput, { target: { value: 'foo/bar' } });
+    expect((screen.getByText('Save') as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.queryByTestId('add-model-name-error')).toBeNull();
+  });
+
+  it('BUG-2 (wave2): a server 422 on Name (race/legacy client) surfaces a clean detail message', async () => {
+    const onAddModel = vi.fn().mockRejectedValue(
+      new Error('POST /models → 422: {"detail":"name must not be blank"}'),
+    );
+    const props = await openAddModel({ onAddModel });
+    fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: 'foo/bar' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    const err = await screen.findByTestId('add-model-error');
+    expect(err.textContent).toContain('422');
+    expect(err.textContent).toContain('name must not be blank');
+    expect(props.onAddModel).toHaveBeenCalled();
+  });
 });
 
 describe('SettingsTab silent mutation failures (fix wave commit 1)', () => {
@@ -480,6 +522,41 @@ describe('SettingsTab EditModelModal — API key clear (S1 §2.5)', () => {
     expect(block.textContent).toContain('max_tokens 1536');
     expect(block.textContent).toContain('seed 7');
   });
+
+  it('BUG-3 (wave2): recomputes the Effective params preview live as the Params textarea changes, instead of staying frozen at dialog-open', async () => {
+    const withEffective: ModelRegistryEntryPublic = {
+      ...model,
+      params: { max_tokens: 1536 },
+      effectiveParams: { max_tokens: 1536, seed: 7 },
+    };
+    renderSettings({ models: [withEffective] });
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
+
+    const paramsInput = screen.getByDisplayValue(/max_tokens/);
+    fireEvent.change(paramsInput, { target: { value: JSON.stringify({ max_tokens: 2048 }) } });
+
+    const block = await screen.findByTestId('edit-model-effective');
+    expect(block.textContent).toContain('max_tokens 2048');
+    expect(block.textContent).not.toContain('seed 7');
+    expect(screen.queryByTestId('edit-model-effective-stale-hint')).toBeNull();
+  });
+
+  it('BUG-3 (wave2): invalid JSON keeps showing the last valid preview plus a hint, without crashing', async () => {
+    const withEffective: ModelRegistryEntryPublic = {
+      ...model,
+      params: { max_tokens: 1536 },
+      effectiveParams: { max_tokens: 1536 },
+    };
+    renderSettings({ models: [withEffective] });
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
+
+    const paramsInput = screen.getByDisplayValue(/max_tokens/);
+    fireEvent.change(paramsInput, { target: { value: '{not json' } });
+
+    const block = await screen.findByTestId('edit-model-effective');
+    expect(block.textContent).toContain('max_tokens 1536');
+    expect(await screen.findByTestId('edit-model-effective-stale-hint')).toBeTruthy();
+  });
 });
 
 describe('SettingsTab Translator card (S4 §3.4)', () => {
@@ -612,19 +689,52 @@ describe('SettingsTab Grounding card', () => {
     expect(screen.getByTestId('grounding-config-unavailable')).toBeTruthy();
   });
 
-  it('editing the prompt and blurring calls onSaveGroundingConfig', async () => {
+  // BUG-1 (wave2): Grounding's prompt editor used to be a bare textarea that
+  // auto-saved on blur ONLY — an edit followed by e.g. tabbing straight to a
+  // button (never blurring into empty space) silently never reached the
+  // server. It now reuses the shared PromptEditor (Save prompt / Revert /
+  // char count / "Unsaved changes"), the same as Translator/Judges/Refiner —
+  // these tests mirror the Refiner card's own PromptEditor coverage above.
+  it('BUG-1 (wave2): renders the shared PromptEditor with explicit Save/Revert, not a bare auto-saving textarea', async () => {
+    renderSettings();
+    const editor = await screen.findByTestId('grounding-editor');
+
+    expect(within(editor).getByTestId('grounding-prompt-toggle')).toBeTruthy();
+    fireEvent.click(within(within(editor).getByTestId('grounding-prompt-toggle')).getByText('Edit'));
+    expect(within(editor).getByTestId('grounding-prompt-editor')).toBeTruthy();
+    expect(within(editor).getByTestId('grounding-prompt-save')).toBeTruthy();
+    expect(within(editor).getByTestId('grounding-prompt-revert')).toBeTruthy();
+  });
+
+  it('BUG-1 (wave2): editing the prompt and clicking Save prompt calls onSaveGroundingConfig with the full body', async () => {
     const onSaveGroundingConfig = vi.fn().mockResolvedValue(undefined);
     renderSettings({ onSaveGroundingConfig });
+    const editor = await screen.findByTestId('grounding-editor');
 
-    const promptInput = await screen.findByTestId('grounding-prompt');
-    fireEvent.change(promptInput, { target: { value: 'New judge prompt.' } });
-    fireEvent.blur(promptInput);
+    fireEvent.click(within(within(editor).getByTestId('grounding-prompt-toggle')).getByText('Edit'));
+    const textarea = within(editor).getByTestId('grounding-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'New judge prompt.' } });
+    fireEvent.click(within(editor).getByTestId('grounding-prompt-save'));
 
     await waitFor(() => expect(onSaveGroundingConfig).toHaveBeenCalledWith({
       modelName: groundingConfig.modelName,
       prompt: 'New judge prompt.',
       params: groundingConfig.params,
     }));
+  });
+
+  it('BUG-1 (wave2): a blur without clicking Save prompt does NOT save (the old silent-loss path)', async () => {
+    const onSaveGroundingConfig = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onSaveGroundingConfig });
+    const editor = await screen.findByTestId('grounding-editor');
+
+    fireEvent.click(within(within(editor).getByTestId('grounding-prompt-toggle')).getByText('Edit'));
+    const textarea = within(editor).getByTestId('grounding-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'Edited but never saved.' } });
+    fireEvent.blur(textarea);
+
+    expect(onSaveGroundingConfig).not.toHaveBeenCalled();
+    expect(screen.getByText('Unsaved changes')).toBeTruthy();
   });
 
   it('changing the model select calls onSaveGroundingConfig immediately', async () => {
@@ -644,10 +754,12 @@ describe('SettingsTab Grounding card', () => {
   it('shows an inline error when the save is rejected', async () => {
     const onSaveGroundingConfig = vi.fn().mockRejectedValue(new Error('PUT /grounding-config → 500'));
     renderSettings({ onSaveGroundingConfig });
+    const editor = await screen.findByTestId('grounding-editor');
 
-    const promptInput = await screen.findByTestId('grounding-prompt');
-    fireEvent.change(promptInput, { target: { value: 'New judge prompt.' } });
-    fireEvent.blur(promptInput);
+    fireEvent.click(within(within(editor).getByTestId('grounding-prompt-toggle')).getByText('Edit'));
+    const textarea = within(editor).getByTestId('grounding-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'New judge prompt.' } });
+    fireEvent.click(within(editor).getByTestId('grounding-prompt-save'));
 
     expect((await screen.findByTestId('grounding-field-error')).textContent).toContain('500');
   });

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import VariantA, { selectPopoverIssues, precomputeFailedMessage } from './VariantA';
 import { useDemoStore } from '../store';
 import type { DemoStore } from '../store';
@@ -116,6 +116,7 @@ function makeDoc(paragraphs: Paragraph[]): Document {
 function makeStore(doc: Document): DemoStore {
   return {
     document: doc,
+    documentResetNonce: 0,
     documents: [{ id: doc.id, title: doc.title, sourceLang: doc.sourceLang, targetLang: doc.targetLang, nParagraphs: doc.nParagraphs, origin: doc.origin }],
     criteria: [],
     models: [],
@@ -288,6 +289,61 @@ describe('Reset confirm dialog (BUG-4: truthful archive copy, frontend-developer
     const message = confirmSpy.mock.calls[0][0] as string;
     expect(message).toContain('archived');
     expect(message).not.toContain('will be lost');
+    confirmSpy.mockRestore();
+  });
+});
+
+describe('Document delete button — double-DELETE guard (BUG-4, frontend-developer-stability-wave2)', () => {
+  function makeUploadDoc() {
+    return { ...makeDoc([makeParagraph(1)]), origin: 'upload' as const };
+  }
+
+  it('fires deleteDoc exactly once for 3 synchronous clicks (double-bound handler / ghost click after confirm())', () => {
+    const deleteDoc = vi.fn().mockResolvedValue(undefined);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    vi.mocked(useDemoStore).mockReturnValue({ ...makeStore(makeUploadDoc()), deleteDoc });
+    render(<VariantA />);
+
+    // Raw DOM .click() (not RTL's act()-wrapped fireEvent) — same repro shape
+    // as the Evaluate/Refine double-submit guard tests above: 3 rapid clicks
+    // land before React commits any state, so only the synchronous ref guard
+    // can stop the second/third invocation.
+    const btn = screen.getByTestId('delete-doc-btn') as HTMLButtonElement;
+    btn.click();
+    btn.click();
+    btn.click();
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);   // the guard also suppresses a second confirm() prompt
+    expect(deleteDoc).toHaveBeenCalledTimes(1);
+    confirmSpy.mockRestore();
+  });
+
+  it('does not call deleteDoc when the confirm dialog is declined', () => {
+    const deleteDoc = vi.fn().mockResolvedValue(undefined);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    vi.mocked(useDemoStore).mockReturnValue({ ...makeStore(makeUploadDoc()), deleteDoc });
+    render(<VariantA />);
+
+    fireEvent.click(screen.getByTestId('delete-doc-btn'));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(deleteDoc).not.toHaveBeenCalled();
+    confirmSpy.mockRestore();
+  });
+
+  it('re-arms after the in-flight delete settles, so a later genuine second delete still works', async () => {
+    const deleteDoc = vi.fn().mockResolvedValue(undefined);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    vi.mocked(useDemoStore).mockReturnValue({ ...makeStore(makeUploadDoc()), deleteDoc });
+    render(<VariantA />);
+
+    const btn = screen.getByTestId('delete-doc-btn') as HTMLButtonElement;
+    fireEvent.click(btn);
+    await waitFor(() => expect(deleteDoc).toHaveBeenCalledTimes(1));
+
+    fireEvent.click(btn);
+    await waitFor(() => expect(deleteDoc).toHaveBeenCalledTimes(2));
+
     confirmSpy.mockRestore();
   });
 });

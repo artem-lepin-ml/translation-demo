@@ -15,6 +15,7 @@ import { useDemoStore, scoreBand } from '../store';
 import { langLabel } from '../lang';
 import { exportUrl } from '../api-client';
 import type { Document, Issue, Term } from '../api-client';
+import type { TermWithTrace } from './glossary-grouping';
 
 import IssuePopover from './IssuePopover';
 import TermPopover from './TermPopover';
@@ -87,6 +88,7 @@ export default function VariantA() {
 
   const {
     document: doc,
+    documentResetNonce,
     documents,
     criteria,
     models,
@@ -143,7 +145,7 @@ export default function VariantA() {
   const [activeTab, setActiveTab] = useState<TabId>('document');
   const [issuePopover, setIssuePopover] =
     useState<{ paraId: number; issueIds: string[]; rect: DOMRect } | null>(null);
-  const [termPopover, setTermPopover] = useState<{ term: Term; rect: DOMRect } | null>(null);
+  const [termPopover, setTermPopover] = useState<{ term: TermWithTrace; rect: DOMRect } | null>(null);
   const [resetting, setResetting] = useState(false);
   // Translation-done badge fades after 5s (S4 §3.3) — tracked per doc so
   // switching documents doesn't leave a stale fade timer running.
@@ -154,6 +156,14 @@ export default function VariantA() {
 
   // Debounce target text PATCH
   const pendingTextRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+
+  // Synchronous re-entry guard for the top-bar document-delete button (BUG-4:
+  // one click + one confirm() was firing two DELETE requests) — same
+  // established pattern as SettingsTab's handleTest/AddModelModal inFlight
+  // refs. Checked BEFORE window.confirm so a second invocation (double-bound
+  // handler, or a browser "ghost click" re-firing after a synchronous
+  // confirm() dialog closes) neither re-prompts nor re-deletes.
+  const deleteDocInFlight = useRef(false);
 
   // ── Init on mount ─────────────────────────────────────────────────────────
 
@@ -505,9 +515,13 @@ export default function VariantA() {
           {doc.origin === 'upload' && (
             <button
               className="va-icon-btn"
+              data-testid="delete-doc-btn"
               title="Delete document"
               onClick={() => {
-                if (window.confirm(`Delete "${doc.title}"?`)) void deleteDoc(doc.id);
+                if (deleteDocInFlight.current) return;
+                if (!window.confirm(`Delete "${doc.title}"?`)) return;
+                deleteDocInFlight.current = true;
+                void deleteDoc(doc.id).finally(() => { deleteDocInFlight.current = false; });
               }}
             >
               🗑
@@ -790,6 +804,7 @@ export default function VariantA() {
               onEvaluate={handleEvaluate}
               onRetryFailed={handleRetryFailed}
               visibleIssues={inspectorIssues}
+              documentResetNonce={documentResetNonce}
               onRestoreRevision={async (revisionId) => {
                 if (!selectedPara) return;
                 await restoreParagraphRevision(selectedPara.id, selectedParaIdx, revisionId);

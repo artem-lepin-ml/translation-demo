@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import type { Term } from '../api-client';
+import { candidatesForDisplay, type TermWithTrace } from './glossary-grouping';
 
 interface Props {
-  term: Term;
+  term: TermWithTrace;
   rect: DOMRect;
   onClose: () => void;
 }
@@ -22,6 +22,11 @@ const pairLabel: Record<string, string> = {
 export default function TermPopover({ term, rect, onClose }: Props) {
   const top = Math.min(rect.bottom + 8, window.innerHeight - 320);
   const left = Math.min(rect.left, window.innerWidth - 380);
+  // Same dead-field fix as the Glossary tab's Candidates table (BUG-6,
+  // frontend-developer-stability-wave1): the top-level `term.candidates`
+  // drops to `[]` for a judge_rejected term even though real candidates were
+  // considered — prefer `trace_json.candidates` when present.
+  const candidates = candidatesForDisplay(term);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -95,10 +100,10 @@ export default function TermPopover({ term, rect, onClose }: Props) {
         )}
 
         {/* Candidates (ambiguous) */}
-        {term.candidates.length > 0 && (
+        {candidates.length > 0 && (
           <div className="va-term-popover-row" style={{ flexDirection: 'column', gap: 4 }}>
             <span className="va-term-popover-label">Ambiguous senses</span>
-            {term.candidates.map((c) => (
+            {candidates.map((c) => (
               <div key={c.qid} style={{ fontSize: 11, color: 'var(--va-text-muted)', paddingLeft: 8 }}>
                 <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--va-accent)' }}>
                   {c.label}

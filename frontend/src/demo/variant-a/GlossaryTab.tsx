@@ -1,7 +1,8 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { langLabel } from '../lang';
-import type { Paragraph, TermsStatus, WikidataRef } from '../api-client';
+import type { Paragraph, TermsStatus } from '../api-client';
 import {
+  candidatesForDisplay,
   findMatchSpan,
   findSentenceContaining,
   groupTerms,
@@ -10,7 +11,6 @@ import {
   type BadgeTone,
   type GlossaryGroup,
   type TermWithTrace,
-  type TraceCandidate,
   type TraceJson,
 } from './glossary-grouping';
 
@@ -45,50 +45,11 @@ export function termsStatusEmptyMessage(status: TermsStatus | undefined): string
   }
 }
 
-/** Normalized shape the Candidates table renders, whichever backend field it
- *  came from (see `candidatesForDisplay` — BUG-6, frontend-developer-stability-wave1).
- *  `matchKind` is `null` when there is no real match provenance to report —
- *  the MATCHED column then renders an honest "—", never the old always-on
- *  "none" (which came from a `matched_via` field the backend never sends). */
-interface DisplayCandidate {
-  qid: string;
-  label: string;
-  description: string;
-  matchKind: string | null;
-}
-
-/** `trace_json.candidates` (label_first.py's `candidates_traced`) is the
- *  richer, ground-truth candidate list: same entities as the top-level
- *  `Term.candidates` for most resolutions, but it never drops to `[]` for a
- *  `judge_rejected` term (the top-level field does — see `TraceCandidate`'s
- *  doc comment) and it carries real per-candidate match provenance. Prefer
- *  it; fall back to the plain `WikidataRef` list only for legacy/seed rows
- *  shipping `trace_json={}`, where match provenance honestly isn't known. */
-function candidatesForDisplay(primary: TermWithTrace): DisplayCandidate[] {
-  const traced = primary.traceJson?.candidates;
-  if (traced && traced.length > 0) return traced.map(fromTraceCandidate);
-  return primary.candidates.map(fromWikidataRef);
-}
-
-function fromTraceCandidate(c: TraceCandidate): DisplayCandidate {
-  return {
-    qid: c.qid,
-    label: c.label_en || c.label_ru || c.qid,
-    description: c.description ?? '',
-    matchKind: c.matched ? matchKindLabel(c.matched.kind) : null,
-  };
-}
-
-function fromWikidataRef(c: WikidataRef): DisplayCandidate {
-  return { qid: c.qid, label: c.label, description: c.description, matchKind: null };
-}
-
-/** `matched.kind` is `label_ru` | `alias_ru` | `alias_en` (match.py's
- *  `exact_match`) — collapse the two alias kinds to one short "alias" label,
- *  matching the "matched via" language `viaChipClass` was already styled for. */
-function matchKindLabel(kind: string): string {
-  return kind.startsWith('alias') ? 'alias' : 'label';
-}
+// `DisplayCandidate` / `candidatesForDisplay` moved to glossary-grouping.ts
+// (frontend-developer-stability-wave2) — TermPopover's "Ambiguous senses"
+// block needed the same dead-field fix as this tab's Candidates table (BUG-6),
+// so the shaping logic now lives in the shared React-free module instead of
+// this component file.
 
 const highlightClass = 't'; // mark.t — EN (target) context highlight, per mockup
 

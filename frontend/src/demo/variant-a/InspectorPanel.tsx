@@ -43,6 +43,12 @@ interface Props {
    *  paragraph refresh it triggers) has completed, so HistoryBlock can
    *  re-fetch the revision list only after the server state has settled. */
   onRestoreRevision: (revisionId: number) => Promise<void>;
+  /** Bumped by store.resetDoc() on every successful Document Reset
+   *  (SUSPECTED-1, wave2) — HistoryBlock re-fetches revisions when this
+   *  changes, the same way it already does after a Restore, since Reset
+   *  reuses the same paragraph id and would otherwise never re-fire that
+   *  effect. */
+  documentResetNonce: number;
 }
 
 export default function InspectorPanel({
@@ -61,6 +67,7 @@ export default function InspectorPanel({
   onRetryFailed,
   visibleIssues,
   onRestoreRevision,
+  documentResetNonce,
 }: Props) {
   const paraLabel = paragraph ? `§${paragraph.idx + 1}` : '§—';
   const openIssues = visibleIssues.filter((i) => i.status === 'open');
@@ -204,7 +211,11 @@ export default function InspectorPanel({
                   isLoading={isLoading}
                   cached={evalState.cached}
                 />
-                <HistoryBlock paragraph={paragraph} onRestore={onRestoreRevision} />
+                <HistoryBlock
+                  paragraph={paragraph}
+                  onRestore={onRestoreRevision}
+                  documentResetNonce={documentResetNonce}
+                />
               </>
             )}
           </div>
@@ -467,15 +478,24 @@ function OriginIcon({ origin }: { origin: RevisionOrigin }) {
 function HistoryBlock({
   paragraph,
   onRestore,
+  documentResetNonce,
 }: {
   paragraph: Paragraph;
   onRestore: (revisionId: number) => Promise<void>;
+  documentResetNonce: number;
 }) {
   const [revisions, setRevisions] = useState<Revision[] | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [previewId, setPreviewId] = useState<number | null>(null);
   const [restoringId, setRestoringId] = useState<number | null>(null);
 
+  // Re-fetch on paragraph switch AND on documentResetNonce (SUSPECTED-1,
+  // wave2): Document Reset writes a fresh 'seed' revision but reuses the
+  // same paragraph id, so a plain `paragraph.id` dependency alone never
+  // re-fires this effect after a Reset — the panel kept showing the
+  // pre-reset CURRENT row until an unrelated reload, the same staleness
+  // already fixed for Restore below via handleRestore's own explicit
+  // re-fetch.
   useEffect(() => {
     let cancelled = false;
     setRevisions(null);
@@ -485,7 +505,7 @@ function HistoryBlock({
       .then((r) => { if (!cancelled) setRevisions(r.revisions); })
       .catch(() => { if (!cancelled) setRevisions([]); });
     return () => { cancelled = true; };
-  }, [paragraph.id]);
+  }, [paragraph.id, documentResetNonce]);
 
   // The backend is authoritative immediately after a restore (GET
   // /revisions already returns all rows) — the bug was purely client-side:

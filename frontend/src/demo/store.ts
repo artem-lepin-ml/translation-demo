@@ -74,6 +74,14 @@ export interface ParaEvalState {
 export interface DemoStore {
   // ── data ────────────────────────────────────────────────────────────────────
   document: Document | null;
+  /** Bumped by resetDoc() on every successful reset — a client-side-only
+   *  signal (never a wire/contract field; document.version was explicitly
+   *  rejected as a contract field, 2026-06-30-demo-contracts.md §7) that
+   *  per-paragraph History blocks can key a re-fetch off, the same way
+   *  they already re-fetch after a Restore (SUSPECTED-1, wave2). Reset
+   *  rewrites every paragraph's target/revision but keeps the same
+   *  paragraph ids, so a plain `paragraph.id`-keyed effect never re-fires. */
+  documentResetNonce: number;
   documents: DocumentSummary[];
   criteria: Criterion[];
   models: ModelRegistryEntryPublic[];
@@ -296,6 +304,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
 
   return {
   document: null,
+  documentResetNonce: 0,
   documents: [],
   criteria: [],
   models: [],
@@ -441,9 +450,21 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       await get().refreshDocuments();          // resync UI with server truth
       return;
     }
+    // Stop polling this doc SYNCHRONOUSLY on a successful DELETE (BUG-5):
+    // the precompute/translation setInterval effects (VariantA.tsx) and the
+    // store-owned terms poller are all keyed off `document`/`document.id`,
+    // and switchDocument below doesn't replace `document` until its own GET
+    // resolves — leaving a window where an already-running poller's next
+    // tick still hits the just-deleted id and 404s. Clearing `document` here
+    // (documentLoading:true avoids a picker flash) tears those effects down
+    // on the very next render instead of waiting for that trailing 404,
+    // mirroring refreshDocument's own 404-recovery path below.
+    get().stopTermsPolling();
+    set({ document: null, documentLoading: true });
     await get().refreshDocuments();
     const first = get().documents[0];
     if (first) await get().switchDocument(first.id);
+    else set({ documentLoading: false });   // no documents left — land on the picker
   },
 
   refreshDocument: async () => {
@@ -729,14 +750,19 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       const activeCriteria = new Set(
         get().criteria.filter((c) => c.enabled).map((c) => c.id),
       );
-      set({
+      set((prev) => ({
         document: fresh,
         documentLoading: false,
         paraEvalState: Object.fromEntries(
           fresh.paragraphs.map((_, i) => [i, defaultParaEval()]),
         ),
         activeCriteria,
-      });
+        // SUSPECTED-1 (wave2): reset rewrites every paragraph's target/revision
+        // but reuses the same paragraph ids, so a plain `paragraph.id`-keyed
+        // History-block refetch (the existing Restore fix) never re-fires —
+        // bump this client-only nonce so it does.
+        documentResetNonce: prev.documentResetNonce + 1,
+      }));
     } catch {
       set({ documentLoading: false });
     }
