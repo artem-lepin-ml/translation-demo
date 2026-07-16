@@ -1,0 +1,163 @@
+<meta charset="utf-8">
+<title>Glossa-MT — E2E + ревью + починка демо (2026-07-16)</title>
+<style>
+:root{--bg:#1a1b26;--bg2:#1f2335;--panel:#24283b;--line:#2f334d;--tx:#c0caf5;--mut:#565f89;--blue:#7aa2f7;--green:#9ece6a;--yel:#e0af68;--red:#f7768e;--purple:#bb9af7;--cyan:#7dcfff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:32px 22px 80px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:.2px}
+h2{font-size:19px;margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);color:#fff}
+h3{font-size:15px;margin:22px 0 8px;color:var(--cyan)}
+.sub{color:var(--mut);font-size:13px;margin-bottom:22px}
+.lead{background:linear-gradient(180deg,var(--bg2),var(--panel));border:1px solid var(--line);border-left:3px solid var(--green);border-radius:12px;padding:18px 20px;font-size:16px}
+.lead b{color:#fff}
+.badge{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:700;vertical-align:middle}
+.b-ready{background:rgba(158,206,106,.16);color:var(--green);border:1px solid rgba(158,206,106,.4)}
+.b-crit{background:rgba(247,118,142,.14);color:var(--red);border:1px solid rgba(247,118,142,.4)}
+.b-high{background:rgba(224,175,104,.14);color:var(--yel);border:1px solid rgba(224,175,104,.4)}
+.b-med{background:rgba(122,162,247,.14);color:var(--blue);border:1px solid rgba(122,162,247,.4)}
+.b-low{background:rgba(86,95,137,.18);color:var(--mut);border:1px solid rgba(86,95,137,.5)}
+.b-fix{background:rgba(158,206,106,.16);color:var(--green);border:1px solid rgba(158,206,106,.4)}
+.b-def{background:rgba(224,175,104,.12);color:var(--yel);border:1px solid rgba(224,175,104,.35)}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px 16px}
+.card .k{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.card .v{font-size:22px;font-weight:700;margin-top:3px}
+.card small{color:var(--mut);font-weight:400;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+td code{background:var(--bg2);padding:1px 5px;border-radius:4px;color:var(--cyan);font-size:12px}
+.radar-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.legend{font-size:13px}
+.legend span{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:middle}
+.shots{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px}
+.shots figure{margin:0;background:var(--bg2);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.shots img{width:100%;display:block;border-bottom:1px solid var(--line)}
+.shots figcaption{padding:7px 9px;font-size:12px;color:var(--mut)}
+.ok{color:var(--green)}.warn{color:var(--yel)}.bad{color:var(--red)}.dat{color:var(--blue)}
+ul{margin:8px 0;padding-left:20px}li{margin:5px 0}
+.note{font-size:12.5px;color:var(--mut)}
+a{color:var(--blue)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+</style>
+<div class="wrap">
+
+<h1>Glossa-MT — e2e на живом сайте, большое ревью кода и починка демо</h1>
+<div class="sub">glossa-mt.com · 2026-07-16 · оркестратор Fable, e2e/ревью Sonnet+Opus · <span class="badge b-ready">ДЕМО ГОТОВО К ЗАПИСИ</span></div>
+
+<div class="lead">
+E2e-прогон на живом сайте показал, что демо <b>в сабмиченном виде НЕ было готово к записи</b>: главный «money-shot» Refine отдавал <b class="bad">502&nbsp;empty_output</b>, а документ «The Qin State» был разбит (6/7 абзацев без перевода за зелёным бейджем). Оба блокера и ещё два инвариант-бага из ревью <b>найдены, докопаны до корня и починены</b>. По твоей просьбе весь пайплайн переведён на <b>gemini-3.1-flash-lite</b> ради скорости, а баг миграции, который сбрасывал конфиг на qwen при каждом рестарте, устранён и <b class="ok">подтверждён реальным редеплоем</b>. Итог: money-shot 2.6&nbsp;с, Evaluate 9.1&nbsp;с, ровно 3 чистых документа, конфиг durable. Можно писать.
+</div>
+
+<h2>360° — что было найдено и что стало после починки</h2>
+<div class="radar-wrap">
+  <svg id="radar" width="420" height="380" viewBox="0 0 420 380"></svg>
+  <div class="legend">
+    <div style="margin-bottom:10px"><span style="background:var(--red)"></span> Найдено e2e/ревью (до починки)</div>
+    <div><span style="background:var(--green)"></span> После починки + редеплоя</div>
+    <div class="note" style="margin-top:16px;max-width:230px">Оси — аспекты step-6. Money-shot был мёртв (1/10), durability конфига — 2/10 (слетал на рестарте), скорость — 4/10 (qwen 30-90&nbsp;с). После починки всё в зелёной зоне; терминология-робастность 6/10 — часть MEDIUM/HIGH отложена в PR-3.</div>
+  </div>
+</div>
+
+<h2>Как это делалось</h2>
+<div class="grid g3">
+  <div class="card"><div class="k">Дорожек параллельно</div><div class="v">5 <small>+ codex</small></div><small>e2e + backend/terminology/frontend (Sonnet) + Opus-адверсарий</small></div>
+  <div class="card"><div class="k">Дифф под ревью</div><div class="v">68 файлов</div><small>~6.9k / 3.7k строк, 24 коммита ветки</small></div>
+  <div class="card"><div class="k">Скринов e2e</div><div class="v">39</div><small>полный journey всех сценариев видео</small></div>
+</div>
+<p class="note" style="margin-top:12px">codex-ревью запустить не удалось: <code>codex</code> залогинен через ChatGPT, но refresh-токен отозван (<span class="mono">refresh_token_invalidated</span>) — нужен твой <code>codex login</code>. Вместо него подняли независимого <b>Opus-адверсария</b> по data-integrity, чтобы вторая перспектива не пропала.</p>
+
+<h2>Найдено и починено</h2>
+<table>
+<tr><th>Sev</th><th>Находка</th><th>Корень</th><th>Статус</th></tr>
+<tr><td><span class="badge b-crit">CRIT</span></td><td><b>Money-shot Refine мёртв</b> — <code>502 empty_output</code>, воспр. 2× (§4 55с, §1)</td><td>qwen3.6-27b как рефайнер — thinking-модель; reasoning не аддитивный, съедает бюджет 2048 → пустой content. При 20000 — таймаут 120с</td><td><span class="badge b-fix">FIXED</span> рефайнер→gemini, <b class="ok">2.6с</b>, «Sealand» ✓</td></tr>
+<tr><td><span class="badge b-crit">CRIT</span></td><td><b>doc 8 «Qin State» разбит</b> — 6/7 абзацев <code>target:""</code>, 0 терминов за зелёным «ready»</td><td>фоновая задача перевода/терминологии не пережила рестарт контейнера (orphan)</td><td><span class="badge b-fix">FIXED</span> пересобран (id 13): 7/7 перевод, 64 терма, пара Цинь/Цзинь ✓</td></tr>
+<tr><td><span class="badge b-crit">CRIT</span></td><td><b>Миграция сбивает модель</b> — grounding/судьи/рефайнер откатывались на qwen при каждом старте</td><td><code>migrate.py:230</code> предикат <span class="mono">model_name != DEFAULT</span> ловил и валидный gemini</td><td><span class="badge b-fix">FIXED</span> guard <span class="mono">NOT IN (MATRIX)</span>; durability подтв. редеплоем</td></tr>
+<tr><td><span class="badge b-high">HIGH</span></td><td>Кнопки Refine/Evaluate без синхронного гварда → тройной клик = 2-6 платных вызовов</td><td><code>disabled={isLoading}</code> обновляется только на следующем рендере</td><td><span class="badge b-fix">FIXED</span> <span class="mono">inFlight</span>-ref (VariantA.tsx) + 2 теста</td></tr>
+<tr><td><span class="badge b-high">HIGH</span></td><td>Тест-инцидент: e2e случайно снял (dismiss) issue-1 на doc 1</td><td>скрытая, но смонтированная кнопка Dismiss в DOM под невидимой вкладкой</td><td><span class="badge b-fix">REVERTED</span> issue-1 снова <code>open</code></td></tr>
+<tr><td><span class="badge b-crit">CRIT/ℹ</span></td><td>delete-document каскадит в <code>score</code>/<code>issue</code></td><td><code>ON DELETE CASCADE</code>; backend-ревью — нарушение инварианта, Opus — санкц. wave-4 исключение (только non-seed, не тронуто PR)</td><td><span class="badge b-def">NOTED</span> Reset при этом <b class="ok">архивирует, не удаляет</b></td></tr>
+</table>
+
+<h3>Отложено в PR-3 (не блокеры записи)</h3>
+<table>
+<tr><th>Sev</th><th>Находка</th><th>Почему безопасно отложить</th></tr>
+<tr><td><span class="badge b-high">HIGH</span></td><td>Non-retryable ошибка Wikidata (4xx≠429) роняет все термины абзаца, а не красит один</td><td>узкий путь; внешний catch не даёт упасть документу; на живом прогоне не воспроизвёлся</td></tr>
+<tr><td><span class="badge b-high">HIGH</span></td><td>Док застревает в <code>terms_status='running'</code> навсегда после рестарта в середине пайплайна</td><td>migrate-фикс закрыл соседний класс; startup-sweep — в PR-3. Обходка: пересоздать док</td></tr>
+<tr><td><span class="badge b-med">MED</span></td><td>Clone-cache: eligibility без проверки score; whitespace-нормализация сдвигает offset терминов</td><td>для файлов Андрея источник (doc 10) со scores → клон корректный; узкие края</td></tr>
+<tr><td><span class="badge b-med">MED</span></td><td>NER timeout race (20с vs 30с SDK) → двойная стоимость; grounding-leg без потолка</td><td>стоимость/латентность, не корректность; на демо-объёме не бьёт</td></tr>
+<tr><td><span class="badge b-med">MED</span></td><td>Glossary: красная точка difficulty при «grounded» QID (косметика, рецидив 3-й раз)</td><td>визуальное противоречие на 1-м термине — при показе цветовой кодировки лучше начать не с него</td></tr>
+<tr><td><span class="badge b-med">MED</span></td><td>Reset-диалог: «live scores will be lost» — пугающая формулировка</td><td>поведение безопасно (архивирует), проблема только в тексте копи</td></tr>
+</table>
+
+<h2>Твоя правка: gemini-3.1-flash-lite во всех ролях</h2>
+<p>qwen как рефайнер оказался технически непригоден (2 попытки: подъём токенов → таймаут, <code>enable_thinking:false</code> → снова пусто — флаг не долетает до провайдера через OpenRouter). По твоему решению весь пайплайн переведён на gemini для скорости и надёжности живой записи:</p>
+<div class="grid g3">
+  <div class="card"><div class="k">Refine (money-shot)</div><div class="v ok">2.6 с</div><small>было 502 / таймаут 120с</small></div>
+  <div class="card"><div class="k">Evaluate (3 судьи)</div><div class="v ok">9.1 с</div><small>было qwen 30-90с; aggregate 5.44</small></div>
+  <div class="card"><div class="k">Роли на gemini</div><div class="v ok">6 / 6</div><small>grounding·translator·refiner·3 судьи, durable</small></div>
+</div>
+<p class="note" style="margin-top:10px"><b>Важно для статьи:</b> судьи теперь gemini, а не qwen — оценки, показанные в кадре, приходят от gemini. Офлайн-числа статьи это не затрагивает. Строка сценария «qwen — default · all roles» (сцена Settings 2:05-2:30) устарела — покажется gemini; поправить озвучку.</p>
+
+<h2>Артефакты (доказательства)</h2>
+<div class="grid g2">
+  <div class="card"><div class="k">Юнит-тесты</div><div class="v"><span class="ok">564</span> + <span class="ok">309</span></div><small>backend (pytest) + frontend (vitest) — 0 падений</small></div>
+  <div class="card"><div class="k">Деплой</div><div class="v ok">smoke 5/5 → 200</div><small>образ собран, migrate OK, коммит <code>37977d2</code></small></div>
+  <div class="card"><div class="k">Durability (после рестарта)</div><div class="v ok">6/6 gemini</div><small>реальный rebuild+restart+migrate — конфиг выжил</small></div>
+  <div class="card"><div class="k">doc 13 (Qin)</div><div class="v ok">7/7 · 64 терма</div><small>Цинь/Цзинь(晋) в глоссарии ✓</small></div>
+</div>
+
+<h3>Что поймал e2e (состояние ДО починки)</h3>
+<div class="shots">
+  <figure><img src="../e2e/shots/prod-emnlp-verify/18-doc10-para4-after-refine.png" alt="refine 502"><figcaption>§4 Refine → красный баннер <span class="bad">502 empty_output</span> (money-shot был мёртв)</figcaption></figure>
+  <figure><img src="../e2e/shots/prod-emnlp-verify/25-doc8-document-view-broken-state.png" alt="doc8 broken"><figcaption>doc 8 «Qin» — пустая колонка перевода, счёт «—» за зелёным «ready»</figcaption></figure>
+  <figure><img src="../e2e/shots/prod-emnlp-verify/12-doc10-para4-inspector-issues.png" alt="sealand issue"><figcaption>§4 инспектор: issue «Primordial Lands → Sealand» (сцена работает)</figcaption></figure>
+  <figure><img src="../e2e/shots/prod-emnlp-verify/01-landing-picker.png" alt="picker"><figcaption>Пикер: 3 карточки + Blank — основная линия надёжна</figcaption></figure>
+  <figure><img src="../e2e/shots/prod-emnlp-verify/08-glossary-akkad-audit-trace.png" alt="glossary trace"><figcaption>Glossary: audit-trace (кандидаты → QID → reason)</figcaption></figure>
+  <figure><img src="../e2e/shots/prod-emnlp-verify/34-settings-tab.png" alt="settings"><figcaption>Settings: 5 секций + реестр моделей, Budget убран</figcaption></figure>
+</div>
+<p class="note">Полный e2e-отчёт: <span class="mono">docs/reports/e2e/prod-emnlp-verify-2026-07-15.md</span> (39 скринов). Backend-ревью: <span class="mono">docs/reports/backend-developer-gemini-everywhere-migration-durability.md</span>.</p>
+
+<h2>Итоговое состояние прода</h2>
+<table>
+<tr><th>Проверка</th><th>Состояние</th></tr>
+<tr><td>Пикер</td><td class="ok">ровно 3 документа (Mesopotamia · Selected Passages · Qin State) + Blank, все terms=done</td></tr>
+<tr><td>Money-shot doc 10 §4</td><td class="ok">чистый драфт «Primordial Lands», 7 открытых issues → Refine ~3с даёт «Sealand»</td></tr>
+<tr><td>doc 1 §1 issue-1</td><td class="ok">open (тест-инцидент откачен)</td></tr>
+<tr><td>doc 13 Qin</td><td class="ok">7/7 переведено, 64 терма, пара Цинь/Цзинь</td></tr>
+<tr><td>Роли моделей</td><td class="ok">gemini-3.1-flash-lite везде, durable через рестарты</td></tr>
+<tr><td>Файлы Андрея (контент-кэш)</td><td class="dat">источник doc 10 со scores → клон корректный (проверено ранее 238мс)</td></tr>
+</table>
+
+<h2>Дальше — решения за тобой</h2>
+<ul>
+<li><b class="ok">Можно записывать.</b> Money-shot: doc 10 → §4 → «Refine paragraph ✦» (~3с) → «Sealand» → Revision history. Repетиция: прогнать Refine, затем <b>Reset</b> дока — вернёт чистый драфт (я оставил его чистым).</li>
+<li><b>Сценарий:</b> строка «qwen — default» устарела — теперь везде gemini. Сказать «gemini-3.1-flash-lite во всех ролях» или поправлю озвучку сам.</li>
+<li><b>codex-ревью</b> ждёт твоего <code>codex login</code> — если нужна вторая независимая перспектива, дай знать, перезапущу.</li>
+<li><b>PR-3 (после видео):</b> Wikidata error-handling, startup-sweep для застрявших <code>terms_status</code>, clone-cache края, glossary red-dot, reset-диалог копи. Ни один — не блокер записи.</li>
+<li><b>PR-2</b> (коммит <code>37977d2</code>) сейчас в ветке <code>feat/emnlp-demo-sprint</code> и уже на проде. Могу оформить его в PR к <code>dev-demo</code>, когда скажешь.</li>
+</ul>
+
+</div>
+<script>
+(function(){
+ const labels=["Основная линия","Money-shot","Данные демо","Durability конфига","Скорость","Инвариант данных","Терминология"];
+ const before=[8,1,3,2,4,8,5], after=[9,9,9,9,9,8,6];
+ const cx=180,cy=190,R=140,N=labels.length;
+ const ang=i=>-Math.PI/2 + i*2*Math.PI/N;
+ const pt=(i,v)=>[cx+Math.cos(ang(i))*R*v/10, cy+Math.sin(ang(i))*R*v/10];
+ let s='';
+ // rings
+ for(let r=2;r<=10;r+=2){let p='';for(let i=0;i<N;i++){const[x,y]=pt(i,r);p+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' ';}s+=`<path d="${p}Z" fill="none" stroke="#2f334d" stroke-width="1"/>`;}
+ // spokes + labels
+ for(let i=0;i<N;i++){const[x,y]=pt(i,10);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#2f334d" stroke-width="1"/>`;
+   const[lx,ly]=pt(i,11.9);const anchor=Math.abs(lx-cx)<8?'middle':(lx>cx?'start':'end');
+   s+=`<text x="${lx}" y="${ly}" fill="#565f89" font-size="11" text-anchor="${anchor}" dominant-baseline="middle">${labels[i]}</text>`;}
+ const poly=(arr,stroke,fill)=>{let p='';for(let i=0;i<N;i++){const[x,y]=pt(i,arr[i]);p+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' ';}return `<path d="${p}Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;};
+ s+=poly(before,'#f7768e','rgba(247,118,142,.13)');
+ s+=poly(after,'#9ece6a','rgba(158,206,106,.18)');
+ document.getElementById('radar').innerHTML=s;
+})();
+</script>
