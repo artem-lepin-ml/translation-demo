@@ -360,6 +360,10 @@ POST /api/documents/{doc_id}/translate           -> 202 {status:'started', total
 GET  /api/documents/{doc_id}/export?format=xlsx|md  -> file (Content-Disposition: attachment)
      # 200 xlsx: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
      # 200 md:   text/markdown; charset=utf-8
+     #      md payload (owner contract 2026-07-17, supersedes the rev-5 table format):
+     #      "# {title}" + final translation text only — one block per paragraph in
+     #      idx order, blank-line separated; no table, no source column, no escaping;
+     #      paragraphs with an empty target (mid-translate) are skipped
      # 404 unknown document; 422 unknown format
 
 # health limits (S3 §2.3)

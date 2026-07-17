@@ -85,19 +85,29 @@ def test_export_xlsx_score_thresholds_colored(client):
     assert ws["D3"].font.color.rgb.upper().endswith(SCORE_GREEN)
 
 
-def test_export_md_table_and_escaping(client):
-    body = _body(title="Esc", paragraphs=[
-        {"source": "a | b", "target": "line1\nline2"},
+def test_export_md_plain_translation_paragraphs(client):
+    # Owner contract 2026-07-17: .md = title + final translation text only,
+    # one block per paragraph, blank-line separated — no table, no source
+    # column, no cell escaping, untranslated paragraphs skipped.
+    body = _body(title="Plain", paragraphs=[
+        {"source": "исходник | с палкой", "target": "First paragraph."},
+        {"source": "второй", "target": "placeholder"},
+        {"source": "третий", "target": "  Third paragraph.  "},
     ])
     doc = client.post("/api/documents", json=body).json()
+    # an empty target only exists mid-AI-translate (create rejects empty
+    # cells), so blank it directly to cover the export-during-translate case
+    db.connect().execute(
+        "UPDATE paragraph SET target='' WHERE document_id=? AND idx=1", (doc["id"],))
+    db.connect().commit()
     r = client.get(f"/api/documents/{doc['id']}/export?format=md")
     assert r.status_code == 200
     assert r.headers["content-type"].startswith("text/markdown")
     assert f"-{doc['id']}.md" in r.headers["content-disposition"]
     text = r.content.decode("utf-8")
-    assert "# Esc" in text
-    assert "a \\| b" in text
-    assert "line1<br>line2" in text
+    assert text == "# Plain\n\nFirst paragraph.\n\nThird paragraph.\n"
+    assert "|" not in text and "<br>" not in text  # table-era artifacts gone
+    assert "исходник" not in text  # source never leaks into the export
 
 
 def test_export_slug_from_title_and_cyrillic_fallback(client):
