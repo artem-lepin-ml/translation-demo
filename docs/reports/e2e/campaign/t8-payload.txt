@@ -1,0 +1,19 @@
+# T8 upload payload — anachronism pair (provenance: GENERATED per campaign spec T8(г),
+# mandate: "compose the 2-3 paragraph pair yourself"). Composed 2026-07-17 for run t8.
+# Planted defects (¶2 EN): «царь» mistranslated as "mayor" (anachronism «мэр Вавилона»);
+# non-canonical name spelling "Hammurapi" (canonical: Hammurabi); ¶3 uses canonical
+# "Hammurabi" → cross-paragraph inconsistency. ¶1 is clean control.
+
+=== SOURCE (Russian) ===
+Вавилон был одним из крупнейших городов древней Месопотамии, расположенным на берегах Евфрата.
+
+В XVIII веке до н. э. царь Вавилона Хаммурапи издал знаменитый свод законов, высеченный на базальтовой стеле.
+
+После смерти Хаммурапи держава ослабла, и город впоследствии не раз переходил из рук в руки.
+
+=== TRANSLATION (English) ===
+Babylon was one of the largest cities of ancient Mesopotamia, located on the banks of the Euphrates.
+
+In the 18th century BC, the mayor of Babylon, Hammurapi, issued a famous code of laws carved on a basalt stele.
+
+After Hammurabi's death the kingdom weakened, and the city later changed hands more than once.

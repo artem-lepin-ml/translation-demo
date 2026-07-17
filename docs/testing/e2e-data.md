@@ -134,7 +134,8 @@ scenarios T2/T5/T9, committed under [docs/testing/e2e-campaign/](e2e-campaign/) 
 | `t9-neg-4001char-ru.txt` / `-en.txt` | T9 | one 4001-char paragraph — creation must be rejected (maxParaChars=4000) |
 
 Expected-QID reference for T5 (checked live 2026-07-17): Париж→Q90, Ханейское царство→Q425405
-(label-guess tier), Фивы(Египет)→Q101583, Фивы(Греция)→Q41621, Мемфис(Египет)→Q5715,
+(label-guess tier), Фивы(Египет)→Q101583, Фивы(Греция)→Q11225429 (corrected during the T5 run:
+this line originally said Q41621, which is Haifa — the run's own finding #5), Мемфис(Египет)→Q5715,
 Мемфис(Теннесси)→Q16563, Вавилон→Q5684. A modern-museum location term grounded to the modern
 city/institution is CORRECT (judge-prompt temporal caveat).
 
