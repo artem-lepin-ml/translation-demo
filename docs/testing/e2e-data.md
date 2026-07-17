@@ -115,6 +115,29 @@ per-paragraph History block. Full design: [contracts spec §7](../superpowers/sp
 4. Restore a non-current revision: `target` reverts to that text, a NEW `origin='restore'` revision is written (restore is itself tracked, not a rewind), and — restoring does **not** copy the old score — the paragraph shows a "Scores are for a previous version — press Evaluate" stale-hint banner over the *last known* score (not a reset to "not scored") until the next explicit Evaluate. This corrects an earlier version of this line, which claimed the score resets to "not scored"; live behavior (confirmed [prod-stability-iter1 §3](../reports/e2e/prod-stability-iter1-2026-07-16.md), "Restore к более старой ревизии") keeps the last known score visible with the banner — more informative than a bare dash. The History-list refresh itself (fixed in an earlier wave, [wave5-run.md §4.1](../reports/e2e/wave5-run.md)) is confirmed working for Restore; the same staleness pattern applied to Document **Reset** (same paragraph id reused, so a `paragraph.id`-keyed refetch alone never re-fired) was found and fixed in frontend-developer-stability-wave2 via a client-side `documentResetNonce` the History block also keys its refetch on.
 5. `export-btn` in the top bar opens `export-menu` with two items, `export-xlsx` and `export-md`; each downloads a file named `{slug}-{doc_id}.{ext}` (verified end-to-end in [wave5-run.md](../reports/e2e/wave5-run.md): xlsx round-trips through `openpyxl` — 15¶+header+meta rows, frozen header, score-colored cells; md is a valid GFM table).
 
+## Campaign fixtures (2026-07-17 e2e mega-campaign)
+
+Deterministic upload payloads for the [mega-campaign spec](../superpowers/specs/2026-07-17-e2e-mega-campaign.md)
+scenarios T2/T5/T9, committed under [docs/testing/e2e-campaign/](e2e-campaign/) BEFORE the runs
+(provenance requirement). Agents feed them through the upload modal (paste or file), never via curl.
+
+| File | Scenario | Contents |
+|---|---|---|
+| `t2-zh-source.txt` | T2 | 5 CJK paragraphs (Qin/Han: 秦朝, 长城, 汉朝, 司马迁), CJK punctuation, no word spaces |
+| `t2-en-translation.txt` | T2 | aligned EN translation (zh → en pair) |
+| `t2-ru-translation.txt` | T2 | aligned RU translation (zh → ru second pass) |
+| `t5-ru-source.txt` | T5 | 8 RU paragraphs of museum-temporal traps: Naram-Suen stele (Париж, Лувр), Ishtar Gate (Берлин), Standard of Ur (Лондон), Egyptian vs Greek Фивы, Memphis Egypt vs Tennessee jazz, Ханейское царство, приевфратские земли, ancient Babylon vs the Babylon site museum |
+| `t5-en-translation.txt` | T5 | aligned EN translation |
+| `gen_t9.py` | T9 | deterministic generator (no randomness) for all `t9-*` files below |
+| `t9-ru-source.txt` / `t9-en-translation.txt` | T9 | exactly 40 aligned paragraphs; paragraph 21 exactly 4000 chars (both limits boundary-exact) |
+| `t9-neg-41para-ru.txt` / `-en.txt` | T9 | 41 paragraphs — creation must be rejected (maxParagraphs=40) |
+| `t9-neg-4001char-ru.txt` / `-en.txt` | T9 | one 4001-char paragraph — creation must be rejected (maxParaChars=4000) |
+
+Expected-QID reference for T5 (checked live 2026-07-17): Париж→Q90, Ханейское царство→Q425405
+(label-guess tier), Фивы(Египет)→Q101583, Фивы(Греция)→Q41621, Мемфис(Египет)→Q5715,
+Мемфис(Теннесси)→Q16563, Вавилон→Q5684. A modern-museum location term grounded to the modern
+city/institution is CORRECT (judge-prompt temporal caveat).
+
 ## Out of scope (do not test / do not seed)
 
 - Live model inference on the seeded document (no key — see above).
