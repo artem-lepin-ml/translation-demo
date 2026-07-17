@@ -942,3 +942,20 @@ describe('historyRefreshNonce — HistoryBlock refetch signal beyond documentRes
     expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
   });
 });
+
+
+describe('evaluate double-submit guard (T7-№5)', () => {
+  it('a second evaluateParagraph call while the first is in flight is a no-op', async () => {
+    let resolveEval: (v: typeof evalResponse) => void;
+    vi.mocked(evaluate).mockImplementation(
+      () => new Promise((res) => { resolveEval = res; }),
+    );
+    const first = useDemoStore.getState().evaluateParagraph(1, 0);
+    // second synchronous call: loading is already true -> must not POST again
+    const second = useDemoStore.getState().evaluateParagraph(1, 0);
+    expect(evaluate).toHaveBeenCalledTimes(1);
+    resolveEval!(evalResponse);
+    await Promise.all([first, second]);
+    expect(evaluate).toHaveBeenCalledTimes(1);
+  });
+});

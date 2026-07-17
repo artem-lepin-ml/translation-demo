@@ -528,6 +528,12 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   // ── evaluate helpers ──────────────────────────────────────────────────────
 
   evaluateParagraph: async (paraId, paraIdx, criterionIds) => {
+    // Synchronous double-submit guard (campaign T7-№5): the button's
+    // disabled={loading} render lags a frame, so two truly simultaneous
+    // clicks (parallel OS-level dispatch) both reach here before React
+    // repaints. `loading` is set synchronously below, so whichever handler
+    // runs first closes the gate for the second.
+    if (get().paraEvalState[paraIdx]?.loading) return;
     // Spreads the previous per-paragraph state (not a fresh literal) so a
     // refineStage set by refineParagraph's chained call survives this pass —
     // otherwise "Re-scoring…" would flash back to the idle label instantly.
