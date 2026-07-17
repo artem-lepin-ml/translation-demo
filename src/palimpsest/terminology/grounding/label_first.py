@@ -7,6 +7,26 @@ Decision table:
   candidates present, 0 exact      -> judge -> yellow/llm_disambiguation or red/judge_rejected
   0 candidates after fallbacks     -> red, resolved_by=no_candidates, no judge call
 
+``confirm_exact`` veto (2026-07-17, false-green fix, see base.py's
+``GroundingConfig.confirm_exact`` docstring): when the config flag is on, a
+judge is injected, and exactly 1 exact match sits among >1 total candidates,
+the row above ("exactly 1 exact-label match -> green, no judge call") is
+withheld -- the mention instead goes through the SAME judge-disambiguation
+call the ">=2 exact matches" row makes, over the full candidate list:
+  judge picks the SAME qid as the exact match  -> green, resolved_by=exact_label
+                                                   (judge trace attached, unlike
+                                                   the zero-LLM row above)
+  judge picks a DIFFERENT candidate            -> yellow/llm_disambiguation (unchanged)
+  judge rejects every candidate                -> red/judge_rejected (unchanged,
+                                                   including post-rejection escalation)
+  judge raises / malformed reply / qid outside
+  the candidate set (i.e. any "unavailable")   -> falls back to the deterministic
+                                                   green untouched, byte-identical
+                                                   to the flag being off (no cache
+                                                   write on this path either)
+Exactly 1 total candidate (nothing to disambiguate against) always keeps the
+zero-LLM deterministic green regardless of the flag.
+
 Post-rejection escalation (2026-07-17, search_mode="label-guess" only): when
 the judge rejects EVERY candidate and the guess tier hasn't already run, one
 extra guesser+judge round runs over the newly guessed candidates only (see
@@ -164,20 +184,38 @@ class LabelFirstGrounding:
             for c in candidates
         ]
 
+        confirm_qid: str | None = None
         if len(exact_matches) == 1:
             chosen = exact_matches[0]
-            ref = WikidataRef.from_qid(chosen["qid"], chosen.get("label_en") or chosen.get("label_ru") or chosen["qid"],
-                                        chosen.get("description", ""))
-            refs = [WikidataRef.from_qid(c["qid"], c.get("label_en") or c.get("label_ru") or c["qid"],
-                                          c.get("description", "")) for c in candidates]
-            return self._result(
-                "green", ref, refs, t0, calls0,
-                queries=queries, search_source=search_source, candidates=candidates_traced,
-                exact_matches=exact_matches, resolved_by="exact_label", judge_trace=None, chosen_qid=chosen["qid"],
-                canon_en=canon_by_qid.get(chosen["qid"], []),
-            )
 
-        # >=2 exact matches, or candidates present with 0 exact matches: escalate.
+            def _exact_green() -> GroundingResult:
+                # The zero-LLM deterministic green -- both the ordinary path
+                # (confirm_exact off / no judge / single candidate) and the
+                # confirm_exact fallback-on-judge-failure path return exactly
+                # this (byte-identical judge_trace=None, no cache write), so
+                # judge unavailability can never regress a previously-safe
+                # exact-label match.
+                ref = WikidataRef.from_qid(
+                    chosen["qid"], chosen.get("label_en") or chosen.get("label_ru") or chosen["qid"],
+                    chosen.get("description", ""))
+                all_refs = [WikidataRef.from_qid(c["qid"], c.get("label_en") or c.get("label_ru") or c["qid"],
+                                                  c.get("description", "")) for c in candidates]
+                return self._result(
+                    "green", ref, all_refs, t0, calls0,
+                    queries=queries, search_source=search_source, candidates=candidates_traced,
+                    exact_matches=exact_matches, resolved_by="exact_label", judge_trace=None,
+                    chosen_qid=chosen["qid"], canon_en=canon_by_qid.get(chosen["qid"], []),
+                )
+
+            # confirm_exact veto (module docstring): only fires when there is
+            # a real competitor to rule out (>1 total candidates) and a judge
+            # is actually available to consult.
+            if not (config.confirm_exact and judge is not None and len(candidates) > 1):
+                return _exact_green()
+            confirm_qid = chosen["qid"]
+
+        # >=2 exact matches, exactly 1 exact match under confirm_exact veto,
+        # or candidates present with 0 exact matches: escalate.
         refs = [WikidataRef.from_qid(c["qid"], c.get("label_en") or c.get("label_ru") or c["qid"],
                                       c.get("description", "")) for c in candidates]
 
@@ -224,6 +262,12 @@ class LabelFirstGrounding:
             # degradation to judge_unavailable (wiki-eval experiment v2, Р15).
             raise
         except Exception as exc:  # noqa: BLE001 -- any other judge failure is terminal here, not retried
+            if confirm_qid is not None:
+                # confirm_exact veto, judge unavailable: fall back to the
+                # deterministic green untouched (module docstring) -- no
+                # decision is written to judge_cache on this path either,
+                # matching the zero-LLM row's own no-cache behavior exactly.
+                return _exact_green()
             decision = {"resolved_by": "judge_unavailable", "chosen_qid": None,
                         "judge_trace": {"error": str(exc),
                                         "latency_ms": round((time.perf_counter() - j0) * 1000, 1)}}
@@ -237,6 +281,8 @@ class LabelFirstGrounding:
             )
 
         if not isinstance(response, dict) or "qid" not in response:
+            if confirm_qid is not None:
+                return _exact_green()  # see the exception handler above for rationale
             decision = {"resolved_by": "judge_unavailable", "chosen_qid": None,
                         "judge_trace": {"error": "malformed judge response", "response": response,
                                         "latency_ms": round((time.perf_counter() - j0) * 1000, 1)}}
@@ -289,6 +335,8 @@ class LabelFirstGrounding:
 
         chosen_ref = next((r for r in refs if r.qid == qid), None)
         if chosen_ref is None:
+            if confirm_qid is not None:
+                return _exact_green()  # contract violation counts as "unavailable" too -- see above
             decision = {"resolved_by": "judge_unavailable", "chosen_qid": None,
                         "judge_trace": {"error": f"qid {qid!r} not in candidate set", "response": response,
                                         "latency_ms": judge_latency}}
@@ -301,14 +349,22 @@ class LabelFirstGrounding:
                 judge_trace={**decision["judge_trace"], "cache_hit": False}, chosen_qid=None, canon_en=[],
             )
 
-        decision = {"resolved_by": "llm_disambiguation", "chosen_qid": qid,
+        # confirm_exact veto success: the judge independently picked the SAME
+        # qid the deterministic exact-match already had -- confirmed, not
+        # merely disambiguated, so this greens like the zero-LLM row (module
+        # docstring) but keeps the judge trace attached (unlike that row).
+        if confirm_qid is not None and qid == confirm_qid:
+            resolved_by, difficulty = "exact_label", "green"
+        else:
+            resolved_by, difficulty = "llm_disambiguation", "yellow"
+        decision = {"resolved_by": resolved_by, "chosen_qid": qid,
                     "judge_trace": {"response": response, "error": None, "latency_ms": judge_latency}}
         if cache_key is not None:
             judge_cache[cache_key] = decision
         return self._result(
-            "yellow", chosen_ref, refs, t0, calls0,
+            difficulty, chosen_ref, refs, t0, calls0,
             queries=queries, search_source=search_source, candidates=candidates_traced,
-            exact_matches=exact_matches, resolved_by="llm_disambiguation",
+            exact_matches=exact_matches, resolved_by=resolved_by,
             judge_trace={**decision["judge_trace"], "cache_hit": False}, chosen_qid=qid,
             canon_en=canon_by_qid.get(qid, []),
         )
@@ -380,6 +436,21 @@ class LabelFirstGrounding:
         chosen_qid = decision["chosen_qid"]
         judge_trace = {**decision["judge_trace"], "cache_hit": True}
 
+        if resolved_by == "exact_label":
+            # confirm_exact veto: a cached SAME-qid confirmation replays as
+            # green/exact_label, not yellow/llm_disambiguation -- the fresh
+            # path's judge-failure fallback (_exact_green()) never reaches
+            # this cache in the first place (see ground()'s docstring note),
+            # so every cached "exact_label" entry here is a genuine confirmed
+            # match.
+            chosen_ref = next((r for r in refs if r.qid == chosen_qid), None)
+            return self._result(
+                "green", chosen_ref, refs, t0, calls0,
+                queries=queries, search_source=search_source, candidates=candidates,
+                exact_matches=exact_matches, resolved_by=resolved_by,
+                judge_trace=judge_trace, chosen_qid=chosen_qid,
+                canon_en=canon_by_qid.get(chosen_qid, []),
+            )
         if resolved_by == "llm_disambiguation":
             chosen_ref = next((r for r in refs if r.qid == chosen_qid), None)
             return self._result(

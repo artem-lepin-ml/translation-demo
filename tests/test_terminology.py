@@ -1647,3 +1647,205 @@ def test_label_first_no_escalation_outside_label_guess_mode():
 
     assert result.trace["resolved_by"] == "judge_rejected"
     assert guesser_calls == []
+
+
+# ── confirm_exact judge veto on a single exact match (2026-07-17, false-green
+# fix) ─────────────────────────────────────────────────────────────────────
+# Mirrors the two prod false-greens: «сирийских» auto-greened to Q33538
+# (Syriac language) via an exact ru ALIAS while the real referent sat
+# elsewhere in the candidate list; «династия Цинь» auto-greened to a TV
+# series whose ru LABEL matched exactly while the real Qin dynasty (ru label
+# just «Цинь», a DIFFERENT label) went unmatched in the same list. The fixture
+# below reproduces that shape generically: Q_NAMESAKE exact-matches the
+# query, Q_REAL is a same-search-hit competitor with a different label, so
+# len(exact_matches) == 1 while len(candidates) == 2.
+
+def _namesake_confirm_wd():
+    return _FakeWD(
+        search={"Династия Цинь": [{"id": "Q_NAMESAKE"}, {"id": "Q_REAL"}]},
+        entities={"Q_NAMESAKE": _entity("Q_NAMESAKE", "Qin Dynasty (TV series)", "Династия Цинь"),
+                  "Q_REAL": _entity("Q_REAL", "Qin dynasty", "Цинь")},
+    )
+
+
+def _namesake_mention() -> TermMention:
+    return TermMention(surface="династию Цинь", lemma="Династия Цинь",
+                       context="Ван покорил династию Цинь в 221 году до н.э.")
+
+
+def test_confirm_exact_judge_confirms_same_qid_resolves_green_with_trace():
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_NAMESAKE", "reason": "confirmed: the historical dynasty"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert result.grounded.qid == "Q_NAMESAKE"
+    assert len(calls) == 1                          # judge WAS consulted, unlike the zero-LLM row
+    assert result.trace["judge"] is not None         # confirmation is visible in the trace
+    assert result.trace["judge"]["response"]["qid"] == "Q_NAMESAKE"
+
+
+def test_confirm_exact_judge_picks_different_candidate_resolves_yellow():
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_REAL", "reason": "the exact-label hit is a TV series, not the dynasty"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "llm_disambiguation"
+    assert result.grounded.qid == "Q_REAL"           # the judge overrode the namesake exact match
+    assert len(calls) == 1
+
+
+def test_confirm_exact_judge_rejects_all_escalation_still_reachable():
+    # judge rejects both candidates on round 1; the post-rejection label-guess
+    # escalation (search_mode="label-guess") must still fire exactly as it
+    # does for the ordinary >=2-exact/0-exact paths -- confirm_exact does not
+    # special-case rejection at all.
+    wd = _namesake_confirm_wd()
+    wd._search["Qin"] = [{"id": "Q_NEW"}]
+    wd._entities["Q_NEW"] = _entity("Q_NEW", "Qin (state)", "Цинь (царство)")
+
+    judge_calls = []
+
+    def judge(prompt):
+        judge_calls.append(prompt)
+        if len(judge_calls) == 1:
+            return {"qid": None, "reason": "neither candidate is the historical dynasty"}
+        return {"qid": "Q_NEW", "reason": "the pre-imperial state of Qin"}
+
+    guesser_calls = []
+
+    def guesser(prompt):
+        guesser_calls.append(prompt)
+        return {"label_ru": None, "label_en": "Qin", "variants": []}
+
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True, search_mode="label-guess"),
+                                   label_guesser=guesser)
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "llm_disambiguation"
+    assert result.grounded.qid == "Q_NEW"
+    assert len(guesser_calls) == 1 and len(judge_calls) == 2
+    assert result.trace["judge"]["first_rejection"]["qid"] is None
+
+
+def test_confirm_exact_judge_rejects_all_no_escalation_stays_red():
+    # same rejection path, but WITHOUT search_mode="label-guess" -- confirms
+    # the ordinary (non-escalating) judge_rejected outcome is also reachable
+    # under confirm_exact, unchanged from the non-confirm case.
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": None, "reason": "neither fits"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))  # baseline search_mode
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "judge_rejected"
+    assert len(calls) == 1
+
+
+def test_confirm_exact_single_candidate_skips_judge_stays_green():
+    # len(candidates) == 1 -> nothing to disambiguate against -> the veto
+    # never fires, zero-LLM green exactly like confirm_exact=False.
+    wd = _FakeWD(search={"Саргон": [{"id": "Q1"}]},
+                 entities={"Q1": _entity("Q1", "Sargon of Akkad", "Саргон")})
+    judge, calls = _judge_counter({"qid": "Q1", "reason": "n/a"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(TermMention(surface="Саргон", lemma="Саргон"), judge=judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert calls == []                                # no competing candidate -> no judge call
+    assert result.trace["judge"] is None
+
+
+def test_confirm_exact_false_is_the_regression_baseline_no_judge_call():
+    # Default confirm_exact=False must reproduce the PRE-fix behavior
+    # byte-for-byte on the same namesake fixture that test_confirm_exact_*
+    # above catches -- this is the documented gap the flag exists to close,
+    # not a bug in the default path itself.
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_REAL", "reason": "would have overridden, if consulted"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig())  # confirm_exact defaults to False
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert result.grounded.qid == "Q_NAMESAKE"        # the namesake, unexamined -- the known gap
+    assert calls == []                                # judge never consulted
+    assert result.trace["judge"] is None
+
+
+def test_confirm_exact_judge_exception_falls_back_to_deterministic_green():
+    wd = _namesake_confirm_wd()
+
+    def raising_judge(prompt):
+        raise RuntimeError("provider unavailable")
+
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(_namesake_mention(), judge=raising_judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert result.grounded.qid == "Q_NAMESAKE"
+    assert result.trace["judge"] is None              # byte-identical to the flag being off
+
+
+def test_confirm_exact_judge_qid_outside_candidates_falls_back_to_green():
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_NOT_A_CANDIDATE", "reason": "contract violation"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert result.grounded.qid == "Q_NAMESAKE"
+    assert len(calls) == 1                            # the judge WAS called, its answer was rejected
+    assert result.trace["judge"] is None              # fallback trace matches the zero-LLM row
+
+
+def test_confirm_exact_cache_replays_within_paragraph_but_not_across():
+    # Simulates the two-Фивы case: same lemma+candidate-QID set, judge
+    # confirmation cached and replayed for a repeat mention in the SAME
+    # paragraph scope, but a DIFFERENT scope tuple (a different paragraph)
+    # must not reuse it -- exactly the cross-paragraph bug the scope_id fix
+    # in terminology_live.py closes.
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_NAMESAKE", "reason": "confirmed"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    cache: dict = {}
+    mention = _namesake_mention()
+
+    r1 = strategy.ground(mention, judge=judge, scope_id=("doc1", "para1"), judge_cache=cache)
+    r2 = strategy.ground(mention, judge=judge, scope_id=("doc1", "para1"), judge_cache=cache)
+    r3 = strategy.ground(mention, judge=judge, scope_id=("doc1", "para2"), judge_cache=cache)
+
+    assert len(calls) == 2                            # para1 called once, replayed; para2 fresh
+    assert r1.difficulty == r2.difficulty == r3.difficulty == "green"
+    assert r1.trace["resolved_by"] == r2.trace["resolved_by"] == r3.trace["resolved_by"] == "exact_label"
+    assert r1.grounded.qid == r2.grounded.qid == r3.grounded.qid == "Q_NAMESAKE"
+    assert r1.trace["judge"]["cache_hit"] is False
+    assert r2.trace["judge"]["cache_hit"] is True     # same paragraph scope -> replay
+    assert r3.trace["judge"]["cache_hit"] is False    # different paragraph scope -> fresh judge call
+
+
+def test_confirm_exact_cached_confirmation_survives_from_cached_decision():
+    # Direct check on _from_cached_decision's new "exact_label" branch: the
+    # replayed GroundingResult carries the correct grounded ref (looked up by
+    # chosen_qid, not just replaying difficulty/resolved_by strings).
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_NAMESAKE", "reason": "confirmed"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    cache: dict = {}
+    mention = _namesake_mention()
+
+    strategy.ground(mention, judge=judge, scope_id="s1", judge_cache=cache)
+    replayed = strategy.ground(mention, judge=judge, scope_id="s1", judge_cache=cache)
+
+    assert len(calls) == 1
+    assert replayed.grounded is not None
+    assert replayed.grounded.qid == "Q_NAMESAKE"
+    assert replayed.candidates and {c.qid for c in replayed.candidates} == {"Q_NAMESAKE", "Q_REAL"}

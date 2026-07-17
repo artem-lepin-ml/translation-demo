@@ -130,6 +130,7 @@ NER_ONE_TERM = '[{"surface":"Вавилон","lemma":"Вавилон","category"
 NER_AMBIGUOUS_TERM = '[{"surface":"Тутмос","lemma":"Тутмос","category":"person"}]'
 NER_EMPTY = "[]"
 NER_HANA_TERM = '[{"surface":"Ханейское царство","lemma":"Ханейское царство","category":"place"}]'
+NER_THEBES_TERM = '[{"surface":"Фивы","lemma":"Фивы","category":"place"}]'
 
 
 # ── happy path: exact-label green, no judge call needed ────────────────────
@@ -194,6 +195,57 @@ def test_run_disambiguation_judge_bridge_resolves_yellow(client):
     grounded = json.loads(row["grounded_json"])
     assert grounded["qid"] == "Q2"                  # the FAKE judge's choice was honored end-to-end
     assert row["pair_accuracy"] == "green"           # "Thutmose II" located verbatim in the target
+
+
+# ── judge-decision cache scope is per-paragraph, not per-document (2026-07-17
+# regression fix) ────────────────────────────────────────────────────────────
+
+def test_run_grounding_scope_is_per_paragraph_not_document(client):
+    """Two paragraphs mention the SAME ambiguous lemma with the SAME
+    candidate QID set (both candidates' ru label is «Фивы» -- 2 exact
+    matches, escalates to the judge regardless of confirm_exact) but a
+    DIFFERENT correct referent by context -- the exact «Фивы»-in-Egypt vs
+    «Фивы»-in-Greece prod case. Before the fix, ``scope_id=doc_id`` let
+    paragraph 2 silently replay paragraph 1's cached judge decision (wrong
+    QID, alien justification); each paragraph must now get its own judge
+    call and its own answer."""
+    wd = _FakeWD(
+        hits={"Фивы": [{"id": "Q_EGYPT"}, {"id": "Q_GREECE"}]},
+        entities={"Q_EGYPT": _entity("Q_EGYPT", "Thebes, Egypt", "Фивы"),
+                  "Q_GREECE": _entity("Q_GREECE", "Thebes, Greece", "Фивы")},
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [
+            {"source": "Фивы были столицей Египта.", "target": "Thebes was the Egyptian capital."},
+            {"source": "Фивы были городом в Беотии.", "target": "Thebes was a city in Boeotia."},
+        ])
+
+        fake_client = _FakeClient([NER_THEBES_TERM, NER_THEBES_TERM])
+        client_for = _client_for_factory(fake_client)
+
+        judge_calls: list[str] = []
+
+        async def judge(conn, prompt, endpoint="grounding"):
+            judge_calls.append(prompt)
+            qid = "Q_EGYPT" if "Египта" in prompt else "Q_GREECE"
+            return {"qid": qid, "reason": "resolved from the paragraph's own context"}
+
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    # A cache-scope regression collapses this to 1 (paragraph 2 replays
+    # paragraph 1's decision instead of calling the judge again).
+    assert len(judge_calls) == 2
+
+    p1, p2 = doc["paragraphs"]
+    row1 = conn.execute("SELECT * FROM term WHERE paragraph_id=?", (p1["id"],)).fetchone()
+    row2 = conn.execute("SELECT * FROM term WHERE paragraph_id=?", (p2["id"],)).fetchone()
+    g1 = json.loads(row1["grounded_json"])
+    g2 = json.loads(row2["grounded_json"])
+    assert g1["qid"] == "Q_EGYPT"
+    assert g2["qid"] == "Q_GREECE"   # NOT reused from paragraph 1 -- the pre-fix bug
 
 
 # ── label-guess tier (live wiring, owner-approved 2026-07-17) ───────────────
@@ -296,6 +348,7 @@ def test_run_builds_and_passes_label_guesser_into_grounder(client):
         asyncio.run(terminology_live.run(doc["id"], client_for, judge))
 
     assert captured["config"].search_mode == "label-guess"
+    assert captured["config"].confirm_exact is True   # 2026-07-17 false-green fix, live-only opt-in
     assert callable(captured["label_guesser"])
 
 

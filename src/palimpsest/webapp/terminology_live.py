@@ -20,19 +20,30 @@ Every grounding/pairing decision reuses the FROZEN terminology module
 unmodified (``extract.py``, ``grounding/label_first.py``,
 ``pairing/link_locate.py``, ``pipeline.py``) -- this module is glue only
 (LLM/DB wiring), per the project convention "reuse, never reimplement".
-Grounding runs ``GroundingConfig(search_mode="label-guess")`` (owner-approved
-2026-07-17, EMNLP-sprint recall fix -- Figure 1 of the published paper,
-«Ханейское царство»/Hana Q425405, used to die as ``no_candidates`` here):
-when the deterministic tiers (lemma/surface prefix search, CirrusSearch,
-sitelink) all find 0 candidates, the zero-LLM alt-names widening tier tries
-first, and only if THAT also finds nothing does ``generate_candidates``
-consult the injected ``label_guesser`` for one extra LLM call guessing the
-entity's exact Wikidata label (see ``grounding/candidates.py``'s module
-docstring for the full escalation order, unchanged by this wiring). The
-guesser is built here (``_make_sync_label_guesser``/
-``_grounding_label_guess_live`` below) from the SAME ``grounding_config``
-model/client as the disambiguation judge, and logged to the budget under its
-own ``"label_guess"`` endpoint tag.
+Grounding runs ``GroundingConfig(search_mode="label-guess", confirm_exact=True)``
+(``search_mode`` owner-approved 2026-07-17, EMNLP-sprint recall fix -- Figure
+1 of the published paper, «Ханейское царство»/Hana Q425405, used to die as
+``no_candidates`` here): when the deterministic tiers (lemma/surface prefix
+search, CirrusSearch, sitelink) all find 0 candidates, the zero-LLM alt-names
+widening tier tries first, and only if THAT also finds nothing does
+``generate_candidates`` consult the injected ``label_guesser`` for one extra
+LLM call guessing the entity's exact Wikidata label (see
+``grounding/candidates.py``'s module docstring for the full escalation
+order, unchanged by this wiring). The guesser is built here
+(``_make_sync_label_guesser``/``_grounding_label_guess_live`` below) from
+the SAME ``grounding_config`` model/client as the disambiguation judge, and
+logged to the budget under its own ``"label_guess"`` endpoint tag.
+``confirm_exact`` (2026-07-17, false-green fix -- see ``base.py``'s
+``GroundingConfig.confirm_exact`` and ``grounding/label_first.py``'s
+decision table) sends a single exact-label match to the judge for
+confirmation whenever a genuine competing candidate also exists in the
+list, instead of auto-greening on the exact match alone -- prod cases:
+«сирийских» auto-greened to Q33538 (Syriac language) via an exact ru ALIAS
+while the real referent sat elsewhere in the list; «династия Цинь»
+auto-greened to a TV series whose ru LABEL happened to match exactly while
+the real Qin dynasty (labelled just «Цинь» in ru) went unmatched. Eval/CLI
+callers keep the default ``confirm_exact=False`` (ablation numbers must not
+shift); only this live wiring opts in.
 Pairing uses ``LinkLocatePairing`` (P1, deterministic, no extra judge call)
 -- the same strategy ``scripts/term_pipeline.py``'s ``cmd_run`` used to
 build ``data/seed/terminology_out.json`` (loaded into the ``term`` table by
@@ -475,10 +486,23 @@ async def _run(doc_id: int, client_for, grounding_judge_live) -> None:
     wd = WikidataClient()
     sync_guesser = _make_sync_label_guesser(conn, client_for, loop)
     grounder = LabelFirstGrounding(
-        wd, config=GroundingConfig(search_mode="label-guess"), label_guesser=sync_guesser)
+        wd, config=GroundingConfig(search_mode="label-guess", confirm_exact=True),
+        label_guesser=sync_guesser)
     pairer = LinkLocatePairing(wd)
     sync_judge = _make_sync_judge(conn, grounding_judge_live, loop)
-    judge_cache: dict = {}          # "one sense per discourse" cache, scoped to scope_id=doc_id
+    # "one sense per discourse" cache, scoped PER PARAGRAPH (scope_id=(doc_id,
+    # paragraph_id) below, 2026-07-17 fix): a document-wide scope_id=doc_id
+    # used to let one paragraph's judge decision for a lemma silently replay
+    # onto an unrelated later paragraph that happens to share the same lemma
+    # and candidate QID set (prod: Egyptian «Фивы» in paragraph 3 and Greek
+    # «Фивы» in paragraph 4 -- same lemma, same Wikidata candidate list,
+    # different referents -- reused paragraph 3's decision for paragraph 4,
+    # wrong QID with an alien justification). One shared dict still backs
+    # repeat mentions of the SAME lemma+candidates within one paragraph (the
+    # «Хана»-twice-in-one-paragraph case keeps working, since the tuple's
+    # paragraph component is identical there); only cross-paragraph reuse is
+    # cut off, by the scope tuple differing.
+    judge_cache: dict = {}
 
     n_succeeded = 0
     for p in paras:
@@ -493,7 +517,7 @@ async def _run(doc_id: int, client_for, grounding_judge_live) -> None:
                 asyncio.to_thread(
                     pipeline.run, p["source"], p["target"] or "", mentions,
                     grounder=grounder, pairer=pairer, judge=sync_judge,
-                    scope_id=doc_id, judge_cache=judge_cache,
+                    scope_id=(doc_id, p["id"]), judge_cache=judge_cache,
                 ),
                 _GROUNDING_TIMEOUT,
             )
