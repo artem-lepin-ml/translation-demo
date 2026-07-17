@@ -87,6 +87,44 @@ describe('UploadModal SidePanel sticky error (C1)', () => {
   });
 });
 
+describe('UploadModal SidePanel CRLF counter (T1-F3: raw CR bytes inflated the char count)', () => {
+  function ControlledSidePanel() {
+    const [state, setState] = useState<{ text: string; lang: string; busy: boolean; error: string | null }>({
+      text: '', lang: 'ru', busy: false, error: null,
+    });
+    return (
+      <SidePanel
+        id="source"
+        label="Source"
+        langPlaceholder="Russian"
+        state={state}
+        onChange={(patch) => setState((s) => ({ ...s, ...patch }))}
+      />
+    );
+  }
+
+  it('normalizes CRLF to LF on paste/type, so the counter reports the real (post-normalize) length', () => {
+    render(<ControlledSidePanel />);
+    const textarea = screen.getByTestId('panel-source-textarea') as HTMLTextAreaElement;
+
+    // Two paragraphs of 5 chars each, CRLF-joined: raw 5+2+2+5=14 chars, real (LF) 5+1+1+5=12.
+    fireEvent.change(textarea, { target: { value: 'aaaaa\r\n\r\nbbbbb' } });
+
+    expect(textarea.value).toBe('aaaaa\n\nbbbbb');
+    expect(textarea.value).not.toContain('\r');
+    expect(screen.getByTestId('panel-source-counter').textContent).toContain('12 chars');
+  });
+
+  it('reports the same char count for an equivalent LF-only paste (no CRLF inflation either way)', () => {
+    render(<ControlledSidePanel />);
+    const textarea = screen.getByTestId('panel-source-textarea') as HTMLTextAreaElement;
+
+    fireEvent.change(textarea, { target: { value: 'aaaaa\n\nbbbbb' } });
+
+    expect(screen.getByTestId('panel-source-counter').textContent).toContain('12 chars');
+  });
+});
+
 describe('UploadModal Step2 precompute caption (LOW-c planned count/cost)', () => {
   it('computes min(N,12) planned paragraphs and planned x5x$0.004 cost', () => {
     mockCreateDoc(vi.fn(() => new Promise<void>(() => {})));

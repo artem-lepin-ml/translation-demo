@@ -136,6 +136,39 @@
   margin-bottom: 8px;
 }
 
+/* Accept-all summary notice (T3-F1/T10-F2) — same colour tokens as
+   .va-inspector-stale-hint (amber "worth a look", not a red error). */
+.va-accept-all-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: rgba(224, 175, 104, 0.08);
+  border: 1px solid var(--va-yellow);
+  border-radius: var(--va-radius-sm);
+  color: var(--va-yellow);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.va-notice-dismiss {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.va-notice-dismiss:hover {
+  opacity: 1;
+}
+
 /* Chrome right section (Accept all + score) */
 .va-chrome-right {
   display: flex;

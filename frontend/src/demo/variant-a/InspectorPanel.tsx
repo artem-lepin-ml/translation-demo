@@ -16,6 +16,14 @@ import type { Issue, Score, Criterion, Paragraph, Revision, RevisionOrigin } fro
 import { getRevisions } from '../api-client';
 import type { ParaEvalState } from '../store';
 
+/** Human-readable criterion name for a raw criterionId, falling back to the
+ *  id itself when it isn't resolvable against the loaded criteria list
+ *  (T8-№2: the failed-criteria banner was showing internal ids like
+ *  "crit-…" verbatim). */
+function criterionLabel(id: string, criteria: Criterion[]): string {
+  return criteria.find((c) => c.id === id)?.name ?? id;
+}
+
 interface Props {
   tab: 'issues' | 'scores';
   onTabChange: (t: 'issues' | 'scores') => void;
@@ -49,6 +57,12 @@ interface Props {
    *  reuses the same paragraph id and would otherwise never re-fire that
    *  effect. */
   documentResetNonce: number;
+  /** Bumped by store on Refine completion, manual edit save, Evaluate
+   *  completion and Accept-all completion (T3-F4/T10-F1) — HistoryBlock
+   *  re-fetches revisions when this changes, same idiom as
+   *  documentResetNonce. Optional/defaulted so pre-existing test fixtures
+   *  that predate this field don't all need updating. */
+  historyRefreshNonce?: number;
 }
 
 export default function InspectorPanel({
@@ -68,6 +82,7 @@ export default function InspectorPanel({
   visibleIssues,
   onRestoreRevision,
   documentResetNonce,
+  historyRefreshNonce = 0,
 }: Props) {
   const paraLabel = paragraph ? `§${paragraph.idx + 1}` : '§—';
   const openIssues = visibleIssues.filter((i) => i.status === 'open');
@@ -140,14 +155,22 @@ export default function InspectorPanel({
         </div>
       )}
 
-      {/* ── Failed criteria warning (genuine live failures only; cached fallback is not a failure) ── */}
-      {evalState.failedCriterionIds.length > 0 && !evalState.cached && !isCollapsed && (
+      {/* ── Failed criteria warning. Shown whenever the last pass had genuine
+          live failures, REGARDLESS of evalState.cached: cached is a separate
+          signal (a cache-fallback response was shown for the failed
+          criteria) — the two used to be mutually exclusive in this banner,
+          which silently hid real judge-call failures whenever a cache
+          fallback happened to exist (T4-Н1). Both now render together. ── */}
+      {evalState.failedCriterionIds.length > 0 && !isCollapsed && (
         <div className="va-inspector-warning">
           <span>
-            Failed: {evalState.failedCriterionIds.join(', ')}
+            Failed: {evalState.failedCriterionIds.map((id) => criterionLabel(id, criteria)).join(', ')}
             {evalState.error && <> — {evalState.error}</>}
-            {evalState.failedCriterionIds.length === criteria.length && (
+            {!evalState.cached && evalState.failedCriterionIds.length === criteria.length && (
               <div>Live evaluation failed and no warmed cache exists for this paragraph. Retry.</div>
+            )}
+            {evalState.cached && (
+              <div>Showing a cached fallback for the failed criteria — Retry for a live judgment.</div>
             )}
           </span>
           <button
@@ -165,7 +188,9 @@ export default function InspectorPanel({
       {/* ── Evaluate failure (network / 5xx / budget cut-off) ── */}
       {evalState.error && evalState.failedCriterionIds.length === 0 && !isCollapsed && (
         <div className="va-inspector-warning">
-          Evaluate failed: {evalState.error}
+          {evalState.errorOp === 'refine' ? 'Refine failed:'
+            : evalState.errorOp === 'dismiss' ? 'Dismiss failed:'
+            : 'Evaluate failed:'} {evalState.error}
         </div>
       )}
 
@@ -215,6 +240,7 @@ export default function InspectorPanel({
                   paragraph={paragraph}
                   onRestore={onRestoreRevision}
                   documentResetNonce={documentResetNonce}
+                  historyRefreshNonce={historyRefreshNonce}
                 />
               </>
             )}
@@ -479,23 +505,27 @@ function HistoryBlock({
   paragraph,
   onRestore,
   documentResetNonce,
+  historyRefreshNonce = 0,
 }: {
   paragraph: Paragraph;
   onRestore: (revisionId: number) => Promise<void>;
   documentResetNonce: number;
+  historyRefreshNonce?: number;
 }) {
   const [revisions, setRevisions] = useState<Revision[] | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [previewId, setPreviewId] = useState<number | null>(null);
   const [restoringId, setRestoringId] = useState<number | null>(null);
 
-  // Re-fetch on paragraph switch AND on documentResetNonce (SUSPECTED-1,
-  // wave2): Document Reset writes a fresh 'seed' revision but reuses the
-  // same paragraph id, so a plain `paragraph.id` dependency alone never
-  // re-fires this effect after a Reset — the panel kept showing the
-  // pre-reset CURRENT row until an unrelated reload, the same staleness
-  // already fixed for Restore below via handleRestore's own explicit
-  // re-fetch.
+  // Re-fetch on paragraph switch, on documentResetNonce (SUSPECTED-1, wave2:
+  // Document Reset writes a fresh 'seed' revision but reuses the same
+  // paragraph id, so a plain `paragraph.id` dependency alone never re-fires
+  // this effect after a Reset), AND on historyRefreshNonce (T3-F4/T10-F1:
+  // Refine/Evaluate/manual-edit/Accept-all can all mutate the current
+  // revision's text or score while this block stays mounted on the Scores
+  // tab — same staleness class as Reset, same nonce-bump fix). Restore below
+  // still uses its own explicit re-fetch in handleRestore rather than this
+  // nonce — it already resolves via the same round trip.
   useEffect(() => {
     let cancelled = false;
     setRevisions(null);
@@ -505,7 +535,7 @@ function HistoryBlock({
       .then((r) => { if (!cancelled) setRevisions(r.revisions); })
       .catch(() => { if (!cancelled) setRevisions([]); });
     return () => { cancelled = true; };
-  }, [paragraph.id, documentResetNonce]);
+  }, [paragraph.id, documentResetNonce, historyRefreshNonce]);
 
   // The backend is authoritative immediately after a restore (GET
   // /revisions already returns all rows) — the bug was purely client-side:

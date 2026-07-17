@@ -1,8 +1,10 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import VariantA, { selectPopoverIssues, precomputeFailedMessage } from './VariantA';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import VariantA, {
+  selectPopoverIssues, precomputeFailedMessage, precomputePartiallyFailed, precomputePartialMessage,
+} from './VariantA';
 import { useDemoStore } from '../store';
 import type { DemoStore } from '../store';
 import type { Document, Issue, Paragraph, PrecomputeStatus } from '../api-client';
@@ -88,6 +90,38 @@ describe('precomputeFailedMessage (S1 §2.6 — honest failure-reason banners)',
   });
 });
 
+describe('precomputePartiallyFailed / precomputePartialMessage (T9-F1 — mixed run must not read as silent success)', () => {
+  it('true when done, at least one succeeded, and at least one failed', () => {
+    expect(precomputePartiallyFailed(precompute({ succeeded: 7, failed: 5, done: 12 }))).toBe(true);
+  });
+
+  it('false on a clean run (failed is 0)', () => {
+    expect(precomputePartiallyFailed(precompute({ succeeded: 12, failed: 0, done: 12 }))).toBe(false);
+  });
+
+  it('false when `failed` is absent — additive field, old backends degrade to false', () => {
+    expect(precomputePartiallyFailed(precompute({ succeeded: 12, done: 12 }))).toBe(false);
+  });
+
+  it('false on total failure (succeeded===0) — that is precomputeFailed\'s case, not this one', () => {
+    expect(precomputePartiallyFailed(precompute({ succeeded: 0, failed: 12, done: 12 }))).toBe(false);
+  });
+
+  it('false while still running', () => {
+    expect(precomputePartiallyFailed({ status: 'running', done: 5, planned: 12, succeeded: 3, failed: 2 })).toBe(false);
+  });
+
+  it('false when precompute is undefined/null', () => {
+    expect(precomputePartiallyFailed(undefined)).toBe(false);
+    expect(precomputePartiallyFailed(null)).toBe(false);
+  });
+
+  it('names the warmed/failed counts and points at the per-paragraph retry affordance', () => {
+    expect(precomputePartialMessage(precompute({ succeeded: 7, planned: 12, failed: 5 })))
+      .toBe('Warmed 7/12 ¶ — 5 failed. Use Evaluate ↻ on the affected paragraphs to retry.');
+  });
+});
+
 // ─── Export menu (S6 §5 / audit-fix regression guard) ──────────────────────
 
 function makeParagraph(id: number): Paragraph {
@@ -117,6 +151,7 @@ function makeStore(doc: Document): DemoStore {
   return {
     document: doc,
     documentResetNonce: 0,
+    historyRefreshNonce: 0,
     documents: [{ id: doc.id, title: doc.title, sourceLang: doc.sourceLang, targetLang: doc.targetLang, nParagraphs: doc.nParagraphs, origin: doc.origin }],
     criteria: [],
     models: [],
@@ -386,5 +421,134 @@ describe('Tab isolation (BUG-2: non-active tab content is unmounted, not merely 
 
     expect(screen.queryByText('Terminology Glossary')).toBeNull();
     expect(screen.getByTestId('evaluate-para')).toBeTruthy();
+  });
+});
+
+describe('Accept-all summary notice (T3-F1/T10-F2: honest post-accept-all outcome)', () => {
+  it('shows "N applied · M skipped" once the batch settles with some issues gone outdated, ' +
+    'and a dismiss button clears it', async () => {
+    const acceptAllIssues = vi.fn().mockResolvedValue({ applied: 1, outdated: 1 });
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const paragraph = { ...makeParagraph(1), issues: [iss('1', { paragraphId: 1 })] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+      acceptAllIssues,
+    });
+    render(<VariantA />);
+
+    fireEvent.click(screen.getByTitle('Accept all issues across all paragraphs'));
+    await waitFor(() => expect(acceptAllIssues).toHaveBeenCalledTimes(1));
+
+    const notice = await screen.findByTestId('accept-all-notice');
+    expect(notice.textContent).toContain('1 applied · 1 skipped (outdated/stale fragments)');
+
+    fireEvent.click(screen.getByTestId('accept-all-notice-dismiss'));
+    expect(screen.queryByTestId('accept-all-notice')).toBeNull();
+
+    confirmSpy.mockRestore();
+  });
+
+  it('shows no notice when the whole batch applies cleanly (outdated === 0)', async () => {
+    const acceptAllIssues = vi.fn().mockResolvedValue({ applied: 1, outdated: 0 });
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const paragraph = { ...makeParagraph(1), issues: [iss('1', { paragraphId: 1 })] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+      acceptAllIssues,
+    });
+    render(<VariantA />);
+
+    fireEvent.click(screen.getByTitle('Accept all issues across all paragraphs'));
+    await waitFor(() => expect(acceptAllIssues).toHaveBeenCalledTimes(1));
+
+    expect(screen.queryByTestId('accept-all-notice')).toBeNull();
+    confirmSpy.mockRestore();
+  });
+
+  it('no longer flatly claims "All suggestions are applied" in the confirm-dialog copy', () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const paragraph = { ...makeParagraph(1), issues: [iss('1', { paragraphId: 1 })] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+    });
+    render(<VariantA />);
+
+    fireEvent.click(screen.getByTitle('Accept all issues across all paragraphs'));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    const message = confirmSpy.mock.calls[0][0] as string;
+    expect(message).not.toContain('All suggestions are applied');
+    confirmSpy.mockRestore();
+  });
+});
+
+describe('Precompute partial-failure notice (T9-F1: a mixed run must not silently drop the badge)', () => {
+  it('renders "Warmed X/Y ¶ — Z failed" when precompute finished with a mix of successes and failures', () => {
+    const doc = {
+      ...makeDoc([makeParagraph(1)]),
+      precompute: { status: 'done' as const, done: 12, planned: 12, succeeded: 7, failed: 5 },
+    };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.getByTestId('precompute-partial-notice').textContent)
+      .toContain('Warmed 7/12 ¶ — 5 failed');
+  });
+
+  it('does not render the partial notice when `failed` is absent (old backend, additive field)', () => {
+    const doc = {
+      ...makeDoc([makeParagraph(1)]),
+      precompute: { status: 'done' as const, done: 12, planned: 12, succeeded: 12 },
+    };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.queryByTestId('precompute-partial-notice')).toBeNull();
+  });
+
+  it('shows only the full-failure notice, never both, when succeeded===0', () => {
+    const doc = {
+      ...makeDoc([makeParagraph(1)]),
+      precompute: { status: 'done' as const, done: 12, planned: 12, succeeded: 0, failed: 12 },
+    };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.getByTestId('precompute-failed-notice')).toBeTruthy();
+    expect(screen.queryByTestId('precompute-partial-notice')).toBeNull();
+  });
+});
+
+describe('Evaluate-first-paragraphs CTA persistence (T1-F2: must survive the 5s translated-badge fade)', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('keeps the Run CTA visible after the 5s fade while the document still has no score', () => {
+    vi.useFakeTimers();
+    const paragraph = { ...makeParagraph(1) };   // aggregate: null by default
+    const doc = { ...makeDoc([paragraph]), translation: { status: 'done' as const, done: 3, total: 3 } };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.getByText(/Evaluate first paragraphs\?/)).toBeTruthy();
+
+    act(() => { vi.advanceTimersByTime(5000); });
+
+    // The "Translated N¶" text itself is allowed to fade…
+    expect(screen.queryByText(/Translated 3¶/)).toBeNull();
+    // …but the CTA that is the only path out of "Score —" must not.
+    expect(screen.getByText(/Evaluate first paragraphs\?/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Run' })).toBeTruthy();
+  });
+
+  it('drops the CTA once the document has a score, independent of the fade timer', () => {
+    const paragraph = { ...makeParagraph(1), aggregate: 8.2 };
+    const doc = { ...makeDoc([paragraph]), translation: { status: 'done' as const, done: 3, total: 3 } };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.queryByText(/Evaluate first paragraphs\?/)).toBeNull();
   });
 });

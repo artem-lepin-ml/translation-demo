@@ -63,6 +63,11 @@ export interface ParaEvalState {
   failedCriterionIds: CriterionId[];
   /** last /evaluate failure (network/5xx/budget cut-off); null = no error */
   error: string | null;
+  /** which operation produced `error` — drives the failure-banner label
+   *  (refine/dismiss failures used to render under "Evaluate failed:",
+   *  campaign finding T4-Н7). Optional like `refineStage` so pre-existing
+   *  test literals don't all need updating; absent reads as 'evaluate'. */
+  errorOp?: 'evaluate' | 'refine' | 'dismiss' | null;
   /** true when the paragraph text changed since these scores were computed */
   stale: boolean;
   /** Refine-in-flight phase (InspectorPanel's "Refine paragraph ✦" button);
@@ -82,6 +87,18 @@ export interface DemoStore {
    *  rewrites every paragraph's target/revision but keeps the same
    *  paragraph ids, so a plain `paragraph.id`-keyed effect never re-fires. */
   documentResetNonce: number;
+  /** Bumped after any mutation that can create a revision or change a
+   *  paragraph's scores WITHOUT already being covered by a dedicated nonce
+   *  (documentResetNonce for Reset) or an in-component re-fetch (Restore's
+   *  own handleRestore re-fetch in HistoryBlock). single-Accept is not
+   *  bumped here — it never needs to be: Accept only lives on the Issues
+   *  tab, so HistoryBlock (Scores-tab-only) is always unmounted at the
+   *  moment of a single Accept and mounts fresh (already post-mutation)
+   *  the next time the Scores tab opens (T10-F1 root-cause finding, wave
+   *  campaign). Refine, Evaluate/Retry-failed, manual edit save and
+   *  Accept-all CAN happen while the Scores tab (and HistoryBlock) stay
+   *  mounted, so they need an explicit refetch trigger — this nonce is it. */
+  historyRefreshNonce: number;
   documents: DocumentSummary[];
   criteria: Criterion[];
   models: ModelRegistryEntryPublic[];
@@ -232,6 +249,7 @@ function defaultParaEval(): ParaEvalState {
     cachedAt: null,
     failedCriterionIds: [],
     error: null,
+    errorOp: null,
     stale: false,
   };
 }
@@ -291,6 +309,12 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       },
     }));
 
+  // Shared refetch signal for InspectorPanel's HistoryBlock — see
+  // historyRefreshNonce's doc comment on the interface above for which
+  // mutations bump it and why single-Accept doesn't need to.
+  const bumpHistoryRefresh = () =>
+    set((s) => ({ historyRefreshNonce: s.historyRefreshNonce + 1 }));
+
   const setIssueStatus = (paraIdx: number, issueId: string, status: Issue['status']) =>
     set((s) => {
       const doc = s.document;
@@ -305,6 +329,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
   return {
   document: null,
   documentResetNonce: 0,
+  historyRefreshNonce: 0,
   documents: [],
   criteria: [],
   models: [],
@@ -516,6 +541,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
           cachedAt: null,
           failedCriterionIds: [],
           error: null,
+          errorOp: null,
           stale: false,
         },
       },
@@ -538,11 +564,17 @@ export const useDemoStore = create<DemoStore>((set, get) => {
               cachedAt: ev.cachedAt,
               failedCriterionIds: ev.failedCriterionIds,
               error: null,
+              errorOp: null,
               stale: false,
             },
           },
         };
       });
+      // A completed evaluate stamps a (possibly new) score onto the current
+      // revision — HistoryBlock must refetch to pick it up if it's already
+      // mounted (T3-F4 / T10-F1: this also transitively fixes Refine, which
+      // calls evaluateParagraph internally after applying its rewrite).
+      bumpHistoryRefresh();
     } catch (e) {
       set((s) => ({
         paraEvalState: {
@@ -551,6 +583,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
             ...(s.paraEvalState[paraIdx] ?? defaultParaEval()),
             loading: false,
             error: String(e),
+            errorOp: 'evaluate',
           },
         },
       }));
@@ -590,7 +623,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
         set((s) => ({
           paraEvalState: {
             ...s.paraEvalState,
-            [paraIdx]: { ...(s.paraEvalState[paraIdx] ?? defaultParaEval()), error: String(e) },
+            [paraIdx]: { ...(s.paraEvalState[paraIdx] ?? defaultParaEval()), error: String(e), errorOp: 'refine' },
           },
         }));
       }
@@ -684,7 +717,8 @@ export const useDemoStore = create<DemoStore>((set, get) => {
             ...s.paraEvalState,
             [paraIdx]: {
               ...(s.paraEvalState[paraIdx] ?? defaultParaEval()),
-              error: `Dismiss failed: ${String(e)}`,
+              error: String(e),
+              errorOp: 'dismiss',
             },
           },
         }));
@@ -715,7 +749,14 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       if (outcome === 'applied') applied += 1;
       else if (outcome === 'outdated') outdated += 1;
     }
-    if (applied > 0) markStale(paraIdx);
+    if (applied > 0) {
+      markStale(paraIdx);
+      // Unlike single Accept, Accept-all's own button lives in the top
+      // chrome (not gated to the Issues tab), so a Scores-tab HistoryBlock
+      // can stay mounted through the whole batch — explicit refetch needed
+      // (T3-F1/T10-F1).
+      bumpHistoryRefresh();
+    }
     return { applied, outdated };
   },
 
@@ -733,7 +774,10 @@ export const useDemoStore = create<DemoStore>((set, get) => {
         return { document: { ...doc, paragraphs } };
       });
       const paraIdx = get().document?.paragraphs.findIndex((p) => p.id === paraId) ?? -1;
-      if (paraIdx >= 0) markStale(paraIdx);   // manual edits outdate scores exactly like accepts
+      if (paraIdx >= 0) {
+        markStale(paraIdx);   // manual edits outdate scores exactly like accepts
+        bumpHistoryRefresh();   // manual edit creates a new 'edit' revision (T3-F4/T10-F1)
+      }
     } catch {
       // Silently ignore; user's edit stays locally
     }

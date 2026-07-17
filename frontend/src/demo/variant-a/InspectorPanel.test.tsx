@@ -122,6 +122,95 @@ describe('InspectorPanel evaluate affordance (B1 dead-paragraph revival)', () =>
     expect(onRetryFailed).toHaveBeenCalledWith(['style', 'cultural']);
   });
 
+  it('T4-Н1: shows BOTH the cached badge and the failed-criteria banner when a live-failed ' +
+    'evaluate fell back to a cache (cached must not suppress the failure banner anymore)', () => {
+    render(
+      <InspectorPanel
+        tab="issues"
+        onTabChange={vi.fn()}
+        paragraph={paragraph}
+        activeCriteria={new Set()}
+        evalState={{
+          loading: false, cached: true, cachedAt: '2026-01-01T00:00:00Z',
+          failedCriterionIds: ['style'], error: null, stale: false,
+        }}
+        criteria={[
+          { id: 'accuracy', name: 'Accuracy' }, { id: 'style', name: 'Style' },
+        ] as never}
+        isCollapsed={false}
+        onToggleCollapse={vi.fn()}
+        onAccept={vi.fn()}
+        onDismiss={vi.fn()}
+        onRefine={vi.fn()}
+        onEvaluate={vi.fn()}
+        onRetryFailed={vi.fn()}
+        visibleIssues={[]}
+        onRestoreRevision={vi.fn()}
+        documentResetNonce={0}
+      />,
+    );
+    expect(screen.getByText('cached', { selector: '.va-cached-badge' })).toBeTruthy();
+    expect(screen.getByText(/Failed: Style/)).toBeTruthy();
+    expect(screen.getByTestId('retry-failed')).toBeTruthy();
+  });
+
+  it('T8-№2: resolves failedCriterionIds to criterion NAMES, falling back to the raw id ' +
+    'when unresolvable against the loaded criteria list', () => {
+    render(
+      <InspectorPanel
+        tab="issues"
+        onTabChange={vi.fn()}
+        paragraph={paragraph}
+        activeCriteria={new Set()}
+        evalState={{
+          loading: false, cached: false, cachedAt: null,
+          failedCriterionIds: ['accuracy', 'crit-unknown-xyz'], error: null, stale: false,
+        }}
+        criteria={[{ id: 'accuracy', name: 'Accuracy' }, { id: 'style', name: 'Style' }] as never}
+        isCollapsed={false}
+        onToggleCollapse={vi.fn()}
+        onAccept={vi.fn()}
+        onDismiss={vi.fn()}
+        onRefine={vi.fn()}
+        onEvaluate={vi.fn()}
+        onRetryFailed={vi.fn()}
+        visibleIssues={[]}
+        onRestoreRevision={vi.fn()}
+        documentResetNonce={0}
+      />,
+    );
+    // "Accuracy" (resolved name) alongside "crit-unknown-xyz" (raw id fallback).
+    expect(screen.getByText(/Failed: Accuracy, crit-unknown-xyz/)).toBeTruthy();
+  });
+
+  it('does not claim "no warmed cache exists" when a cache fallback IS present (cached=true)', () => {
+    render(
+      <InspectorPanel
+        tab="issues"
+        onTabChange={vi.fn()}
+        paragraph={paragraph}
+        activeCriteria={new Set()}
+        evalState={{
+          loading: false, cached: true, cachedAt: '2026-01-01T00:00:00Z',
+          failedCriterionIds: ['accuracy'], error: null, stale: false,
+        }}
+        criteria={[{ id: 'accuracy', name: 'Accuracy' }] as never}
+        isCollapsed={false}
+        onToggleCollapse={vi.fn()}
+        onAccept={vi.fn()}
+        onDismiss={vi.fn()}
+        onRefine={vi.fn()}
+        onEvaluate={vi.fn()}
+        onRetryFailed={vi.fn()}
+        visibleIssues={[]}
+        onRestoreRevision={vi.fn()}
+        documentResetNonce={0}
+      />,
+    );
+    expect(screen.queryByText(/no warmed cache exists/)).toBeNull();
+    expect(screen.getByText(/Showing a cached fallback/)).toBeTruthy();
+  });
+
   it('disables the evaluate button while loading', () => {
     render(
       <InspectorPanel
@@ -651,6 +740,45 @@ describe('InspectorPanel Revision history (S5 §3.2-3.3)', () => {
     // paragraph/nonce) — must not unmount/re-fetch HistoryBlock.
     rerender(
       <InspectorPanel {...base} onAccept={vi.fn()} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={0} />,
+    );
+
+    expect(vi.mocked(apiClient.getRevisions).mock.calls.length).toBe(callsBefore);
+  });
+
+  it('T3-F4/T10-F1: re-fetches revisions when historyRefreshNonce changes, even though paragraph.id ' +
+    'and documentResetNonce stayed the same (Refine/Evaluate/manual-edit/Accept-all completion)', async () => {
+    const afterMutation: Revision[] = [
+      { id: 6, origin: 'apply_edit', createdAt: new Date().toISOString(), text: 'post-mutation', aggregate: 9.1, isBest: true, isCurrent: true },
+    ];
+    vi.mocked(apiClient.getRevisions)
+      .mockResolvedValueOnce({ revisions })
+      .mockResolvedValueOnce({ revisions: afterMutation });
+    const { rerender } = render(
+      <InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={0} historyRefreshNonce={0} />,
+    );
+    await screen.findByTestId('revision-history');
+    expect(screen.getAllByTestId(/^history-row-/).length).toBe(3);
+    const callsBefore = vi.mocked(apiClient.getRevisions).mock.calls.length;
+
+    rerender(
+      <InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={0} historyRefreshNonce={1} />,
+    );
+
+    await waitFor(() => expect(vi.mocked(apiClient.getRevisions).mock.calls.length).toBe(callsBefore + 1));
+    expect(screen.getAllByTestId(/^history-row-/).length).toBe(1);
+    expect(screen.getByTestId('history-row-6')).toBeTruthy();
+  });
+
+  it('defaults historyRefreshNonce to a stable 0 when the prop is omitted (pre-existing callers/fixtures)', async () => {
+    vi.mocked(apiClient.getRevisions).mockResolvedValue({ revisions });
+    const { rerender } = render(
+      <InspectorPanel {...base} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={0} />,
+    );
+    await screen.findByTestId('revision-history');
+    const callsBefore = vi.mocked(apiClient.getRevisions).mock.calls.length;
+
+    rerender(
+      <InspectorPanel {...base} onDismiss={vi.fn()} paragraph={paragraph} onRestoreRevision={vi.fn()} documentResetNonce={0} />,
     );
 
     expect(vi.mocked(apiClient.getRevisions).mock.calls.length).toBe(callsBefore);

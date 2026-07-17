@@ -352,7 +352,7 @@ describe('dismissIssue failure surfaces paraEvalState.error (M4)', () => {
     vi.mocked(patchIssueStatus).mockRejectedValue(new Error('HTTP 500'));
     await useDemoStore.getState().dismissIssue('1');
     const st = useDemoStore.getState().paraEvalState[0];
-    expect(st.error).toContain('Dismiss failed');
+    expect(st.errorOp).toBe('dismiss');
     expect(st.error).toContain('500');
   });
 
@@ -648,6 +648,7 @@ describe('refineParagraph (EMNLP sprint — refiner pass, replaces per-paragraph
       paraEvalState: { 0: {
         loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false,
       } },
+      historyRefreshNonce: 0,
     });
   });
 
@@ -670,6 +671,9 @@ describe('refineParagraph (EMNLP sprint — refiner pass, replaces per-paragraph
     expect(state.document!.paragraphs[0].aggregate).toBe(7);   // from evalResponse, via the chained evaluate
     expect(state.paraEvalState[0].refineStage).toBeUndefined();
     expect(state.paraEvalState[0].loading).toBe(false);
+    // Refine's chained evaluateParagraph call bumps historyRefreshNonce on
+    // its own success path — Refine needs no separate bump (T3-F4/T10-F1).
+    expect(state.historyRefreshNonce).toBe(1);
   });
 
   it('holds refineStage="rescoring" while the chained evaluate is still in flight', async () => {
@@ -707,6 +711,8 @@ describe('refineParagraph (EMNLP sprint — refiner pass, replaces per-paragraph
     const state = useDemoStore.getState().paraEvalState[0];
     expect(state.refineStage).toBeUndefined();
     expect(state.error).toContain('500');
+    // T4-Н7: the banner label must say "Refine failed:", not "Evaluate failed:"
+    expect(state.errorOp).toBe('refine');
     expect(evaluate).not.toHaveBeenCalled();
   });
 });
@@ -864,5 +870,75 @@ describe('resetDoc — documentResetNonce (SUSPECTED-1, wave2: History block sta
     await useDemoStore.getState().resetDoc();
 
     expect(useDemoStore.getState().documentResetNonce).toBe(0);
+  });
+});
+
+describe('historyRefreshNonce — HistoryBlock refetch signal beyond documentResetNonce/Restore ' +
+  '(T3-F4/T10-F1: staleness confirmed for Refine/Evaluate/manual-edit/Accept-all)', () => {
+  beforeEach(() => {
+    useDemoStore.setState({
+      document: makeDoc([
+        issue('1', { targetFragment: 'aaa', suggestion: 'xxx' }),
+        issue('2', { targetFragment: 'bbb', suggestion: 'yyy' }),
+      ]),
+      paraEvalState: {
+        0: { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false },
+      },
+      historyRefreshNonce: 0,
+    });
+  });
+
+  it('bumps after a successful evaluateParagraph (Evaluate ↻ / Retry-failed)', async () => {
+    vi.mocked(evaluate).mockResolvedValue(evalResponse);
+    await useDemoStore.getState().evaluateParagraph(1, 0);
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(1);
+  });
+
+  it('does not bump when evaluateParagraph fails', async () => {
+    vi.mocked(evaluate).mockRejectedValue(new Error('boom'));
+    await useDemoStore.getState().evaluateParagraph(1, 0);
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
+  });
+
+  it('bumps after a successful manual edit save (saveParagraphTarget)', async () => {
+    vi.mocked(patchParagraph).mockResolvedValue({
+      id: 1, idx: 0, source: 'ru', target: 'edited text', scores: [], scoresPrev: null,
+      scoresBaseline: null, aggregate: null, aggregateBaseline: null, issues: [], terms: [],
+    });
+    await useDemoStore.getState().saveParagraphTarget(1, 'edited text');
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(1);
+  });
+
+  it('does not bump when the manual edit PATCH fails', async () => {
+    vi.mocked(patchParagraph).mockRejectedValue(new Error('HTTP 500'));
+    await useDemoStore.getState().saveParagraphTarget(1, 'edited text');
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
+  });
+
+  it('bumps once after acceptAllIssues applies at least one edit', async () => {
+    vi.mocked(applyEdit)
+      .mockResolvedValueOnce({ target: 'xxx bbb', issue: issue('1', { status: 'accepted' }), siblingIssues: [] })
+      .mockResolvedValueOnce({ target: 'xxx yyy', issue: issue('2', { status: 'accepted' }), siblingIssues: [] });
+    await useDemoStore.getState().acceptAllIssues(1, 0, ['1', '2']);
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(1);
+  });
+
+  it('does not bump when acceptAllIssues applies nothing (every issue outdated)', async () => {
+    vi.mocked(applyEdit).mockRejectedValueOnce(
+      new Error('POST /paragraphs/1/apply-edit → 422: {"error":"fragment_not_found"}'),
+    );
+    vi.mocked(patchIssueStatus).mockResolvedValue(issue('1', { status: 'outdated' }));
+    await useDemoStore.getState().acceptAllIssues(1, 0, ['1']);
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
+  });
+
+  it('does NOT bump for a single acceptIssue — Accept only lives on the Issues tab, so ' +
+    'HistoryBlock is always unmounted at that moment and mounts fresh (already post-mutation) ' +
+    'next time the Scores tab opens; no bump is needed (see historyRefreshNonce doc comment)', async () => {
+    vi.mocked(applyEdit).mockResolvedValueOnce({
+      target: 'xxx bbb', issue: issue('1', { status: 'accepted' }), siblingIssues: [],
+    });
+    await useDemoStore.getState().acceptIssue(1, 0, '1');
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
   });
 });

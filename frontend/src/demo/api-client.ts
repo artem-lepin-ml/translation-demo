@@ -150,6 +150,12 @@ export interface PrecomputeStatus {
    * `done === planned && succeeded === 0` means every precompute call failed
    * (e.g. missing API key) — the caller should surface that, not stay silent. */
   succeeded: number;
+  /** Paragraphs whose precompute call failed individually, even though the
+   * run as a whole produced at least one score (T9-F1: a mixed run used to
+   * read as a silent full success). Additive/optional — absent on backends
+   * that predate this field, in which case partial-failure detection simply
+   * degrades to false rather than throwing. */
+  failed?: number;
   /** Human-readable cause of a succeeded===0 precompute run (S1 §2.6):
    * 'no_api_key' | 'budget_exhausted' | 'all_failed'. */
   errorReason?: string;
