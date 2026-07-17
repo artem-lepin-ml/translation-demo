@@ -23,8 +23,10 @@ Flow: `extract` (RU term mentions) → `ground` (Wikidata QID + difficulty) → 
   |---|---|---|---|
   | Exactly 1 exact match | QID taken deterministically, no LLM call | 🟢 | `exact_label` |
   | ≥2 exact matches | judge disambiguates over candidate label+description+context | 🟡 | `llm_disambiguation` |
-  | 0 exact, candidates exist | judge; picks → 🟡, rejects all → 🔴 | 🟡/🔴 | `llm_disambiguation` / `judge_rejected` |
+  | 0 exact, candidates exist | judge; picks → 🟡, rejects all → 🔴 (after one guess-escalation round, see below) | 🟡/🔴 | `llm_disambiguation` / `judge_rejected` |
   | 0 candidates after fallbacks | red, no LLM | 🔴 | `no_candidates` |
+
+  **Post-rejection label-guess escalation (2026-07-17, `search_mode="label-guess"` only).** The pre-judge guess tier fires only on ZERO hits, but "N hits, all the wrong entity" is invisible to that gate — prod case: «Хана» prefix-finds 7 entities (given name, Hawaii CDP, football club…), never the Bronze-age kingdom, and the judge honestly rejects them all. When the judge rejects every candidate and the guess tier hasn't already run, `ground()` runs ONE extra round (`candidates.escalate_label_guess` + `_guess_escalation_after_rejection`): guess labels → interleaved prefix search excluding the vetoed QIDs → judge over the NEW candidates only. New candidates are **never** exact-label matched — a fresh exact match inside a homonym set the judge just vetoed must not auto-green (false-green is the worst error class). Success → 🟡 `llm_disambiguation` with `trace.judge.first_rejection` preserving the initial veto; any failure (guess finds nothing new, second rejection, transport error, malformed response) keeps the honest `judge_rejected`, with the attempted `kind="label_guess"` queries still visible in the trace. Escalated successes are deliberately not written to the judge-decision cache (the chosen ref lies outside the mention's generated candidate set, so a cached replay could not rebuild it); a duplicate mention repeats one guesser+judge pair. Cost: at most one guesser + one judge call per judge-rejected mention.
 
   Exact match: `norm(query) == norm(label_ru)` for `query` ∈ {lemma, surface}, extended to aliases when `match_aliases` is on. Every candidate records `matched` — which label/alias it hit and via which query form — the basis of trace transparency.
 

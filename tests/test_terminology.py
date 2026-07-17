@@ -1536,3 +1536,114 @@ def test_label_first_paris_class_scenario_filters_junk_and_judge_grounds_city():
     assert result.trace["resolved_by"] == "llm_disambiguation"
     assert result.grounded is not None
     assert result.grounded.qid == "Q90"
+
+
+# ── post-rejection label-guess escalation (2026-07-17, «Хана» class) ─────────
+# The pre-judge guess tier only fires on ZERO hits; "7 hits, all the wrong
+# entity" is invisible to that gate. After a judge rejection, one extra
+# guesser+judge round runs over the NEW candidates only.
+
+def _khana_escalation_wd():
+    # lemma «Хана» finds 2 junk entities; the guessed "Khana" form finds the
+    # kingdom (excluded qids stay excluded).
+    return _FakeWD(
+        search={"Хана": [{"id": "Q_NAME"}, {"id": "Q_HAWAII"}],
+                "Khana": [{"id": "Q_NAME"}, {"id": "Q425405"}]},
+        entities={"Q_NAME": _entity("Q_NAME", "Hana", "Хана"),
+                  "Q_HAWAII": _entity("Q_HAWAII", "Hana, Hawaii", "Хана"),
+                  "Q425405": _entity("Q425405", "Kingdom of Khana")},
+    )
+
+
+def test_label_first_guess_escalation_resolves_after_judge_rejection():
+    wd = _khana_escalation_wd()
+    guesser_calls = []
+
+    def guesser(prompt):
+        guesser_calls.append(prompt)
+        return {"label_ru": None, "label_en": None, "variants": ["Khana"]}
+
+    judge_calls = []
+
+    def judge(prompt):
+        judge_calls.append(prompt)
+        if len(judge_calls) == 1:
+            return {"qid": None, "reason": "all candidates are modern homonyms"}
+        return {"qid": "Q425405", "reason": "Bronze-age kingdom on the middle Euphrates"}
+
+    strategy = LabelFirstGrounding(wd, GroundingConfig(search_mode="label-guess"),
+                                   label_guesser=guesser)
+    result = strategy.ground(TermMention(surface="Хану", lemma="Хана",
+                                         context="Шамши-Адад покорил Хану."), judge=judge)
+
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "llm_disambiguation"
+    assert result.grounded.qid == "Q425405"
+    assert len(guesser_calls) == 1 and len(judge_calls) == 2
+    # second judge round sees ONLY the new candidate, not the vetoed homonyms
+    assert "Q425405" in judge_calls[1] and "Q_NAME" not in judge_calls[1]
+    guess_qs = [q for q in result.trace["queries"] if q["kind"] == "label_guess"]
+    assert [q["q"] for q in guess_qs] == ["Khana"]
+    assert all(q["strategy"] == "guess" for q in guess_qs)
+    assert result.trace["judge"]["first_rejection"]["qid"] is None
+    # combined candidate list keeps the vetoed ones for trace transparency
+    assert {c["qid"] for c in result.trace["candidates"]} == {"Q_NAME", "Q_HAWAII", "Q425405"}
+
+
+def test_label_first_guess_escalation_second_rejection_stays_red():
+    wd = _khana_escalation_wd()
+    judge_calls = []
+
+    def judge(prompt):
+        judge_calls.append(prompt)
+        return {"qid": None, "reason": "nothing fits"}
+
+    strategy = LabelFirstGrounding(
+        wd, GroundingConfig(search_mode="label-guess"),
+        label_guesser=lambda p: {"label_ru": None, "label_en": None, "variants": ["Khana"]})
+    result = strategy.ground(TermMention(surface="Хану", lemma="Хана",
+                                         context="Шамши-Адад покорил Хану."), judge=judge)
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "judge_rejected"
+    assert len(judge_calls) == 2
+    # the attempted guess queries stay visible in the final red trace
+    assert any(q["kind"] == "label_guess" for q in result.trace["queries"])
+
+
+def test_label_first_no_escalation_when_guess_tier_already_ran():
+    # candidates came FROM the pre-judge guess tier; rejection must not loop
+    # into a second guesser round.
+    wd = _FakeWD(search={"Guessed": [{"id": "Q77"}]},
+                 entities={"Q77": _entity("Q77", "Guessed")})
+    guesser_calls = []
+
+    def guesser(prompt):
+        guesser_calls.append(prompt)
+        return {"label_ru": None, "label_en": "Guessed", "variants": []}
+
+    judge, judge_calls = _judge_counter({"qid": None, "reason": "not it"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(search_mode="label-guess"),
+                                   label_guesser=guesser)
+    result = strategy.ground(TermMention(surface="Загадка", lemma="Загадка",
+                                         context="Загадка без скобок."), judge=judge)
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "judge_rejected"
+    assert len(guesser_calls) == 1  # pre-judge tier only, no post-rejection loop
+    assert len(judge_calls) == 1
+
+
+def test_label_first_no_escalation_outside_label_guess_mode():
+    # no exact label match -> judge path -> rejection; baseline mode must not
+    # consult the guesser even though one is wired in.
+    wd = _FakeWD(search={"Хана": [{"id": "Q_NAME"}]},
+                 entities={"Q_NAME": _entity("Q_NAME", "Hana (given name)", "Хана (имя)")})
+    guesser_calls = []
+    judge, _ = _judge_counter({"qid": None, "reason": "no"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(),  # baseline mode
+                                   label_guesser=lambda p: guesser_calls.append(p) or {})
+    result = strategy.ground(TermMention(surface="Хана", lemma="Хана"), judge=judge)
+
+    assert result.trace["resolved_by"] == "judge_rejected"
+    assert guesser_calls == []

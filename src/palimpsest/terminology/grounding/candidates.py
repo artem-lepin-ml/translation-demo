@@ -295,37 +295,9 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
             return empty_result
 
         def _widen(q_list: list[str], tier: str) -> None:
-            per_form: list[list[dict]] = []
-            for q in q_list:
-                if not q:
-                    continue
-                results = wd.search_entities(q, lang=mention.lang, limit=config.search_limit)
-                # Both widening tiers ("alt"/"label_guess", search_mode !=
-                # "baseline") hit the same wbsearchentities prefix-search
-                # backend as rung 1 above, just with a derived form instead of
-                # surface/lemma. "alt" keeps "strategy": "prefix" (zero-LLM,
-                # already distinguishable via "kind"); "label_guess" gets its
-                # own "guess" strategy so a trace UI can flag an LLM-guessed
-                # query distinctly at a glance (live-pipeline wiring,
-                # owner-approved 2026-07-17) -- "kind" still separately
-                # tracks the tier either way.
-                strategy = "guess" if tier == "label_guess" else "prefix"
-                queries.append({"q": q, "kind": tier, "mechanism": "wbsearchentities",
-                                 "strategy": strategy, "n_hits": len(results)})
-                per_form.append(results)
-            # Rank-wise interleave across forms. Appending form-by-form lets a
-            # junk-rich FIRST form starve a later one under the hits[:...]
-            # head-cut below -- prod 2026-07-17: «Хана»'s 7 hits (given name,
-            # Hawaii CDP, football club...) filled the head while "Khana"
-            # rank 2 = Q425405 (Kingdom of Hana, the right entity) never
-            # reached enrichment or the judge. zip_longest keeps each form's
-            # own ranking while giving every form a fair slot per rank.
-            for rank_slice in zip_longest(*per_form):
-                for h in rank_slice:
-                    if h is not None and h["id"] not in seen_qid:
-                        seen_qid.add(h["id"])
-                        hits.append(h)
-                        hit_tier[h["id"]] = tier
+            _search_interleaved(wd, mention, config, q_list, tier,
+                                queries=queries, seen_qid=seen_qid,
+                                hits=hits, hit_tier=hit_tier)
 
         alt_forms = _alt_names_from_context(mention.surface, mention.context)
         if alt_forms:
@@ -333,18 +305,7 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
 
         if not hits and config.search_mode == "label-guess" and label_guesser is not None:
             guess = _guess_labels(label_guesser, mention)
-            # label_ru/label_en plus up to 3 "variants" (scholarly LoC
-            # romanization, bare canonical noun — 2026-07-17: «Ханейское
-            # царство» guessed "Хана"/"Hana" but Q425405 is only reachable
-            # via the "Khana" spelling). Dedup preserves guess order; cap
-            # keeps the widening tier bounded at 5 prefix searches.
-            raw_variants = guess.get("variants")
-            variants = [v for v in raw_variants if isinstance(v, str)] if isinstance(raw_variants, list) else []
-            seen_guess: set[str] = set()
-            guess_forms = [
-                g for g in (guess.get("label_ru"), guess.get("label_en"), *variants)
-                if g and not (g in seen_guess or seen_guess.add(g))
-            ][:5]
+            guess_forms = _guess_forms(guess)
             if guess_forms:
                 _widen(guess_forms, "label_guess")
 
@@ -359,6 +320,65 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
     # non-entity / near-dup filters below prune before the judge sees them.
     enrich_top = _WIDEN_ENRICH_TOP if hit_tier else config.enrich_top
     qids = [h["id"] for h in hits[:enrich_top]]
+    candidates, canon_by_qid = _enrich_candidates(wd, config, qids, hit_tier)
+    return {"candidates": candidates, "canon_by_qid": canon_by_qid,
+            "source": source, "n_hits": len(hits), "queries": queries}
+
+
+def _search_interleaved(wd: WikidataClient, mention: TermMention, config: GroundingConfig,
+                        q_list: list[str], tier: str, *, queries: list[dict],
+                        seen_qid: set[str], hits: list[dict], hit_tier: dict[str, str]) -> None:
+    """Prefix-search each widening form and merge the results fairly.
+
+    Both widening tiers ("alt"/"label_guess") hit the same wbsearchentities
+    prefix-search backend as rung 1, just with a derived form instead of
+    surface/lemma. "alt" keeps ``strategy: "prefix"`` (zero-LLM, already
+    distinguishable via "kind"); "label_guess" gets its own ``"guess"``
+    strategy so a trace UI can flag an LLM-guessed query distinctly at a
+    glance (live-pipeline wiring, owner-approved 2026-07-17).
+
+    Results are rank-wise interleaved across forms, NOT appended form-by-form:
+    a junk-rich first form would otherwise starve a later one under the
+    ``hits[:enrich_top]`` head-cut -- prod 2026-07-17: «Хана»'s 7 hits (given
+    name, Hawaii CDP, football club...) filled the head while "Khana" rank 2
+    = Q425405 (Kingdom of Hana, the right entity) never reached enrichment or
+    the judge. ``zip_longest`` keeps each form's own ranking while giving
+    every form a fair slot per rank.
+    """
+    per_form: list[list[dict]] = []
+    for q in q_list:
+        if not q:
+            continue
+        results = wd.search_entities(q, lang=mention.lang, limit=config.search_limit)
+        strategy = "guess" if tier == "label_guess" else "prefix"
+        queries.append({"q": q, "kind": tier, "mechanism": "wbsearchentities",
+                         "strategy": strategy, "n_hits": len(results)})
+        per_form.append(results)
+    for rank_slice in zip_longest(*per_form):
+        for h in rank_slice:
+            if h is not None and h["id"] not in seen_qid:
+                seen_qid.add(h["id"])
+                hits.append(h)
+                hit_tier[h["id"]] = tier
+
+
+def _guess_forms(guess: dict) -> list[str]:
+    """label_ru/label_en plus up to 3 "variants" (scholarly LoC romanization,
+    bare canonical noun -- 2026-07-17: «Ханейское царство» guessed
+    "Хана"/"Hana" but Q425405 is only reachable via the "Khana" spelling).
+    Dedup preserves guess order; the cap keeps the widening tier bounded at
+    5 prefix searches."""
+    raw_variants = guess.get("variants")
+    variants = [v for v in raw_variants if isinstance(v, str)] if isinstance(raw_variants, list) else []
+    seen: set[str] = set()
+    return [
+        g for g in (guess.get("label_ru"), guess.get("label_en"), *variants)
+        if g and not (g in seen or seen.add(g))
+    ][:5]
+
+
+def _enrich_candidates(wd: WikidataClient, config: GroundingConfig, qids: list[str],
+                       hit_tier: dict[str, str]) -> tuple[list[dict], dict[str, list[str]]]:
     entities = wd.get_entities(qids)
     candidates: list[dict] = []
     canon_by_qid: dict[str, list[str]] = {}
@@ -396,7 +416,7 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
         candidate = {
             "qid": cqid,
             "label_ru": label_ru,
-            "label_en": label_of(ent, "en"),
+            "label_en": label_en,
             "description": description,
             "aliases_ru": aliases_of(ent, "ru"),
             "aliases_en": aliases_of(ent, "en"),
@@ -405,5 +425,38 @@ def generate_candidates(wd: WikidataClient, mention: TermMention,
             candidate["source"] = hit_tier.get(qid, "baseline")
         candidates.append(candidate)
         canon_by_qid[cqid] = canonical_en_forms(ent)
-    return {"candidates": candidates, "canon_by_qid": canon_by_qid,
-            "source": source, "n_hits": len(hits), "queries": queries}
+    return candidates, canon_by_qid
+
+
+def escalate_label_guess(wd: WikidataClient, mention: TermMention, config: GroundingConfig,
+                         label_guesser: Judge, *, exclude_qids: set[str]) -> dict:
+    """One post-rejection widening round (called by ``label_first.py``,
+    2026-07-17): the deterministic rungs DID find candidates, so the zero-hit
+    gate above never fired -- but the judge then rejected them all ("wrong
+    hits" look identical to "good hits" until the judge sees them; prod case:
+    «Хана» finds 7 entities, none of them the Bronze-age kingdom). Guess
+    labels and search them exactly like the pre-judge label_guess tier,
+    excluding the already-rejected QIDs. The caller re-judges ONLY the new
+    candidates -- never the deterministic exact-label green path: a fresh
+    exact match inside a homonym set the judge just vetoed must not
+    auto-green (false-green is the worst error class).
+
+    Returns ``{"candidates", "canon_by_qid", "queries"}``; empty candidates
+    when the guess finds nothing new. Transport failures raise like
+    ``generate_candidates`` (the caller keeps the honest rejection); tolerable
+    guesser-LLM failures yield ``{}`` from ``_guess_labels`` and therefore no
+    candidates; ``FatalGroundingJudgeError`` propagates.
+    """
+    queries: list[dict] = []
+    guess = _guess_labels(label_guesser, mention)
+    forms = _guess_forms(guess)
+    hits: list[dict] = []
+    hit_tier: dict[str, str] = {}
+    seen_qid = set(exclude_qids)
+    if forms:
+        _search_interleaved(wd, mention, config, forms, "label_guess",
+                            queries=queries, seen_qid=seen_qid,
+                            hits=hits, hit_tier=hit_tier)
+    qids = [h["id"] for h in hits[:_WIDEN_ENRICH_TOP]]
+    candidates, canon_by_qid = _enrich_candidates(wd, config, qids, hit_tier)
+    return {"candidates": candidates, "canon_by_qid": canon_by_qid, "queries": queries}

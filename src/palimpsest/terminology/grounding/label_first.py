@@ -7,6 +7,12 @@ Decision table:
   candidates present, 0 exact      -> judge -> yellow/llm_disambiguation or red/judge_rejected
   0 candidates after fallbacks     -> red, resolved_by=no_candidates, no judge call
 
+Post-rejection escalation (2026-07-17, search_mode="label-guess" only): when
+the judge rejects EVERY candidate and the guess tier hasn't already run, one
+extra guesser+judge round runs over the newly guessed candidates only (see
+``_guess_escalation_after_rejection``); success is yellow/llm_disambiguation,
+anything else keeps the honest rejection.
+
 Error policy: candidate-gen failure (``RuntimeError`` -- e.g. Wikidata retries
 exhausted -- or a bare non-retryable ``urllib.error.HTTPError``/``OSError``
 that escaped the client's own retry loop) -> red/wikidata_unavailable (not
@@ -35,7 +41,7 @@ from ..base import (
     WikidataRef,
 )
 from ..wikidata import WikidataClient
-from .candidates import generate_candidates
+from .candidates import escalate_label_guess, generate_candidates
 from .match import exact_match, norm
 
 DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT = """## Role
@@ -247,6 +253,29 @@ class LabelFirstGrounding:
         qid = response["qid"]
 
         if qid is None:
+            # Post-rejection label-guess escalation (2026-07-17): the pre-judge
+            # guess tier only fires on ZERO hits, but "7 hits, all the wrong
+            # entity" (prod: «Хана» -> given name / Hawaii CDP / football club,
+            # never the Bronze-age kingdom) is invisible to that gate -- only
+            # the judge's rejection reveals it. One extra guesser + judge round
+            # over the NEW candidates only; any failure keeps the honest
+            # rejection. Skipped when the guess tier already ran pre-judge
+            # (nothing new to try).
+            if (config.search_mode == "label-guess" and self.label_guesser is not None
+                    and not any(q.get("kind") == "label_guess" for q in queries)):
+                escalated = self._guess_escalation_after_rejection(
+                    mention, judge, response,
+                    candidates_traced=candidates_traced, queries=queries,
+                    search_source=search_source, exact_matches=exact_matches,
+                    t0=t0, calls0=calls0,
+                )
+                if escalated is not None:
+                    # Deliberately NOT written to judge_cache: the chosen ref
+                    # lies outside this mention's generated candidate set, so
+                    # _from_cached_decision could not replay it -- a duplicate
+                    # mention repeats one guesser + one judge call instead
+                    # (bounded; scope_id is per-paragraph in the demo anyway).
+                    return escalated
             decision = {"resolved_by": "judge_rejected", "chosen_qid": None,
                         "judge_trace": {"response": response, "error": None, "latency_ms": judge_latency}}
             if cache_key is not None:
@@ -282,6 +311,62 @@ class LabelFirstGrounding:
             exact_matches=exact_matches, resolved_by="llm_disambiguation",
             judge_trace={**decision["judge_trace"], "cache_hit": False}, chosen_qid=qid,
             canon_en=canon_by_qid.get(qid, []),
+        )
+
+    def _guess_escalation_after_rejection(
+        self, mention: TermMention, judge: Judge, first_response: dict, *,
+        candidates_traced: list[dict], queries: list[dict], search_source,
+        exact_matches: list[dict], t0: float, calls0: int,
+    ) -> GroundingResult | None:
+        """One label-guess round after the judge rejected every candidate.
+
+        Returns a yellow/llm_disambiguation result when the second judge call
+        picks one of the NEW candidates; ``None`` in every other case -- the
+        caller then returns the original honest rejection. New candidates are
+        judged only, never exact-label matched: a fresh exact match inside a
+        homonym set the judge just vetoed must not auto-green (false-green is
+        the worst error class). ``queries`` is extended in place so the guess
+        attempt stays visible in the trace even when the rejection stands.
+        """
+        try:
+            esc = escalate_label_guess(
+                self.wd, mention, self.config, self.label_guesser,
+                exclude_qids={c["qid"] for c in candidates_traced})
+        except FatalGroundingJudgeError:
+            raise
+        except (RuntimeError, urllib.error.HTTPError, OSError):
+            return None  # transport failure mid-escalation: the rejection stands
+        queries.extend(esc["queries"])
+        new_cands = esc["candidates"]
+        if not new_cands:
+            return None
+        prompt = _format_judge_prompt(mention, new_cands)
+        j0 = time.perf_counter()
+        try:
+            response = judge(prompt)
+        except FatalGroundingJudgeError:
+            raise
+        except Exception:  # noqa: BLE001 -- the first judge DID answer; its rejection stands
+            return None
+        judge_latency = round((time.perf_counter() - j0) * 1000, 1)
+        qid = response.get("qid") if isinstance(response, dict) else None
+        if not qid:
+            return None  # rejected again (or malformed): keep the original rejection
+        chosen = next((c for c in new_cands if c["qid"] == qid), None)
+        if chosen is None:
+            return None  # contract violation on the escalation round only
+        all_candidates = candidates_traced + [{**c, "matched": None} for c in new_cands]
+        refs = [WikidataRef.from_qid(c["qid"], c.get("label_en") or c.get("label_ru") or c["qid"],
+                                      c.get("description", "")) for c in all_candidates]
+        chosen_ref = next(r for r in refs if r.qid == qid)
+        judge_trace = {"response": response, "error": None, "latency_ms": judge_latency,
+                       "cache_hit": False, "first_rejection": first_response}
+        return self._result(
+            "yellow", chosen_ref, refs, t0, calls0,
+            queries=queries, search_source=search_source, candidates=all_candidates,
+            exact_matches=exact_matches, resolved_by="llm_disambiguation",
+            judge_trace=judge_trace, chosen_qid=qid,
+            canon_en=esc["canon_by_qid"].get(qid, []),
         )
 
     def _from_cached_decision(self, decision, refs, t0, calls0, *, queries, search_source,
