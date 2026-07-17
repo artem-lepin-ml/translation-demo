@@ -110,7 +110,7 @@ interface Document extends DocumentSummary {
   sourceModel: string;
   aggregate: number | null;     // среднее paragraph.aggregate (на лету, из замороженных)
   paragraphs: Paragraph[];
-  precompute: { status: 'running' | 'done' | 'stopped' | 'skipped'; done: number; planned: number; succeeded: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-4 (custom-pair-upload); присутствует для origin='upload', null для origin='seed'
+  precompute: { status: 'running' | 'done' | 'stopped' | 'skipped'; done: number; planned: number; succeeded: number; failed: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-4 (custom-pair-upload); присутствует для origin='upload', null для origin='seed'. failed: number — 2026-07-17 fix (additive), см. дельту внизу файла
   translation: { status: 'running' | 'done' | 'failed'; done: number; total: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-5 (translator): присутствует, когда присутствует precompute (т.е. origin='upload'); зеркалит форму precompute
   termsStatus: 'none' | 'running' | 'done' | 'failed';  // 2026-07-11 (live terminology, см. дельту внизу файла): присутствует ДЛЯ ВСЕХ документов (в т.ч. origin='seed', там всегда 'done') — в отличие от precompute/translation это колонка БД (document.terms_status), не in-memory реестр
 }
@@ -173,7 +173,7 @@ PATCH  /api/issues/{id}             {status: 'open'|'dismissed'}
 
 # контрибьюшен 2 — пул оценщиков (Settings)
 GET    /api/criteria                            -> Criterion[]
-POST   /api/criteria               {Criterion}  -> Criterion
+POST   /api/criteria               {Criterion}  -> Criterion            # 2026-07-17 fix: теперь действительно evaluable (см. дельту внизу файла) — ранее первая же оценка любого кастомного критерия падала FileNotFoundError, потому что judge.py читал ТОЛЬКО файл prompts/scoring/<id>.md, никогда БД-строку с пользовательским prompt
 PUT    /api/criteria/{id}          {Criterion}  -> Criterion            # id из тела игнорируется
 DELETE /api/criteria/{id}                       -> 204 | 409            # 409 если есть скоры/issues; используй enabled=false
 
@@ -201,7 +201,7 @@ POST   /api/budget/reset                        -> {spentUsd, capUsd, calls, cal
 - **Агрегат — один общий хелпер, всегда по ВСЕМ enabled-критериям:** `aggregate = Σ( norm(value)·weight ) / Σ weight`, `norm(value)=(value−scaleMin)/(scaleMax−scaleMin)` (показ ×10). Нормализация обязательна (шкалы критериев разные). **`seed.py` и `/evaluate` зовут ОДИН и тот же `compute_aggregate()`** — иначе baseline и latest несравнимы. При частичном/подмножественном `/evaluate` агрегат считается по ВСЕМ enabled-критериям, подставляя **последний доступный** score для не-переоценённых (а не по подмножеству). Заморожен в момент оценки; правка весов задним числом не меняет показанное «до».
 - **Сравнимость наборов:** каждая оценка хранит `criteria_key` (отсортированные id enabled-критериев на момент оценки). UI сравнивает `criteria_key` baseline и latest; **различаются → бейдж «набор критериев изменился, дельта не сравнима»** (иначе прирост — артефакт включения/выключения критерия, а не качества).
 - **Частичный сбой `/evaluate`:** упавший критерий отсутствует в `scores` и попадает в `failedCriterionIds` (явное поле ответа); HTTP 200.
-- **Живой + кеш-фолбэк (решение владельца):** `/evaluate` идёт в LLM с таймаутом T (≈20 с). На этапе seed для показательных абзацев вставляются строки `kind='cache'` (ожидаемый результат после правок). При таймауте/сбое, если у абзаца есть `kind='cache'` — возвращаем его значения с `cached:true`, **НИЧЕГО не вставляя** в score/issue (read-only passthrough, «preview»). Cache-строки **исключены** из выбора «текущего»: `latest = max(created_at) WHERE kind IN ('seed','live')`. Так документ не открывается уже-улучшенным и cached-ответ не инвертирует дельту.
+- **Живой + кеш-фолбэк (решение владельца):** `/evaluate` идёт в LLM с таймаутом T (≈20 с). На этапе seed для показательных абзацев вставляются строки `kind='cache'` (ожидаемый результат после правок). При таймауте/сбое, если у абзаца есть `kind='cache'` — возвращаем его значения с `cached:true`, **НИЧЕГО не вставляя** в score/issue (read-only passthrough, «preview»). Cache-строки **исключены** из выбора «текущего»: `latest = max(created_at) WHERE kind IN ('seed','live')`. Так документ не открывается уже-улучшенным и cached-ответ не инвертирует дельту. **`failedCriterionIds` на cached-ответе (2026-07-17 fix, см. дельту внизу файла):** `[]`, если ни один живой судья реально не пытался вызваться (единственная причина — не настроен api-ключ, `_judge_live`'s `RuntimeError("no api key for model")` до сетевого вызова) — обычное чтение кеша; иначе — реальный список упавших критериев, когда живые судьи ДЕЙСТВИТЕЛЬНО вызвались и все упали (auth-ошибка, таймаут, ошибка парсинга, исчерпание бюджета). До фикса поле было жёстко зашито `[]` при любом cached-ответе.
 - **Reset (решение владельца):** `POST /api/documents/{id}/reset` удаляет score/issue-строки c `kind='live'` по документу и восстанавливает `paragraph.target = paragraph.seed_target` (immutable). Baseline (`kind='seed'`) и cache (`kind='cache'`) переживают. Reset также **принудительно реоткрывает** все `kind='seed'` issue-строки (`status='open'`), независимо от их предыдущего статуса — ранее dismissed seed-issue снова становится open после сброса. Возвращает свежий `Document`. Гонка с живым `/evaluate`: документ несёт `version`; `/evaluate` и `reset` его инкрементят; `reset` отдаёт `409`, если по документу есть незавершённый `/evaluate` (in-memory guard). 
 - **`/apply-edit` цепочкой:** на `422 fragment_not_found` статус issue **НЕ меняется** (остаётся `open`), UI показывает ошибку «текст изменился — пересчитайте». Цепочка accept применяется в порядке `charStart` (меньше шанс сдвига фрагментов). При INSERT нового open-issue, если уже есть `accepted`/`dismissed` issue с тем же `(paragraphId, criterionId, targetFragment)` — новый **не вставляется** (без дублей-наложений на спан).
 - **`POST /api/models/{name}/test` — зонд-вызов (роудмапа п.4):** `404` только для неизвестного `name`; любой другой исход — `200`. Отсутствие api-ключа/env, таймаут (общий `EVAL_TIMEOUT`≈20 с), ошибка API, ошибка парсинга JSON-ответа модели или блок бюджета — все дают `200 TestModelResult{ok:false, message:<причина>}` (та же философия, что у кеш-фолбэка `/evaluate`: неудачный реальный вызов — не 5xx). Модели даётся русский абзац `idx=1` с просьбой извлечь термины JSON-массивом; `reference` = нормализованные surface-формы seed `term`-строк этого абзаца (slash-split на составные формы вроде «марту/амурру»); `share = matched/total`; `ok = (нет ошибки) И share ≥ 0.5`. Реальный вызов идёт через `_client_for` + `LLMClient.complete`, под тем же бюджетным гардом (`budget.py`, жёсткий кап $2, pre-call резервирование), что и `/evaluate`.
@@ -552,3 +552,89 @@ producing the `mesopotamia-2`/`qin-state` uploads) gains `--golden-token`/env
 `GLOSSA_GOLDEN_TOKEN`, sent on every request it makes (create + poll) — without it, a plain
 unauthenticated run against a session-isolated server would create documents nobody else
 (including a re-run of the script itself) can ever see again.
+
+## EMNLP e2e-campaign bugfix delta (2026-07-17)
+
+Three confirmed bugs from the EMNLP demo-sprint e2e campaign (T2/T5/T8/T9), all in the
+backend evaluate/precompute path. No DDL change; two additive DTO fields.
+
+**Fix 1 — custom criterion could never be evaluated (CRITICAL, judge.py).**
+`judge.py::_scoring_prompt(criterion_id)` always read `prompts/scoring/<id>.md` from disk and
+never looked at the criterion's own DB row — only the 3 built-in ids (`accuracy`/`fluency`/
+`style`) have a matching file, so scoring a custom criterion (created via `POST
+/api/criteria {prompt}`, §2 above) was a deterministic `FileNotFoundError` on the very first
+attempt, before any LLM call. Design fact confirmed by reading `seed.py:84-89`: the 3
+built-in rows' `criterion.prompt` column is populated **verbatim from the same files** at
+seed time, so making the DB row the source of truth is safe universally, not just for custom
+rows. Fix: `_scoring_prompt(criterion_id, prompt=None)` / `scoring_system_prompt(...,
+*, prompt=None)` / `judge_one(..., prompt=None)` all gained an optional `prompt` override
+that wins when non-empty; `app.py::_judge_live` (the one real call site, `_client_for` +
+`judge_one`) threads `criterion["prompt"]` through both the token-estimate call and the real
+scoring call. A criterion whose DB prompt is empty **and** has no matching file still raises
+`FileNotFoundError` — same as before — but that exception was already caught by
+`asyncio.gather(..., return_exceptions=True)` in `/evaluate` and by `precompute._run`'s own
+try/except, so it always surfaced as a per-criterion `failedCriterionIds` entry, never a
+500 — no additional guard was needed for that edge case.
+
+**Fix 2 — silent precompute stalls under parallel sessions (precompute.py, budget.py).**
+Two distinct bugs shared one symptom ("precompute silently classifies paragraphs
+`budget_exhausted` or finishes claiming success while data is missing"); a third, pre-existing
+bug was surfaced (not fixed) by this work:
+
+- **(a) Fixed — process-global call sub-cap.** `precompute._take_call_slot()` checked/
+  incremented `budget._STATE["precompute_calls"]` as a single process-wide `int` capped by
+  `_CALL_CAP` (env `PALIMPSEST_PRECOMPUTE_CALLS`, default 80) — under session isolation
+  (2026-07-16 delta above), every browser session runs its own precompute warm-up against its
+  own SQLite clone, but they all shared this ONE counter. One session's 12-paragraph
+  warm-up could exhaust the cap before a concurrent session's warm-up even got a slot, which
+  then silently stopped (`status:'stopped', errorReason:'budget_exhausted'`) despite the real
+  $ budget being nowhere near its cap. Fix: `budget._STATE["precompute_calls"]` is now a
+  `{sid: count}` dict, keyed by `db.current_sid()` — the same rekeying every other precompute
+  in-memory structure (`_status`, `_tasks`) already uses for session isolation. Each session
+  gets its own independent `_CALL_CAP` budget.
+- **(b) Fixed — partial-success masking.** The precompute run loop (`precompute.py::_run`)
+  silently discarded a paragraph whose judge call raised and kept going to the next one; the
+  final status only ever gained an `errorReason` when `succeeded == 0` (100% failure) — a
+  *partial* failure (e.g. 2 of 12 paragraphs failed, the rest succeeded) was completely
+  invisible in the status payload, `status: 'done'` looked identical to a clean run. Fix:
+  `precompute.mark_started`/`mark_skipped`/`_run` all gain a `failed: number` counter
+  (additive, backward-compatible — see the `Document.precompute` DTO update above), counting
+  paragraphs where a criterion's judge call genuinely raised (NOT a TOCTOU/delete discard,
+  which is a benign no-op). This is a **backend-only** fix — the frontend still only alarms
+  on `succeeded === 0`; wiring a partial-failure UI affordance off the new `failed` count is a
+  follow-up, not part of this delta.
+- **(c) Surfaced, not fixed — generic exception classification.** `precompute
+  ._classify_failure` buckets anything that isn't `budget.BudgetExceeded` or a `RuntimeError`
+  containing "no api key" into a catch-all `'all_failed'` `errorReason`, regardless of the
+  real cause (a judge JSON-parse error and a raw network blip are indistinguishable in the
+  reported reason). Not addressed by this delta — `failed` now at least tells an operator
+  paragraphs were lost even when `errorReason` can't say more than `'all_failed'`.
+
+**Fix 3 — full judge failure masked as an ordinary cache read (app.py).**
+`app.py::evaluate`'s `if not succeeded:` branch always called `_cache_response(conn, p,
+enabled, failed)` but the function itself hardcoded `"failedCriterionIds": []` in its return,
+ignoring the `failed` argument entirely — so a cached response looked byte-identical whether
+it came from an ordinary cache-only read (no live attempt was ever meaningful, e.g. no api
+key configured — see §3 "Живой + кеш-фолбэк" above) or from every live judge genuinely
+running and failing (auth error, timeout, parse error, budget exhaustion). Fix: `evaluate()`
+now classifies the `asyncio.gather` exceptions before calling `_cache_response` — `[]` when
+every exception is `_judge_live`'s own pristine "no api key" `RuntimeError` (no live attempt
+was ever made), the real `failed` list otherwise; `_cache_response` uses the argument it
+already had instead of the literal `[]`. Additive semantics change, no field renamed/removed.
+
+**Small polish, same lane:**
+- `POST /api/models` duplicate `name` → `409 {"error": "A model with this name already
+  exists"}` instead of the raw SQLite text (`"UNIQUE constraint failed: model.name"`); every
+  other `sqlite3.IntegrityError` still falls back to the raw text (no change to that path).
+- `POST /api/models/{name}/test`'s error-path `message` now also strips a provider-internal
+  `user_id` token (regex `user_[A-Za-z0-9]+`, local to `app.py` — distinct from `secrets_
+  guard.redact_error`'s key-shaped redaction, which this endpoint's error path also gained;
+  before this fix it built its message from the raw exception with no redaction at all).
+- `GET /api/documents/{id}/export?format=` is now case-insensitive (`MD`/`Xlsx` both work).
+- `export.slugify` locked with a unit test for a fully-CJK title: falls back to `document`
+  (same as the existing Cyrillic-fallback case), filename remains uniquely keyed by the doc
+  id (`{slug}-{id}.{ext}`) regardless.
+
+doc-parity: [webapp.md](../../subsystems/webapp.md) (`judge.py`/precompute/export/models-409
+rows and the "Cache fallback protocol"/"Precompute" prose) updated in the same commit as the
+code.

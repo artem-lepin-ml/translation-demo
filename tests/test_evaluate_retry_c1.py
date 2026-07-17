@@ -185,7 +185,7 @@ def test_precompute_subcap_counts_one_slot_per_criterion_despite_retries(eval_cl
     slots, and must not bypass the slot check either (the slot is already
     held for the whole retry sequence)."""
     monkeypatch.setattr(precompute, "_CALL_CAP", 10)
-    budget._STATE.pop("precompute_calls", None)
+    budget._STATE.pop("precompute_calls", None)  # per-sid dict (2026-07-17); legacy fixture -> one sid
 
     attempts = {"n": 0}
 
@@ -210,7 +210,7 @@ def test_precompute_subcap_counts_one_slot_per_criterion_despite_retries(eval_cl
     asyncio.run(precompute.run(doc["id"], app_mod._judge_live))
     # 1 paragraph x 1 criterion = 1 slot consumed, even though judge_one
     # (inside the retry loop) was invoked 3x before succeeding.
-    assert budget._STATE["precompute_calls"] == 1
+    assert budget._STATE["precompute_calls"][db.current_sid()] == 1
     assert attempts["n"] == 3
     assert precompute.status_for(doc["id"])["status"] == "done"
 

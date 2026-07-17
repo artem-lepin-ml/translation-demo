@@ -204,7 +204,7 @@ def test_free_text_language_full_loop_preamble_on_every_call(eval_client, monkey
     accept-triggered re-judge — receives the German/French language preamble."""
     prompts_seen: list[tuple[str, str]] = []
 
-    def recording_judge(client, criterion_id, source, target, *, source_lang, target_lang):
+    def recording_judge(client, criterion_id, source, target, *, source_lang, target_lang, **_kw):
         from palimpsest.webapp.judge import scoring_system_prompt
         system = scoring_system_prompt(criterion_id, source_lang, target_lang)
         prompts_seen.append((system, f"[SOURCE — {source_lang}] {source}"))
@@ -240,7 +240,7 @@ def test_free_text_language_precompute_also_gets_preamble(eval_client, monkeypat
     confirm the free-text language preamble applies there too."""
     prompts_seen: list[str] = []
 
-    def recording_judge(client, criterion_id, source, target, *, source_lang, target_lang):
+    def recording_judge(client, criterion_id, source, target, *, source_lang, target_lang, **_kw):
         from palimpsest.webapp.judge import scoring_system_prompt
         prompts_seen.append(scoring_system_prompt(criterion_id, source_lang, target_lang))
         return _judge_result()
@@ -316,7 +316,11 @@ def test_bad_key_auth_error_fails_fast_no_retry(eval_client, monkeypatch):
 
 def test_bad_key_falls_back_to_cache_without_retry_delay(eval_client, monkeypatch):
     """End-to-end: a precomputed/seeded paragraph with a bad key on live judge
-    still serves the cached result, and does so without retry-induced delay."""
+    still serves the cached result, and does so without retry-induced delay.
+    2026-07-17 fix: the live judges genuinely RAN (a real 401 came back from
+    the provider) and ALL failed, so cached:true still carries the real
+    failedCriterionIds — not the pristine-cache-read [] (see the sibling
+    no-key test below)."""
     monkeypatch.setattr(app_mod, "EVAL_BACKOFF", 5.0)
 
     def bad_key(*a, **kw):
@@ -339,4 +343,29 @@ def test_bad_key_falls_back_to_cache_without_retry_delay(eval_client, monkeypatc
 
     assert ev["cached"] is True
     assert ev["scores"][0]["value"] == pytest.approx(7.5)
+    assert ev["failedCriterionIds"] == ["accuracy"]
     assert elapsed < 0.5, f"cache fallback with a bad key took {elapsed:.3f}s"
+
+
+def test_no_key_cache_fallback_keeps_failed_criterion_ids_empty(eval_client, monkeypatch):
+    """The pristine no-key path (2026-07-17 fix, contrast with the bad-key
+    test above): no live attempt is EVER made — _judge_live's own
+    RuntimeError('no api key for model') fires before any network call — so
+    a cache fallback here is an ordinary cache read, and failedCriterionIds
+    stays [] exactly like before this fix."""
+    async def no_key(*a, **kw):
+        raise RuntimeError("no api key for model")
+
+    monkeypatch.setattr(app_mod, "_judge_live", no_key)
+    pid = _make_para(eval_client)
+
+    conn = db.connect()
+    conn.execute(
+        "INSERT INTO score(paragraph_id,criterion_id,value,summary,aggregate,criteria_key,kind,created_at) "
+        "VALUES(?,?,?,?,?,?,?,?)", (pid, "accuracy", 7.5, "cached ok", 7.5, "accuracy", "cache", "2020-01-01"))
+    conn.commit()
+
+    ev = eval_client.post(f"/api/paragraphs/{pid}/evaluate").json()
+
+    assert ev["cached"] is True
+    assert ev["failedCriterionIds"] == []

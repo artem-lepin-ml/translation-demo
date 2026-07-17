@@ -36,7 +36,8 @@ def test_precompute_writes_seed_and_cache(scored_client):
     cache = conn.execute("SELECT COUNT(*) c FROM score WHERE kind='cache'").fetchone()["c"]
     issues = conn.execute("SELECT COUNT(*) c FROM issue WHERE kind='seed' AND status='open'").fetchone()["c"]
     assert seed == 2 and cache == 2 and issues == 2       # 2 абзаца × 1 критерий
-    assert precompute.status_for(doc["id"]) == {"status": "done", "done": 2, "planned": 2, "succeeded": 2}
+    assert precompute.status_for(doc["id"]) == {
+        "status": "done", "done": 2, "planned": 2, "succeeded": 2, "failed": 0}
 
 
 def test_skip_already_scored_paragraph(scored_client):
@@ -73,21 +74,47 @@ def test_all_calls_fail_status_done_but_zero_succeeded(scored_client):
     """When every judge call fails (e.g. missing API key), the run still ends in
     'done' (not 'stopped' — that's reserved for the sub-cap), but 'succeeded'
     stays 0 so the frontend can tell 'ran and produced nothing' apart from a
-    real success (BUG-5 seam)."""
+    real success (BUG-5 seam). 'failed' (2026-07-17) mirrors 'succeeded' —
+    both paragraphs genuinely failed, none were TOCTOU-discarded."""
     async def failing_judge(conn, criterion, source, target, sl, tl, endpoint="precompute"):
         raise RuntimeError("no api key")
 
     doc = _mk_doc(scored_client, n=2)
     asyncio.run(precompute.run(doc["id"], failing_judge))
     status = precompute.status_for(doc["id"])
-    assert status == {"status": "done", "done": 2, "planned": 2, "succeeded": 0,
+    assert status == {"status": "done", "done": 2, "planned": 2, "succeeded": 0, "failed": 2,
                        "error_reason": "no_api_key"}
+
+
+def test_partial_failure_reports_failed_count(scored_client):
+    """One paragraph's judge call fails, the other two succeed — the run still
+    ends 'done' (partial failure is not a stop condition), but 'failed'=1
+    surfaces what 'succeeded'==planned would otherwise mask (2026-07-17 fix,
+    BUG-family b: the frontend previously only alarmed on succeeded==0)."""
+    calls = {"n": 0}
+
+    async def flaky_judge(conn, criterion, source, target, sl, tl, endpoint="precompute"):
+        calls["n"] += 1
+        if calls["n"] == 2:
+            raise RuntimeError("boom")
+        return {"value": 7.0, "summary": "ok", "issues": [], "usage": None}
+
+    doc = _mk_doc(scored_client, n=3)
+    asyncio.run(precompute.run(doc["id"], flaky_judge))
+    status = precompute.status_for(doc["id"])
+    assert status["status"] == "done"
+    assert status["done"] == 3
+    assert status["succeeded"] == 2
+    assert status["failed"] == 1
+    # a generic exception (not "no api key"/BudgetExceeded) classifies as
+    # all_failed — BUG-family c, surfaced (not fixed) by the failed-count field.
+    assert status["error_reason"] == "all_failed"
 
 
 def test_sub_cap_stops_run(scored_client, monkeypatch):
     monkeypatch.setattr(precompute, "_CALL_CAP", 1)
     from palimpsest.webapp import budget
-    budget._STATE.pop("precompute_calls", None)
+    budget._STATE.pop("precompute_calls", None)  # per-sid dict (2026-07-17); legacy fixture -> one sid
     doc = _mk_doc(scored_client, n=3)
     asyncio.run(precompute.run(doc["id"], _fake_judge))
     assert precompute.status_for(doc["id"])["status"] == "stopped"
@@ -96,7 +123,7 @@ def test_sub_cap_stops_run(scored_client, monkeypatch):
 def test_precompute_false_status_skipped(scored_client):
     doc = scored_client.post("/api/documents", json=_body()).json()  # precompute=False в _body
     got = scored_client.get(f"/api/documents/{doc['id']}").json()
-    assert got["precompute"] == {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0}
+    assert got["precompute"] == {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0, "failed": 0}
 
 
 def test_delete_mid_run_cancels_task_no_further_judge_calls(scored_client):
@@ -160,7 +187,8 @@ def test_create_response_precompute_false_status_skipped_immediately(scored_clie
     paras = [{"source": f"s{i}", "target": f"t{i}"} for i in range(2)]
     r = scored_client.post("/api/documents", json=_body(paragraphs=paras, precompute=False))
     assert r.status_code == 201
-    assert r.json()["precompute"] == {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0}
+    assert r.json()["precompute"] == {
+        "status": "skipped", "done": 0, "planned": 0, "succeeded": 0, "failed": 0}
 
 
 def test_create_response_precompute_true_status_running_immediately(scored_client):
@@ -173,3 +201,43 @@ def test_create_response_precompute_true_status_running_immediately(scored_clien
     assert got["status"] == "running"
     assert got["done"] == 0
     assert got["planned"] == 5
+
+
+# ── per-session _CALL_CAP isolation (2026-07-17 fix, BUG-family a) ─────────
+#
+# Before the fix, budget._STATE["precompute_calls"] was a single process-
+# global int: two concurrent isolated sessions warming their own documents
+# shared ONE _CALL_CAP budget, so one session's precompute could silently
+# exhaust the slots the other session needed. Rekeying by db.current_sid()
+# (the same rekeying every other precompute in-memory structure already
+# uses) gives each session its own cap. Direct-monkeypatch db.current_sid —
+# the "legacy shim" every other test in this file already relies on for a
+# single implicit session — extended to swap identities mid-test so both
+# sides of the isolation claim are exercised without standing up two full
+# ASGI sessions.
+
+def test_take_call_slot_is_isolated_per_session(monkeypatch):
+    from palimpsest.webapp import budget
+
+    monkeypatch.setattr(precompute, "_CALL_CAP", 2)
+    budget._STATE.pop("precompute_calls", None)
+    current = {"sid": "sid-a"}
+    monkeypatch.setattr(db, "current_sid", lambda: current["sid"])
+
+    async def scenario():
+        assert await precompute._take_call_slot() is True
+        assert await precompute._take_call_slot() is True
+        assert await precompute._take_call_slot() is False   # sid-a's cap of 2 is exhausted
+
+        current["sid"] = "sid-b"
+        # sid-b has never taken a slot -> its own independent cap of 2, not
+        # starved by sid-a's exhaustion.
+        assert await precompute._take_call_slot() is True
+        assert await precompute._take_call_slot() is True
+        assert await precompute._take_call_slot() is False
+
+        current["sid"] = "sid-a"
+        assert await precompute._take_call_slot() is False   # sid-a still exhausted, unaffected by sid-b
+
+    asyncio.run(scenario())
+    assert budget._STATE["precompute_calls"] == {"sid-a": 2, "sid-b": 2}

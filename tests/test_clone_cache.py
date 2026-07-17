@@ -101,7 +101,7 @@ def test_clone_on_identical_content_instant_terms_and_no_launch(client, monkeypa
     doc = r.json()
 
     assert doc["termsStatus"] == "done"
-    assert doc["precompute"] == {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0}
+    assert doc["precompute"] == {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0, "failed": 0}
     assert len(doc["paragraphs"]) == 2
     for para in doc["paragraphs"]:
         assert len(para["terms"]) == 1
@@ -286,5 +286,5 @@ def test_translate_true_never_clones(client, launches):
     doc = r.json()
 
     assert doc["termsStatus"] == "none"                   # untouched at creation -> proves no clone happened
-    assert doc["precompute"] == {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0}
+    assert doc["precompute"] == {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0, "failed": 0}
     assert launches["terminology_live"] == []              # deferred to post-translate, not launched here

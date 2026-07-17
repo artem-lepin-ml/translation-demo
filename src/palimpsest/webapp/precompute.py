@@ -35,14 +35,15 @@ def status_for(doc_id: int) -> dict | None:
 
 
 def mark_skipped(doc_id: int) -> None:
-    _status[(db.current_sid(), doc_id)] = {"status": "skipped", "done": 0, "planned": 0, "succeeded": 0}
+    _status[(db.current_sid(), doc_id)] = {
+        "status": "skipped", "done": 0, "planned": 0, "succeeded": 0, "failed": 0}
 
 
 def mark_started(doc_id: int, n_paragraphs: int) -> None:
     """Pre-set status so the 201 body already carries it; run() refines later."""
     _status[(db.current_sid(), doc_id)] = {
         "status": "running", "done": 0,
-        "planned": min(n_paragraphs, PRECOMPUTE_PARAS), "succeeded": 0}
+        "planned": min(n_paragraphs, PRECOMPUTE_PARAS), "succeeded": 0, "failed": 0}
 
 
 def _classify_failure(exc: Exception) -> str:
@@ -81,12 +82,20 @@ def _now() -> str:
 
 async def _take_call_slot() -> bool:
     """Sub-cap check-and-increment BEFORE the call, under budget's own lock
-    (решение №10 — no second locking scheme)."""
+    (решение №10 — no second locking scheme). Keyed per session (2026-07-17
+    fix — BUG-family a): the counter used to be one process-global int, so
+    concurrent isolated sessions shared a single _CALL_CAP budget and one
+    session's warming could silently exhaust another's slots (paragraphs
+    mid-batch turning up budget_exhausted while the real $ budget was
+    untouched). db.current_sid() mirrors the same rekeying every other
+    precompute in-memory structure already uses (see module docstring)."""
+    sid = db.current_sid()
     async with budget._lock:
-        used = budget._STATE.get("precompute_calls", 0)
+        calls = budget._STATE.setdefault("precompute_calls", {})
+        used = calls.get(sid, 0)
         if used >= _CALL_CAP:
             return False
-        budget._STATE["precompute_calls"] = used + 1
+        calls[sid] = used + 1
         return True
 
 
@@ -158,7 +167,7 @@ async def _run(doc_id: int, judge_live) -> None:
         "SELECT * FROM paragraph WHERE document_id=? ORDER BY idx LIMIT ?",
         (doc_id, PRECOMPUTE_PARAS)).fetchall()
     enabled = conn.execute("SELECT * FROM criterion WHERE enabled=1").fetchall()
-    _status[key] = {"status": "running", "done": 0, "planned": len(paras), "succeeded": 0}
+    _status[key] = {"status": "running", "done": 0, "planned": len(paras), "succeeded": 0, "failed": 0}
     for p in paras:
         if not _document_exists(conn, doc_id):
             _status.pop(key, None)             # документ удалён во время прогрева
@@ -168,7 +177,7 @@ async def _run(doc_id: int, judge_live) -> None:
             _status[key]["succeeded"] += 1
             continue
         results: dict[str, dict] = {}
-        failed = False
+        para_failed = False
         for c in enabled:
             if not await _take_call_slot():
                 _status[key]["status"] = "stopped"
@@ -182,11 +191,18 @@ async def _run(doc_id: int, judge_live) -> None:
                 logging.exception(
                     "precompute judge call failed doc_id=%s paragraph_id=%s criterion=%s",
                     doc_id, p["id"], c["id"])
-                failed = True                  # BudgetExceeded/сеть → абзац не пишется
+                para_failed = True             # BudgetExceeded/сеть → абзац не пишется
                 _status[key].setdefault("error_reason", _classify_failure(exc))
                 break
-        if not failed and _write_paragraph(conn, doc_id, p["id"], enabled, results):
+        if not para_failed and _write_paragraph(conn, doc_id, p["id"], enabled, results):
             _status[key]["succeeded"] += 1
+        elif para_failed:
+            # TOCTOU/delete discards (_write_paragraph returning False with no
+            # exception) are a benign no-op, not a failure — only a genuine
+            # judge-call exception counts here (2026-07-17 fix: previously
+            # invisible to the status payload; the frontend only alarmed on
+            # succeeded==0, masking a partial-failure run as plain "done").
+            _status[key]["failed"] += 1
         _status[key]["done"] += 1
     if _status[key]["succeeded"] == 0 and _status[key]["planned"] > 0:
         _status[key].setdefault("error_reason", "all_failed")

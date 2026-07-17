@@ -110,7 +110,17 @@ def lang_name(lang: str) -> str:
     return LANG_NAMES.get(lang.lower(), lang)
 
 
-def _scoring_prompt(criterion_id: str) -> str:
+def _scoring_prompt(criterion_id: str, prompt: str | None = None) -> str:
+    """The scoring-rubric body for one criterion. ``prompt`` — the criterion's
+    own DB row (2026-07-17 fix) — wins when non-empty; the on-disk file under
+    prompts/scoring/ is the fallback. This is NOT a legacy-only path: seed.py
+    populates the 3 built-in rows' ``prompt`` column verbatim from these same
+    files, so DB-first is safe for them too. It only matters for a custom
+    criterion, whose id has no matching file — before this fix, scoring one
+    always raised ``FileNotFoundError`` (the user-entered prompt was saved to
+    the DB row but never read back)."""
+    if prompt:
+        return prompt
     return (paths.PROMPTS / "scoring" / f"{criterion_id}.md").read_text(encoding="utf-8")
 
 
@@ -125,7 +135,8 @@ _SUGGESTION_CONTRACT = (
 )
 
 
-def scoring_system_prompt(criterion_id: str, source_lang: str = "ru", target_lang: str = "en") -> str:
+def scoring_system_prompt(criterion_id: str, source_lang: str = "ru", target_lang: str = "en",
+                          *, prompt: str | None = None) -> str:
     src, tgt = lang_name(source_lang), lang_name(target_lang)
     preamble = f"You are evaluating a translation from {src} into {tgt}.\n\n"
     if (src.lower(), tgt.lower()) != ("russian", "english"):
@@ -135,17 +146,23 @@ def scoring_system_prompt(criterion_id: str, source_lang: str = "ru", target_lan
             f"target language). Ignore Cyrillic-specific transliteration rules when the "
             f"source is not Russian.\n\n"
         )
-    return preamble + _SUGGESTION_CONTRACT + _scoring_prompt(criterion_id)
+    return preamble + _SUGGESTION_CONTRACT + _scoring_prompt(criterion_id, prompt)
 
 
 def judge_one(client: LLMClient, criterion_id: str, source: str, target: str, *,
-              source_lang: str = "ru", target_lang: str = "en") -> dict[str, Any]:
+              source_lang: str = "ru", target_lang: str = "en",
+              prompt: str | None = None) -> dict[str, Any]:
     """Score (source, target) on one criterion. Returns {value, summary, issues, usage}.
 
     ``issues`` items use the rev-4 wire shape (camelCase):
     {targetFragment, sourceFragment, explanation, suggestion, severity, mqmCategory}.
+
+    ``prompt`` (optional) is the criterion's own DB-row scoring prompt — see
+    ``_scoring_prompt``. Omitted by callers that only have a built-in
+    criterion_id (tests, docs tooling), which still resolve via the on-disk
+    file.
     """
-    system = scoring_system_prompt(criterion_id, source_lang, target_lang)
+    system = scoring_system_prompt(criterion_id, source_lang, target_lang, prompt=prompt)
     user = (f"[SOURCE — {lang_name(source_lang)}]\n{source}\n\n"
             f"[TRANSLATION — {lang_name(target_lang)}]\n{target}")
     result = client.complete(system, user)          # per-model temperature decided upstream

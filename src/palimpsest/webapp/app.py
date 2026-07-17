@@ -251,8 +251,16 @@ app.add_middleware(SessionMiddleware)
 
 @app.exception_handler(sqlite3.IntegrityError)
 def _integrity_error(request: Request, exc: sqlite3.IntegrityError) -> JSONResponse:
-    # duplicate PK / FK violation on a config write → 409, not a 500
-    return JSONResponse(status_code=409, content={"error": str(exc)})
+    # duplicate PK / FK violation on a config write → 409, not a 500. The raw
+    # SQLite text ("UNIQUE constraint failed: model.name") leaks table/column
+    # names to the user; translate the common duplicate-model-name shape into
+    # a human message (2026-07-17 fix) and fall back to the raw text for
+    # every other constraint violation.
+    text = str(exc)
+    if "UNIQUE constraint failed: model.name" in text:
+        return JSONResponse(status_code=409,
+                            content={"error": "A model with this name already exists"})
+    return JSONResponse(status_code=409, content={"error": text})
 
 EVAL_TIMEOUT = float(os.environ.get("PALIMPSEST_EVAL_TIMEOUT", "20"))
 # A single judge call over a ~2k-char pair on gpt-5.4-mini normally returns in
@@ -907,7 +915,12 @@ async def _judge_live(conn, criterion, source: str, target: str,
     if client is None:
         raise RuntimeError("no api key for model")
     name = criterion["model_name"]
-    system = scoring_system_prompt(criterion["id"], source_lang, target_lang)
+    # DB row is the source of truth for the scoring prompt (2026-07-17 fix) —
+    # scoring_system_prompt/judge_one fall back to prompts/scoring/<id>.md
+    # only when this is empty (never true for a real custom criterion, since
+    # POST /api/criteria rejects a blank prompt at 422).
+    crit_prompt = criterion["prompt"]
+    system = scoring_system_prompt(criterion["id"], source_lang, target_lang, prompt=crit_prompt)
     prompt_tok = (budget.count_tokens(system) + budget.count_tokens(source)
                   + budget.count_tokens(target))
     raw = json.loads(conn.execute("SELECT params_json FROM model WHERE name=?", (name,)
@@ -923,7 +936,8 @@ async def _judge_live(conn, criterion, source: str, target: str,
         try:
             res = await asyncio.wait_for(
                 asyncio.to_thread(judge_one, client, criterion["id"], source, target,
-                                  source_lang=source_lang, target_lang=target_lang), EVAL_TIMEOUT)
+                                  source_lang=source_lang, target_lang=target_lang,
+                                  prompt=crit_prompt), EVAL_TIMEOUT)
             break
         except Exception as exc:
             if is_transient_error(exc) and attempt < EVAL_RETRIES:
@@ -985,7 +999,14 @@ async def evaluate(pid: int, body: EvaluateBody = EvaluateBody()) -> dict:
     failed = [c["id"] for c, r in zip(crits, results) if isinstance(r, Exception)]
 
     if not succeeded:
-        cached = _cache_response(conn, p, enabled, failed)
+        # A cache fallback after every live judge genuinely ran and failed must
+        # carry the real failedCriterionIds (2026-07-17 fix) — UNLESS every
+        # failure is "no api key configured" (_judge_live's own RuntimeError,
+        # raised before any network attempt): that's the pristine cache-only
+        # path, not a live failure, so it keeps [] like before.
+        exceptions = [r for r in results if isinstance(r, Exception)]
+        pristine_no_key = bool(exceptions) and all(_is_no_key_error(exc) for exc in exceptions)
+        cached = _cache_response(conn, p, enabled, [] if pristine_no_key else failed)
         if cached is not None:
             return cached
         # no cache and nothing succeeded → empty live result (all failed)
@@ -1032,8 +1053,22 @@ async def evaluate(pid: int, body: EvaluateBody = EvaluateBody()) -> dict:
         }
 
 
+def _is_no_key_error(exc: Exception) -> bool:
+    """True for _judge_live's own 'no api key configured' RuntimeError — raised
+    before any network attempt, so it never counts as a live judge having
+    RUN and failed (mirrors precompute._classify_failure/translate.
+    _classify_failure's no_api_key marker)."""
+    return isinstance(exc, RuntimeError) and "no api key" in str(exc)
+
+
 def _cache_response(conn, p, enabled, failed) -> dict | None:
-    """Read-only passthrough of pre-computed kind='cache' scores (rev-4 §3)."""
+    """Read-only passthrough of pre-computed kind='cache' scores (rev-4 §3).
+
+    ``failed`` (2026-07-17 fix) is [] on the pristine no-key path (no live
+    attempt was ever made — see the caller's ``pristine_no_key`` gate) and
+    the real failed criterion ids when live judges actually ran and all
+    failed, so a cached fallback after a genuine live failure is
+    distinguishable from an ordinary cache-only read."""
     pid = p["id"]
     cache = conn.execute("SELECT * FROM score WHERE paragraph_id=? AND kind='cache'", (pid,)).fetchall()
     if not cache:
@@ -1045,9 +1080,7 @@ def _cache_response(conn, p, enabled, failed) -> dict | None:
         "scoresPrev": [_score_dict(r) for r in prev.values()] or None,
         "scoresBaseline": [_score_dict(r) for r in baseline.values()] or None,
         "aggregate": cache[0]["aggregate"], "aggregateBaseline": agg_base, "aggregatePrev": agg_prev,
-        # cache supplied a value for every criterion → nothing failed from the
-        # consumer's view (the live judges that raised are an internal detail).
-        "issues": _para_issues(conn, pid), "failedCriterionIds": [],
+        "issues": _para_issues(conn, pid), "failedCriterionIds": failed,
         "cached": True, "cachedAt": cache[0]["created_at"], "docVersion": ver,
     }
 
@@ -1280,6 +1313,7 @@ async def translate_document(doc_id: int) -> dict:
 
 @app.get("/api/documents/{doc_id}/export")
 def export_document(doc_id: int, format: str = "xlsx"):
+    format = format.lower()                     # ?format=MD etc. (2026-07-17 fix)
     if format not in ("xlsx", "md"):
         raise HTTPException(422, "unknown format")
     conn = db.connect()
@@ -1805,6 +1839,13 @@ TEST_EXTRACT_PROMPT = (
     "ONLY a JSON array of strings, no prose, no code fences."
 )
 
+# A provider error body can echo an internal user_id (e.g. OpenRouter's 400
+# body: "... 'user_id': 'user_3DSjOtCFgWsPlqyYKDeAIpsKkPf'"), unrelated to
+# secrets_guard's key-shaped redaction — scoped here since the model Test
+# endpoint is the one place this message reaches the UI directly (2026-07-17
+# fix; e2e finding Н4).
+_USER_ID_RE = re.compile(r"\buser_[A-Za-z0-9]+\b")
+
 
 def _stems(text: str) -> set[str]:
     """Morphology-tolerant word stems: prefix-4 of each word (short words kept
@@ -1886,7 +1927,11 @@ async def test_model(name: str, body: TestBody = TestBody()) -> dict:
         await budget.settle(est, None, gen)
         budget.log_call({"model": name, "endpoint": "test", "params": raw,
                           "status": "error", "costUsd": None})
-        return {**empty, "message": f"{type(e).__name__}: {e}"}
+        # This message goes straight to the UI (unlike the other redact_error
+        # call sites in this file, which only ever reach the budget log), so
+        # it also needs the user_id scrub on top of the usual key-like tokens.
+        message = _USER_ID_RE.sub("[REDACTED]", redact_error(f"{type(e).__name__}: {e}"))
+        return {**empty, "message": message}
 
     latency = int((time.perf_counter() - t0) * 1000)
     cost = result.usage.cost_usd
