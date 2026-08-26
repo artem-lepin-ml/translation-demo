@@ -140,3 +140,6 @@ Same smoke run: `response_format={"type":"json_object"}` works on route `auto` a
 orthogonal, but combining the `provider-9` pin with json_object yields a deterministic 400 Bad Request from the
 upstream. Judge-style calls (strict JSON) to deepseek must use `auto` (10/10 success in the 2026-07-05 triage,
 ~equal cost); keep the pin only for plain-text roles (translation).
+
+### RESOLVED 2026-08-26: `gse-demo` had no restart policy — host reboot caused a ~7-day outage
+The host rebooted 2026-08-18 22:51. Every other container on it (`caddy`, `gse-viewer`, `bioproverka-web`) runs with `--restart unless-stopped` and came back up automatically; `gse-demo` did not, because [deploy/update-server.sh](../deploy/update-server.sh) started it via a plain `docker run -d` with no `--restart` flag, which defaults to `no`. The container stayed stopped for ~7 days (until noticed 2026-08-26), and Caddy served 502 for `gse-translation.ru` the whole time. Hot-fixed live on the server with `docker update --restart unless-stopped gse-demo && docker start gse-demo`; this is now durable in the repo — `update-server.sh`'s `docker run -d` invocation carries `--restart unless-stopped`, matching the other containers on the host, so future rebuilds and future host reboots both preserve the policy. See [deploy/README.md](../deploy/README.md) step 4.
