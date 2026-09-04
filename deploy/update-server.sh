@@ -119,6 +119,7 @@ if [ -n "$OPENROUTER_API_KEY" ]; then
 fi
 
 docker run -d --name "$CONTAINER_NAME" \
+    --restart unless-stopped \
     --network "$NETWORK_NAME" \
     -v "$DATA_DIR:/data" \
     -e PALIMPSEST_BUDGET_LOG=/data/budget_calls.jsonl \
