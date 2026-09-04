@@ -428,7 +428,7 @@ def test_grounding_config_endpoint_200_when_booted_from_a_bare_model_less_db(tmp
     2026-07-11 this left grounding_config permanently unseeded (FK-safety
     guard, null/default config forever) — since
     _upsert_model_registry_and_remap now runs first in migrate() and
-    unconditionally seeds the 5-model registry, a bare DB now bootstraps a
+    unconditionally seeds the 4-model registry, a bare DB now bootstraps a
     REAL default config instead. Either way the endpoint must return 200,
     never 500 — that's the one invariant both the old and new test versions
     protect."""

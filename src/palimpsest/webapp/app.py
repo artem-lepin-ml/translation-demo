@@ -6,6 +6,9 @@ API-only: the React/TipTap frontend is served separately by Vite (which proxies
 from __future__ import annotations
 
 import asyncio
+import contextlib
+import hashlib
+import hmac
 import io
 import json
 import logging
@@ -13,6 +16,7 @@ import os
 import re
 import sqlite3
 import time
+import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
@@ -35,23 +39,228 @@ from .secrets_guard import is_secret_key, redact_error
 logger = logging.getLogger(__name__)
 
 
+def _reset_stuck_terms(conn: sqlite3.Connection) -> int:
+    """Startup-only recovery for ``document.terms_status='running'`` rows
+    (stability fix, 2026-07-16).
+
+    ``terminology_live.py``'s live pipeline runs as an in-process asyncio
+    task (``terminology_live._tasks``, never persisted) — a container
+    restart kills that task without it ever reaching ``_finish()``, but the
+    DB column it was updating stays exactly as it left it: ``'running'``.
+    Unlike ``precompute``/``translate``'s in-memory status dicts (which
+    simply forget the status on restart, see
+    docs/known_issues.md#translate-status-is-lost-on-server-restart), a
+    persisted DB column actively LIES to the frontend forever after a
+    restart — the document polls a `running` status that will never
+    resolve, since no task for that doc_id can possibly exist in the
+    freshly-started process.
+
+    Called once, right after ``_migrate_db``, before the app serves any
+    request — at that point NO in-process terminology task has been
+    launched for ANY doc_id yet, so unconditionally resetting every
+    ``'running'`` row back to ``'none'`` is always safe (this can never race
+    a task that is genuinely still running). Returns the number of rows
+    reset (0 in the common case)."""
+    with db.current_lock():
+        n = conn.execute(
+            "UPDATE document SET terms_status='none' WHERE terms_status='running'").rowcount
+        conn.commit()
+    return n
+
+
+# ─────────────────────────── session isolation: ASGI middleware ───────────────────────────
+# docs/superpowers/specs/2026-07-16-session-isolation.md. A raw ASGI middleware
+# (not @app.middleware("http")/BaseHTTPMiddleware — that runs the downstream
+# call in a separate task via a queue relay, which has historically muddied
+# contextvar propagation; a plain ASGI class awaits self.app(...) directly in
+# the SAME task, which is what db._session_id.set() below needs to reliably
+# reach the route handler and everything it calls).
+GLOSSA_SID_COOKIE = "glossa_sid"
+SESSION_MAX_AGE_S = 4 * 60 * 60          # 4h, mirrors the TTL sweep idle window below
+GOLDEN_TOKEN_HEADER = "x-golden-session"
+
+
+def _resolve_sid(raw_cookie: str | None) -> tuple[str, bool]:
+    """(sid, is_fresh) — a present, well-formed UUID cookie is reused as-is;
+    anything else (absent/malformed) mints a fresh uuid4."""
+    if raw_cookie:
+        try:
+            uuid.UUID(raw_cookie)
+            return raw_cookie, False
+        except ValueError:
+            pass
+    return str(uuid.uuid4()), True
+
+
+class SessionMiddleware:
+    """Scoped to ``/api/*`` only — the static frontend mount and the JSON
+    ``/`` health stub never need a session. ``X-Golden-Session`` (checked
+    constant-time against env ``DEMO_ADMIN_TOKEN``) routes the owner's
+    canonical-update traffic (``scripts/create_demo_docs.py --golden-token``)
+    straight to the golden DB, no cookie issued. Otherwise: reuse a
+    well-formed ``glossa_sid`` cookie, or mint+``Set-Cookie`` a fresh one."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http" or not scope["path"].startswith("/api/"):
+            await self.app(scope, receive, send)
+            return
+
+        request = Request(scope, receive=receive)
+        admin_token = os.environ.get("DEMO_ADMIN_TOKEN", "")
+        golden_header = request.headers.get(GOLDEN_TOKEN_HEADER)
+        if admin_token and golden_header and hmac.compare_digest(golden_header, admin_token):
+            # Log only the FACT of a golden-token request — never the token value.
+            logger.info("golden-token request: %s %s", request.method, request.url.path)
+            token = db._session_id.set(db.GOLDEN_SID)
+            try:
+                await self.app(scope, receive, send)
+            finally:
+                db._session_id.reset(token)
+            return
+
+        sid, is_fresh = _resolve_sid(request.cookies.get(GLOSSA_SID_COOKIE))
+        token = db._session_id.set(sid)
+        if not is_fresh:
+            try:
+                await self.app(scope, receive, send)
+            finally:
+                db._session_id.reset(token)
+            return
+
+        cookie_value = (
+            f"{GLOSSA_SID_COOKIE}={sid}; HttpOnly; Path=/; SameSite=lax; "
+            f"Secure; Max-Age={SESSION_MAX_AGE_S}"
+        ).encode("latin-1")
+
+        async def send_with_cookie(message):
+            if message["type"] == "http.response.start":
+                message = dict(message)
+                message["headers"] = [*message.get("headers", []), (b"set-cookie", cookie_value)]
+            await send(message)
+
+        try:
+            await self.app(scope, receive, send_with_cookie)
+        finally:
+            db._session_id.reset(token)
+
+
+# ─────────────────────────── session isolation: TTL sweep ───────────────────────────
+SESSION_SWEEP_INTERVAL_S = 15 * 60
+SESSION_IDLE_TTL_S = 4 * 60 * 60
+
+
+def _session_has_live_task(sid: str) -> bool:
+    """True iff `sid` shows up in any of the three background-task registries
+    -- a sweep must never close out from under a running translate/precompute/
+    terms task (spec: skip-by-task, a timeout-margin heuristic, not a
+    structural lock guarantee -- documented honestly there)."""
+    return (
+        any(k[0] == sid for k in translate._tasks)
+        or any(k[0] == sid for k in translate._translating)
+        or any(k[0] == sid for k in terminology_live._tasks)
+        or any(k[0] == sid for k in precompute._tasks)
+    )
+
+
+def _purge_session_state(sid: str) -> None:
+    """Drop every `(sid, doc_id)` key belonging to `sid` from ALL SEVEN
+    in-memory structures rekeyed by session isolation (spec's full list)."""
+    for store in (translate._status, translate._tasks, precompute._status,
+                  precompute._tasks, terminology_live._tasks):
+        for key in [k for k in store if k[0] == sid]:
+            store.pop(key, None)
+    translate._translating.difference_update(
+        {k for k in translate._translating if k[0] == sid})
+    _evaluating.difference_update({k for k in _evaluating if k[0] == sid})
+
+
+async def _sweep_sessions_once() -> int:
+    """One TTL pass: close+unlink every session idle > SESSION_IDLE_TTL_S
+    (unless it has a live background task), purging its in-memory state too.
+    Returns the number of sessions closed (0 in the common case)."""
+    with db._sessions_guard:
+        snapshot = list(db._sessions.items())
+    now = time.monotonic()
+    closed = 0
+    for sid, entry in snapshot:
+        if now - entry.last_used <= SESSION_IDLE_TTL_S:
+            continue
+        if _session_has_live_task(sid):
+            continue
+        db.close_session(sid)
+        _purge_session_state(sid)
+        closed += 1
+    if closed:
+        logger.info("session TTL sweep: closed %d idle session(s)", closed)
+    return closed
+
+
+async def _session_sweeper() -> None:
+    while True:
+        await asyncio.sleep(SESSION_SWEEP_INTERVAL_S)
+        try:
+            await _sweep_sessions_once()
+        except Exception:
+            logger.exception("session TTL sweep failed")
+
+
 @asynccontextmanager
 async def _lifespan(_app: FastAPI):
     # Bring an existing prod DB up to the current additive schema before the
     # app serves any request (spec 2026-07-05-score-history-best §2.4) — a
     # fresh dev/test DB (db.init_db) already has the full SCHEMA, so this is a
     # no-op there beyond the idempotent CREATE TABLE IF NOT EXISTS/backfill checks.
-    _migrate_db(db.connect())
-    yield
+    # All of this runs against GOLDEN (db._startup_done is still False).
+    conn = db.connect()
+    _migrate_db(conn)
+    n = _reset_stuck_terms(conn)
+    if n:
+        logger.info(
+            "startup sweep: reset terms_status 'running'->'none' for %d document(s) "
+            "(stale from a previous process's in-flight terminology task)", n)
+    # Session isolation (2026-07-16): wipe any session clones a prior process
+    # left on disk ("restart = a fresh stand for everyone"), THEN open the
+    # gate that makes connect()/current_lock() require a real session id.
+    db.wipe_sessions()
+    db.set_startup_done()
+    sweep_task = asyncio.create_task(_session_sweeper())
+    try:
+        yield
+    finally:
+        sweep_task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await sweep_task
+        # Reset process-global session state so a SECOND lifespan cycle in the
+        # same Python process (only happens in tests that use `with
+        # TestClient(app) as client:` more than once) starts clean rather than
+        # inheriting a stale "already past startup" flag or golden connection
+        # pinned to a since-monkeypatched-away DB_PATH.
+        db._startup_done = False
+        if db._golden_conn is not None:
+            db._golden_conn.close()
+        db._golden_conn = None
+        db._golden_conn_path = None
 
 
 app = FastAPI(title="Glossa-MT demo", lifespan=_lifespan)
+app.add_middleware(SessionMiddleware)
 
 
 @app.exception_handler(sqlite3.IntegrityError)
 def _integrity_error(request: Request, exc: sqlite3.IntegrityError) -> JSONResponse:
-    # duplicate PK / FK violation on a config write → 409, not a 500
-    return JSONResponse(status_code=409, content={"error": str(exc)})
+    # duplicate PK / FK violation on a config write → 409, not a 500. The raw
+    # SQLite text ("UNIQUE constraint failed: model.name") leaks table/column
+    # names to the user; translate the common duplicate-model-name shape into
+    # a human message (2026-07-17 fix) and fall back to the raw text for
+    # every other constraint violation.
+    text = str(exc)
+    if "UNIQUE constraint failed: model.name" in text:
+        return JSONResponse(status_code=409,
+                            content={"error": "A model with this name already exists"})
+    return JSONResponse(status_code=409, content={"error": text})
 
 EVAL_TIMEOUT = float(os.environ.get("PALIMPSEST_EVAL_TIMEOUT", "20"))
 # A single judge call over a ~2k-char pair on gpt-5.4-mini normally returns in
@@ -65,8 +274,9 @@ EVAL_BACKOFF = float(os.environ.get("PALIMPSEST_EVAL_BACKOFF", "0.5"))
 MAX_PARAGRAPHS = 40
 MAX_PARA_CHARS = 4000
 
-# doc ids with an /evaluate in flight — reset 409s against these.
-_evaluating: set[int] = set()
+# (session_id, doc_id) pairs with an /evaluate in flight — reset 409s against
+# these (rekeyed for session isolation, 2026-07-16 — see db.current_sid()).
+_evaluating: set[tuple[str, int]] = set()
 
 
 def _now() -> str:
@@ -264,8 +474,13 @@ def health() -> dict:
 
 @app.get("/api/documents")
 def list_documents() -> list:
+    """Picker list — excludes `hidden=1` documents (owner curation, 2026-07-16
+    UI review #1; see migrate.py's `_curate_demo_documents`). A hidden
+    document is still fully reachable via `GET /api/documents/{id}` below
+    (deep link) — only this list is filtered."""
     conn = db.connect()
-    return [_doc_summary(conn, d) for d in conn.execute("SELECT * FROM document ORDER BY id")]
+    return [_doc_summary(conn, d)
+            for d in conn.execute("SELECT * FROM document WHERE hidden=0 ORDER BY id")]
 
 
 @app.get("/api/documents/{doc_id}")
@@ -338,6 +553,155 @@ def _terms_launch_after_translate(doc_id: int, client_for) -> None:
         terminology_live.launch(doc_id, client_for, _grounding_judge_live)
 
 
+# ─────────────────────── content-fingerprint clone cache ───────────────────────
+# EMNLP demo-video follow-up: a translate:false upload whose (source, target)
+# pairs match an existing terms_status='done' document byte-for-byte instantly
+# inherits its terms/scores/issues instead of spending LLM calls. See
+# "Content clone cache" in docs/subsystems/webapp.md for the full design.
+#
+# Stability fix (2026-07-16): the fingerprint used to whitespace-normalize
+# each field before hashing ("trivial paste differences shouldn't matter"),
+# but _clone_predictions copies term.char_start/char_end verbatim onto the
+# NEW document's raw (un-normalized) text — a whitespace-only difference the
+# fingerprint deliberately ignored would silently shift every copied offset
+# onto the wrong characters. Fix: hash the RAW pairs directly (no
+# normalization at all). This is the simpler of the two options considered
+# (the other being "keep normalizing, then also compare raw text before
+# committing to clone") because a match on a raw-bytes hash already IS a
+# byte-exact match by construction — no separate raw-compare step is needed,
+# and no case is lost: any pair of documents that would have passed both the
+# old normalized-hash check AND a raw-exact check still matches under plain
+# raw hashing. The one real behavior change is that a whitespace-differing
+# paste no longer clones (falls through to the real pipeline instead) —
+# correct, since cloning it was never actually offset-safe.
+
+
+def _content_fingerprint(pairs: list[tuple[str, str]]) -> str:
+    """sha256 over the ordered ``(source, target)`` pairs, RAW bytes (see the
+    module comment above for why — no whitespace normalization). Title and
+    languages are deliberately excluded — the clone cache matches on
+    translation CONTENT only. Serializing as a JSON array (not a raw
+    concatenation) keeps pair count and order load-bearing in the hash
+    itself, so a different paragraph count or a reordering can never
+    collide by construction. A fingerprint match therefore guarantees
+    byte-exact source/target text, which is what makes it safe for
+    ``_clone_predictions`` to copy ``term.char_start``/``char_end`` verbatim
+    onto the new document's paragraphs."""
+    payload = json.dumps(pairs, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _clone_source_eligible(conn, doc_id: int) -> bool:
+    """A ``terms_status='done'`` document only qualifies as a clone source if
+    it actually carries predictions worth cloning — otherwise the cache
+    would hand the new document an empty scores view while silently skipping
+    the real judge pipeline that would have produced real ones (stability
+    fix, 2026-07-16).
+
+    Score presence is the reliable signal: every paragraph that ever went
+    through precompute/``/evaluate`` gets exactly one ``score`` row per
+    enabled criterion (a criterion always writes a value, even for a
+    flawless translation), so zero score rows unambiguously means "never
+    scored". Term presence is deliberately NOT part of this gate the same
+    way: unlike scoring, term extraction is content-dependent — a paragraph
+    that genuinely has no extractable terminology legitimately ends with
+    zero ``term`` rows even after a full, successful ``terminology_live``
+    run, so "zero terms" cannot distinguish "never processed" from
+    "correctly found nothing" the way "zero scores" can; requiring term rows
+    too would wrongly reject a perfectly good clone source.
+
+    One indexed ``EXISTS``-shaped probe — cheap at this demo's scale (few
+    documents, no schema change needed)."""
+    return conn.execute(
+        "SELECT 1 FROM score s JOIN paragraph p ON p.id=s.paragraph_id "
+        "WHERE p.document_id=? LIMIT 1", (doc_id,)).fetchone() is not None
+
+
+def _find_clone_source(conn, new_doc_id: int, fingerprint: str) -> int | None:
+    """First existing document (any origin — the seed document qualifies like
+    any other) whose CURRENT paragraph content hashes to ``fingerprint``,
+    oldest match wins. Fingerprints are never stored — recomputed on the fly
+    per candidate on every call; the demo has few documents, so this is
+    cheap and needs no schema change. Only a fully-processed AND actually
+    scored source (``terms_status='done'`` and ``_clone_source_eligible``) is
+    eligible — a document still none/running/failed, or 'done' with nothing
+    ever scored, has nothing worth cloning yet, and this also keeps the
+    brand-new document (still 'none' at this point) from matching itself."""
+    for row in conn.execute(
+            "SELECT id FROM document WHERE id != ? AND terms_status='done' ORDER BY id",
+            (new_doc_id,)):
+        cand_id = row["id"]
+        if not _clone_source_eligible(conn, cand_id):
+            continue
+        cand_rows = conn.execute(
+            "SELECT source, target FROM paragraph WHERE document_id=? ORDER BY idx",
+            (cand_id,)).fetchall()
+        cand_pairs = [(r["source"], r["target"]) for r in cand_rows]
+        if _content_fingerprint(cand_pairs) == fingerprint:
+            return cand_id
+    return None
+
+
+def _clone_predictions(
+        conn, source_doc_id: int, new_pids: list[int], new_revision_ids: list[int | None], ts: str) -> None:
+    """Copy every term/score/issue row from ``source_doc_id`` onto the
+    freshly-inserted paragraphs in ``new_pids``, index-aligned (caller
+    already matched paragraph counts via the fingerprint, and holds
+    ``db.current_lock()`` inside the same not-yet-committed transaction as
+    the paragraph inserts).
+
+    Safe to copy ``term.char_start``/``char_end`` verbatim (see below) only
+    because the caller (``_find_clone_source``) already guarantees a
+    byte-exact raw-text match via ``_content_fingerprint`` — this function
+    does not re-verify that itself.
+
+    ``term`` rows keep every column verbatim (difficulty/grounded_json/
+    candidates_json/trace_json/target_surface/pair_accuracy/recommended/
+    note) — only ``paragraph_id`` is remapped. ``score``/``issue`` rows keep
+    kind/status/criterion_id verbatim too, INCLUDING each score row's own
+    frozen ``aggregate``/``criteria_key`` columns — the same "computed once
+    at write time, never recomputed" contract ``seed.py``/
+    ``precompute._write_paragraph`` use (see ``aggregate.py``):
+    ``_para_score_views`` reads ``score.aggregate`` straight off the row, so
+    copying the column verbatim reproduces the source document's exact
+    scores/deltas with no extra computation here. ``created_at`` is stamped
+    to ``ts`` (the clone happens "now"); ``score.revision_id`` is remapped
+    to the new paragraph's own (single, just-inserted) revision — every
+    paragraph reaching this function came from a non-translate upload, so
+    it always has exactly one. Source rows are read oldest-first and
+    inserted in that same relative order, so the fresh autoincrement ids
+    preserve the original recency ordering and ``_para_score_views``'s
+    ``ORDER BY created_at DESC, id DESC`` "latest per criterion" tie-break
+    reproduces the source document's latest/prev split exactly.
+    """
+    cand_rows = conn.execute(
+        "SELECT id FROM paragraph WHERE document_id=? ORDER BY idx", (source_doc_id,)).fetchall()
+    cand_pids = [r["id"] for r in cand_rows]
+    for new_pid, new_revision_id, cand_pid in zip(new_pids, new_revision_ids, cand_pids, strict=True):
+        for t in conn.execute("SELECT * FROM term WHERE paragraph_id=? ORDER BY id", (cand_pid,)):
+            conn.execute(
+                "INSERT INTO term(paragraph_id,source_surface,source_lemma,context,char_start,char_end,"
+                "difficulty,grounded_json,candidates_json,target_surface,pair_accuracy,recommended,note,"
+                "trace_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (new_pid, t["source_surface"], t["source_lemma"], t["context"], t["char_start"], t["char_end"],
+                 t["difficulty"], t["grounded_json"], t["candidates_json"], t["target_surface"],
+                 t["pair_accuracy"], t["recommended"], t["note"], t["trace_json"]))
+        for s in conn.execute(
+                "SELECT * FROM score WHERE paragraph_id=? ORDER BY created_at ASC, id ASC", (cand_pid,)):
+            conn.execute(
+                "INSERT INTO score(paragraph_id,criterion_id,value,summary,aggregate,criteria_key,kind,"
+                "created_at,revision_id) VALUES(?,?,?,?,?,?,?,?,?)",
+                (new_pid, s["criterion_id"], s["value"], s["summary"], s["aggregate"], s["criteria_key"],
+                 s["kind"], ts, new_revision_id))
+        for i in conn.execute("SELECT * FROM issue WHERE paragraph_id=? ORDER BY id", (cand_pid,)):
+            conn.execute(
+                "INSERT INTO issue(paragraph_id,criterion_id,target_fragment,source_fragment,explanation,"
+                "suggestion,severity,mqm_category,status,kind,created_at) "
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                (new_pid, i["criterion_id"], i["target_fragment"], i["source_fragment"], i["explanation"],
+                 i["suggestion"], i["severity"], i["mqm_category"], i["status"], i["kind"], ts))
+
+
 @app.post("/api/documents", status_code=201)
 async def create_document(request: Request) -> dict:
     raw = await _read_body_capped(request)
@@ -384,34 +748,59 @@ async def create_document(request: Request) -> dict:
     run_precompute = body.precompute and not body.translate
 
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         ts = _now()
         doc_id = conn.execute(
             "INSERT INTO document(title,source_lang,target_lang,source_model,version,origin,created_at) "
             "VALUES(?,?,?,'user',0,'upload',?)",
             (body.title.strip(), src, tgt, ts)).lastrowid
+        new_pids: list[int] = []
+        new_revision_ids: list[int | None] = []
+        stored_pairs: list[tuple[str, str]] = []
         for idx, pair in enumerate(body.paragraphs):
             source = pair.source.strip()
             target = "" if body.translate else pair.target.strip()
             pid = conn.execute(
                 "INSERT INTO paragraph(document_id,idx,source,target,seed_target) VALUES(?,?,?,?,?)",
                 (doc_id, idx, source, target, target)).lastrowid
+            new_pids.append(pid)
+            stored_pairs.append((source, target))
             if not body.translate:
                 # translate:true leaves target empty — translate.py writes the
                 # first real revision once each paragraph is actually translated.
-                db.write_revision(conn, pid, target, "upload", ts)
+                new_revision_ids.append(db.write_revision(conn, pid, target, "upload", ts))
+            else:
+                new_revision_ids.append(None)
+
+        # Content-fingerprint clone cache — translate:true is exempt (targets
+        # are still empty here, nothing meaningful to fingerprint yet; terms
+        # for a translate:true doc only ever launch post-translation, see
+        # _terms_launch_after_translate).
+        cloned_from: int | None = None
+        if not body.translate:
+            fingerprint = _content_fingerprint(stored_pairs)
+            cloned_from = _find_clone_source(conn, doc_id, fingerprint)
+            if cloned_from is not None:
+                _clone_predictions(conn, cloned_from, new_pids, new_revision_ids, ts)
+
         conn.commit()
         # Set in-memory precompute/translation status BEFORE building the
         # response so the 201 body already carries it (run() refines `planned`
         # once it re-counts the paragraphs, but the initial value here is
         # already correct — same min(N, PRECOMPUTE_PARAS) math).
-        if run_precompute:
+        if cloned_from is not None:
+            # Cloned scores already ARE the baseline — never spend a judge
+            # pass on paragraphs whose scores were just cloned in.
+            precompute.mark_skipped(doc_id)
+        elif run_precompute:
             precompute.mark_started(doc_id, len(body.paragraphs))
         else:
             precompute.mark_skipped(doc_id)
         if body.translate:
-            translate._translating.add(doc_id)
+            translate._translating.add((db.current_sid(), doc_id))
             translate.mark_started(doc_id, len(body.paragraphs))
+        elif cloned_from is not None:
+            conn.execute("UPDATE document SET terms_status='done' WHERE id=?", (doc_id,))
         else:
             # translate:true docs have no target yet — terms launch later, at
             # translate's successful end (see _terms_launch_after_translate).
@@ -422,11 +811,13 @@ async def create_document(request: Request) -> dict:
             conn.execute("UPDATE document SET terms_status='running' WHERE id=?", (doc_id,))
         d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
         result = _doc_dict(conn, d)
-    if run_precompute:
+    if cloned_from is not None:
+        logger.info("document %d cloned from %d via content fingerprint", doc_id, cloned_from)
+    if run_precompute and cloned_from is None:
         precompute.launch(doc_id, _judge_live)
     if body.translate:
         translate.launch(doc_id, _client_for, _terms_launch_after_translate)
-    else:
+    elif cloned_from is None:
         terminology_live.launch(doc_id, _client_for, _grounding_judge_live)
     return result
 
@@ -434,9 +825,9 @@ async def create_document(request: Request) -> dict:
 @app.delete("/api/documents/{doc_id}", status_code=204)
 def delete_document_route(doc_id: int):
     conn = db.connect()
-    if doc_id in _evaluating:
+    if (db.current_sid(), doc_id) in _evaluating:
         return JSONResponse({"error": "evaluate_in_flight"}, status_code=409)
-    with db._lock:
+    with db.current_lock():
         d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
         if not d:
             raise HTTPException(404, "document not found")
@@ -479,7 +870,7 @@ def _para_or_404(conn, pid: int):
 @app.patch("/api/paragraphs/{pid}")
 def patch_paragraph(pid: int, target: str = Body(..., embed=True)) -> dict:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         p = _para_or_404(conn, pid)
         conn.execute("UPDATE paragraph SET target=? WHERE id=?", (target, pid))
         if target != p["target"]:
@@ -524,7 +915,12 @@ async def _judge_live(conn, criterion, source: str, target: str,
     if client is None:
         raise RuntimeError("no api key for model")
     name = criterion["model_name"]
-    system = scoring_system_prompt(criterion["id"], source_lang, target_lang)
+    # DB row is the source of truth for the scoring prompt (2026-07-17 fix) —
+    # scoring_system_prompt/judge_one fall back to prompts/scoring/<id>.md
+    # only when this is empty (never true for a real custom criterion, since
+    # POST /api/criteria rejects a blank prompt at 422).
+    crit_prompt = criterion["prompt"]
+    system = scoring_system_prompt(criterion["id"], source_lang, target_lang, prompt=crit_prompt)
     prompt_tok = (budget.count_tokens(system) + budget.count_tokens(source)
                   + budget.count_tokens(target))
     raw = json.loads(conn.execute("SELECT params_json FROM model WHERE name=?", (name,)
@@ -540,7 +936,8 @@ async def _judge_live(conn, criterion, source: str, target: str,
         try:
             res = await asyncio.wait_for(
                 asyncio.to_thread(judge_one, client, criterion["id"], source, target,
-                                  source_lang=source_lang, target_lang=target_lang), EVAL_TIMEOUT)
+                                  source_lang=source_lang, target_lang=target_lang,
+                                  prompt=crit_prompt), EVAL_TIMEOUT)
             break
         except Exception as exc:
             if is_transient_error(exc) and attempt < EVAL_RETRIES:
@@ -588,25 +985,33 @@ async def evaluate(pid: int, body: EvaluateBody = EvaluateBody()) -> dict:
     target_ids = set(body.criterionIds) if body.criterionIds else {c["id"] for c in enabled}
     crits = [c for c in enabled if c["id"] in target_ids]
 
-    _evaluating.add(doc_id)
+    eval_key = (db.current_sid(), doc_id)
+    _evaluating.add(eval_key)
     try:
         results = await asyncio.gather(
             *[_judge_live(conn, c, p["source"], p["target"],
                           doc["source_lang"], doc["target_lang"]) for c in crits],
             return_exceptions=True)
     finally:
-        _evaluating.discard(doc_id)
+        _evaluating.discard(eval_key)
 
     succeeded = {c["id"]: r for c, r in zip(crits, results) if not isinstance(r, Exception)}
     failed = [c["id"] for c, r in zip(crits, results) if isinstance(r, Exception)]
 
     if not succeeded:
-        cached = _cache_response(conn, p, enabled, failed)
+        # A cache fallback after every live judge genuinely ran and failed must
+        # carry the real failedCriterionIds (2026-07-17 fix) — UNLESS every
+        # failure is "no api key configured" (_judge_live's own RuntimeError,
+        # raised before any network attempt): that's the pristine cache-only
+        # path, not a live failure, so it keeps [] like before.
+        exceptions = [r for r in results if isinstance(r, Exception)]
+        pristine_no_key = bool(exceptions) and all(_is_no_key_error(exc) for exc in exceptions)
+        cached = _cache_response(conn, p, enabled, [] if pristine_no_key else failed)
         if cached is not None:
             return cached
         # no cache and nothing succeeded → empty live result (all failed)
 
-    with db._lock:
+    with db.current_lock():
         # values for ALL enabled = latest, overridden by fresh successes
         latest, _, _, agg_prev, _ = _para_score_views(conn, pid)
         values = {cid: row["value"] for cid, row in latest.items()}
@@ -648,8 +1053,22 @@ async def evaluate(pid: int, body: EvaluateBody = EvaluateBody()) -> dict:
         }
 
 
+def _is_no_key_error(exc: Exception) -> bool:
+    """True for _judge_live's own 'no api key configured' RuntimeError — raised
+    before any network attempt, so it never counts as a live judge having
+    RUN and failed (mirrors precompute._classify_failure/translate.
+    _classify_failure's no_api_key marker)."""
+    return isinstance(exc, RuntimeError) and "no api key" in str(exc)
+
+
 def _cache_response(conn, p, enabled, failed) -> dict | None:
-    """Read-only passthrough of pre-computed kind='cache' scores (rev-4 §3)."""
+    """Read-only passthrough of pre-computed kind='cache' scores (rev-4 §3).
+
+    ``failed`` (2026-07-17 fix) is [] on the pristine no-key path (no live
+    attempt was ever made — see the caller's ``pristine_no_key`` gate) and
+    the real failed criterion ids when live judges actually ran and all
+    failed, so a cached fallback after a genuine live failure is
+    distinguishable from an ordinary cache-only read."""
     pid = p["id"]
     cache = conn.execute("SELECT * FROM score WHERE paragraph_id=? AND kind='cache'", (pid,)).fetchall()
     if not cache:
@@ -661,9 +1080,7 @@ def _cache_response(conn, p, enabled, failed) -> dict | None:
         "scoresPrev": [_score_dict(r) for r in prev.values()] or None,
         "scoresBaseline": [_score_dict(r) for r in baseline.values()] or None,
         "aggregate": cache[0]["aggregate"], "aggregateBaseline": agg_base, "aggregatePrev": agg_prev,
-        # cache supplied a value for every criterion → nothing failed from the
-        # consumer's view (the live judges that raised are an internal detail).
-        "issues": _para_issues(conn, pid), "failedCriterionIds": [],
+        "issues": _para_issues(conn, pid), "failedCriterionIds": failed,
         "cached": True, "cachedAt": cache[0]["created_at"], "docVersion": ver,
     }
 
@@ -706,7 +1123,7 @@ def _splice_suggestion(target: str, frag: str, suggestion: str) -> str | None:
 @app.post("/api/paragraphs/{pid}/apply-edit")
 def apply_edit(pid: int, body: ApplyEditBody) -> dict:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         p = _para_or_404(conn, pid)
         try:
             iid = int(body.issueId)
@@ -777,7 +1194,7 @@ def patch_issue_status(iid: int, body: IssueStatusBody) -> dict:
         # 'outdated' = the fragment was overlapped by an earlier accepted edit
         raise HTTPException(422, {"error": "invalid_status"})
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         iss = conn.execute("SELECT * FROM issue WHERE id=?", (iid,)).fetchone()
         if not iss:
             raise HTTPException(404, "issue not found")
@@ -791,11 +1208,11 @@ def patch_issue_status(iid: int, body: IssueStatusBody) -> dict:
 @app.post("/api/documents/{doc_id}/reset")
 def reset_document(doc_id: int) -> dict:
     conn = db.connect()
-    if doc_id in _evaluating:
+    if (db.current_sid(), doc_id) in _evaluating:
         raise HTTPException(409, "evaluate in flight")
     if translate.is_translating(doc_id):
         raise HTTPException(409, "translation_in_progress")
-    with db._lock:
+    with db.current_lock():
         d = conn.execute("SELECT * FROM document WHERE id=?", (doc_id,)).fetchone()
         if not d:
             raise HTTPException(404, "document not found")
@@ -845,7 +1262,7 @@ class RestoreBody(BaseModel):
 @app.post("/api/paragraphs/{pid}/restore")
 def restore_paragraph(pid: int, body: RestoreBody) -> dict:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         _para_or_404(conn, pid)
         rev = conn.execute("SELECT * FROM target_revision WHERE id=?", (body.revisionId,)).fetchone()
         if not rev:
@@ -886,7 +1303,7 @@ async def translate_document(doc_id: int) -> dict:
         return JSONResponse({"detail": "budget_exhausted"}, status_code=409)
 
     total = conn.execute("SELECT COUNT(*) n FROM paragraph WHERE document_id=?", (doc_id,)).fetchone()["n"]
-    translate._translating.add(doc_id)
+    translate._translating.add((db.current_sid(), doc_id))
     translate.mark_started(doc_id, total)
     translate.launch(doc_id, _client_for)
     return {"status": "started", "total": total}
@@ -896,6 +1313,7 @@ async def translate_document(doc_id: int) -> dict:
 
 @app.get("/api/documents/{doc_id}/export")
 def export_document(doc_id: int, format: str = "xlsx"):
+    format = format.lower()                     # ?format=MD etc. (2026-07-17 fix)
     if format not in ("xlsx", "md"):
         raise HTTPException(422, "unknown format")
     conn = db.connect()
@@ -955,7 +1373,7 @@ def create_criterion(c: CriterionBody) -> dict:
     if not c.prompt.strip():
         raise HTTPException(422, "prompt must not be empty")
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute(
             "INSERT INTO criterion(id,name,model_name,prompt,scale_min,scale_max,weight,color,enabled) "
             "VALUES(?,?,?,?,?,?,?,?,?)",
@@ -968,7 +1386,7 @@ def create_criterion(c: CriterionBody) -> dict:
 @app.put("/api/criteria/{cid}")
 def update_criterion(cid: str, c: CriterionBody) -> dict:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         if not conn.execute("SELECT 1 FROM criterion WHERE id=?", (cid,)).fetchone():
             raise HTTPException(404, "criterion not found")
         conn.execute(
@@ -983,7 +1401,7 @@ def update_criterion(cid: str, c: CriterionBody) -> dict:
 @app.delete("/api/criteria/{cid}", status_code=204)
 def delete_criterion(cid: str) -> None:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         refs = conn.execute("SELECT 1 FROM score WHERE criterion_id=? UNION SELECT 1 FROM issue WHERE criterion_id=? LIMIT 1",
                             (cid, cid)).fetchone()
         if refs:
@@ -1055,6 +1473,17 @@ def _require_params_object(m: dict) -> dict:
     return params
 
 
+def _require_model_name(m: dict) -> str:
+    """``name`` must be non-empty after stripping surrounding whitespace — an
+    empty/blank name previously created an unusable, unselectable registry row
+    (e2e iter1 BUG-2, docs/reports/e2e/prod-stability-iter1-2026-07-16.md §4).
+    No format whitelist: an operator may legitimately use unusual provider ids."""
+    name = m.get("name")
+    if not isinstance(name, str) or not name.strip():
+        raise HTTPException(422, "name must not be empty")
+    return name.strip()
+
+
 @app.get("/api/models")
 def list_models() -> list:
     conn = db.connect()
@@ -1063,15 +1492,16 @@ def list_models() -> list:
 
 @app.post("/api/models")
 def create_model(m: dict = Body(...)) -> dict:
+    name = _require_model_name(m)
     params = _require_params_object(m)
     _guard_params(params)
     _validate_params_whitelist(params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
-                     (m["name"], m["baseUrl"], m.get("apiKey", ""), json.dumps(params)))
+                     (name, m["baseUrl"], m.get("apiKey", ""), json.dumps(params)))
         conn.commit()
-        return _model_public(conn.execute("SELECT * FROM model WHERE name=?", (m["name"],)).fetchone())
+        return _model_public(conn.execute("SELECT * FROM model WHERE name=?", (name,)).fetchone())
 
 
 @app.put("/api/models/{name:path}")
@@ -1080,7 +1510,7 @@ def update_model(name: str, m: dict = Body(...)) -> dict:
     _guard_params(params)
     _validate_params_whitelist(params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         row = conn.execute("SELECT * FROM model WHERE name=?", (name,)).fetchone()
         if not row:
             raise HTTPException(404, "model not found")
@@ -1099,7 +1529,7 @@ def update_model(name: str, m: dict = Body(...)) -> dict:
 @app.delete("/api/models/{name:path}", status_code=204)
 def delete_model(name: str) -> None:
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         if conn.execute("SELECT 1 FROM criterion WHERE model_name=? LIMIT 1", (name,)).fetchone():
             raise HTTPException(409, "model referenced by a criterion")
         conn.execute("DELETE FROM model WHERE name=?", (name,))
@@ -1128,7 +1558,7 @@ def update_grounding_config(gc: GroundingConfigBody) -> dict:
     _guard_params(gc.params)
     _validate_params_whitelist(gc.params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute(
             "INSERT INTO grounding_config(id,model_name,prompt,params_json) VALUES(1,?,?,?) "
             "ON CONFLICT(id) DO UPDATE SET model_name=excluded.model_name, "
@@ -1167,7 +1597,7 @@ def update_translator_config(tc: TranslatorConfigBody) -> dict:
     _guard_params(tc.params)
     _validate_params_whitelist(tc.params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute(
             "INSERT INTO translator_config(id,model_name,prompt,params_json) VALUES(1,?,?,?) "
             "ON CONFLICT(id) DO UPDATE SET model_name=excluded.model_name, "
@@ -1206,7 +1636,7 @@ def update_refiner_config(rc: RefinerConfigBody) -> dict:
     _guard_params(rc.params)
     _validate_params_whitelist(rc.params)
     conn = db.connect()
-    with db._lock:
+    with db.current_lock():
         conn.execute(
             "INSERT INTO refiner_config(id,model_name,prompt,params_json) VALUES(1,?,?,?) "
             "ON CONFLICT(id) DO UPDATE SET model_name=excluded.model_name, "
@@ -1326,7 +1756,7 @@ async def refine_paragraph(pid: int) -> dict:
     if not revised:
         raise HTTPException(502, {"detail": "refine_failed", "error": "empty_output"})
 
-    with db._lock:
+    with db.current_lock():
         with conn:
             conn.execute("UPDATE paragraph SET target=? WHERE id=?", (revised, pid))
             for f in findings:
@@ -1409,6 +1839,13 @@ TEST_EXTRACT_PROMPT = (
     "ONLY a JSON array of strings, no prose, no code fences."
 )
 
+# A provider error body can echo an internal user_id (e.g. OpenRouter's 400
+# body: "... 'user_id': 'user_3DSjOtCFgWsPlqyYKDeAIpsKkPf'"), unrelated to
+# secrets_guard's key-shaped redaction — scoped here since the model Test
+# endpoint is the one place this message reaches the UI directly (2026-07-17
+# fix; e2e finding Н4).
+_USER_ID_RE = re.compile(r"\buser_[A-Za-z0-9]+\b")
+
 
 def _stems(text: str) -> set[str]:
     """Morphology-tolerant word stems: prefix-4 of each word (short words kept
@@ -1490,7 +1927,11 @@ async def test_model(name: str, body: TestBody = TestBody()) -> dict:
         await budget.settle(est, None, gen)
         budget.log_call({"model": name, "endpoint": "test", "params": raw,
                           "status": "error", "costUsd": None})
-        return {**empty, "message": f"{type(e).__name__}: {e}"}
+        # This message goes straight to the UI (unlike the other redact_error
+        # call sites in this file, which only ever reach the budget log), so
+        # it also needs the user_id scrub on top of the usual key-like tokens.
+        message = _USER_ID_RE.sub("[REDACTED]", redact_error(f"{type(e).__name__}: {e}"))
+        return {**empty, "message": message}
 
     latency = int((time.perf_counter() - t0) * 1000)
     cost = result.usage.cost_usd

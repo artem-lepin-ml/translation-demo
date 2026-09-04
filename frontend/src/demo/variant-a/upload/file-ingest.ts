@@ -40,18 +40,31 @@ export function decodeText(buf: ArrayBuffer): string {
   return decoded;
 }
 
+/** CRLF/CR -> LF (T1-F3): a Windows-authored .txt/.md file (or a paste that
+ * preserved \r\n verbatim) otherwise carries a stray \r on every line —
+ * invisible in the rendered textarea but counted by `.length`, so the
+ * "N chars" counter over-reports vs what actually ends up in the paragraph
+ * text. Applied once at the single point text enters SidePanel's state
+ * (here for file loads, and in UploadModal's textarea onChange for typed/
+ * pasted text) so the counter and the text later POSTed to createDocument
+ * are always byte-for-byte the same string — no separate normalization
+ * needed at submit time. */
+export function normalizeLineEndings(text: string): string {
+  return text.replace(/\r\n?/g, '\n');
+}
+
 /** Any supported file type -> plain text for the textarea (SSOT). */
 export async function ingestFile(file: File): Promise<string> {
   const name = file.name.toLowerCase();
   if (name.endsWith('.docx')) {
     const { text } = await extractText(file);              // server-side, python-docx
-    return text;
+    return normalizeLineEndings(text);
   }
   // Drag-n-drop bypasses the accept filter: anything but .md/.txt is 415 (spec §5.8.5: .doc/.pdf)
   if (!name.endsWith('.md') && !name.endsWith('.txt')) {
     throw Object.assign(new Error(errorMessage(415)), { status: 415 });
   }
-  const raw = decodeText(await file.arrayBuffer());
+  const raw = normalizeLineEndings(decodeText(await file.arrayBuffer()));
   return name.endsWith('.md') ? stripMarkdown(raw) : raw;
 }
 

@@ -1,0 +1,23 @@
+T10 (б) PASTE SANITIZATION PROOF — paragraph 58, prod glossa-mt.com, 2026-07-17
+==============================================================================
+
+CLIPBOARD CONTENT written to real clipboard (text/html + text/plain):
+  text/html:  <strong>Uruinimgina</strong>, <a href="https://en.wikipedia.org/wiki/Urukagina">ruler of Lagash</a> <em>reforms</em><img src=x onerror="window.__t10xss=1">
+  text/plain: Uruinimgina, ruler of Lagash reforms
+
+PASTE performed with Meta+V, caret at end of TipTap editor.
+
+TipTap editor DOM (innerHTML tail) RIGHT AFTER paste — formatting retained in the
+live editor rendering (expected — TipTap keeps marks in-editor):
+  ...inimgina</strong>, <a target="_blank" rel="noopener noreferrer nofollow"
+  href="https://en.wikipedia.org/wiki/Urukagina">ruler of Lagash</a> <em>reforms</em></p>
+  window.__t10xss = null   (img onerror NEVER fired — no script execution)
+
+PERSISTED DATA after blur-triggered save — GET /api/paragraphs/58/revisions,
+current revision:
+  {"id":288, "origin":"edit", "len":999, "hasHTML":false,
+   "tail":"...implemented in other Mesopotamian city-states.Uruinimgina, ruler of Lagash reforms"}
+
+VERDICT: PASS. Formatting honestly flattened to plain text on persist; no HTML
+tags, no <img>, no href, no <strong>/<em> in the stored revision. XSS canary did
+not execute. Data layer is clean.

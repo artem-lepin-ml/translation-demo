@@ -33,6 +33,9 @@ build/
 
 # Generated demo DB (regenerate via `python -m palimpsest.webapp.seed`)
 data/demo.db
+# Ephemeral per-browser-session clones of demo.db (session isolation,
+# 2026-07-16) — wiped on every server restart, never canonical data.
+data/sessions/
 # Browser e2e session scratch
 .playwright-cli/
 .playwright-mcp/

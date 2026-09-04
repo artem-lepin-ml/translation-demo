@@ -28,8 +28,14 @@ def test_client_for_no_fallback_for_vllm(seeded, monkeypatch):
     from palimpsest.webapp import app, db
     conn = db.connect()
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-live")
-    # vLLM row has empty key + non-OR base_url → NO fallback → None (never leak OR key off-OR)
-    assert app._client_for(conn, "TranslateGemma-27B") is None
+    # a local/self-hosted row (empty key + non-OR base_url) → NO fallback →
+    # None (never leak the OR key off-OR); inserted directly since the
+    # registry itself is OpenRouter-only after the 2026-07-11 prod
+    # finalization (TranslateGemma-27B, the old vLLM example, is gone).
+    conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
+                 ("local/self-hosted", "http://localhost:8001/v1", "", "{}"))
+    conn.commit()
+    assert app._client_for(conn, "local/self-hosted") is None
 
 
 def test_client_for_drops_temperature_for_gemini_flash_lite(seeded):

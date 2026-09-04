@@ -266,7 +266,8 @@ def test_translate_endpoint_seed_document_403(client):
 def test_translate_endpoint_no_config_is_409(client, monkeypatch):
     monkeypatch.setattr(translate, "launch", lambda *a, **kw: None)
     doc = client.post("/api/documents", json=_translate_body()).json()
-    translate._translating.discard(doc["id"])  # the no-op'd auto-launch never actually ran
+    # the no-op'd auto-launch never actually ran
+    translate._translating.discard((db.current_sid(), doc["id"]))
     r = client.post(f"/api/documents/{doc['id']}/translate")
     assert r.status_code == 409
     assert r.json()["detail"] == "no_api_key"
@@ -282,7 +283,8 @@ def test_translate_endpoint_budget_exhausted_409(client, monkeypatch):
         ("openai/gpt-5.4-mini", "p", json.dumps({"max_tokens": 2048})))
     conn.commit()
     doc = client.post("/api/documents", json=_translate_body()).json()
-    translate._translating.discard(doc["id"])  # the no-op'd auto-launch never actually ran
+    # the no-op'd auto-launch never actually ran
+    translate._translating.discard((db.current_sid(), doc["id"]))
 
     budget._STATE["spent"] = budget._CAP_USD    # already at the cap
     try:
@@ -291,7 +293,7 @@ def test_translate_endpoint_budget_exhausted_409(client, monkeypatch):
         assert r.json()["detail"] == "budget_exhausted"
     finally:
         budget.reset()
-    assert doc["id"] not in translate._translating
+    assert (db.current_sid(), doc["id"]) not in translate._translating
 
 
 def test_translate_endpoint_starts_and_returns_total(client, monkeypatch):
@@ -306,7 +308,8 @@ def test_translate_endpoint_starts_and_returns_total(client, monkeypatch):
         ("openai/gpt-5.4-mini", "p", json.dumps({"max_tokens": 256})))
     conn.commit()
     doc = client.post("/api/documents", json=_translate_body()).json()
-    translate._translating.discard(doc["id"])  # the no-op'd auto-launch never actually ran
+    # the no-op'd auto-launch never actually ran
+    translate._translating.discard((db.current_sid(), doc["id"]))
     r = client.post(f"/api/documents/{doc['id']}/translate")
     assert r.status_code == 202, r.text
     assert r.json() == {"status": "started", "total": 3}
@@ -319,7 +322,7 @@ def test_translate_endpoint_starts_and_returns_total(client, monkeypatch):
 def test_evaluate_409_while_translating(client, monkeypatch):
     monkeypatch.setattr(translate, "launch", lambda *a, **kw: None)
     doc = client.post("/api/documents", json=_translate_body()).json()
-    translate._translating.add(doc["id"])
+    translate._translating.add((db.current_sid(), doc["id"]))
     pid = doc["paragraphs"][0]["id"]
     r = client.post(f"/api/paragraphs/{pid}/evaluate")
     assert r.status_code == 409
@@ -329,7 +332,7 @@ def test_evaluate_409_while_translating(client, monkeypatch):
 def test_reset_409_while_translating(client, monkeypatch):
     monkeypatch.setattr(translate, "launch", lambda *a, **kw: None)
     doc = client.post("/api/documents", json=_translate_body()).json()
-    translate._translating.add(doc["id"])
+    translate._translating.add((db.current_sid(), doc["id"]))
     r = client.post(f"/api/documents/{doc['id']}/reset")
     assert r.status_code == 409
 
@@ -366,9 +369,10 @@ def test_delete_cancels_translate_task():
             def client_for(conn, name, params_override=None):
                 return SlowClient()
 
-            translate._translating.add(doc["id"])
+            key = (db_mod.current_sid(), doc["id"])
+            translate._translating.add(key)
             task = asyncio.create_task(translate.run_translation(doc["id"], client_for))
-            translate._tasks[doc["id"]] = task
+            translate._tasks[key] = task
             await asyncio.sleep(0.02)
 
             r = c.delete(f"/api/documents/{doc['id']}")

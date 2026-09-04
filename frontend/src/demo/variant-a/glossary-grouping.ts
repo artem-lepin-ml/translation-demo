@@ -28,6 +28,82 @@ export interface TraceStep {
   elapsed_s?: number;
 }
 
+/** One candidate as delivered inside `trace_json.candidates`
+ *  (`label_first.py`'s `candidates_traced`) — richer than the top-level
+ *  `Term.candidates` (`WikidataRef[]`, wire-DTO): it carries a real `matched`
+ *  verdict per candidate (label/alias match, or `null` when that candidate
+ *  never matched anything). The top-level field has no such provenance, and
+ *  for a `judge_rejected` term it can even be `[]` while this array still
+ *  holds every candidate that was actually considered and rejected (BUG-6,
+ *  frontend-developer-stability-wave1). */
+export interface TraceCandidate {
+  qid: string;
+  label_ru?: string | null;
+  label_en?: string | null;
+  description?: string;
+  matched?: { kind: string; value: string; query: string } | null;
+}
+
+/** One entry of `trace_json.queries` (`generate_candidates`'s `queries` list,
+ *  `terminology/grounding/candidates.py`) — a single Wikidata search call.
+ *  `strategy` names which of the escalating search backends made this call
+ *  ("prefix" | "cirrus" | "sitelink" — added alongside the fastapi-developer
+ *  lane's grounding-pipeline work); optional because older trace rows were
+ *  written before the field existed and callers must degrade gracefully. */
+export interface TraceQueryEntry {
+  q: string;
+  kind: string;
+  mechanism: string;
+  n_hits: number;
+  strategy?: string;
+}
+
+// ─── SEARCH-step query grouping (FIX 2, glossary trace polish) ─────────────
+// Old traces predating `strategy` (or repeated fallback escalations) render
+// several visually identical rows — e.g. three "lemma «Ханейское царство» 0
+// hits" rows (prefix→cirrus→sitelink escalation with no strategy label), or
+// five alternating lemma/surface rows for «царя Приморья». Collapse rows
+// that are true duplicates (same strategy+kind+q+n_hits) into one, tagged
+// with a ×N count; distinct strategies/kinds/queries stay their own rows
+// since those genuinely differ.
+
+/** One collapsed SEARCH-step row: `count` is 1 for a unique query, >1 when N
+ *  identical entries were folded together. */
+export interface GroupedSearchQuery {
+  strategy?: string;
+  kind: string;
+  q: string;
+  n_hits: number;
+  count: number;
+}
+
+/** Groups `trace_json.queries` for display, preserving first-seen order. */
+export function groupSearchQueries(queries: TraceQueryEntry[]): GroupedSearchQuery[] {
+  const order: string[] = [];
+  const byKey = new Map<string, GroupedSearchQuery>();
+  for (const entry of queries) {
+    const key = `${entry.strategy ?? ''}::${entry.kind}::${entry.q}::${entry.n_hits}`;
+    const existing = byKey.get(key);
+    if (existing) {
+      existing.count += 1;
+      continue;
+    }
+    byKey.set(key, { strategy: entry.strategy, kind: entry.kind, q: entry.q, n_hits: entry.n_hits, count: 1 });
+    order.push(key);
+  }
+  return order.map((key) => byKey.get(key)!);
+}
+
+/** `trace_json.judge` (label_first.py's `judge_trace`) — present only when a
+ *  judge call was actually made (absent for `exact_label`/`no_candidates`/
+ *  `wikidata_unavailable`, which never escalate). */
+export interface TraceJudge {
+  response?: { qid?: string | null; reason?: string } | null;
+  error?: string | null;
+  latency_ms?: number;
+  cache_hit?: boolean;
+}
+
 export interface TraceJson {
   resolved_by?: string;
   model?: string;
@@ -36,6 +112,27 @@ export interface TraceJson {
   search?: TraceStep;
   label_match?: TraceStep;
   decision?: TraceStep;
+  /** Full candidate list with per-item match provenance (see
+   *  `TraceCandidate`) — absent on legacy/seed rows shipping `trace_json={}`. */
+  candidates?: TraceCandidate[];
+  // ─── real flat fields (`label_first.py::_result`) — confirmed against live
+  // prod trace_json, docs/reports/debugger-glossary-reddot-trace.md §2c. The
+  // fields above this line (`query`/`search`/`label_match`/`decision`/`model`/
+  // `judge_reason`) are a nested shape that was written *ahead of* the
+  // real backend and never matches live-pipeline output — kept only because
+  // `resolveBadge`'s heuristic fallback path and its tests still exercise
+  // them; the "Grounding path" panel below reads the real fields instead. ──
+  queries?: TraceQueryEntry[];
+  search_source?: string;
+  /** Subset of `candidates` that exact-matched a query (`match.py::exact_match`),
+   *  each annotated with its own `matched` (never `null` here, unlike the
+   *  general `TraceCandidate.matched`). */
+  exact_matches?: (TraceCandidate & { matched: NonNullable<TraceCandidate['matched']> })[];
+  judge?: TraceJudge | null;
+  chosen_qid?: string | null;
+  canon_en?: string[];
+  n_api_calls?: number;
+  latency_ms?: number;
 }
 
 /** `Term` once the backend lane adds `traceJson` to the DTO. A plain `Term`
@@ -43,6 +140,62 @@ export interface TraceJson {
  *  the field is optional — safe to use whether or not the backend field has
  *  landed yet in `api-client.ts`. */
 export type TermWithTrace = Term & { traceJson?: TraceJson };
+
+// ─── candidate display shaping ──────────────────────────────────────────────
+// Shared by GlossaryTab (Candidates table) and TermPopover ("Ambiguous senses")
+// — moved here from GlossaryTab.tsx (frontend-developer-stability-wave2) so a
+// second view doesn't have to import display-shaping logic out of another
+// React component. Single source of truth for "which candidate list is
+// actually true" (BUG-6, frontend-developer-stability-wave1).
+
+/** Normalized shape any "candidates" view renders, whichever backend field it
+ *  came from (see `candidatesForDisplay` — BUG-6, frontend-developer-stability-wave1).
+ *  `matchKind` is `null` when there is no real match provenance to report —
+ *  callers should render an honest "—", never a fabricated "none" (the old
+ *  bug: a `matched_via` field the backend never sends). `url` is always a
+ *  real or Wikidata-QID-derived link (`terminology/base.py`'s
+ *  `f"https://www.wikidata.org/wiki/{qid}"` convention). */
+export interface DisplayCandidate {
+  qid: string;
+  label: string;
+  description: string;
+  matchKind: string | null;
+  url: string;
+}
+
+/** `trace_json.candidates` (label_first.py's `candidates_traced`) is the
+ *  richer, ground-truth candidate list: same entities as the top-level
+ *  `Term.candidates` for most resolutions, but it never drops to `[]` for a
+ *  `judge_rejected` term (the top-level field does — see `TraceCandidate`'s
+ *  doc comment) and it carries real per-candidate match provenance. Prefer
+ *  it; fall back to the plain `WikidataRef` list only for legacy/seed rows
+ *  shipping `trace_json={}`, where match provenance honestly isn't known. */
+export function candidatesForDisplay(primary: TermWithTrace): DisplayCandidate[] {
+  const traced = primary.traceJson?.candidates;
+  if (traced && traced.length > 0) return traced.map(fromTraceCandidate);
+  return primary.candidates.map(fromWikidataRef);
+}
+
+function fromTraceCandidate(c: TraceCandidate): DisplayCandidate {
+  return {
+    qid: c.qid,
+    label: c.label_en || c.label_ru || c.qid,
+    description: c.description ?? '',
+    matchKind: c.matched ? matchKindLabel(c.matched.kind) : null,
+    url: `https://www.wikidata.org/wiki/${c.qid}`,
+  };
+}
+
+function fromWikidataRef(c: WikidataRef): DisplayCandidate {
+  return { qid: c.qid, label: c.label, description: c.description, matchKind: null, url: c.url };
+}
+
+/** `matched.kind` is `label_ru` | `alias_ru` | `alias_en` (match.py's
+ *  `exact_match`) — collapse the two alias kinds to one short "alias" label,
+ *  matching the "matched via" language `viaChipClass` was already styled for. */
+function matchKindLabel(kind: string): string {
+  return kind.startsWith('alias') ? 'alias' : 'label';
+}
 
 export type BadgeTone = 'det' | 'llm' | 'rej' | 'none';
 
@@ -55,6 +208,16 @@ const DEFAULT_MODEL_LABEL = 'LLM';
 
 function isEmptyTrace(trace: TraceJson | undefined): boolean {
   return !trace || Object.keys(trace).length === 0;
+}
+
+/** Yellow (AI-resolved) badge label (#5, owner review: "◇ LLM · LLM" read as
+ *  a confusing double). When the per-term model name isn't in the trace,
+ *  `model` falls back to `DEFAULT_MODEL_LABEL` ('LLM') — in that case drop
+ *  the now-redundant "· LLM" suffix entirely instead of doubling the word.
+ *  When a real model name IS known, show it, with "AI" (not "LLM") as the
+ *  leading word so a known model never reads "LLM · LLM" again either. */
+function llmBadgeLabel(model: string): string {
+  return model === DEFAULT_MODEL_LABEL ? '◇ context-resolved · AI' : `◇ context-resolved · ${model}`;
 }
 
 /**
@@ -90,24 +253,24 @@ export function resolveBadge(term: TermWithTrace): Badge {
     switch (resolvedBy) {
       case 'exact_label':
       case 'label_match':
-        return { tone: 'det', label: '◆ label match' };
+        return { tone: 'det', label: '◆ unambiguous · label match' };
       case 'llm_disambiguation':
-        return { tone: 'llm', label: `◇ LLM · ${model}` };
+        return { tone: 'llm', label: llmBadgeLabel(model) };
       case 'llm_rejected':
-        return { tone: 'rej', label: '◇ LLM rejected all' };
+        return { tone: 'rej', label: '◇ unresolved · AI abstained' };
       // Deterministic enrichment stops here: candidates found but no exact
       // label match and no judge was run — honest "unresolved", NOT "none".
       case 'ambiguous_candidates':
       case 'judge_unavailable':
-        return { tone: 'rej', label: `◇ ambiguous · ${knownCandidates || '?'} candidates` };
+        return { tone: 'rej', label: `◇ unresolved · ${knownCandidates || '?'} candidates` };
       case 'no_candidates':
-        return { tone: 'none', label: '○ no candidates' };
+        return { tone: 'none', label: '○ unresolved · no candidates' };
       default:
         // Defensive: unrecognized value from a future backend — degrade
         // honestly by what the data shows rather than always claiming "none".
         return knownCandidates > 0
-          ? { tone: 'rej', label: `◇ ambiguous · ${knownCandidates} candidates` }
-          : { tone: 'none', label: '○ no candidates' };
+          ? { tone: 'rej', label: `◇ unresolved · ${knownCandidates} candidates` }
+          : { tone: 'none', label: '○ unresolved · no candidates' };
     }
   }
 
@@ -115,22 +278,22 @@ export function resolveBadge(term: TermWithTrace): Badge {
     if (term.grounded?.qid) {
       return { tone: 'det', label: '◆ grounded' };
     }
-    return { tone: 'none', label: '○ no candidates' };
+    return { tone: 'none', label: '○ unresolved · no candidates' };
   }
 
   const hasQid = Boolean(term.grounded?.qid);
   const candidateCount = term.candidates.length;
   const model = trace?.model ?? DEFAULT_MODEL_LABEL;
   if (hasQid && candidateCount > 1) {
-    return { tone: 'llm', label: `◇ LLM · ${model}` };
+    return { tone: 'llm', label: llmBadgeLabel(model) };
   }
   if (hasQid && candidateCount === 1) {
-    return { tone: 'det', label: '◆ label match' };
+    return { tone: 'det', label: '◆ unambiguous · label match' };
   }
   if (!hasQid && candidateCount > 0) {
-    return { tone: 'rej', label: '◇ LLM rejected all' };
+    return { tone: 'rej', label: '◇ unresolved · AI abstained' };
   }
-  return { tone: 'none', label: '○ no candidates' };
+  return { tone: 'none', label: '○ unresolved · no candidates' };
 }
 
 // ─── Grouping (§2.1) ─────────────────────────────────────────────────────────
@@ -275,12 +438,24 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
     else byKey.set(key, [term]);
   }
 
-  function buildFields(mentions: TermWithTrace[]) {
+  // `qid`: the group's own grounded qid (null for an ungrounded group). When
+  // set, `difficulty` folds only mentions that actually grounded to THAT
+  // entity — an ungrounded raw-lemma sibling merged in purely for dedup (see
+  // the merge pass below) must never paint a grounded group's headline
+  // dot red (red-dot-with-QID bug, 3rd recurrence — see
+  // docs/reports/debugger-glossary-reddot-trace.md Defect 1). `pair` is
+  // exempt from this gate: a red-difficulty mention already has
+  // `pairAccuracy=null` by contract (Term dataclass, terminology/base.py),
+  // so it can never itself skew `pair` — no separate filtering needed there.
+  function buildFields(mentions: TermWithTrace[], qid: string | null) {
     const primary = mentions[0];
-    let difficulty: Verdict = primary.difficulty;
+    const difficultySource = qid ? mentions.filter((m) => m.grounded?.qid === qid) : mentions;
+    let difficulty: Verdict = (difficultySource[0] ?? primary).difficulty;
+    for (const m of difficultySource) {
+      difficulty = worseVerdict(difficulty, m.difficulty);
+    }
     let pair: Verdict | null = null;
     for (const m of mentions) {
-      difficulty = worseVerdict(difficulty, m.difficulty);
       if (m.pairAccuracy) pair = pair ? worseVerdict(pair, m.pairAccuracy) : m.pairAccuracy;
     }
     // Translation = recommended||targetSurface of the first mention that has
@@ -296,13 +471,14 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
   for (const [key, bucket] of byKey) {
     const mentions = [...bucket].sort(compareByAppearance);
     const primary = mentions[0];
-    const { difficulty, pair, translation } = buildFields(mentions);
+    const draftQid = primary.grounded?.qid ?? null;
+    const { difficulty, pair, translation } = buildFields(mentions, draftQid);
     const grounded = mentions.find((m) => m.grounded)?.grounded ?? null;
 
     const draft: GlossaryGroup = {
       key,
       lemma: (primary.sourceLemma || primary.sourceSurface).toLowerCase(),
-      qid: primary.grounded?.qid ?? null,
+      qid: draftQid,
       category: titleCase(primary.note),
       sourceSurface: primary.sourceSurface,
       translation,
@@ -334,7 +510,7 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
     if (candidates && candidates.length === 1) {
       const target = candidates[0];
       const allMentions = [...target.mentions, ...d.mentions].sort(compareByAppearance);
-      const { difficulty, pair, translation } = buildFields(allMentions);
+      const { difficulty, pair, translation } = buildFields(allMentions, target.qid);
       target.mentions = allMentions;
       target.difficulty = difficulty;
       target.pair = pair;
@@ -348,9 +524,12 @@ export function groupTerms(terms: TermWithTrace[], paragraphs: Paragraph[]): Glo
   return groups;
 }
 
-/** Summary-line counters (spec §2.1): "resolved deterministically / via LLM /
- *  not grounded" — the latter folds both `rej` and `none` badge tones since
- *  the summary line has no separate "rejected" bucket. */
+/** Summary-line counters (spec §2.1): "unambiguous / context-resolved /
+ *  unresolved" (paper §2.1 vocabulary) — the latter folds both `rej` and
+ *  `none` badge tones since the summary line has no separate "rejected"
+ *  bucket. Field names (`deterministic`/`llm`/`notGrounded`) are internal
+ *  API and intentionally unchanged — only the rendered copy follows the
+ *  paper's terms. */
 export function summarizeGroups(groups: GlossaryGroup[]): GlossarySummary {
   let mentions = 0;
   let deterministic = 0;

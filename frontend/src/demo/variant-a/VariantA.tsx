@@ -15,6 +15,7 @@ import { useDemoStore, scoreBand } from '../store';
 import { langLabel } from '../lang';
 import { exportUrl } from '../api-client';
 import type { Document, Issue, Term } from '../api-client';
+import type { TermWithTrace } from './glossary-grouping';
 
 import IssuePopover from './IssuePopover';
 import TermPopover from './TermPopover';
@@ -47,6 +48,31 @@ export function precomputeFailedMessage(precompute: Document['precompute']): str
     default:
       return 'Precompute failed — scores unavailable; use Evaluate ↻ on a paragraph';
   }
+}
+
+/** Precompute finished with a MIX of successes and per-paragraph failures
+ * (T9-F1): precomputeFailed above already covers the succeeded===0 total-
+ * failure case, but a partial failure used to read as plain success and
+ * silently drop the badge — a real judge-call loss the user never learns
+ * about. Degrades to false when the backend hasn't started sending `failed`
+ * yet (optional field). */
+export function precomputePartiallyFailed(precompute: Document['precompute']): boolean {
+  return (
+    precompute?.status === 'done' &&
+    precompute.succeeded > 0 &&
+    !!precompute.failed &&
+    precompute.failed > 0
+  );
+}
+
+/** Notice text for the partial-failure case — mirrors precomputeFailedMessage's
+ * "point at the manual affordance" shape (S1 §2.6) since there is no bulk
+ * precompute-retry endpoint, only the existing per-paragraph Evaluate ↻. */
+export function precomputePartialMessage(precompute: Document['precompute']): string {
+  const succeeded = precompute?.succeeded ?? 0;
+  const planned = precompute?.planned ?? 0;
+  const failed = precompute?.failed ?? 0;
+  return `Warmed ${succeeded}/${planned} ¶ — ${failed} failed. Use Evaluate ↻ on the affected paragraphs to retry.`;
 }
 
 /** Download glyph matching UploadIcon's style (S6 §5) — tray + arrow-down. */
@@ -87,6 +113,8 @@ export default function VariantA() {
 
   const {
     document: doc,
+    documentResetNonce,
+    historyRefreshNonce,
     documents,
     criteria,
     models,
@@ -143,7 +171,7 @@ export default function VariantA() {
   const [activeTab, setActiveTab] = useState<TabId>('document');
   const [issuePopover, setIssuePopover] =
     useState<{ paraId: number; issueIds: string[]; rect: DOMRect } | null>(null);
-  const [termPopover, setTermPopover] = useState<{ term: Term; rect: DOMRect } | null>(null);
+  const [termPopover, setTermPopover] = useState<{ term: TermWithTrace; rect: DOMRect } | null>(null);
   const [resetting, setResetting] = useState(false);
   // Translation-done badge fades after 5s (S4 §3.3) — tracked per doc so
   // switching documents doesn't leave a stale fade timer running.
@@ -151,9 +179,24 @@ export default function VariantA() {
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [runningFirstEvaluate, setRunningFirstEvaluate] = useState(false);
   const [retryingTranslate, setRetryingTranslate] = useState(false);
+  // Non-blocking post-accept-all summary (T3-F1/T10-F2): the confirm()
+  // dialog claims "suggestions are applied", but a fragment can go stale
+  // mid-batch (422 outdated) and silently drop its card — this surfaces the
+  // honest count instead of staying silent. Cleared on dismiss or the next
+  // Accept-all run; persists across paragraph/tab navigation until then
+  // (non-blocking, not a self-expiring toast — the app has no toast system).
+  const [acceptAllNotice, setAcceptAllNotice] = useState<string | null>(null);
 
   // Debounce target text PATCH
   const pendingTextRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+
+  // Synchronous re-entry guard for the top-bar document-delete button (BUG-4:
+  // one click + one confirm() was firing two DELETE requests) — same
+  // established pattern as SettingsTab's handleTest/AddModelModal inFlight
+  // refs. Checked BEFORE window.confirm so a second invocation (double-bound
+  // handler, or a browser "ghost click" re-firing after a synchronous
+  // confirm() dialog closes) neither re-prompts nor re-deletes.
+  const deleteDocInFlight = useRef(false);
 
   // ── Init on mount ─────────────────────────────────────────────────────────
 
@@ -208,6 +251,9 @@ export default function VariantA() {
   const selectedPara = paragraphs[selectedParaIdx] ?? null;
 
   const showPrecomputeFailedNotice = precomputeFailed(doc?.precompute);
+  // Mutually exclusive with the full-failure notice above (precomputeFailed
+  // already requires succeeded===0, this requires succeeded>0) — never both.
+  const showPrecomputePartialNotice = precomputePartiallyFailed(doc?.precompute);
 
   const allOpenIssues = useMemo(
     () =>
@@ -316,14 +362,37 @@ export default function VariantA() {
     void dismissIssue(issue.id);
   }
 
-  function handleRefine() {
+  // Synchronous re-entry guard: the buttons' `disabled={isLoading}` derives
+  // from Zustand state and only reaches the DOM on the next React render, so
+  // a rapid double/triple-click fires several real (paid) LLM calls before
+  // React disables it — Refine is a rewrite+rescore pair, so a triple-click
+  // can mean up to 6 paid calls. Same idiom as SettingsTab's handleTest guard
+  // and UploadModal's submit guard. Keyed by paraIdx (Set, not a single bool)
+  // so an in-flight call on one paragraph never blocks a click on another;
+  // shared between Refine and Evaluate so either one in flight blocks both,
+  // mirroring the combined `isLoading` the buttons already render against.
+  const inFlightEvalRef = useRef<Set<number>>(new Set());
+
+  async function handleRefine() {
     if (!selectedPara) return;
-    void refineParagraph(selectedPara.id, selectedParaIdx);
+    if (inFlightEvalRef.current.has(selectedParaIdx)) return;
+    inFlightEvalRef.current.add(selectedParaIdx);
+    try {
+      await refineParagraph(selectedPara.id, selectedParaIdx);
+    } finally {
+      inFlightEvalRef.current.delete(selectedParaIdx);
+    }
   }
 
-  function handleEvaluate() {
+  async function handleEvaluate() {
     if (!selectedPara) return;
-    void evaluateParagraph(selectedPara.id, selectedParaIdx);
+    if (inFlightEvalRef.current.has(selectedParaIdx)) return;
+    inFlightEvalRef.current.add(selectedParaIdx);
+    try {
+      await evaluateParagraph(selectedPara.id, selectedParaIdx);
+    } finally {
+      inFlightEvalRef.current.delete(selectedParaIdx);
+    }
   }
 
   function handleRetryFailed(criterionIds: string[]) {
@@ -331,7 +400,7 @@ export default function VariantA() {
     void evaluateParagraph(selectedPara.id, selectedParaIdx, criterionIds);
   }
 
-  function handleAcceptAllDoc() {
+  async function handleAcceptAllDoc() {
     const byPara = new Map<number, { paraId: number; idx: number; ids: string[] }>();
     for (const iss of allOpenIssues) {
       if (!iss.suggestion) continue;            // nothing to apply
@@ -344,11 +413,22 @@ export default function VariantA() {
     const nIssues = [...byPara.values()].reduce((n, g) => n + g.ids.length, 0);
     const ok = window.confirm(
       `Accept ${nIssues} issues across ${byPara.size} paragraphs?\n` +
-      `All suggestions are applied; scores go stale until you press Evaluate.`,
+      `Suggestions are applied where the underlying text hasn't changed since they ` +
+      `were found; scores go stale until you press Evaluate.`,
     );
     if (!ok) return;
-    for (const { paraId, idx, ids } of byPara.values()) {
-      void acceptAllIssues(paraId, idx, ids);
+    setAcceptAllNotice(null);
+    const results = await Promise.all(
+      [...byPara.values()].map(({ paraId, idx, ids }) => acceptAllIssues(paraId, idx, ids)),
+    );
+    const applied = results.reduce((n, r) => n + r.applied, 0);
+    const outdated = results.reduce((n, r) => n + r.outdated, 0);
+    // Only worth a notice when the confirm dialog's "applied" promise didn't
+    // fully hold — a clean run (outdated === 0) needs no extra chrome.
+    if (outdated > 0) {
+      setAcceptAllNotice(
+        `${applied} applied · ${outdated} skipped (outdated/stale fragments)`,
+      );
     }
   }
 
@@ -356,7 +436,8 @@ export default function VariantA() {
     const resetTarget = doc?.origin === 'upload' ? 'its originally uploaded state' : 'its seed state';
     const ok = window.confirm(
       `Reset the document to ${resetTarget}?\n` +
-      'All accepted edits, dismissals and live scores will be lost.',
+      'Live scores and issues will be archived (hidden, not deleted); ' +
+      'every paragraph reverts to its seed text.',
     );
     if (!ok) return;
     setResetting(true);
@@ -481,9 +562,13 @@ export default function VariantA() {
           {doc.origin === 'upload' && (
             <button
               className="va-icon-btn"
+              data-testid="delete-doc-btn"
               title="Delete document"
               onClick={() => {
-                if (window.confirm(`Delete "${doc.title}"?`)) void deleteDoc(doc.id);
+                if (deleteDocInFlight.current) return;
+                if (!window.confirm(`Delete "${doc.title}"?`)) return;
+                deleteDocInFlight.current = true;
+                void deleteDoc(doc.id).finally(() => { deleteDocInFlight.current = false; });
               }}
             >
               🗑
@@ -510,17 +595,26 @@ export default function VariantA() {
               </div>
             </span>
           )}
-          {doc.translation?.status === 'done' && translationDoneVisible && (
+          {/* Translated-count text fades 5s after the run (S4 §3.3) — but the
+             "Evaluate first paragraphs?" CTA is the only path forward out of
+             "Score —" and must not vanish with it (T1-F2): it stays up
+             independently as long as the document has no score yet, until
+             the user acts on it (Run) or scores appear some other way. */}
+          {doc.translation?.status === 'done' && (translationDoneVisible || docAggregate === null) && (
             <span className="va-translate-progress-wrap" data-testid="translation-done-badge">
-              <span className="va-translating-badge" style={{ color: 'var(--va-green)' }}>
-                Translated {doc.translation.total}¶
-              </span>
-              <span className="va-run-precompute-hint">
-                Evaluate first paragraphs?{' '}
-                <button className="va-link-btn" disabled={runningFirstEvaluate} onClick={() => void handleRunFirstEvaluate()}>
-                  {runningFirstEvaluate ? 'Running…' : 'Run'}
-                </button>
-              </span>
+              {translationDoneVisible && (
+                <span className="va-translating-badge" style={{ color: 'var(--va-green)' }}>
+                  Translated {doc.translation.total}¶
+                </span>
+              )}
+              {docAggregate === null && (
+                <span className="va-run-precompute-hint">
+                  Evaluate first paragraphs?{' '}
+                  <button className="va-link-btn" disabled={runningFirstEvaluate} onClick={() => void handleRunFirstEvaluate()}>
+                    {runningFirstEvaluate ? 'Running…' : 'Run'}
+                  </button>
+                </span>
+              )}
             </span>
           )}
           {doc.translation?.status === 'failed' && (
@@ -581,7 +675,7 @@ export default function VariantA() {
             <button
               className="va-accept-all-doc"
               disabled={isDocRescoring || allOpenIssues.length === 0}
-              onClick={handleAcceptAllDoc}
+              onClick={() => void handleAcceptAllDoc()}
               title="Accept all issues across all paragraphs"
             >
               Accept all
@@ -662,6 +756,24 @@ export default function VariantA() {
               {showPrecomputeFailedNotice && (
                 <div className="va-precompute-failed-notice" data-testid="precompute-failed-notice">
                   {precomputeFailedMessage(doc.precompute)}
+                </div>
+              )}
+              {showPrecomputePartialNotice && (
+                <div className="va-precompute-failed-notice" data-testid="precompute-partial-notice">
+                  {precomputePartialMessage(doc.precompute)}
+                </div>
+              )}
+              {acceptAllNotice && (
+                <div className="va-accept-all-notice" data-testid="accept-all-notice">
+                  <span>{acceptAllNotice}</span>
+                  <button
+                    className="va-notice-dismiss"
+                    data-testid="accept-all-notice-dismiss"
+                    onClick={() => setAcceptAllNotice(null)}
+                    title="Dismiss"
+                  >
+                    ×
+                  </button>
                 </div>
               )}
               <div className="va-col-headers">
@@ -766,6 +878,8 @@ export default function VariantA() {
               onEvaluate={handleEvaluate}
               onRetryFailed={handleRetryFailed}
               visibleIssues={inspectorIssues}
+              documentResetNonce={documentResetNonce}
+              historyRefreshNonce={historyRefreshNonce}
               onRestoreRevision={async (revisionId) => {
                 if (!selectedPara) return;
                 await restoreParagraphRevision(selectedPara.id, selectedParaIdx, revisionId);

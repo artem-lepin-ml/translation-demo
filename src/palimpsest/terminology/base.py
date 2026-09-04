@@ -58,6 +58,19 @@ class GroundingConfig:
     match_aliases: bool = True
     search_limit: int = 7
     enrich_top: int = 5
+    # Judge veto on a single exact-label match (2026-07-17, false-green fix):
+    # when True and exactly 1 exact match sits among >1 total candidates, the
+    # deterministic green is withheld and the SAME judge-disambiguation call
+    # the >=2-exact-matches path already makes is run over all candidates
+    # instead -- catches the namesake case («сирийских» -> Q33538 Syriac
+    # language via an exact ru ALIAS; «династия Цинь» -> a TV series whose ru
+    # LABEL happens to match exactly, while the real Qin dynasty sat
+    # unmatched in the candidate list). A single candidate (no competitor to
+    # rule out) still auto-greens with zero LLM calls -- the veto only fires
+    # when there is something to disambiguate against. Default False so
+    # eval/CLI ablation runs are unaffected; the live webapp pipeline opts in
+    # (see webapp/terminology_live.py).
+    confirm_exact: bool = False
     # Candidate-search widening tiers (wiki-eval experiment, 2026-07-10):
     # cumulative, gated entirely inside candidates.py::generate_candidates.
     #   "baseline"    -- today's search (rungs 1-4), unchanged.
@@ -85,6 +98,7 @@ class GroundingConfig:
         enrich_top: int = 5,
         use_fallbacks: bool | None = None,
         search_mode: Literal["baseline", "alt-names", "label-guess"] = "baseline",
+        confirm_exact: bool = False,
     ) -> None:
         # dataclass(frozen=True) only auto-generates __init__ when the class
         # doesn't already define one, so this hand-written constructor is the
@@ -101,6 +115,7 @@ class GroundingConfig:
         object.__setattr__(self, "search_limit", search_limit)
         object.__setattr__(self, "enrich_top", enrich_top)
         object.__setattr__(self, "search_mode", search_mode)
+        object.__setattr__(self, "confirm_exact", confirm_exact)
 
     @property
     def use_fallbacks(self) -> bool:

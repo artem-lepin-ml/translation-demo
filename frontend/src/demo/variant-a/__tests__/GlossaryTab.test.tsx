@@ -133,3 +133,223 @@ describe('GlossaryTab grouped table', () => {
     expect(screen.queryByText(/Grounding path|Context/)).toBeNull();
   });
 });
+
+// ─── Real flat trace_json rendering (debugger-glossary-reddot-trace.md §2) ──
+//
+// The backend's real `trace_json` shape is flat: {v, config, queries,
+// search_source, candidates, exact_matches, resolved_by, judge, chosen_qid,
+// canon_en, n_api_calls, latency_ms} (label_first.py::_result). These tests
+// use that real shape (not the earlier forward-looking nested guess) to
+// prove the Matched column, the Grounding-path steps, and the Judge decision
+// block all render live data instead of "none" / "Skipped — no trace".
+describe('GlossaryTab — real flat trace_json rendering (BUG-6 / debugger fixes)', () => {
+  function buildLiveTerm(overrides: Partial<TermWithTrace> = {}): TermWithTrace {
+    return buildTerm({
+      id: 'qin',
+      sourceSurface: 'Цинь',
+      sourceLemma: 'Цинь',
+      difficulty: 'yellow',
+      grounded: { qid: 'Q7181', label: 'Qin dynasty', description: 'Chinese dynasty', url: 'https://www.wikidata.org/wiki/Q7181' },
+      candidates: [
+        { qid: 'Q7181', label: 'Qin dynasty', description: 'Chinese dynasty', url: 'https://www.wikidata.org/wiki/Q7181' },
+        { qid: 'Q49751', label: 'Guqin', description: 'Chinese string instrument', url: 'https://www.wikidata.org/wiki/Q49751' },
+      ],
+      traceJson: {
+        resolved_by: 'llm_disambiguation',
+        queries: [{ q: 'Цинь', kind: 'lemma', mechanism: 'wbsearchentities', n_hits: 2 }],
+        search_source: 'wbsearchentities',
+        candidates: [
+          { qid: 'Q7181', label_ru: 'Цинь', label_en: 'Qin dynasty', description: 'Chinese dynasty',
+            matched: { kind: 'label_ru', value: 'Цинь', query: 'Цинь' } },
+          { qid: 'Q49751', label_ru: 'Цинь (инструмент)', label_en: 'Guqin', description: 'Chinese string instrument',
+            matched: null },
+        ],
+        exact_matches: [
+          { qid: 'Q7181', label_ru: 'Цинь', matched: { kind: 'label_ru', value: 'Цинь', query: 'Цинь' } },
+        ],
+        judge: {
+          response: { qid: 'Q7181', reason: 'The sentence discusses the historical Chinese state, not the instrument.' },
+          error: null, latency_ms: 812, cache_hit: false,
+        },
+        chosen_qid: 'Q7181',
+        n_api_calls: 2,
+        latency_ms: 950,
+      },
+      ...overrides,
+    });
+  }
+
+  function renderAndExpand() {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildLiveTerm()];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+  }
+
+  it('Matched column shows the real match kind, and "—" (not "none") for a candidate that never matched', () => {
+    renderAndExpand();
+    expect(screen.getByText('label')).toBeTruthy();     // Q7181's real matched.kind
+    expect(screen.queryByText('none')).toBeNull();       // the old always-on fallback must be gone
+    expect(screen.getAllByTitle('No match provenance recorded for this candidate').length).toBe(1);
+  });
+
+  it('Grounding-path panel renders live search/candidate/decision data instead of "Skipped — no trace" for every step', () => {
+    renderAndExpand();
+    // Each step's title (.va-gl-step-t) is real, live-pipeline content — not
+    // the dead nested-shape fallback that rendered "Skipped" for every one of
+    // the 4 steps on every live-pipeline term before this fix.
+    expect(screen.getByText('wbsearchentities')).toBeTruthy();        // search step: real search_source
+    expect(screen.getByText('2 candidates found')).toBeTruthy();      // candidates step: real count
+    expect(screen.getByText('Exactly 1 exact match')).toBeTruthy();   // exact step: real exact_matches
+    expect(screen.getByText('llm disambiguation')).toBeTruthy();      // decision step: real resolved_by
+    expect(screen.getByText(/resolved_by: llm_disambiguation/)).toBeTruthy();
+    expect(screen.queryAllByText('Skipped').length).toBe(0);
+  });
+
+  it('Judge decision block shows the real reason from traceJson.judge.response.reason', () => {
+    renderAndExpand();
+    expect(screen.getByText(/historical Chinese state/)).toBeTruthy();
+  });
+
+  it('FIX 3: Judge decision panel drops the "model: … · Settings › Grounding" line and its accent box, ' +
+    'keeping only the plain reasoning quote', () => {
+    renderAndExpand();
+    expect(screen.queryByText(/model:/)).toBeNull();
+    expect(screen.queryByText(/Settings › Grounding/)).toBeNull();
+    expect(document.querySelector('.va-gl-judge')).toBeNull();
+    expect(document.querySelector('.va-gl-judge-m')).toBeNull();
+    expect(document.querySelector('.va-gl-judge-r')).not.toBeNull();
+  });
+
+  it('FIX 1a: the QID cell in the Candidates table links to Wikidata (target=_blank, rel=noopener)', () => {
+    renderAndExpand();
+    const qidLink = screen.getByRole('link', { name: 'Q7181' });
+    expect(qidLink.getAttribute('href')).toBe('https://www.wikidata.org/wiki/Q7181');
+    expect(qidLink.getAttribute('target')).toBe('_blank');
+    expect(qidLink.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
+  it('#4: renders a query row\'s search strategy as a distinct dim label (prefix/full-text/sitelink map)', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildLiveTerm({
+      traceJson: {
+        resolved_by: 'llm_disambiguation',
+        queries: [
+          { q: 'приевфратский', kind: 'lemma', mechanism: 'wbsearchentities', n_hits: 0, strategy: 'prefix' },
+          { q: 'Цинь', kind: 'surface', mechanism: 'cirrussearch', n_hits: 3, strategy: 'cirrus' },
+          { q: 'Q7181', kind: 'lemma', mechanism: 'sitelinks', n_hits: 1, strategy: 'sitelink' },
+        ],
+        search_source: 'wbsearchentities',
+        candidates: [],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+
+    // All three strategy labels are distinct and visible — not 3 identical rows.
+    expect(screen.getByText('prefix ·')).toBeTruthy();
+    expect(screen.getByText('full-text ·')).toBeTruthy();
+    expect(screen.getByText('sitelink ·')).toBeTruthy();
+  });
+
+  it('#4: defensive fallback — a query row without `strategy` (older trace) renders kind+q as before, no stray label', () => {
+    renderAndExpand(); // buildLiveTerm's default queries carry no `strategy` field
+    expect(screen.getByText('lemma')).toBeTruthy();
+    expect(screen.queryByText('prefix ·')).toBeNull();
+    expect(screen.queryByText('full-text ·')).toBeNull();
+    expect(screen.queryByText('sitelink ·')).toBeNull();
+  });
+
+  it('falls back to the plain candidates list (all "—" Matched) for legacy/seed rows with trace_json={}', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildLiveTerm({ traceJson: {} })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    // Grounding path is not shown at all for empty trace_json (hasTrace gate,
+    // unchanged behavior) but the Candidates table still renders from the
+    // top-level `candidates` field, honestly reporting no match provenance.
+    expect(screen.queryByText(/Grounding path/)).toBeNull();
+    expect(screen.getAllByTitle('No match provenance recorded for this candidate').length).toBe(2);
+    expect(screen.queryByText('none')).toBeNull();
+  });
+});
+
+// ─── FIX 1b: no dangling "Label — " separator when description is empty ───
+describe('GlossaryTab — Candidates table, empty-description rendering (FIX 1, glossary trace polish)', () => {
+  it('a candidate with no description renders just the label — no trailing "— " (owner screenshot: "Эйягамиль — ")', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm({
+      traceJson: {
+        resolved_by: 'llm_disambiguation',
+        candidates: [
+          { qid: 'Q1', label_en: 'Эйягамиль', description: '', matched: null },
+        ],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    const labelCell = screen.getByText('Эйягамиль').closest('td');
+    expect(labelCell?.textContent).toBe('Эйягамиль');
+  });
+
+  it('a candidate WITH a description keeps the "Label — description" rendering', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm({
+      traceJson: {
+        resolved_by: 'llm_disambiguation',
+        candidates: [
+          { qid: 'Q1', label_en: 'Ur', description: 'ancient Sumerian city-state', matched: null },
+        ],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    const labelCell = screen.getByText('Ur').closest('td');
+    expect(labelCell?.textContent).toBe('Ur — ancient Sumerian city-state');
+  });
+});
+
+// ─── FIX 2: SEARCH-step duplicate query rows collapse with a ×N marker ────
+describe('GlossaryTab — SEARCH step query grouping (FIX 2, glossary trace polish)', () => {
+  it('3 identical unlabeled query rows (no `strategy`) collapse into one row with a ×3 marker', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm({
+      traceJson: {
+        resolved_by: 'no_candidates',
+        queries: [
+          { q: 'Ханейское царство', kind: 'lemma', mechanism: 'wbsearchentities', n_hits: 0 },
+          { q: 'Ханейское царство', kind: 'lemma', mechanism: 'cirrussearch', n_hits: 0 },
+          { q: 'Ханейское царство', kind: 'lemma', mechanism: 'sitelinks', n_hits: 0 },
+        ],
+        candidates: [],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    expect(screen.getAllByText(/Ханейское царство/).length).toBe(1); // one row, not three identical lines
+    expect(screen.getByText('×3')).toBeTruthy();
+  });
+
+  it('distinct labeled strategies stay separate, un-multiplied rows', () => {
+    const paragraphs = [buildParagraph(1, 0)];
+    const terms = [buildTerm({
+      traceJson: {
+        resolved_by: 'no_candidates',
+        queries: [
+          { q: 'x', kind: 'lemma', mechanism: 'wbsearchentities', n_hits: 0, strategy: 'prefix' },
+          { q: 'x', kind: 'lemma', mechanism: 'cirrussearch', n_hits: 0, strategy: 'cirrus' },
+          { q: 'x', kind: 'lemma', mechanism: 'sitelinks', n_hits: 0, strategy: 'sitelink' },
+        ],
+        candidates: [],
+      },
+    })];
+    render(<GlossaryTab terms={terms} paragraphs={paragraphs} sourceLang="ru" targetLang="en" />);
+    fireEvent.click(screen.getByText('×1').closest('tr')!);
+    expect(screen.getByText('prefix ·')).toBeTruthy();
+    expect(screen.getByText('full-text ·')).toBeTruthy();
+    expect(screen.getByText('sitelink ·')).toBeTruthy();
+    // No ×N multiplier marker anywhere — all three rows are distinct
+    // (the mentions column's own "×1" is unrelated and must not confuse this).
+    expect(document.querySelectorAll('.va-gl-qmult').length).toBe(0);
+  });
+});

@@ -38,7 +38,7 @@ def _install_fake_judge(monkeypatch, *, value_by_criterion=None, issues_by_crite
     value_by_criterion = value_by_criterion or {}
     issues_by_criterion = issues_by_criterion or {}
 
-    def _fake_judge_one(client, criterion_id, ru, en, *, source_lang="ru", target_lang="en"):
+    def _fake_judge_one(client, criterion_id, ru, en, *, source_lang="ru", target_lang="en", **_kw):
         value = value_by_criterion.get(criterion_id, 8.0)
         issues = issues_by_criterion.get(criterion_id, [])
         payload = {"final_score": value, "summary": "ok", "identified_issues": issues}

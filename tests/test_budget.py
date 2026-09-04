@@ -171,7 +171,7 @@ def test_judge_live_error_path_releases_reservation_end_to_end(tmp_path, monkeyp
         budget._CALL_CAP = 10000
         budget._PRICES = {}
 
-        def _raise_judge(client, criterion_id, ru, en, *, source_lang="ru", target_lang="en"):
+        def _raise_judge(client, criterion_id, ru, en, *, source_lang="ru", target_lang="en", **_kw):
             raise RuntimeError("simulated provider error")
 
         monkeypatch.setattr(appmod, "_client_for", lambda conn, name: SimpleNamespace(

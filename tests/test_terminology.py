@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import json
+import logging
 import sys
+import urllib.error
 from pathlib import Path
 
 import pytest
@@ -364,6 +366,71 @@ def test_pipeline_threads_judge_scope_and_cache_to_grounder():
     assert grounder.calls[0]["judge_cache"] is cache
 
 
+# ── per-mention isolation (defense-in-depth on top of a grounding strategy's
+# own error handling -- see grounding/label_first.py's broadened catch) ──────
+class _FlakyGrounder:
+    """green for every mention except one whose surface triggers a raised
+    exception -- simulates a grounding strategy that lets an error escape
+    uncaught, independent of any particular strategy's own error handling."""
+    name = "flaky"
+
+    def __init__(self, raise_on: str, exc: Exception):
+        self.raise_on = raise_on
+        self.exc = exc
+        self.calls: list[str] = []
+
+    def ground(self, mention, *, judge=None, scope_id=None, judge_cache=None):
+        self.calls.append(mention.surface)
+        if mention.surface == self.raise_on:
+            raise self.exc
+        ref = WikidataRef.from_qid("Q1", "X")
+        return GroundingResult("green", ref, [ref], trace={"canon_en": ["X"]})
+
+
+def test_pipeline_isolates_mention_whose_grounder_raises_and_keeps_the_rest():
+    # Regression: pipeline.run() used to have no per-mention try/except, so one
+    # raised lookup error killed the whole paragraph's extraction (0 terms back
+    # instead of just dropping the one bad mention).
+    mentions = [
+        TermMention("BADterm", char_start=0, char_end=7),
+        TermMention("GOODterm", char_start=12, char_end=20),
+    ]
+    grounder = _FlakyGrounder(raise_on="BADterm", exc=RuntimeError("boom"))
+    terms = pipeline.run("BADterm and GOODterm", "X here", mentions, grounder=grounder, pairer=_Pairer())
+
+    assert grounder.calls == ["BADterm", "GOODterm"]              # loop continued past the raise
+    assert [t.source_surface for t in terms] == ["GOODterm"]      # bad mention dropped, not the paragraph
+    assert terms[0].difficulty == "green"
+
+
+def test_pipeline_logs_skipped_mention_at_warning_level_no_secrets(caplog):
+    mentions = [TermMention("BADterm", char_start=0, char_end=7)]
+    grounder = _FlakyGrounder(raise_on="BADterm", exc=RuntimeError("wikidata unavailable"))
+
+    with caplog.at_level(logging.WARNING, logger="palimpsest.terminology.pipeline"):
+        terms = pipeline.run("BADterm", "X", mentions, grounder=grounder, pairer=_Pairer())
+
+    assert terms == []
+    assert caplog.records                                          # something was logged
+    assert all(rec.levelno == logging.WARNING for rec in caplog.records)
+    assert any("BADterm" in rec.getMessage() for rec in caplog.records)
+
+
+def test_pipeline_does_not_swallow_fatal_grounding_judge_error():
+    # FatalGroundingJudgeError is an explicit halt marker (token-limit overflow,
+    # per-call gate violations) -- the per-mention isolation must NOT treat it
+    # like an ordinary lookup failure; it has to propagate and stop the run.
+    mentions = [
+        TermMention("HALTterm", char_start=0, char_end=8),
+        TermMention("GOODterm", char_start=12, char_end=20),
+    ]
+    grounder = _FlakyGrounder(raise_on="HALTterm", exc=FatalGroundingJudgeError("token-limit overflow"))
+
+    with pytest.raises(FatalGroundingJudgeError):
+        pipeline.run("HALTterm and GOODterm", "X here", mentions, grounder=grounder, pairer=_Pairer())
+    assert grounder.calls == ["HALTterm"]  # halted before reaching the next mention
+
+
 def test_db_tuple_candidates_never_null():
     ref = WikidataRef.from_qid("Q1", "X")
     from palimpsest.terminology.base import Term
@@ -439,6 +506,21 @@ def test_candidates_wikipedia_langlink_last_resort():
     gen = generate_candidates(wd, TermMention(surface="Уруинимгину", lemma="Урукагина"), GroundingConfig())
     assert gen["source"] == "wikipedia_langlink"
     assert [c["qid"] for c in gen["candidates"]] == ["Q312060"]
+
+
+def test_candidates_query_strategy_labels_escalation_ladder():
+    # Same fixture as test_candidates_wikipedia_langlink_last_resort: prefix
+    # search misses both forms (lemma+surface -> 2 queries), CirrusSearch
+    # misses both forms too (2 more), sitelink finally resolves it (1 more)
+    # -- 5 queries for one 2-word mention, each carrying the backend that
+    # produced it so a trace UI can distinguish escalation from repetition.
+    wd = _FakeWD(search={}, cirrus={}, wiki={"Урукагина": "Q312060"},
+                 entities={"Q312060": _entity("Q312060", "Urukagina", "Урукагина", p31=("Q5",), enwiki="Urukagina")})
+    gen = generate_candidates(wd, TermMention(surface="Уруинимгину", lemma="Урукагина"), GroundingConfig())
+    assert gen["source"] == "wikipedia_langlink"
+    strategies = [q["strategy"] for q in gen["queries"]]
+    assert strategies == ["prefix", "prefix", "cirrus", "cirrus", "sitelink"]
+    assert all(q["strategy"] in {"prefix", "cirrus", "sitelink"} for q in gen["queries"])
 
 
 def test_candidates_use_sitelink_false_skips_wikipedia_rung_cirrus_still_fires():
@@ -584,6 +666,70 @@ def test_candidates_label_guess_tier_fires_only_after_alt_names_also_empty():
     assert gen["candidates"][0]["source"] == "label_guess"
     assert gen["candidates"][0]["qid"] == "Q77"
     assert any(q["kind"] == "label_guess" for q in gen["queries"])
+
+
+def test_candidates_label_guess_variants_reach_search_khana_class():
+    """The Ханейское-царство class (2026-07-17): the common guesses
+    («Хана»/"Hana") find nothing, but a scholarly-romanization variant
+    ("Khana") from the new `variants` field must be queried and win."""
+    wd = _FakeWD(search={"Khana": [{"id": "Q425405"}]},
+                 entities={"Q425405": _entity("Q425405", "Kingdom of Khana")})
+
+    def fake_guesser(prompt):
+        return {"label_ru": "Хана", "label_en": "Hana", "variants": ["Khana", "Хана", None, 42]}
+
+    mention = TermMention(surface="Ханейское царство", lemma="Ханейское царство",
+                          context="покорила Ханейское царство, распространив власть.")
+    config = GroundingConfig(search_mode="label-guess")
+    gen = generate_candidates(wd, mention, config, label_guesser=fake_guesser)
+
+    queried = [q["q"] for q in gen["queries"] if q["kind"] == "label_guess"]
+    assert queried == ["Хана", "Hana", "Khana"]  # deduped, junk types dropped
+    assert all(q["strategy"] == "guess" for q in gen["queries"] if q["kind"] == "label_guess")
+    assert gen["candidates"][0]["qid"] == "Q425405"
+    assert gen["candidates"][0]["source"] == "label_guess"
+
+
+def test_candidates_label_guess_later_form_rank2_survives_junk_rich_first_form():
+    """Prod 2026-07-17, «Ханейское царство» round 2: the first guess form
+    («Хана») returned 7 junk hits that filled ``hits[:enrich_top=5]``, so
+    "Khana" rank 2 = Q425405 never reached enrichment or the judge. The
+    rank-wise interleave in ``_widen`` plus the widened-tier enrich cap must
+    let a later form's top-2 hit through."""
+    junk = [{"id": f"Q_J{i}"} for i in range(7)]
+    wd = _FakeWD(
+        search={"Хана": junk, "Khana": [{"id": "Q_J0"}, {"id": "Q425405"}]},
+        entities={
+            "Q425405": _entity("Q425405", "Kingdom of Khana"),
+            **{f"Q_J{i}": _entity(f"Q_J{i}", f"Junk {i}") for i in range(7)},
+        },
+    )
+
+    def fake_guesser(prompt):
+        return {"label_ru": "Хана", "label_en": None, "variants": ["Khana"]}
+
+    mention = TermMention(surface="Ханейское царство", lemma="Ханейское царство",
+                          context="покорила Ханейское царство, распространив власть.")
+    gen = generate_candidates(wd, mention, GroundingConfig(search_mode="label-guess"),
+                              label_guesser=fake_guesser)
+
+    qids = [c["qid"] for c in gen["candidates"]]
+    assert "Q425405" in qids
+    # interleave puts each form's rank-1 first: Хана#1, Khana#1(dup), then rank 2
+    assert qids[:3] == ["Q_J0", "Q_J1", "Q425405"]
+
+
+def test_candidates_label_guess_variants_capped_at_five_forms():
+    wd = _FakeWD(search={}, entities={})
+
+    def fake_guesser(prompt):
+        return {"label_ru": "а", "label_en": "b", "variants": ["c", "d", "e", "f", "g"]}
+
+    mention = TermMention(surface="Нечто", lemma="Нечто", context="Нечто случилось, без скобок.")
+    gen = generate_candidates(wd, mention, GroundingConfig(search_mode="label-guess"),
+                              label_guesser=fake_guesser)
+    queried = [q["q"] for q in gen["queries"] if q["kind"] == "label_guess"]
+    assert queried == ["а", "b", "c", "d", "e"]  # hard cap of 5 widening searches
 
 
 def test_candidates_label_guess_not_called_when_alt_names_already_succeeded():
@@ -955,6 +1101,22 @@ def test_label_first_trace_complete_on_no_candidates_path():
     assert result.trace["resolved_by"] == "no_candidates"
 
 
+def test_label_first_trace_config_writes_split_fields_not_deprecated_use_fallbacks():
+    # GroundingConfig split use_fallbacks -> use_cirrus/use_sitelink (2026-07-06,
+    # see base.py's docstring); the trace's "config" block must reflect the
+    # actual current toggles, not the deprecated combined name -- no consumer
+    # (frontend GlossaryTab/glossary-grouping, the demo contracts spec) reads
+    # trace.config, so this is a straight rename, not a compat shim.
+    wd = _FakeWD(search={"Саргон": [{"id": "Q1"}]},
+                 entities={"Q1": _entity("Q1", "Sargon of Akkad", "Саргон")})
+    strategy = LabelFirstGrounding(wd, config=GroundingConfig(use_cirrus=False, use_sitelink=True))
+    result = strategy.ground(TermMention(surface="Саргон", lemma="Саргон"))
+
+    assert result.trace["config"]["use_cirrus"] is False
+    assert result.trace["config"]["use_sitelink"] is True
+    assert "use_fallbacks" not in result.trace["config"]
+
+
 # ── Task 12: error policy ───────────────────────────────────────────────────
 class _RaisingWD:
     """Fake WikidataClient whose search methods raise, simulating an unavailable API."""
@@ -983,6 +1145,111 @@ def test_label_first_wikidata_unavailable_is_red_and_distinct_from_no_candidates
     assert result.trace["resolved_by"] == "wikidata_unavailable"
     assert result.trace["resolved_by"] != "no_candidates"
     assert calls == []  # candidate-gen failure short-circuits before any judge call
+
+
+# ── HTTPError/OSError catch broadening (per-mention isolation root cause) ────
+class _RaisingOnceWD:
+    """Fake WikidataClient whose search methods raise a single injected
+    exception -- used to prove label_first.py's catch is broad enough for
+    non-RuntimeError failures (urllib.error.HTTPError, OSError) that
+    WikidataClient's own retry loop lets escape bare (see wikidata.py::_fetch
+    -- a non-retryable HTTPError, or a retryable one whose retries are
+    exhausted, is re-raised unwrapped, not as RuntimeError)."""
+    n_calls = 0
+
+    def __init__(self, exc: Exception):
+        self._exc = exc
+
+    def search_entities(self, term, lang="ru", limit=7):
+        raise self._exc
+
+    def search_cirrus(self, term, limit=7):
+        raise self._exc
+
+    def wikipedia_wikibase_item(self, title, lang="ru"):
+        raise self._exc
+
+    def get_entities(self, qids, **kw):
+        return {}
+
+
+def _http_error(code: int = 503) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError("https://www.wikidata.org/w/api.php", code, "err", {}, None)
+
+
+def test_label_first_http_error_resolves_wikidata_unavailable_not_crash():
+    wd = _RaisingOnceWD(_http_error(503))
+    judge, calls = _judge_counter({"qid": "Q1", "reason": "n/a"})
+    strategy = LabelFirstGrounding(wd)
+    result = strategy.ground(TermMention(surface="Саргон", lemma="Саргон"), judge=judge)
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "wikidata_unavailable"
+    assert calls == []  # candidate-gen failure short-circuits before any judge call
+
+
+def test_label_first_os_error_resolves_wikidata_unavailable_not_crash():
+    wd = _RaisingOnceWD(ConnectionResetError("connection reset by peer"))
+    strategy = LabelFirstGrounding(wd)
+    result = strategy.ground(TermMention(surface="Саргон", lemma="Саргон"))
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "wikidata_unavailable"
+
+
+class _PartialFailureWD:
+    """_FakeWD-style lookup table that raises for one specific query term and
+    resolves the rest normally -- reproduces 'one bad Wikidata call mid-
+    paragraph', distinct from _RaisingOnceWD/_RaisingWD which simulate the
+    whole client being down for every mention."""
+
+    def __init__(self, search=None, entities=None, raise_on=(), exc=None):
+        self.n_calls = 0
+        self._search = search or {}
+        self._entities = entities or {}
+        self._raise_on = set(raise_on)
+        self._exc = exc
+
+    def search_entities(self, term, lang="ru", limit=7):
+        if term in self._raise_on:
+            raise self._exc
+        return list(self._search.get(term, []))
+
+    def search_cirrus(self, term, limit=7):
+        return []
+
+    def wikipedia_wikibase_item(self, title, lang="ru"):
+        return None
+
+    def get_entities(self, qids, **kw):
+        return {q: self._entities[q] for q in qids if q in self._entities}
+
+
+def test_pipeline_survives_one_mention_wikidata_http_error_mid_paragraph():
+    # Full-stack regression for the bug this fix addresses: a single
+    # non-retryable Wikidata HTTPError on one mention used to propagate
+    # uncaught through label_first.ground() (RuntimeError-only catch) and then
+    # through pipeline.run()'s mention loop (no per-mention try/except),
+    # dropping every term of the paragraph -- not just the one bad lookup.
+    wd = _PartialFailureWD(
+        search={"Саргон": [{"id": "Q1"}]},
+        entities={"Q1": _entity("Q1", "Sargon of Akkad", "Саргон")},
+        raise_on={"Навуходоносор"},
+        exc=_http_error(500),
+    )
+    grounder = LabelFirstGrounding(wd)
+    mentions = [
+        TermMention(surface="Навуходоносор", lemma="Навуходоносор", char_start=0, char_end=13),
+        TermMention(surface="Саргон", lemma="Саргон", char_start=18, char_end=24),
+    ]
+    terms = pipeline.run("Навуходоносор ... Саргон ...", "... ...", mentions,
+                          grounder=grounder, pairer=_Pairer())
+
+    assert [t.source_surface for t in terms] == ["Навуходоносор", "Саргон"]  # both mentions survive
+    bad, good = terms
+    assert bad.difficulty == "red"
+    assert bad.trace["resolved_by"] == "wikidata_unavailable"
+    assert good.difficulty == "green"
 
 
 def test_label_first_judge_raises_resolves_judge_unavailable_called_once_not_retried():
@@ -1093,3 +1360,492 @@ def test_wilson_ci_matches_known_reference_interval():
     lo, hi = wilson_ci(61, 78)
     assert 0.67 < lo < 0.69
     assert 0.85 < hi < 0.87
+
+
+# ── grounding quality fix: junk-P31 candidate filtering + near-dup dedup ─────
+# Regression for the owner-reported prod defects (2026-07-16): «Египтяне»
+# candidates included Wikinews-article items (Q99042315 etc.) reaching the
+# judge via the CirrusSearch full-text tier, and «Париж» got judge_rejected
+# on document 10 despite Q90 being a slam-dunk exact match (real trace pulled
+# from https://glossa-mt.com/api/documents/10 -- see the investigation report).
+def _with_desc(entity: dict, en_desc: str = "", ru_desc: str = "") -> dict:
+    if en_desc:
+        entity["descriptions"]["en"] = {"value": en_desc}
+    if ru_desc:
+        entity["descriptions"]["ru"] = {"value": ru_desc}
+    return entity
+
+
+def test_candidates_filters_wikinews_article_via_p31():
+    # Real shape of the DEFECT 2 report: a Wikinews-article item surfaces via
+    # CirrusSearch full-text alongside the genuine entity.
+    wd = _FakeWD(
+        search={},
+        cirrus={"Египтяне": [{"id": "Q41616"}, {"id": "Q99042315"}]},
+        entities={
+            "Q41616": _with_desc(_entity("Q41616", "Egyptians", "Египтяне", p31=("Q41710",)),
+                                  "ethnic group"),
+            "Q99042315": _with_desc(_entity("Q99042315", "Египтяне", "Египтяне", p31=("Q17633526",)),
+                                     "Wikinews article"),
+        },
+    )
+    gen = generate_candidates(wd, TermMention(surface="Египтяне", lemma="Египтяне"), GroundingConfig())
+    qids = [c["qid"] for c in gen["candidates"]]
+    assert qids == ["Q41616"]
+    assert "Q99042315" not in qids
+
+
+def test_candidates_filters_each_non_entity_p31_blocklist_value():
+    # All 5 blocklisted P31 values are dropped, not just the Wikinews case.
+    blocklisted = {
+        "QW": "Q17633526",   # Wikinews article
+        "QD": "Q4167410",    # Wikimedia disambiguation page
+        "QC": "Q4167836",    # Wikimedia category
+        "QT": "Q11266439",   # Wikimedia template
+        "QL": "Q13406463",   # Wikimedia list article
+    }
+    entities = {"Q_GOOD": _entity("Q_GOOD", "Real Entity", "РеальнаяСущность", p31=("Q5",))}
+    for qid, p31 in blocklisted.items():
+        entities[qid] = _entity(qid, f"Meta {qid}", "Мета", p31=(p31,))
+    wd = _FakeWD(search={"Тест": [{"id": qid} for qid in ["Q_GOOD", *blocklisted]]}, entities=entities)
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["Q_GOOD"]
+
+
+def test_candidates_wikinews_description_fallback_when_p31_missing():
+    # No P31 claim at all (defensive fallback path): description text alone
+    # still catches the single documented "Wikinews article" pattern.
+    wd = _FakeWD(
+        search={"Тест": [{"id": "Q1"}]},
+        entities={"Q1": _with_desc(_entity("Q1", "Тест", "Тест"), "Wikinews article")},
+    )
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert gen["candidates"] == []
+
+
+def test_candidates_legitimate_entity_with_no_p31_is_not_dropped():
+    # No P31 + an unrelated description must NOT be treated as junk -- the
+    # filter is narrowly targeted, not "reject anything without P31".
+    wd = _FakeWD(search={"Тест": [{"id": "Q1"}]},
+                 entities={"Q1": _with_desc(_entity("Q1", "Тест", "Тест"), "a plain entity")})
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["Q1"]
+
+
+def test_candidates_dedup_identical_label_and_description():
+    # Two candidates with the exact same (label_ru, description) offered to
+    # the judge are pure noise -- keep only the first.
+    wd = _FakeWD(
+        search={"Париж": [{"id": "QDUPA"}, {"id": "QDUPB"}]},
+        entities={
+            "QDUPA": _with_desc(_entity("QDUPA", "Paris FC", "Париж"), "football club in France"),
+            "QDUPB": _with_desc(_entity("QDUPB", "Paris FC", "Париж"), "football club in France"),
+        },
+    )
+    gen = generate_candidates(wd, TermMention(surface="Париж", lemma="Париж"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["QDUPA"]
+
+
+def test_candidates_dedup_keeps_distinct_descriptions_for_same_label():
+    # Men's vs women's Paris FC share a label but differ in description --
+    # both are genuinely distinct candidates and must both survive.
+    wd = _FakeWD(
+        search={"Париж": [{"id": "QMEN"}, {"id": "QWOMEN"}]},
+        entities={
+            "QMEN": _with_desc(_entity("QMEN", "Paris FC", "Париж"), "football club in France"),
+            "QWOMEN": _with_desc(_entity("QWOMEN", "Paris FC", "Париж"), "women's association football club"),
+        },
+    )
+    gen = generate_candidates(wd, TermMention(surface="Париж", lemma="Париж"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["QMEN", "QWOMEN"]
+
+
+def test_candidates_dedup_does_not_merge_homonyms_with_empty_descriptions():
+    # Safety regression: two GENUINELY DIFFERENT entities sharing a Russian
+    # label but carrying no description (a routine real-world data gap, not
+    # an edge case) must never be collapsed by the dedup fix -- that's
+    # exactly the ">=2 exact matches" homonym case G6's judge escalation
+    # exists to disambiguate (e.g. two rulers of the same name).
+    wd = _FakeWD(
+        search={"Тутмос": [{"id": "Q1"}, {"id": "Q2"}]},
+        entities={"Q1": _entity("Q1", "Thutmose I", "Тутмос"),
+                  "Q2": _entity("Q2", "Thutmose II", "Тутмос")},
+    )
+    gen = generate_candidates(wd, TermMention(surface="Тутмос", lemma="Тутмос"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["Q1", "Q2"]
+
+
+def test_candidates_dedup_does_not_merge_candidates_without_a_label():
+    # Two label-less candidates are never collapsed together just because
+    # both keys happen to be falsy -- dedup only fires on a real label match.
+    wd = _FakeWD(
+        search={"Тест": [{"id": "Q1"}, {"id": "Q2"}]},
+        entities={"Q1": _entity("Q1", "Q1", None), "Q2": _entity("Q2", "Q2", None)},
+    )
+    gen = generate_candidates(wd, TermMention(surface="Тест", lemma="Тест"), GroundingConfig())
+    assert [c["qid"] for c in gen["candidates"]] == ["Q1", "Q2"]
+
+
+def test_grounding_judge_system_prompt_has_temporal_context_caveat():
+    # DEFECT 1 fix marker: the judge must be told not to reject an enduring
+    # real-world referent merely because the surrounding narrative describes
+    # an earlier historical period (the root cause of the «Париж»
+    # judge_rejected defect -- real trace reason: "the provided candidates
+    # refer to modern entities" although Q90 IS the correct referent).
+    from palimpsest.terminology.grounding.label_first import DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
+    assert "enduring real-world referent" in DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
+    assert "era mismatch" in DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT
+
+
+def test_label_first_paris_class_scenario_filters_junk_and_judge_grounds_city():
+    # End-to-end regression for the real defect: 5 raw hits include a
+    # Wikinews-article item (must be filtered) and a near-duplicate club pair
+    # (must be deduped to 1), leaving a clean candidate set that still needs
+    # the judge (2 genuine exact matches on "Париж": the city + the club) --
+    # the mocked judge picks the city, proving the mechanism (clean candidate
+    # list reaching the judge) works, independent of any specific LLM call.
+    wd = _FakeWD(
+        search={"Париж": [
+            {"id": "Q90"},        # Paris, the city -- the correct referent
+            {"id": "QJUNK"},      # Wikinews article titled "Париж" -- filtered
+            {"id": "QDUPA"},      # Paris FC (men's)
+            {"id": "QDUPB"},      # identical (label_ru, description) -- deduped
+            {"id": "Q830149"},    # Paris, Texas -- legitimate distinct candidate
+        ]},
+        entities={
+            "Q90": _with_desc(_entity("Q90", "Paris", "Париж", p31=("Q515",)),
+                               "capital and most populous city in France"),
+            "QJUNK": _with_desc(_entity("QJUNK", "Париж", "Париж", p31=("Q17633526",)),
+                                 "Wikinews article"),
+            "QDUPA": _with_desc(_entity("QDUPA", "Paris FC", "Париж"), "football club in France"),
+            "QDUPB": _with_desc(_entity("QDUPB", "Paris FC", "Париж"), "football club in France"),
+            "Q830149": _with_desc(_entity("Q830149", "Paris, TX", "Парис"),
+                                   "city in Texas, United States"),
+        },
+    )
+    judge, calls = _judge_counter({"qid": "Q90", "reason": "modern Paris is the museum's location"})
+    strategy = LabelFirstGrounding(wd)
+    mention = TermMention(surface="Париж", lemma="Париж",
+                           context="Конец XXIII в. до н.э. Париж, Лувр")
+    result = strategy.ground(mention, judge=judge)
+
+    trace_qids = {c["qid"] for c in result.trace["candidates"]}
+    assert trace_qids == {"Q90", "QDUPA", "Q830149"}   # junk + dup never reach the trace/judge
+    assert len(calls) == 1                             # 2 exact matches (Q90, QDUPA) -> escalation
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "llm_disambiguation"
+    assert result.grounded is not None
+    assert result.grounded.qid == "Q90"
+
+
+# ── post-rejection label-guess escalation (2026-07-17, «Хана» class) ─────────
+# The pre-judge guess tier only fires on ZERO hits; "7 hits, all the wrong
+# entity" is invisible to that gate. After a judge rejection, one extra
+# guesser+judge round runs over the NEW candidates only.
+
+def _khana_escalation_wd():
+    # lemma «Хана» finds 2 junk entities; the guessed "Khana" form finds the
+    # kingdom (excluded qids stay excluded).
+    return _FakeWD(
+        search={"Хана": [{"id": "Q_NAME"}, {"id": "Q_HAWAII"}],
+                "Khana": [{"id": "Q_NAME"}, {"id": "Q425405"}]},
+        entities={"Q_NAME": _entity("Q_NAME", "Hana", "Хана"),
+                  "Q_HAWAII": _entity("Q_HAWAII", "Hana, Hawaii", "Хана"),
+                  "Q425405": _entity("Q425405", "Kingdom of Khana")},
+    )
+
+
+def test_label_first_guess_escalation_resolves_after_judge_rejection():
+    wd = _khana_escalation_wd()
+    guesser_calls = []
+
+    def guesser(prompt):
+        guesser_calls.append(prompt)
+        return {"label_ru": None, "label_en": None, "variants": ["Khana"]}
+
+    judge_calls = []
+
+    def judge(prompt):
+        judge_calls.append(prompt)
+        if len(judge_calls) == 1:
+            return {"qid": None, "reason": "all candidates are modern homonyms"}
+        return {"qid": "Q425405", "reason": "Bronze-age kingdom on the middle Euphrates"}
+
+    strategy = LabelFirstGrounding(wd, GroundingConfig(search_mode="label-guess"),
+                                   label_guesser=guesser)
+    result = strategy.ground(TermMention(surface="Хану", lemma="Хана",
+                                         context="Шамши-Адад покорил Хану."), judge=judge)
+
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "llm_disambiguation"
+    assert result.grounded.qid == "Q425405"
+    assert len(guesser_calls) == 1 and len(judge_calls) == 2
+    # second judge round sees ONLY the new candidate, not the vetoed homonyms
+    assert "Q425405" in judge_calls[1] and "Q_NAME" not in judge_calls[1]
+    guess_qs = [q for q in result.trace["queries"] if q["kind"] == "label_guess"]
+    assert [q["q"] for q in guess_qs] == ["Khana"]
+    assert all(q["strategy"] == "guess" for q in guess_qs)
+    assert result.trace["judge"]["first_rejection"]["qid"] is None
+    # combined candidate list keeps the vetoed ones for trace transparency
+    assert {c["qid"] for c in result.trace["candidates"]} == {"Q_NAME", "Q_HAWAII", "Q425405"}
+
+
+def test_label_first_guess_escalation_second_rejection_stays_red():
+    wd = _khana_escalation_wd()
+    judge_calls = []
+
+    def judge(prompt):
+        judge_calls.append(prompt)
+        return {"qid": None, "reason": "nothing fits"}
+
+    strategy = LabelFirstGrounding(
+        wd, GroundingConfig(search_mode="label-guess"),
+        label_guesser=lambda p: {"label_ru": None, "label_en": None, "variants": ["Khana"]})
+    result = strategy.ground(TermMention(surface="Хану", lemma="Хана",
+                                         context="Шамши-Адад покорил Хану."), judge=judge)
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "judge_rejected"
+    assert len(judge_calls) == 2
+    # the attempted guess queries stay visible in the final red trace
+    assert any(q["kind"] == "label_guess" for q in result.trace["queries"])
+
+
+def test_label_first_no_escalation_when_guess_tier_already_ran():
+    # candidates came FROM the pre-judge guess tier; rejection must not loop
+    # into a second guesser round.
+    wd = _FakeWD(search={"Guessed": [{"id": "Q77"}]},
+                 entities={"Q77": _entity("Q77", "Guessed")})
+    guesser_calls = []
+
+    def guesser(prompt):
+        guesser_calls.append(prompt)
+        return {"label_ru": None, "label_en": "Guessed", "variants": []}
+
+    judge, judge_calls = _judge_counter({"qid": None, "reason": "not it"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(search_mode="label-guess"),
+                                   label_guesser=guesser)
+    result = strategy.ground(TermMention(surface="Загадка", lemma="Загадка",
+                                         context="Загадка без скобок."), judge=judge)
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "judge_rejected"
+    assert len(guesser_calls) == 1  # pre-judge tier only, no post-rejection loop
+    assert len(judge_calls) == 1
+
+
+def test_label_first_no_escalation_outside_label_guess_mode():
+    # no exact label match -> judge path -> rejection; baseline mode must not
+    # consult the guesser even though one is wired in.
+    wd = _FakeWD(search={"Хана": [{"id": "Q_NAME"}]},
+                 entities={"Q_NAME": _entity("Q_NAME", "Hana (given name)", "Хана (имя)")})
+    guesser_calls = []
+    judge, _ = _judge_counter({"qid": None, "reason": "no"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(),  # baseline mode
+                                   label_guesser=lambda p: guesser_calls.append(p) or {})
+    result = strategy.ground(TermMention(surface="Хана", lemma="Хана"), judge=judge)
+
+    assert result.trace["resolved_by"] == "judge_rejected"
+    assert guesser_calls == []
+
+
+# ── confirm_exact judge veto on a single exact match (2026-07-17, false-green
+# fix) ─────────────────────────────────────────────────────────────────────
+# Mirrors the two prod false-greens: «сирийских» auto-greened to Q33538
+# (Syriac language) via an exact ru ALIAS while the real referent sat
+# elsewhere in the candidate list; «династия Цинь» auto-greened to a TV
+# series whose ru LABEL matched exactly while the real Qin dynasty (ru label
+# just «Цинь», a DIFFERENT label) went unmatched in the same list. The fixture
+# below reproduces that shape generically: Q_NAMESAKE exact-matches the
+# query, Q_REAL is a same-search-hit competitor with a different label, so
+# len(exact_matches) == 1 while len(candidates) == 2.
+
+def _namesake_confirm_wd():
+    return _FakeWD(
+        search={"Династия Цинь": [{"id": "Q_NAMESAKE"}, {"id": "Q_REAL"}]},
+        entities={"Q_NAMESAKE": _entity("Q_NAMESAKE", "Qin Dynasty (TV series)", "Династия Цинь"),
+                  "Q_REAL": _entity("Q_REAL", "Qin dynasty", "Цинь")},
+    )
+
+
+def _namesake_mention() -> TermMention:
+    return TermMention(surface="династию Цинь", lemma="Династия Цинь",
+                       context="Ван покорил династию Цинь в 221 году до н.э.")
+
+
+def test_confirm_exact_judge_confirms_same_qid_resolves_green_with_trace():
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_NAMESAKE", "reason": "confirmed: the historical dynasty"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert result.grounded.qid == "Q_NAMESAKE"
+    assert len(calls) == 1                          # judge WAS consulted, unlike the zero-LLM row
+    assert result.trace["judge"] is not None         # confirmation is visible in the trace
+    assert result.trace["judge"]["response"]["qid"] == "Q_NAMESAKE"
+
+
+def test_confirm_exact_judge_picks_different_candidate_resolves_yellow():
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_REAL", "reason": "the exact-label hit is a TV series, not the dynasty"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "llm_disambiguation"
+    assert result.grounded.qid == "Q_REAL"           # the judge overrode the namesake exact match
+    assert len(calls) == 1
+
+
+def test_confirm_exact_judge_rejects_all_escalation_still_reachable():
+    # judge rejects both candidates on round 1; the post-rejection label-guess
+    # escalation (search_mode="label-guess") must still fire exactly as it
+    # does for the ordinary >=2-exact/0-exact paths -- confirm_exact does not
+    # special-case rejection at all.
+    wd = _namesake_confirm_wd()
+    wd._search["Qin"] = [{"id": "Q_NEW"}]
+    wd._entities["Q_NEW"] = _entity("Q_NEW", "Qin (state)", "Цинь (царство)")
+
+    judge_calls = []
+
+    def judge(prompt):
+        judge_calls.append(prompt)
+        if len(judge_calls) == 1:
+            return {"qid": None, "reason": "neither candidate is the historical dynasty"}
+        return {"qid": "Q_NEW", "reason": "the pre-imperial state of Qin"}
+
+    guesser_calls = []
+
+    def guesser(prompt):
+        guesser_calls.append(prompt)
+        return {"label_ru": None, "label_en": "Qin", "variants": []}
+
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True, search_mode="label-guess"),
+                                   label_guesser=guesser)
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "yellow"
+    assert result.trace["resolved_by"] == "llm_disambiguation"
+    assert result.grounded.qid == "Q_NEW"
+    assert len(guesser_calls) == 1 and len(judge_calls) == 2
+    assert result.trace["judge"]["first_rejection"]["qid"] is None
+
+
+def test_confirm_exact_judge_rejects_all_no_escalation_stays_red():
+    # same rejection path, but WITHOUT search_mode="label-guess" -- confirms
+    # the ordinary (non-escalating) judge_rejected outcome is also reachable
+    # under confirm_exact, unchanged from the non-confirm case.
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": None, "reason": "neither fits"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))  # baseline search_mode
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "red"
+    assert result.trace["resolved_by"] == "judge_rejected"
+    assert len(calls) == 1
+
+
+def test_confirm_exact_single_candidate_skips_judge_stays_green():
+    # len(candidates) == 1 -> nothing to disambiguate against -> the veto
+    # never fires, zero-LLM green exactly like confirm_exact=False.
+    wd = _FakeWD(search={"Саргон": [{"id": "Q1"}]},
+                 entities={"Q1": _entity("Q1", "Sargon of Akkad", "Саргон")})
+    judge, calls = _judge_counter({"qid": "Q1", "reason": "n/a"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(TermMention(surface="Саргон", lemma="Саргон"), judge=judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert calls == []                                # no competing candidate -> no judge call
+    assert result.trace["judge"] is None
+
+
+def test_confirm_exact_false_is_the_regression_baseline_no_judge_call():
+    # Default confirm_exact=False must reproduce the PRE-fix behavior
+    # byte-for-byte on the same namesake fixture that test_confirm_exact_*
+    # above catches -- this is the documented gap the flag exists to close,
+    # not a bug in the default path itself.
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_REAL", "reason": "would have overridden, if consulted"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig())  # confirm_exact defaults to False
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert result.grounded.qid == "Q_NAMESAKE"        # the namesake, unexamined -- the known gap
+    assert calls == []                                # judge never consulted
+    assert result.trace["judge"] is None
+
+
+def test_confirm_exact_judge_exception_falls_back_to_deterministic_green():
+    wd = _namesake_confirm_wd()
+
+    def raising_judge(prompt):
+        raise RuntimeError("provider unavailable")
+
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(_namesake_mention(), judge=raising_judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert result.grounded.qid == "Q_NAMESAKE"
+    assert result.trace["judge"] is None              # byte-identical to the flag being off
+
+
+def test_confirm_exact_judge_qid_outside_candidates_falls_back_to_green():
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_NOT_A_CANDIDATE", "reason": "contract violation"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    result = strategy.ground(_namesake_mention(), judge=judge)
+
+    assert result.difficulty == "green"
+    assert result.trace["resolved_by"] == "exact_label"
+    assert result.grounded.qid == "Q_NAMESAKE"
+    assert len(calls) == 1                            # the judge WAS called, its answer was rejected
+    assert result.trace["judge"] is None              # fallback trace matches the zero-LLM row
+
+
+def test_confirm_exact_cache_replays_within_paragraph_but_not_across():
+    # Simulates the two-Фивы case: same lemma+candidate-QID set, judge
+    # confirmation cached and replayed for a repeat mention in the SAME
+    # paragraph scope, but a DIFFERENT scope tuple (a different paragraph)
+    # must not reuse it -- exactly the cross-paragraph bug the scope_id fix
+    # in terminology_live.py closes.
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_NAMESAKE", "reason": "confirmed"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    cache: dict = {}
+    mention = _namesake_mention()
+
+    r1 = strategy.ground(mention, judge=judge, scope_id=("doc1", "para1"), judge_cache=cache)
+    r2 = strategy.ground(mention, judge=judge, scope_id=("doc1", "para1"), judge_cache=cache)
+    r3 = strategy.ground(mention, judge=judge, scope_id=("doc1", "para2"), judge_cache=cache)
+
+    assert len(calls) == 2                            # para1 called once, replayed; para2 fresh
+    assert r1.difficulty == r2.difficulty == r3.difficulty == "green"
+    assert r1.trace["resolved_by"] == r2.trace["resolved_by"] == r3.trace["resolved_by"] == "exact_label"
+    assert r1.grounded.qid == r2.grounded.qid == r3.grounded.qid == "Q_NAMESAKE"
+    assert r1.trace["judge"]["cache_hit"] is False
+    assert r2.trace["judge"]["cache_hit"] is True     # same paragraph scope -> replay
+    assert r3.trace["judge"]["cache_hit"] is False    # different paragraph scope -> fresh judge call
+
+
+def test_confirm_exact_cached_confirmation_survives_from_cached_decision():
+    # Direct check on _from_cached_decision's new "exact_label" branch: the
+    # replayed GroundingResult carries the correct grounded ref (looked up by
+    # chosen_qid, not just replaying difficulty/resolved_by strings).
+    wd = _namesake_confirm_wd()
+    judge, calls = _judge_counter({"qid": "Q_NAMESAKE", "reason": "confirmed"})
+    strategy = LabelFirstGrounding(wd, GroundingConfig(confirm_exact=True))
+    cache: dict = {}
+    mention = _namesake_mention()
+
+    strategy.ground(mention, judge=judge, scope_id="s1", judge_cache=cache)
+    replayed = strategy.ground(mention, judge=judge, scope_id="s1", judge_cache=cache)
+
+    assert len(calls) == 1
+    assert replayed.grounded is not None
+    assert replayed.grounded.qid == "Q_NAMESAKE"
+    assert replayed.candidates and {c.qid for c in replayed.candidates} == {"Q_NAMESAKE", "Q_REAL"}

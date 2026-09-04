@@ -4,6 +4,25 @@ Up-link: [docs/README.md](README.md). Open limitations and non-obvious traps for
 
 ## Open
 
+### Two concurrent `starlette.testclient.TestClient` instances can deadlock inside `sqlite3.Connection.backup()` (session-isolation tests, 2026-07-16)
+Discovered writing `tests/test_session_isolation.py`: a document create launches a background
+asyncio task (`terminology_live.launch`); `TestClient` spins up a SEPARATE OS-thread "blocking
+portal" (its own private event loop) per instance/per un-entered call, so a SECOND, freshly-
+instantiated `TestClient` racing that background task's `db.current_lock()` acquisition (via
+`terminology_live._finish`) against the second client's own `db.connect()`-triggered
+`clone_golden()` reliably hung inside `golden.backup(dest_conn)` — confirmed via
+`faulthandler.dump_traceback(all_threads=True)` thread dumps during a bisection. Confirmed
+test-harness-only: the identical race through a single-event-loop `httpx.AsyncClient` +
+`httpx.ASGITransport` driving the SAME app never hangs — a real single-process `uvicorn`
+server has no multi-portal bridging, so this is not a production concern. **Workaround (not a
+code fix): any new test that creates a document via one client/session and then immediately
+touches it from a SECOND, separately-instantiated `TestClient` must drive that scenario
+through `httpx.AsyncClient(transport=httpx.ASGITransport(app=app))` + `async with
+app.router.lifespan_context(app):` instead of `starlette.testclient.TestClient` — see
+`tests/test_session_isolation.py`'s module docstring and its `_async_client` helper for the
+working pattern.** A single `TestClient` instance driving several sequential requests on its
+own is unaffected (no second portal in play).
+
 ### Translate status is lost on server restart (accepted, same class as precompute)
 `translate._status`/`translate._tasks` (2026-07-05-translator) are in-memory, keyed by `doc_id`, same as `precompute._status`. A restart mid-translation loses the visible `running`/`done`/`failed` badge and drops the reference to the asyncio task — the loop itself was already cancelled by the process exit. Recovery is a plain re-`POST /api/documents/{doc_id}/translate`: already-translated paragraphs (`target != ''`) are skipped, so it resumes rather than re-translating from scratch. Not fixed — same accepted risk as "Precompute sub-cap resets on server restart" below.
 
@@ -140,3 +159,36 @@ Same smoke run: `response_format={"type":"json_object"}` works on route `auto` a
 orthogonal, but combining the `provider-9` pin with json_object yields a deterministic 400 Bad Request from the
 upstream. Judge-style calls (strict JSON) to deepseek must use `auto` (10/10 success in the 2026-07-05 triage,
 ~equal cost); keep the pin only for plain-text roles (translation).
+
+### RESOLVED 2026-08-26: `gse-demo` had no restart policy — host reboot caused a ~7-day outage
+The host rebooted 2026-08-18 22:51. Every other container on it (`caddy`, `gse-viewer`, `bioproverka-web`) runs with `--restart unless-stopped` and came back up automatically; `gse-demo` did not, because [deploy/update-server.sh](../deploy/update-server.sh) started it via a plain `docker run -d` with no `--restart` flag, which defaults to `no`. The container stayed stopped for ~7 days (until noticed 2026-08-26), and Caddy served 502 for `gse-translation.ru` the whole time. Hot-fixed live on the server with `docker update --restart unless-stopped gse-demo && docker start gse-demo`; this is now durable in the repo — `update-server.sh`'s `docker run -d` invocation carries `--restart unless-stopped`, matching the other containers on the host, so future rebuilds and future host reboots both preserve the policy. See [deploy/README.md](../deploy/README.md) step 6.
+
+### RESOLVED 2026-07-16: migrate() clobbered an operator's current-MATRIX model choice on every restart (CRITICAL)
+`migrate()` runs on every app startup (`app.py` lifespan) and in the deploy script — not just once, on every
+container restart/redeploy. Two of its steps had an over-broad predicate: `_upsert_model_registry_and_remap`'s
+criterion remap (`WHERE model_name IS NULL OR model_name != DEFAULT_CRITERION_MODEL`) and
+`_remap_singleton_config_model_refs`'s config remap (`WHERE model_name IS NOT NULL AND model_name != DEFAULT`)
+were both meant to repoint rows still pointing at a **retired** (pre-2026-07-11) model, but `!= DEFAULT` also
+matched a **current, valid** registry model an operator had deliberately picked via Settings (e.g. gemini for a
+single criterion, or qwen left in place) — so every restart silently reverted that choice back to
+`DEFAULT_CRITERION_MODEL`. Found by code review before it hit an operator-visible incident. Fixed: both
+predicates now check `model_name NOT IN (<current MATRIX names>)` (mirrors `_prune_obsolete_model_rows`'s own
+retired-row test) — only a genuinely retired model gets remapped; any model still in `MATRIX` (including a
+non-default one) survives every migrate() run. See `src/palimpsest/webapp/migrate.py`
+(`_upsert_model_registry_and_remap`, `_remap_singleton_config_model_refs`) and
+`tests/test_model_registry_v2.py::test_operator_set_current_matrix_model_survives_migrate` /
+`test_operator_set_current_matrix_criterion_model_survives_migrate` for the durability regression coverage.
+
+### qwen/qwen3.6-27b as refiner returns empty output / times out (forced thinking) — demo uses gemini for every role
+`qwen/qwen3.6-27b` is a forced-reasoning model (`model_matrix.py`'s `reasoning="effort"` — the effort surface is
+always on, not optional the way it is for deepseek). In the refiner role — a single-pass full-paragraph rewrite —
+the model's reasoning tokens routinely exhausted the (then 2048-token) completion budget before any visible
+`target` text was emitted, so `POST /api/paragraphs/{id}/refine` either came back with empty/whitespace content
+(rejected by the existing empty-output guard, see `tests/test_refiner.py::test_refine_empty_output_is_502_and_rejected`)
+or blew past the request timeout — the refiner "money-shot" demo action was effectively dead on qwen. Discovered
+during the 2026-07-16 gemini-everywhere sprint. Fix: `DEFAULT_CRITERION_MODEL` (`model_matrix.py`) moved to
+`google/gemini-3.1-flash-lite` for every role (translator, all 3 judge criteria, refiner; grounding was already on
+it) for the EMNLP demo, and the refiner's default `max_tokens` was raised 2048→4096 as a second line of defence.
+`qwen/qwen3.6-27b` stays in `MATRIX` as an available registry model — it is simply no longer the default anywhere,
+and remains a legitimate per-role override for translator/judge criteria where reasoning latency is less
+disruptive than in the single-shot refiner call.

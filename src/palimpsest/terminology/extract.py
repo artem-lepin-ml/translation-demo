@@ -40,6 +40,13 @@ class ExtractionParseError(ValueError):
 # FROZEN 2026-07-10 for the full evaluation runs (owner decision). Category
 # field is the final edit. Do not modify without an owner-approved spec
 # amendment.
+#
+# 2026-07-17 owner-approved amendment: added the "lemma stays in the source
+# language/script" rule below. On Chinese source terms the model was
+# emitting a RUSSIAN lemma (e.g. «династия Цинь» for 秦朝), which then drove
+# grounding's ru-label search straight into a namesake (a TV series titled
+# «Династия Цинь» in Russian) instead of the real Qin dynasty. Extraction
+# scope/logic and the {surface, lemma, category} wire schema are unchanged.
 NER_SYSTEM_PROMPT = """## Role
 You are a source-criticism historian and linguist. You annotate Russian
 academic texts on ancient history and extract TERMS and PROPER NAMES.
@@ -120,6 +127,11 @@ not an exhaustive list.
   nominative case («Лагаше» → «Лагаш»); for a phrase, ALL words agree in
   the nominative («династии Цин» → «династия Цин», «авилумов» → «авилум»).
   If surface is already in the nominative, lemma equals surface.
+- lemma MUST be in the SAME language and script as surface. Never translate,
+  transliterate, or substitute a Russian/English gloss for a non-Russian
+  term. This nominative-case rule is specific to Russian's inflection; a
+  language with no grammatical case to restore (for example Chinese) has no
+  inflected form to recover, so lemma equals surface exactly for that term.
 - category labels each extracted item: use the token before the dash in the
   <categories> list above (person, place, people, title, social,
   institution, dynasty, culture, language, realia, event, deity, work,

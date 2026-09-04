@@ -12,9 +12,11 @@ from __future__ import annotations
 
 import asyncio
 import json
+import time
 
 import pytest
 
+from palimpsest.llm.client import LLMClient, LLMConfig
 from palimpsest.webapp import app as app_mod
 from palimpsest.webapp import budget, db, terminology_live, translate
 
@@ -74,7 +76,11 @@ class _FakeClient:
             raise content
         return _FakeResult(content)
 
-    config = type("Cfg", (), {"max_tokens": 2048})()
+    # `timeout` mirrors LLMConfig.timeout's real default (30.0, llm/client.py)
+    # -- terminology_live._effective_ner_timeout reads client.config.timeout,
+    # so a fake missing this attribute would AttributeError, not just
+    # silently use a wrong value.
+    config = type("Cfg", (), {"max_tokens": 2048, "timeout": 30.0})()
 
 
 def _client_for_factory(client: _FakeClient):
@@ -123,6 +129,8 @@ def _no_auto_launch(monkeypatch):
 NER_ONE_TERM = '[{"surface":"Вавилон","lemma":"Вавилон","category":"place"}]'
 NER_AMBIGUOUS_TERM = '[{"surface":"Тутмос","lemma":"Тутмос","category":"person"}]'
 NER_EMPTY = "[]"
+NER_HANA_TERM = '[{"surface":"Ханейское царство","lemma":"Ханейское царство","category":"place"}]'
+NER_THEBES_TERM = '[{"surface":"Фивы","lemma":"Фивы","category":"place"}]'
 
 
 # ── happy path: exact-label green, no judge call needed ────────────────────
@@ -187,6 +195,191 @@ def test_run_disambiguation_judge_bridge_resolves_yellow(client):
     grounded = json.loads(row["grounded_json"])
     assert grounded["qid"] == "Q2"                  # the FAKE judge's choice was honored end-to-end
     assert row["pair_accuracy"] == "green"           # "Thutmose II" located verbatim in the target
+
+
+# ── judge-decision cache scope is per-paragraph, not per-document (2026-07-17
+# regression fix) ────────────────────────────────────────────────────────────
+
+def test_run_grounding_scope_is_per_paragraph_not_document(client):
+    """Two paragraphs mention the SAME ambiguous lemma with the SAME
+    candidate QID set (both candidates' ru label is «Фивы» -- 2 exact
+    matches, escalates to the judge regardless of confirm_exact) but a
+    DIFFERENT correct referent by context -- the exact «Фивы»-in-Egypt vs
+    «Фивы»-in-Greece prod case. Before the fix, ``scope_id=doc_id`` let
+    paragraph 2 silently replay paragraph 1's cached judge decision (wrong
+    QID, alien justification); each paragraph must now get its own judge
+    call and its own answer."""
+    wd = _FakeWD(
+        hits={"Фивы": [{"id": "Q_EGYPT"}, {"id": "Q_GREECE"}]},
+        entities={"Q_EGYPT": _entity("Q_EGYPT", "Thebes, Egypt", "Фивы"),
+                  "Q_GREECE": _entity("Q_GREECE", "Thebes, Greece", "Фивы")},
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [
+            {"source": "Фивы были столицей Египта.", "target": "Thebes was the Egyptian capital."},
+            {"source": "Фивы были городом в Беотии.", "target": "Thebes was a city in Boeotia."},
+        ])
+
+        fake_client = _FakeClient([NER_THEBES_TERM, NER_THEBES_TERM])
+        client_for = _client_for_factory(fake_client)
+
+        judge_calls: list[str] = []
+
+        async def judge(conn, prompt, endpoint="grounding"):
+            judge_calls.append(prompt)
+            qid = "Q_EGYPT" if "Египта" in prompt else "Q_GREECE"
+            return {"qid": qid, "reason": "resolved from the paragraph's own context"}
+
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    # A cache-scope regression collapses this to 1 (paragraph 2 replays
+    # paragraph 1's decision instead of calling the judge again).
+    assert len(judge_calls) == 2
+
+    p1, p2 = doc["paragraphs"]
+    row1 = conn.execute("SELECT * FROM term WHERE paragraph_id=?", (p1["id"],)).fetchone()
+    row2 = conn.execute("SELECT * FROM term WHERE paragraph_id=?", (p2["id"],)).fetchone()
+    g1 = json.loads(row1["grounded_json"])
+    g2 = json.loads(row2["grounded_json"])
+    assert g1["qid"] == "Q_EGYPT"
+    assert g2["qid"] == "Q_GREECE"   # NOT reused from paragraph 1 -- the pre-fix bug
+
+
+# ── label-guess tier (live wiring, owner-approved 2026-07-17) ───────────────
+# Enables candidates.py's "label-guess" search_mode in the live pipeline: when
+# lemma/surface/cirrus/sitelink all find 0 candidates, one extra LLM call
+# guesses the entity's exact Wikidata label before the mention is given up as
+# no_candidates. Reference case: the paper's own Figure 1, «Ханейское
+# царство» (canonical Wikidata label «Хана» / "Kingdom of Hana", Q425405).
+
+def test_run_label_guess_tier_resolves_no_candidates_mention(client):
+    """All deterministic tiers find 0 hits for the raw surface/lemma; the
+    label-guess tier's guessed label ("Хана") reaches search and resolves a
+    mention that used to die as no_candidates. The guessed label doesn't
+    lexically match the surface, so this also exercises the disambiguation
+    judge escalation on top of the label-guess widened candidate."""
+    wd = _FakeWD(
+        hits={"Хана": [{"id": "Q425405"}]},          # only the GUESSED label has a hit
+        entities={"Q425405": _entity("Q425405", "Hana", "Хана", enwiki="Hana")},
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [{"source": "Ханейское царство было соседом Мари.",
+                                 "target": "The Kingdom of Hana bordered Mari."}])
+
+        guess_reply = json.dumps({"label_ru": "Хана", "label_en": None})
+        fake_client = _FakeClient([NER_HANA_TERM, guess_reply])
+        client_for = _client_for_factory(fake_client)
+        judge = asyncio.run(_judge_picks("Q425405"))  # guessed label != surface, judge escalates
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    pid = doc["paragraphs"][0]["id"]
+    row = conn.execute("SELECT * FROM term WHERE paragraph_id=?", (pid,)).fetchone()
+    assert row is not None
+    assert row["difficulty"] == "yellow"                # llm_disambiguation, not no_candidates/red
+    trace = json.loads(row["trace_json"])
+    assert trace["resolved_by"] == "llm_disambiguation"
+    assert trace["chosen_qid"] == "Q425405"
+    guess_queries = [q for q in trace["queries"] if q["kind"] == "label_guess"]
+    assert guess_queries, "expected a label_guess-tier query in the trace"
+    assert all(q["strategy"] == "guess" for q in guess_queries)   # distinguishable from "prefix"
+    # the fake LLM client is called exactly twice: NER extract, then the guess
+    assert len(fake_client.calls) == 2
+    assert fake_client.calls[1][0] == terminology_live.DEFAULT_LABEL_GUESS_SYSTEM_PROMPT
+
+
+def test_run_label_guesser_not_called_when_normal_tiers_find_candidates(client):
+    """The label-guess tier must only fire on a genuine 0-candidates miss --
+    a mention resolved by the deterministic prefix-search tier (rung 1) must
+    never reach the (LLM-backed) guesser at all."""
+    wd = _FakeWD(
+        hits={"Вавилон": [{"id": "Q23522"}]},
+        entities={"Q23522": _entity("Q23522", "Babylon", "Вавилон", enwiki="Babylon")},
+    )
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [{"source": "Вавилон был велик.", "target": "Babylon was great."}])
+
+        fake_client = _FakeClient([NER_ONE_TERM])        # only ONE reply configured -- NER
+        client_for = _client_for_factory(fake_client)
+        judge = asyncio.run(_judge_picks("Q23522"))
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    # If the guesser had been invoked it would have called .complete() a
+    # second time (returning the clamped last/only reply) -- exactly one call
+    # proves the guesser was never reached.
+    assert len(fake_client.calls) == 1
+    pid = doc["paragraphs"][0]["id"]
+    row = conn.execute("SELECT * FROM term WHERE paragraph_id=?", (pid,)).fetchone()
+    assert row["difficulty"] == "green"
+
+
+def test_run_builds_and_passes_label_guesser_into_grounder(client):
+    """Unit-level wiring check: _run constructs LabelFirstGrounding with
+    search_mode='label-guess' and a callable label_guesser -- both built from
+    the same client_for the disambiguation judge/NER call already use."""
+    captured: dict = {}
+    real_cls = terminology_live.LabelFirstGrounding
+
+    class _CapturingGrounding(real_cls):
+        def __init__(self, wd, config=None, *, label_guesser=None):
+            captured["config"] = config
+            captured["label_guesser"] = label_guesser
+            super().__init__(wd, config=config, label_guesser=label_guesser)
+
+    wd = _FakeWD()
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        mp.setattr(terminology_live, "LabelFirstGrounding", _CapturingGrounding)
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [{"source": "Ничего не найдено.", "target": "Nothing found."}])
+
+        fake_client = _FakeClient([NER_EMPTY])
+        client_for = _client_for_factory(fake_client)
+        judge = asyncio.run(_judge_picks("Q1"))
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    assert captured["config"].search_mode == "label-guess"
+    assert captured["config"].confirm_exact is True   # 2026-07-17 false-green fix, live-only opt-in
+    assert callable(captured["label_guesser"])
+
+
+def test_label_guess_call_logged_under_distinct_budget_endpoint(client):
+    """The label-guess LLM call is logged to the budget under its own
+    'label_guess' endpoint tag -- distinct from the disambiguation judge's
+    'terms_grounding' tag and the NER call's 'terms_extract' tag -- so
+    spend/call-count stay separately attributable (see
+    terminology_live._grounding_label_guess_live)."""
+    wd = _FakeWD(
+        hits={"Хана": [{"id": "Q425405"}]},
+        entities={"Q425405": _entity("Q425405", "Hana", "Хана", enwiki="Hana")},
+    )
+    logged: list[dict] = []
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(terminology_live, "WikidataClient", lambda *a, **kw: wd)
+        mp.setattr(terminology_live.budget, "log_call", lambda rec: logged.append(rec))
+        conn = db.connect()
+        _seed_grounding_config(conn)
+        doc = _mk_doc(client, [{"source": "Ханейское царство было соседом Мари.",
+                                 "target": "The Kingdom of Hana bordered Mari."}])
+
+        guess_reply = json.dumps({"label_ru": "Хана", "label_en": None})
+        fake_client = _FakeClient([NER_HANA_TERM, guess_reply])
+        client_for = _client_for_factory(fake_client)
+        judge = asyncio.run(_judge_picks("Q425405"))
+        asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    endpoints = {rec["endpoint"] for rec in logged}
+    assert "label_guess" in endpoints
+    assert "terms_extract" in endpoints              # NER's own tag, sanity check they coexist
 
 
 # ── per-paragraph failure handling ──────────────────────────────────────────
@@ -361,3 +554,115 @@ def test_terms_stub_route_removed(client):
     pid = doc["paragraphs"][0]["id"]
     r = client.post(f"/api/paragraphs/{pid}/terms")
     assert r.status_code == 404
+
+
+# ── startup sweep for stuck terms_status='running' (stability fix: Issue A) ──
+
+def test_startup_sweep_resets_stuck_running_to_none(client):
+    """app._reset_stuck_terms recovers a document left at terms_status=
+    'running' by a killed process -- called once from the FastAPI lifespan
+    right after migrate(), before any request is served. A 'done' document
+    must be left untouched."""
+    conn = db.connect()
+    running_id = _mk_doc(client, [{"source": "s1", "target": "t1"}])["id"]
+    done_id = _mk_doc(client, [{"source": "s2", "target": "t2"}])["id"]
+    conn.execute("UPDATE document SET terms_status='running' WHERE id=?", (running_id,))
+    conn.execute("UPDATE document SET terms_status='done' WHERE id=?", (done_id,))
+    conn.commit()
+
+    n = app_mod._reset_stuck_terms(conn)
+
+    assert n == 1
+    row = conn.execute("SELECT terms_status FROM document WHERE id=?", (running_id,)).fetchone()
+    assert row["terms_status"] == "none"
+    row2 = conn.execute("SELECT terms_status FROM document WHERE id=?", (done_id,)).fetchone()
+    assert row2["terms_status"] == "done"           # untouched
+
+
+def test_startup_sweep_is_noop_when_nothing_stuck(client):
+    conn = db.connect()
+    doc_id = _mk_doc(client, [{"source": "s", "target": "t"}])["id"]
+    conn.execute("UPDATE document SET terms_status='done' WHERE id=?", (doc_id,))
+    conn.commit()
+
+    assert app_mod._reset_stuck_terms(conn) == 0
+    row = conn.execute("SELECT terms_status FROM document WHERE id=?", (doc_id,)).fetchone()
+    assert row["terms_status"] == "done"
+
+
+def test_startup_sweep_leaves_failed_and_none_alone(client):
+    conn = db.connect()
+    doc_id = _mk_doc(client, [{"source": "s", "target": "t"}])["id"]
+    conn.execute("UPDATE document SET terms_status='failed' WHERE id=?", (doc_id,))
+    conn.commit()
+
+    assert app_mod._reset_stuck_terms(conn) == 0
+    row = conn.execute("SELECT terms_status FROM document WHERE id=?", (doc_id,)).fetchone()
+    assert row["terms_status"] == "failed"           # sweep only ever touches 'running'
+
+
+# ── timeout race fixes (stability fix: Issue C) ──────────────────────────────
+
+def test_ner_timeout_exceeds_sdk_client_timeout():
+    """The NER leg's wait_for ceiling must always exceed the real SDK client
+    timeout it wraps (LLMConfig.timeout, 30s default) -- otherwise wait_for
+    fires first and abandons a still-running SDK call. Exercised against a
+    REAL LLMConfig/LLMClient (no network call: constructing openai.OpenAI
+    does not touch the network), not a hardcoded number, so this stays
+    correct if either default changes."""
+    default_client = LLMClient(LLMConfig(model="m", base_url="http://x", api_key="k"))
+    assert default_client.config.timeout == 30.0    # sanity: pin the value this test reasons about
+    eff = terminology_live._effective_ner_timeout(default_client)
+    assert eff > default_client.config.timeout
+
+    # Even a client explicitly configured with a SMALL SDK timeout must not
+    # collapse the ceiling below the env-configured NER floor.
+    small_cfg = LLMConfig(model="m", base_url="http://x", api_key="k", timeout=5.0)
+    small_timeout_client = LLMClient(small_cfg)
+    eff_small = terminology_live._effective_ner_timeout(small_timeout_client)
+    assert eff_small > small_timeout_client.config.timeout
+    assert eff_small >= terminology_live._NER_TIMEOUT
+
+    # And a LARGE SDK timeout must still be cleared with the same margin.
+    large_cfg = LLMConfig(model="m", base_url="http://x", api_key="k", timeout=120.0)
+    large_timeout_client = LLMClient(large_cfg)
+    eff_large = terminology_live._effective_ner_timeout(large_timeout_client)
+    assert eff_large > large_timeout_client.config.timeout
+
+
+def test_grounding_timeout_constant_is_generous():
+    """The grounding leg's ceiling (previously absent entirely) must be
+    generous enough to comfortably outlast a normal paragraph run (NER's own
+    ceiling alone can reach ~35s; the grounding leg additionally makes
+    Wikidata network calls and zero or more judge calls) -- this is a
+    defense-in-depth ceiling, not a tight SDK-aligned one."""
+    assert terminology_live._GROUNDING_TIMEOUT >= 60.0
+
+
+def test_grounding_leg_timeout_fires_and_paragraph_fails_gracefully(client, monkeypatch):
+    """A pipeline.run() call that outlives _GROUNDING_TIMEOUT must not stall
+    the whole run forever -- the wait_for added around the to_thread call
+    fires, gets caught by _run's existing per-paragraph except, and the run
+    finishes with that paragraph simply skipped (same per-paragraph failure
+    contract the NER leg already had). Only the paragraph's OWN pipeline.run
+    is slow here; the ceiling is monkeypatched way down so the test itself
+    stays fast."""
+    monkeypatch.setattr(terminology_live, "_GROUNDING_TIMEOUT", 0.05)
+
+    def _hang(*a, **kw):
+        time.sleep(0.3)                              # outlives the 0.05s ceiling above
+        return []
+
+    monkeypatch.setattr(terminology_live.pipeline, "run", _hang)
+    conn = db.connect()
+    _seed_grounding_config(conn)
+    doc = _mk_doc(client, [{"source": "Вавилон.", "target": "Babylon."}])
+
+    fake_client = _FakeClient([NER_ONE_TERM])
+    client_for = _client_for_factory(fake_client)
+    judge = asyncio.run(_judge_picks("Q1"))
+    asyncio.run(terminology_live.run(doc["id"], client_for, judge))
+
+    got = client.get(f"/api/documents/{doc['id']}").json()
+    assert got["termsStatus"] == "failed"            # only paragraph timed out -> nothing succeeded
+    assert got["paragraphs"][0]["terms"] == []

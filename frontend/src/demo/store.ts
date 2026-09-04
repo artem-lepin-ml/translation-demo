@@ -63,6 +63,11 @@ export interface ParaEvalState {
   failedCriterionIds: CriterionId[];
   /** last /evaluate failure (network/5xx/budget cut-off); null = no error */
   error: string | null;
+  /** which operation produced `error` — drives the failure-banner label
+   *  (refine/dismiss failures used to render under "Evaluate failed:",
+   *  campaign finding T4-Н7). Optional like `refineStage` so pre-existing
+   *  test literals don't all need updating; absent reads as 'evaluate'. */
+  errorOp?: 'evaluate' | 'refine' | 'dismiss' | null;
   /** true when the paragraph text changed since these scores were computed */
   stale: boolean;
   /** Refine-in-flight phase (InspectorPanel's "Refine paragraph ✦" button);
@@ -74,6 +79,26 @@ export interface ParaEvalState {
 export interface DemoStore {
   // ── data ────────────────────────────────────────────────────────────────────
   document: Document | null;
+  /** Bumped by resetDoc() on every successful reset — a client-side-only
+   *  signal (never a wire/contract field; document.version was explicitly
+   *  rejected as a contract field, 2026-06-30-demo-contracts.md §7) that
+   *  per-paragraph History blocks can key a re-fetch off, the same way
+   *  they already re-fetch after a Restore (SUSPECTED-1, wave2). Reset
+   *  rewrites every paragraph's target/revision but keeps the same
+   *  paragraph ids, so a plain `paragraph.id`-keyed effect never re-fires. */
+  documentResetNonce: number;
+  /** Bumped after any mutation that can create a revision or change a
+   *  paragraph's scores WITHOUT already being covered by a dedicated nonce
+   *  (documentResetNonce for Reset) or an in-component re-fetch (Restore's
+   *  own handleRestore re-fetch in HistoryBlock). single-Accept is not
+   *  bumped here — it never needs to be: Accept only lives on the Issues
+   *  tab, so HistoryBlock (Scores-tab-only) is always unmounted at the
+   *  moment of a single Accept and mounts fresh (already post-mutation)
+   *  the next time the Scores tab opens (T10-F1 root-cause finding, wave
+   *  campaign). Refine, Evaluate/Retry-failed, manual edit save and
+   *  Accept-all CAN happen while the Scores tab (and HistoryBlock) stay
+   *  mounted, so they need an explicit refetch trigger — this nonce is it. */
+  historyRefreshNonce: number;
   documents: DocumentSummary[];
   criteria: Criterion[];
   models: ModelRegistryEntryPublic[];
@@ -224,6 +249,7 @@ function defaultParaEval(): ParaEvalState {
     cachedAt: null,
     failedCriterionIds: [],
     error: null,
+    errorOp: null,
     stale: false,
   };
 }
@@ -283,6 +309,12 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       },
     }));
 
+  // Shared refetch signal for InspectorPanel's HistoryBlock — see
+  // historyRefreshNonce's doc comment on the interface above for which
+  // mutations bump it and why single-Accept doesn't need to.
+  const bumpHistoryRefresh = () =>
+    set((s) => ({ historyRefreshNonce: s.historyRefreshNonce + 1 }));
+
   const setIssueStatus = (paraIdx: number, issueId: string, status: Issue['status']) =>
     set((s) => {
       const doc = s.document;
@@ -296,6 +328,8 @@ export const useDemoStore = create<DemoStore>((set, get) => {
 
   return {
   document: null,
+  documentResetNonce: 0,
+  historyRefreshNonce: 0,
   documents: [],
   criteria: [],
   models: [],
@@ -441,21 +475,65 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       await get().refreshDocuments();          // resync UI with server truth
       return;
     }
+    // Stop polling this doc SYNCHRONOUSLY on a successful DELETE (BUG-5):
+    // the precompute/translation setInterval effects (VariantA.tsx) and the
+    // store-owned terms poller are all keyed off `document`/`document.id`,
+    // and switchDocument below doesn't replace `document` until its own GET
+    // resolves — leaving a window where an already-running poller's next
+    // tick still hits the just-deleted id and 404s. Clearing `document` here
+    // (documentLoading:true avoids a picker flash) tears those effects down
+    // on the very next render instead of waiting for that trailing 404,
+    // mirroring refreshDocument's own 404-recovery path below.
+    get().stopTermsPolling();
+    set({ document: null, documentLoading: true });
     await get().refreshDocuments();
     const first = get().documents[0];
     if (first) await get().switchDocument(first.id);
+    else set({ documentLoading: false });   // no documents left — land on the picker
   },
 
   refreshDocument: async () => {
     const cur = get().document;
     if (!cur) return;
-    const doc = await getDocument(cur.id);
-    set({ document: doc });                             // paraEvalState is preserved
+    try {
+      const doc = await getDocument(cur.id);
+      // Stale-fetch guard: this action is polled every 2.5-3s (precompute /
+      // translation / terms-status pollers below all funnel through it). If
+      // the user switched documents (or backed out to the picker) while this
+      // request was in flight, a slow response for the no-longer-active
+      // document must never clobber whatever is loaded now.
+      if (get().document?.id !== cur.id) return;
+      set({ document: doc });                           // paraEvalState is preserved
+    } catch (e) {
+      // The document was deleted server-side while a poller was still
+      // hitting it — every poller above would otherwise 404 forever. Stop
+      // the store-owned terms-status interval directly (idempotent); the two
+      // setInterval-based pollers in VariantA.tsx clear themselves on their
+      // own next render once `document` goes null (their effect deps
+      // include `doc?.id`). Guarded by the same stale-fetch check so a
+      // late-arriving 404 for a document the user already left never blanks
+      // whatever they've since switched to.
+      if (String(e).includes('→ 404') && get().document?.id === cur.id) {
+        get().stopTermsPolling();
+        set({ document: null });                        // → falls back to the picker
+        void get().refreshDocuments();                   // drop the deleted doc from the list
+        return;
+      }
+      // Any other error (network blip / 5xx): leave state untouched —
+      // pollers retry on their next tick; refreshDocument has never
+      // surfaced errors to the UI.
+    }
   },
 
   // ── evaluate helpers ──────────────────────────────────────────────────────
 
   evaluateParagraph: async (paraId, paraIdx, criterionIds) => {
+    // Synchronous double-submit guard (campaign T7-№5): the button's
+    // disabled={loading} render lags a frame, so two truly simultaneous
+    // clicks (parallel OS-level dispatch) both reach here before React
+    // repaints. `loading` is set synchronously below, so whichever handler
+    // runs first closes the gate for the second.
+    if (get().paraEvalState[paraIdx]?.loading) return;
     // Spreads the previous per-paragraph state (not a fresh literal) so a
     // refineStage set by refineParagraph's chained call survives this pass —
     // otherwise "Re-scoring…" would flash back to the idle label instantly.
@@ -469,6 +547,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
           cachedAt: null,
           failedCriterionIds: [],
           error: null,
+          errorOp: null,
           stale: false,
         },
       },
@@ -491,11 +570,17 @@ export const useDemoStore = create<DemoStore>((set, get) => {
               cachedAt: ev.cachedAt,
               failedCriterionIds: ev.failedCriterionIds,
               error: null,
+              errorOp: null,
               stale: false,
             },
           },
         };
       });
+      // A completed evaluate stamps a (possibly new) score onto the current
+      // revision — HistoryBlock must refetch to pick it up if it's already
+      // mounted (T3-F4 / T10-F1: this also transitively fixes Refine, which
+      // calls evaluateParagraph internally after applying its rewrite).
+      bumpHistoryRefresh();
     } catch (e) {
       set((s) => ({
         paraEvalState: {
@@ -504,6 +589,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
             ...(s.paraEvalState[paraIdx] ?? defaultParaEval()),
             loading: false,
             error: String(e),
+            errorOp: 'evaluate',
           },
         },
       }));
@@ -543,7 +629,7 @@ export const useDemoStore = create<DemoStore>((set, get) => {
         set((s) => ({
           paraEvalState: {
             ...s.paraEvalState,
-            [paraIdx]: { ...(s.paraEvalState[paraIdx] ?? defaultParaEval()), error: String(e) },
+            [paraIdx]: { ...(s.paraEvalState[paraIdx] ?? defaultParaEval()), error: String(e), errorOp: 'refine' },
           },
         }));
       }
@@ -637,7 +723,8 @@ export const useDemoStore = create<DemoStore>((set, get) => {
             ...s.paraEvalState,
             [paraIdx]: {
               ...(s.paraEvalState[paraIdx] ?? defaultParaEval()),
-              error: `Dismiss failed: ${String(e)}`,
+              error: String(e),
+              errorOp: 'dismiss',
             },
           },
         }));
@@ -668,7 +755,14 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       if (outcome === 'applied') applied += 1;
       else if (outcome === 'outdated') outdated += 1;
     }
-    if (applied > 0) markStale(paraIdx);
+    if (applied > 0) {
+      markStale(paraIdx);
+      // Unlike single Accept, Accept-all's own button lives in the top
+      // chrome (not gated to the Issues tab), so a Scores-tab HistoryBlock
+      // can stay mounted through the whole batch — explicit refetch needed
+      // (T3-F1/T10-F1).
+      bumpHistoryRefresh();
+    }
     return { applied, outdated };
   },
 
@@ -686,7 +780,10 @@ export const useDemoStore = create<DemoStore>((set, get) => {
         return { document: { ...doc, paragraphs } };
       });
       const paraIdx = get().document?.paragraphs.findIndex((p) => p.id === paraId) ?? -1;
-      if (paraIdx >= 0) markStale(paraIdx);   // manual edits outdate scores exactly like accepts
+      if (paraIdx >= 0) {
+        markStale(paraIdx);   // manual edits outdate scores exactly like accepts
+        bumpHistoryRefresh();   // manual edit creates a new 'edit' revision (T3-F4/T10-F1)
+      }
     } catch {
       // Silently ignore; user's edit stays locally
     }
@@ -703,14 +800,19 @@ export const useDemoStore = create<DemoStore>((set, get) => {
       const activeCriteria = new Set(
         get().criteria.filter((c) => c.enabled).map((c) => c.id),
       );
-      set({
+      set((prev) => ({
         document: fresh,
         documentLoading: false,
         paraEvalState: Object.fromEntries(
           fresh.paragraphs.map((_, i) => [i, defaultParaEval()]),
         ),
         activeCriteria,
-      });
+        // SUSPECTED-1 (wave2): reset rewrites every paragraph's target/revision
+        // but reuses the same paragraph ids, so a plain `paragraph.id`-keyed
+        // History-block refetch (the existing Restore fix) never re-fires —
+        // bump this client-only nonce so it does.
+        documentResetNonce: prev.documentResetNonce + 1,
+      }));
     } catch {
       set({ documentLoading: false });
     }

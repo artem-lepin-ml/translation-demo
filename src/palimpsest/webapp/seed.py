@@ -66,12 +66,13 @@ def seed() -> None:
     conn = db.init_db(reset=True)
     ts = _now()
 
-    # model registry: all 5 curated demo/paper rows, unconditionally (2026-07-11
+    # model registry: all 4 curated demo/paper rows, unconditionally (2026-07-11
     # EMNLP sprint — MATRIX itself is now exactly the curated set, so the old
     # PALIMPSEST_SEED_DEMO "skip the dead vLLM placeholders" branch no longer
-    # applies; the one remaining vLLM row, TranslateGemma-27B, is a deliberate
-    # display-only placeholder every environment seeds the same way). Shared OR
-    # key from env goes to OpenRouter rows; the vLLM row keeps an empty key.
+    # applies; all 4 rows are OpenRouter — the sprint's original TranslateGemma-27B
+    # local vLLM placeholder was dropped once the owner finalized the registry on
+    # prod). Shared OR key from env goes to every row (is_openrouter is still
+    # checked per-row, not hardcoded, in case a non-OR row is ever added back).
     or_key = os.environ.get("OPENROUTER_API_KEY", "")
     for spec in MATRIX.values():
         conn.execute("INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
@@ -89,10 +90,20 @@ def seed() -> None:
 
     crit_rows = _criteria_rows(conn)
 
+    # Title cleaned at the source (2026-07-16, owner UI review #1) -- no
+    # "(pilot)" suffix, same reasoning as data/seed/demo_docs/mesopotamia-2
+    # .json's title. `hidden` is left at its schema default (0) here, same
+    # pattern as `terms_status` above it: migrate.py's `_curate_demo_documents`
+    # (title-prefix match) is the SINGLE place that decides hidden state, and
+    # it re-applies on every app startup (`_lifespan` -> `_migrate_db`) --
+    # exactly mirroring how `_backfill_seed_document_terms_status` finalizes
+    # this same seed row's `terms_status` to 'done' rather than seed.py
+    # setting it directly. See docs/superpowers/specs/
+    # 2026-06-30-demo-contracts.md "Document picker curation delta".
     doc_id = conn.execute(
         "INSERT INTO document(title,source_lang,target_lang,source_model,seed_model,"
         "seed_prompt_variant,version,origin,created_at) VALUES(?,?,?,?,?,?,0,'seed',?)",
-        ("Mesopotamia — ancient Near East (pilot)", "ru", "en", "gpt-5.4-mini",
+        ("Mesopotamia — ancient Near East", "ru", "en", "gpt-5.4-mini",
          "gpt-5.5-low", "v2", ts)).lastrowid
 
     rows = [json.loads(l) for l in SEED_FILE.read_text("utf-8").splitlines() if l.strip()]
@@ -235,11 +246,16 @@ def _seed_refiner_config(conn) -> None:
     """Mirrors _seed_translator_config — the refiner role (paper: "a dedicated
     refiner LLM integrates aggregated corrections in a single pass") is a
     singleton config exactly like the translator's, just for a rewrite-style
-    call instead of a first-pass draft."""
+    call instead of a first-pass draft.
+
+    max_tokens=4096 (was 2048, 2026-07-16) — mirrors migrate.py's
+    REFINER_DEFAULT_PARAMS; see docs/known_issues.md for why the refiner role
+    also moved off qwen (forced-thinking, empty output/timeout) onto the
+    gemini DEFAULT_CRITERION_MODEL the same day."""
     prompt = (paths.PROMPTS / "refiner" / "default.md").read_text(encoding="utf-8")
     conn.execute(
         "INSERT INTO refiner_config(id,model_name,prompt,params_json) VALUES(1,?,?,?)",
-        (DEFAULT_CRITERION_MODEL, prompt, json.dumps({"max_tokens": 2048, "temperature": 0.2})))
+        (DEFAULT_CRITERION_MODEL, prompt, json.dumps({"max_tokens": 4096, "temperature": 0.2})))
 
 
 def _seed_glossary(conn) -> None:

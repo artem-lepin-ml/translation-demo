@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDemoStore } from '../../store';
 import { MAX_PARAGRAPHS, MAX_PARA_CHARS } from '../../limits';
-import { ACCEPT, errorMessage, ingestFile, splitParagraphs } from './file-ingest';
+import { ACCEPT, errorMessage, ingestFile, normalizeLineEndings, splitParagraphs } from './file-ingest';
 import UploadIcon from './UploadIcon';
 
 // Mirrors precompute.py: PRECOMPUTE_PARAS (first 12 ¶) x one judge call per
@@ -75,7 +75,6 @@ export function SidePanel(props: {
 
       {active ? (
         <div className="va-ai-translate-card" data-testid="ai-translate-card">
-          <span className="glyph">✦</span>
           <div className="msg">
             Will be translated by <b>{aiTranslate!.modelName ?? 'the configured model'}</b> after upload
           </div>
@@ -90,7 +89,7 @@ export function SidePanel(props: {
           disabled={state.busy}
           placeholder={dragActive ? 'Drop file to load' : 'Paste text\nor drop a file here (.docx, .md, .txt)'}
           value={state.text}
-          onChange={(e) => onChange({ text: e.target.value, error: null })}
+          onChange={(e) => onChange({ text: normalizeLineEndings(e.target.value), error: null })}
           onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
           onDragOver={(e) => e.preventDefault()}
           onDragLeave={() => setDragActive(false)}
@@ -117,7 +116,11 @@ export function SidePanel(props: {
         <span className="va-upload-file-hint">{ACCEPT.split(',').join(' · ')}</span>
         <input ref={fileRef} type="file" accept={ACCEPT} hidden disabled={active}
                onChange={(e) => void loadFile(e.target.files?.[0])} />
-        {!active && <span className="va-upload-counter">{paras.length} ¶ · {state.text.length} chars</span>}
+        {!active && (
+          <span className="va-upload-counter" data-testid={`panel-${id}-counter`}>
+            {paras.length} ¶ · {state.text.length} chars
+          </span>
+        )}
       </div>
 
       {aiTranslate?.eligible && (

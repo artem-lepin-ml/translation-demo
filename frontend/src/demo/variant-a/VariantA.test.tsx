@@ -1,8 +1,10 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import VariantA, { selectPopoverIssues, precomputeFailedMessage } from './VariantA';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import VariantA, {
+  selectPopoverIssues, precomputeFailedMessage, precomputePartiallyFailed, precomputePartialMessage,
+} from './VariantA';
 import { useDemoStore } from '../store';
 import type { DemoStore } from '../store';
 import type { Document, Issue, Paragraph, PrecomputeStatus } from '../api-client';
@@ -88,6 +90,38 @@ describe('precomputeFailedMessage (S1 §2.6 — honest failure-reason banners)',
   });
 });
 
+describe('precomputePartiallyFailed / precomputePartialMessage (T9-F1 — mixed run must not read as silent success)', () => {
+  it('true when done, at least one succeeded, and at least one failed', () => {
+    expect(precomputePartiallyFailed(precompute({ succeeded: 7, failed: 5, done: 12 }))).toBe(true);
+  });
+
+  it('false on a clean run (failed is 0)', () => {
+    expect(precomputePartiallyFailed(precompute({ succeeded: 12, failed: 0, done: 12 }))).toBe(false);
+  });
+
+  it('false when `failed` is absent — additive field, old backends degrade to false', () => {
+    expect(precomputePartiallyFailed(precompute({ succeeded: 12, done: 12 }))).toBe(false);
+  });
+
+  it('false on total failure (succeeded===0) — that is precomputeFailed\'s case, not this one', () => {
+    expect(precomputePartiallyFailed(precompute({ succeeded: 0, failed: 12, done: 12 }))).toBe(false);
+  });
+
+  it('false while still running', () => {
+    expect(precomputePartiallyFailed({ status: 'running', done: 5, planned: 12, succeeded: 3, failed: 2 })).toBe(false);
+  });
+
+  it('false when precompute is undefined/null', () => {
+    expect(precomputePartiallyFailed(undefined)).toBe(false);
+    expect(precomputePartiallyFailed(null)).toBe(false);
+  });
+
+  it('names the warmed/failed counts and points at the per-paragraph retry affordance', () => {
+    expect(precomputePartialMessage(precompute({ succeeded: 7, planned: 12, failed: 5 })))
+      .toBe('Warmed 7/12 ¶ — 5 failed. Use Evaluate ↻ on the affected paragraphs to retry.');
+  });
+});
+
 // ─── Export menu (S6 §5 / audit-fix regression guard) ──────────────────────
 
 function makeParagraph(id: number): Paragraph {
@@ -116,6 +150,8 @@ function makeDoc(paragraphs: Paragraph[]): Document {
 function makeStore(doc: Document): DemoStore {
   return {
     document: doc,
+    documentResetNonce: 0,
+    historyRefreshNonce: 0,
     documents: [{ id: doc.id, title: doc.title, sourceLang: doc.sourceLang, targetLang: doc.targetLang, nParagraphs: doc.nParagraphs, origin: doc.origin }],
     criteria: [],
     models: [],
@@ -235,5 +271,284 @@ describe('Export control (audit-fix HIGH: dropdown items were unclickable)', () 
     expect(Number.isNaN(backdropZ)).toBe(false);
     expect(Number.isNaN(menuZ)).toBe(false);
     expect(menuZ).toBeGreaterThan(backdropZ);
+  });
+});
+
+describe('VariantA Refine/Evaluate double-submit guard (paid-LLM-call race)', () => {
+  it('fires evaluateParagraph exactly once for 3 synchronous clicks on Evaluate ↻', () => {
+    const evaluateParagraph = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([makeParagraph(1)])),
+      evaluateParagraph,
+    });
+    render(<VariantA />);
+
+    // Raw DOM .click() (not RTL's act()-wrapped fireEvent) reproduces the real
+    // race: 3 rapid clicks land before React commits the `loading` state that
+    // disables the button — same repro shape as UploadModal Step2's submit guard.
+    const btn = screen.getByTestId('evaluate-para') as HTMLButtonElement;
+    btn.click();
+    btn.click();
+    btn.click();
+
+    expect(evaluateParagraph).toHaveBeenCalledTimes(1);
+  });
+
+  it('fires refineParagraph exactly once for 3 synchronous clicks on Refine paragraph ✦', () => {
+    const refineParagraph = vi.fn().mockResolvedValue(undefined);
+    const paragraph = { ...makeParagraph(1), issues: [iss('1')] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+      refineParagraph,
+    });
+    render(<VariantA />);
+
+    const btn = screen.getByTestId('refine-paragraph') as HTMLButtonElement;
+    btn.click();
+    btn.click();
+    btn.click();
+
+    expect(refineParagraph).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Reset confirm dialog (BUG-4: truthful archive copy, frontend-developer-stability-wave1)', () => {
+  it('tells the truth: live scores/issues are archived, not lost — and drops the old "will be lost" claim', () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);   // don't actually reset
+    renderVariantA([makeParagraph(1)]);
+
+    fireEvent.click(screen.getByText('Reset'));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    const message = confirmSpy.mock.calls[0][0] as string;
+    expect(message).toContain('archived');
+    expect(message).not.toContain('will be lost');
+    confirmSpy.mockRestore();
+  });
+});
+
+describe('Document delete button — double-DELETE guard (BUG-4, frontend-developer-stability-wave2)', () => {
+  function makeUploadDoc() {
+    return { ...makeDoc([makeParagraph(1)]), origin: 'upload' as const };
+  }
+
+  it('fires deleteDoc exactly once for 3 synchronous clicks (double-bound handler / ghost click after confirm())', () => {
+    const deleteDoc = vi.fn().mockResolvedValue(undefined);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    vi.mocked(useDemoStore).mockReturnValue({ ...makeStore(makeUploadDoc()), deleteDoc });
+    render(<VariantA />);
+
+    // Raw DOM .click() (not RTL's act()-wrapped fireEvent) — same repro shape
+    // as the Evaluate/Refine double-submit guard tests above: 3 rapid clicks
+    // land before React commits any state, so only the synchronous ref guard
+    // can stop the second/third invocation.
+    const btn = screen.getByTestId('delete-doc-btn') as HTMLButtonElement;
+    btn.click();
+    btn.click();
+    btn.click();
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);   // the guard also suppresses a second confirm() prompt
+    expect(deleteDoc).toHaveBeenCalledTimes(1);
+    confirmSpy.mockRestore();
+  });
+
+  it('does not call deleteDoc when the confirm dialog is declined', () => {
+    const deleteDoc = vi.fn().mockResolvedValue(undefined);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    vi.mocked(useDemoStore).mockReturnValue({ ...makeStore(makeUploadDoc()), deleteDoc });
+    render(<VariantA />);
+
+    fireEvent.click(screen.getByTestId('delete-doc-btn'));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(deleteDoc).not.toHaveBeenCalled();
+    confirmSpy.mockRestore();
+  });
+
+  it('re-arms after the in-flight delete settles, so a later genuine second delete still works', async () => {
+    const deleteDoc = vi.fn().mockResolvedValue(undefined);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    vi.mocked(useDemoStore).mockReturnValue({ ...makeStore(makeUploadDoc()), deleteDoc });
+    render(<VariantA />);
+
+    const btn = screen.getByTestId('delete-doc-btn') as HTMLButtonElement;
+    fireEvent.click(btn);
+    await waitFor(() => expect(deleteDoc).toHaveBeenCalledTimes(1));
+
+    fireEvent.click(btn);
+    await waitFor(() => expect(deleteDoc).toHaveBeenCalledTimes(2));
+
+    confirmSpy.mockRestore();
+  });
+});
+
+describe('Refine button available from both inspector tabs (BUG-5, frontend-developer-stability-wave1)', () => {
+  it('is present when the inspector is on the Scores tab, not just Issues', () => {
+    const paragraph = { ...makeParagraph(1), issues: [iss('1')] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+      inspectorTab: 'scores',
+    });
+    render(<VariantA />);
+
+    expect(screen.getByTestId('refine-paragraph')).toBeTruthy();
+  });
+});
+
+describe('Tab isolation (BUG-2: non-active tab content is unmounted, not merely hidden, ' +
+  'frontend-developer-stability-wave1)', () => {
+  it('unmounts the Document-tab body (paragraphs + inspector) when switching to another main tab', () => {
+    renderVariantA([makeParagraph(1)]);
+    expect(screen.getByTestId('evaluate-para')).toBeTruthy();       // Document tab active by default
+    expect(screen.getByTestId('refine-paragraph')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Glossary' }));
+
+    // A stray click on where these controls used to be must hit nothing —
+    // the whole Document-tab subtree is gone from the DOM, not just hidden.
+    expect(screen.queryByTestId('evaluate-para')).toBeNull();
+    expect(screen.queryByTestId('refine-paragraph')).toBeNull();
+  });
+
+  it('unmounts the Glossary tab body when switching back to Document', () => {
+    renderVariantA([makeParagraph(1)]);
+    fireEvent.click(screen.getByRole('button', { name: 'Glossary' }));
+    expect(screen.getByText('Terminology Glossary')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Document' }));
+
+    expect(screen.queryByText('Terminology Glossary')).toBeNull();
+    expect(screen.getByTestId('evaluate-para')).toBeTruthy();
+  });
+});
+
+describe('Accept-all summary notice (T3-F1/T10-F2: honest post-accept-all outcome)', () => {
+  it('shows "N applied · M skipped" once the batch settles with some issues gone outdated, ' +
+    'and a dismiss button clears it', async () => {
+    const acceptAllIssues = vi.fn().mockResolvedValue({ applied: 1, outdated: 1 });
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const paragraph = { ...makeParagraph(1), issues: [iss('1', { paragraphId: 1 })] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+      acceptAllIssues,
+    });
+    render(<VariantA />);
+
+    fireEvent.click(screen.getByTitle('Accept all issues across all paragraphs'));
+    await waitFor(() => expect(acceptAllIssues).toHaveBeenCalledTimes(1));
+
+    const notice = await screen.findByTestId('accept-all-notice');
+    expect(notice.textContent).toContain('1 applied · 1 skipped (outdated/stale fragments)');
+
+    fireEvent.click(screen.getByTestId('accept-all-notice-dismiss'));
+    expect(screen.queryByTestId('accept-all-notice')).toBeNull();
+
+    confirmSpy.mockRestore();
+  });
+
+  it('shows no notice when the whole batch applies cleanly (outdated === 0)', async () => {
+    const acceptAllIssues = vi.fn().mockResolvedValue({ applied: 1, outdated: 0 });
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const paragraph = { ...makeParagraph(1), issues: [iss('1', { paragraphId: 1 })] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+      acceptAllIssues,
+    });
+    render(<VariantA />);
+
+    fireEvent.click(screen.getByTitle('Accept all issues across all paragraphs'));
+    await waitFor(() => expect(acceptAllIssues).toHaveBeenCalledTimes(1));
+
+    expect(screen.queryByTestId('accept-all-notice')).toBeNull();
+    confirmSpy.mockRestore();
+  });
+
+  it('no longer flatly claims "All suggestions are applied" in the confirm-dialog copy', () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const paragraph = { ...makeParagraph(1), issues: [iss('1', { paragraphId: 1 })] };
+    vi.mocked(useDemoStore).mockReturnValue({
+      ...makeStore(makeDoc([paragraph])),
+      activeCriteria: new Set(['accuracy']),
+    });
+    render(<VariantA />);
+
+    fireEvent.click(screen.getByTitle('Accept all issues across all paragraphs'));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    const message = confirmSpy.mock.calls[0][0] as string;
+    expect(message).not.toContain('All suggestions are applied');
+    confirmSpy.mockRestore();
+  });
+});
+
+describe('Precompute partial-failure notice (T9-F1: a mixed run must not silently drop the badge)', () => {
+  it('renders "Warmed X/Y ¶ — Z failed" when precompute finished with a mix of successes and failures', () => {
+    const doc = {
+      ...makeDoc([makeParagraph(1)]),
+      precompute: { status: 'done' as const, done: 12, planned: 12, succeeded: 7, failed: 5 },
+    };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.getByTestId('precompute-partial-notice').textContent)
+      .toContain('Warmed 7/12 ¶ — 5 failed');
+  });
+
+  it('does not render the partial notice when `failed` is absent (old backend, additive field)', () => {
+    const doc = {
+      ...makeDoc([makeParagraph(1)]),
+      precompute: { status: 'done' as const, done: 12, planned: 12, succeeded: 12 },
+    };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.queryByTestId('precompute-partial-notice')).toBeNull();
+  });
+
+  it('shows only the full-failure notice, never both, when succeeded===0', () => {
+    const doc = {
+      ...makeDoc([makeParagraph(1)]),
+      precompute: { status: 'done' as const, done: 12, planned: 12, succeeded: 0, failed: 12 },
+    };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.getByTestId('precompute-failed-notice')).toBeTruthy();
+    expect(screen.queryByTestId('precompute-partial-notice')).toBeNull();
+  });
+});
+
+describe('Evaluate-first-paragraphs CTA persistence (T1-F2: must survive the 5s translated-badge fade)', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('keeps the Run CTA visible after the 5s fade while the document still has no score', () => {
+    vi.useFakeTimers();
+    const paragraph = { ...makeParagraph(1) };   // aggregate: null by default
+    const doc = { ...makeDoc([paragraph]), translation: { status: 'done' as const, done: 3, total: 3 } };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.getByText(/Evaluate first paragraphs\?/)).toBeTruthy();
+
+    act(() => { vi.advanceTimersByTime(5000); });
+
+    // The "Translated N¶" text itself is allowed to fade…
+    expect(screen.queryByText(/Translated 3¶/)).toBeNull();
+    // …but the CTA that is the only path out of "Score —" must not.
+    expect(screen.getByText(/Evaluate first paragraphs\?/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Run' })).toBeTruthy();
+  });
+
+  it('drops the CTA once the document has a score, independent of the fade timer', () => {
+    const paragraph = { ...makeParagraph(1), aggregate: 8.2 };
+    const doc = { ...makeDoc([paragraph]), translation: { status: 'done' as const, done: 3, total: 3 } };
+    vi.mocked(useDemoStore).mockReturnValue(makeStore(doc));
+    render(<VariantA />);
+
+    expect(screen.queryByText(/Evaluate first paragraphs\?/)).toBeNull();
   });
 });

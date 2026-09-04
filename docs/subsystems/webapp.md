@@ -26,14 +26,14 @@ for academic and industry audiences.
 | Module | Responsibility |
 |---|---|
 | [`app.py`](../../src/palimpsest/webapp/app.py) | FastAPI entry point. Defines all HTTP routes, serialization helpers, and the async `/evaluate` loop. Orchestrates `db`, `aggregate`, and `judge`; enforces append-only score writes and the cache-fallback protocol. |
-| [`db.py`](../../src/palimpsest/webapp/db.py) | SQLite persistence. Single shared connection, threading lock, schema constant `SCHEMA`, `connect()`, `init_db()`. All writes in `app.py` are serialized through `db._lock`. |
+| [`db.py`](../../src/palimpsest/webapp/db.py) | SQLite persistence + session routing (2026-07-16, see "Session isolation" below): `connect()`/`current_lock()` resolve against a `contextvars.ContextVar` sid set by `app.py`'s ASGI middleware — golden DB, a per-session clone, or (legacy test compat) the module-global `_conn`/`_lock` pair a test monkeypatched directly. Schema constant `SCHEMA`, `init_db()` (legacy/build-time, untouched). |
 | [`aggregate.py`](../../src/palimpsest/webapp/aggregate.py) | Computes a single 0–10 aggregate from per-criterion values. Each criterion is normalized to its own `[scaleMin, scaleMax]` before weighted averaging. Used identically by seed and `/evaluate` so baseline and latest are always comparable. |
-| [`judge.py`](../../src/palimpsest/webapp/judge.py) | LLM-as-judge for a single criterion. Reads `prompts/scoring/<id>.md`, calls `LLMClient.complete()`, parses JSON (strips fences tolerantly, drops trailing commas before `}`/`]`, else falls back to the outermost `{...}` — see `_parse_json` and [known_issues.md](../known_issues.md)), returns `{value, summary, issues}` with camelCase wire shapes. `judge_one`/`scoring_system_prompt` take `source_lang`/`target_lang` (ISO code or free-text name — `lang_name` maps the 12 known codes to full names and passes anything else through as typed): every scoring prompt is prefixed with "You are evaluating a translation from {X} into {Y}." — including `(ru, en)`, which used to be byte-for-byte. Any pair other than Russian→English also gets a one-line adapter preamble ("This rubric was written for Russian→English…"); the user message labels source/translation with full language names (`[SOURCE — German]`/`[TRANSLATION — French]`). |
+| [`judge.py`](../../src/palimpsest/webapp/judge.py) | LLM-as-judge for a single criterion. The scoring-rubric body source of truth (2026-07-17 fix) is the criterion's own DB row (`criterion.prompt`) when non-empty; `prompts/scoring/<id>.md` on disk is the fallback (`_scoring_prompt(criterion_id, prompt=None)`) — `seed.py` populates the 3 built-in rows' `prompt` column verbatim from these same files, so DB-first is safe universally, not just for a custom criterion. Before this fix `_scoring_prompt` always read the file and ignored the DB row, so a custom criterion (whose id has no matching file) hit a deterministic `FileNotFoundError` on every scoring attempt — it could never actually be evaluated; `app.py::_judge_live` now threads `criterion["prompt"]` through both `scoring_system_prompt()` (token-count estimate) and `judge_one()` (the real call). Calls `LLMClient.complete()`, parses JSON (strips fences tolerantly, drops trailing commas before `}`/`]`, else falls back to the outermost `{...}` — see `_parse_json` and [known_issues.md](../known_issues.md)), returns `{value, summary, issues}` with camelCase wire shapes. `judge_one`/`scoring_system_prompt` take `source_lang`/`target_lang` (ISO code or free-text name — `lang_name` maps the 12 known codes to full names and passes anything else through as typed): every scoring prompt is prefixed with "You are evaluating a translation from {X} into {Y}." — including `(ru, en)`, which used to be byte-for-byte. Any pair other than Russian→English also gets a one-line adapter preamble ("This rubric was written for Russian→English…"); the user message labels source/translation with full language names (`[SOURCE — German]`/`[TRANSLATION — French]`). |
 | [`seed.py`](../../src/palimpsest/webapp/seed.py) | One-shot DB seeder. Drops and recreates the schema, inserts the default model, four criteria (Cultural Adaptation dropped wave-4), one document, 15 paragraphs (rebuilt by [seed-refresh](../superpowers/plans/2026-07-02-seed-refresh.md)) with `kind='seed'` baseline scores/issues, `kind='cache'` uplift scores, mock terms, and three glossary entries. `_seed_terms` still writes a placeholder `VERDICTS[i % 3]` rotation for `difficulty`/`pairAccuracy` regardless of seed content — real term verdicts only reach the `term` table via the separate `scripts/load_terms.py` step (or `make reseed`, which chains both) run after seeding; current difficulty distribution (single source of truth) is in [e2e-data.md](../testing/e2e-data.md) (see also [terminology stage doc](../stages/terminology.md)). |
 | [`precompute.py`](../../src/palimpsest/webapp/precompute.py) | Background first-pass scoring for uploaded documents (spec §5.6). Sequential, budget-guarded judge pass over the first 12 paragraphs; writes `kind='seed'`+`kind='cache'` atomically per paragraph. |
 | [`translate.py`](../../src/palimpsest/webapp/translate.py) | Background first-pass AI translation for a source-only uploaded document (2026-07-05-translator). Mirrors `precompute.py`'s status-registry/cancellation pattern; writes `paragraph.target`/`seed_target` + an `origin='translate'` revision per paragraph, rolling 2-paragraph context, budget-guarded, one retry on a transient error. See "Translate" below. |
 | [`terminology_live.py`](../../src/palimpsest/webapp/terminology_live.py) | Background live terminology pipeline (2026-07-11 EMNLP sprint): NER → Wikidata grounding → disambiguation judge → target pairing, run automatically once a document has both source and target text. Reuses the frozen [terminology module](../stages/terminology.md) unmodified — this file is LLM/DB wiring only. Persists progress on `document.terms_status` (a DB column, unlike precompute/translate's in-memory registries). See "Live terminology" below. |
-| [`migrate.py`](../../src/palimpsest/webapp/migrate.py) | Additive, idempotent schema migration for an existing (already-populated) prod DB — `CREATE TABLE IF NOT EXISTS`/guarded `ALTER TABLE`/backfill, one step per table/column: `target_revision`, `translator_config`, `grounding_config`, `glossary`, `term.trace_json`, `score.revision_id`. Runs on every app startup (FastAPI lifespan) and via `python -m palimpsest.webapp.migrate`. `db.py::SCHEMA` is still the source of truth for fresh DBs; this module exists because there is no other migration framework in the project — **every table/column added to `SCHEMA` needs a matching step here, or an already-populated prod DB never gets it** (2026-07-06: `grounding_config` shipped in `SCHEMA` without one, causing a prod 500 on `GET /api/grounding-config` — see [known_issues.md](../known_issues.md)). |
+| [`migrate.py`](../../src/palimpsest/webapp/migrate.py) | Additive, idempotent schema migration for an existing (already-populated) prod DB — `CREATE TABLE IF NOT EXISTS`/guarded `ALTER TABLE`/backfill, one step per table/column: `target_revision`, `translator_config`, `grounding_config`, `glossary`, `term.trace_json`, `score.revision_id`, `document.hidden`. Also two non-schema owner-curation steps (2026-07-16, UI review #1/#7, title-matched, never touching `score`/`issue`): `_curate_demo_documents` (hide/rename picker documents by title) and `_prune_orphan_revisions` (delete never-scored `target_revision` rows for the one curated document, see "Revision history & best" below). Runs on every app startup (FastAPI lifespan) and via `python -m palimpsest.webapp.migrate`. `db.py::SCHEMA` is still the source of truth for fresh DBs; this module exists because there is no other migration framework in the project — **every table/column added to `SCHEMA` needs a matching step here, or an already-populated prod DB never gets it** (2026-07-06: `grounding_config` shipped in `SCHEMA` without one, causing a prod 500 on `GET /api/grounding-config` — see [known_issues.md](../known_issues.md)). |
 | [`export.py`](../../src/palimpsest/webapp/export.py) | Renders a document as a parallel-text file — `.xlsx` (openpyxl, paragraph-aligned, score-colored) or `.md` (a table). No DB writes. See "Export" below. |
 | [`model_matrix.py`](../../src/palimpsest/webapp/model_matrix.py) | Single source of truth for the 8 demo models' capabilities and seed default params (`MATRIX`). Pricing is never hardcoded — fetched live from OpenRouter at runtime by `budget.py`. |
 | [`model_params.py`](../../src/palimpsest/webapp/model_params.py) | Parses a model's `params_json` and keeps only the keys that model actually supports, per `model_matrix.MATRIX`; unknown keys are silently dropped (`ConfigDict(extra="ignore")`) — this is the CAPABILITY filter (`effectiveParams` in the wire DTO), separate from the WRITE-time key whitelist in `app._validate_params_whitelist` (§ Params whitelist below). |
@@ -53,6 +53,89 @@ lets SQLite reuse a deleted row's rowid for the next insert, which would let an 
 `score.revision_id` (rev-5, nullable) points at the `target_revision` row current when that score was
 written; historical pre-rev-5 rows stay `NULL` (never backfilled — honest, not guessed).
 
+## Session isolation (2026-07-16)
+
+Full design: [docs/superpowers/specs/2026-07-16-session-isolation.md](../superpowers/specs/2026-07-16-session-isolation.md).
+Every browser hitting `glossa-mt.com` gets its **own ephemeral copy** of the demo data, so
+parallel EMNLP reviewers never see or mutate each other's documents/scores/settings, and
+never touch the owner's canonical content.
+
+**Golden + clones.** `/data/demo.db` is the **golden** template — mutated only by startup
+procedures (migrate/curate/sweep/seed) and by golden-token requests (below). A regular
+browser session gets `/data/sessions/<sid>.db`, a lazy `sqlite3` backup-API clone of golden
+(a few MB, effectively instant), opened on that session's first request and cached in
+`db._sessions: dict[sid, SessionConn(conn, lock, last_used)]`. `db._sessions_guard`
+double-checked-locks the clone-on-first-use path (real sync endpoints run in real
+anyio-pool threads, so the race on a brand-new sid's first request is real). Every session
+also gets its OWN write lock (`SessionConn.lock`, via `db.current_lock()`) instead of one
+global lock — two sessions' writes never block each other.
+
+**Routing: cookie → contextvar → `db.connect()`.** A raw ASGI middleware
+(`app.SessionMiddleware`, scoped to `/api/*` — NOT `@app.middleware("http")`/
+`BaseHTTPMiddleware`, which historically muddied contextvar propagation by running
+`call_next` in a separate task) reads/mints the `glossa_sid` cookie (UUID; missing/invalid →
+fresh `uuid4()` + `Set-Cookie: HttpOnly; Path=/; SameSite=lax; Secure; Max-Age=14400`) and
+sets it on a `contextvars.ContextVar` BEFORE the route handler runs. `db.connect()`/
+`db.current_lock()` resolve against `db.current_sid()` (the single source of truth every
+module reads for rekeying its own in-memory state too, see below): startup phase (before
+`db.set_startup_done()`) or sid `"__golden__"` → golden; a real sid → the session cache
+(clone on miss); **no sid after startup → `RuntimeError`** (fail-loud, replacing a silent
+write into golden); and — load-bearing for the existing test suite — **if the legacy
+module-global `db._conn` is not `None`** (17 test files monkeypatch `db.DB_PATH`/`db._conn`
+directly), that connection wins unconditionally, so every existing fixture keeps working
+unmodified and an entire test collapses onto one shared "session" exactly like before this
+feature existed.
+
+**Golden-token (owner's canonical-update path).** A request carrying header
+`X-Golden-Session` equal (constant-time, `hmac.compare_digest`) to env `DEMO_ADMIN_TOKEN`
+routes to sid `"__golden__"` (no cookie set) instead of a session clone — this is what keeps
+[`scripts/create_demo_docs.py`](../../scripts/create_demo_docs.py) able to add canonical
+documents through the real API+LLM pipeline (`--golden-token`/env `GLOSSA_GOLDEN_TOKEN`,
+sent on every request it makes, create AND poll). `DEMO_ADMIN_TOKEN` unset → the header is
+silently ignored, ordinary per-sid routing applies. Logs record only the FACT of a
+golden-token request, never the token value.
+
+**In-memory state, rekeyed to `(sid, doc_id)`.** Doc ids collide across sessions by
+construction (every clone starts from the same golden autoincrement counter) — the seven
+module-level dicts/sets that used to key on `doc_id` alone now key on
+`(db.current_sid(), doc_id)`: `translate._status`/`_translating`/`_tasks`,
+`precompute._status`/`_tasks`, `terminology_live._tasks`, `app._evaluating`. Without this, a
+DELETE in session B could cancel session A's live translate task for the "same" doc_id, or
+one session's evaluate-in-flight guard could false-positive/leak against another's.
+Background pipelines (translate/precompute/terminology_live) capture `conn = db.connect()`
+once at task start and thread it through explicitly — `asyncio.create_task`/
+`asyncio.to_thread`/the anyio sync-endpoint pool all copy contextvars, so a second
+`db.current_sid()` call deep inside a background task still resolves to the SAME session
+that launched it.
+
+**TTL sweep + startup wipe.** The FastAPI lifespan wipes `/data/sessions/*` (glob
+`<sid>.db*`, including `-wal`/`-shm`) before flipping `db.set_startup_done()` — "restart = a
+fresh stand for everyone" (owner decision). A background task then sweeps every 15 minutes:
+a session idle (`SessionConn.last_used`) over 4 hours is closed + unlinked, UNLESS its sid
+appears in any of `translate._tasks`/`_translating`/`terminology_live._tasks`/
+`precompute._tasks` (a live background task) — this is a timeout-margin + task-skip
+heuristic, not a structural lock guarantee, documented honestly as such in the spec. A
+closed session's `(sid, doc_id)` keys are purged from all seven structures above
+(`app._purge_session_state`). Since a long-running background task doesn't naturally
+re-trigger `connect()`/`current_lock()`'s own `last_used` bump between paragraphs, each
+module's per-paragraph write helper calls `db.touch(sid)` explicitly.
+
+**What stays global (deliberately).** Budget tracking (spend cap, call cap — one shared
+OpenRouter key), LLM clients/HTTP pools, and the Wikidata client's politeness/rate-limit
+state are NOT session-scoped — see the spec's "Что остаётся глобальным" section for why.
+
+**Data invariant.** "Never delete score/issue" (`.claude/rules/invariants.md`) applies to
+GOLDEN in full force — golden mutates only via startup procedures and golden-token
+requests. A session clone's deletion on TTL/restart is not a deletion of canonical
+predictions (owner decision, 2026-07-16); within a session the existing semantics are
+unchanged (Reset archives, no `DELETE FROM score/issue` anywhere).
+
+**Ops.** Deploy (`rsync`) is unaffected — `/data` stays excluded, session clones live under
+`/data/sessions` and are wiped on every restart/redeploy anyway. See
+[deploy/README.md](../../deploy/README.md) for the env vars and the former deploy-script
+steps this feature moved into `migrate.py` (temperature pin) or found already redundant
+(criterion retirement).
+
 ### Frontend (`frontend/src/demo/variant-a/`)
 
 | Component | Role |
@@ -61,12 +144,12 @@ written; historical pre-rev-5 rows stay `NULL` (never backfilled — honest, not
 | [`DocumentPicker.tsx`](../../frontend/src/demo/variant-a/DocumentPicker.tsx) | Landing view (EMNLP sprint) — one card per `DocumentSummary` (title, lang pair, paragraph count, a `termsStatus`-derived status dot/line via `termsStatusPresentation`) plus a trailing dashed "Blank document" card that opens `UploadModal` with AI-translate pre-selected (`openUploadModal({aiTranslateDefault: true})`). Card meta is derived from real `DocumentSummary` fields only — the DTO carries no per-document judge-score/finding counts, so the status line reflects `termsStatus`, not a fabricated count. Zero documents renders just the blank card (not an error — see "Subtleties"). |
 | [`lang.ts`](../../frontend/src/demo/lang.ts) | `langLabel`: dictionary → `Intl.DisplayNames` for BCP-47-like codes → free text passed through capitalized; `isBcp47Like` is the shared shape detector. |
 | [`EditorParagraph.tsx`](../../frontend/src/demo/variant-a/EditorParagraph.tsx) | Aligned paragraph row: read-only source text (`dir="auto"`) with term highlights; TipTap-editable translation (`dir="auto"`) with underline decorations from `review-extension`. Column language is per-document, not hardcoded. Source and translation use unified typography (15px / line-height 1.85) — shared baseline for the first line. Meta-strip with a compact horizontal chip (`§N + score + Δ + cached`, testid `para-meta`/`score-chip`) above the paragraph body — the left gutter is gone; chip band colours green/yellow/red are styled. Hovering the chip (native `title` tooltip, `buildScoreChipTooltip`) reveals the aggregate plus a per-enabled-criterion breakdown and cached/stale provenance notes; any criterion without a value yet shows `…` while a rescore is in flight or `—` once genuinely absent, never a blank/undefined line. |
-| [`InspectorPanel.tsx`](../../frontend/src/demo/variant-a/InspectorPanel.tsx) | Right-side panel for the selected paragraph — Issues / Scores tabs, per-criterion cards and score bars with prev/baseline deltas. Header carries "Refine paragraph ✦" (EMNLP sprint, `data-testid="refine-paragraph"`; replaces the old per-paragraph "Accept all" batch-splice button — the doc-level "Accept all across all paragraphs" chrome button is unchanged and still uses `acceptAllIssues`): disabled with tooltip "No open findings" when the paragraph has no open issues; otherwise calls `store.refineParagraph`, which shows "Refining…" then "Re-scoring…" (`evalState.refineStage`) and disables Accept/Dismiss/Evaluate/Retry-failed for the duration. |
+| [`InspectorPanel.tsx`](../../frontend/src/demo/variant-a/InspectorPanel.tsx) | Right-side panel for the selected paragraph — Issues / Scores tabs, per-criterion cards and score bars with prev/baseline deltas. Header carries "Refine paragraph ✦" (EMNLP sprint, `data-testid="refine-paragraph"`; replaces the old per-paragraph "Accept all" batch-splice button — the doc-level "Accept all across all paragraphs" chrome button is unchanged and still uses `acceptAllIssues`; shown on **both** the Issues and Scores tabs — stability fix, 2026-07-16, was gated to the Issues tab only, so a reviewer parked on Scores had no way to trigger a refine pass without switching tabs first): disabled with tooltip "No open findings" when the paragraph has no open issues; otherwise calls `store.refineParagraph`, which shows "Refining…" then "Re-scoring…" (`evalState.refineStage`) and disables Accept/Dismiss/Evaluate/Retry-failed for the duration. |
 | [`IssuePopover.tsx`](../../frontend/src/demo/variant-a/IssuePopover.tsx) | Floating popover on an underlined segment — shows issues for that span, Accept / Dismiss actions. |
 | [`IssuesPanel.tsx`](../../frontend/src/demo/variant-a/IssuesPanel.tsx) | Full-document issue list grouped by paragraph, filtered by active criteria. |
 | [`TermPopover.tsx`](../../frontend/src/demo/variant-a/TermPopover.tsx) | Floating popover for a hovered term — Wikidata grounding, difficulty signal, pair accuracy. |
-| [`GlossaryTab.tsx`](../../frontend/src/demo/variant-a/GlossaryTab.tsx) | Grouped glossary (wave-5 redesign, [spec](../superpowers/specs/2026-07-05-glossary-redesign-impl.md)): terms grouped by `(lemma, entity)` via [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts), 7 data columns + chevron (Difficulty/Pair/Source/Translation/Wikidata/Grounding/Mentions), accordion row expansion into Context RU/EN, a 4-step grounding-path stepper (QUERY→SEARCH→LABEL MATCH→DECISION, fed by the `Term.traceJson` wire field — [contracts spec §1](../superpowers/specs/2026-06-30-demo-contracts.md), degrades gracefully to a no-trace render when a term's `trace_json` is `{}`, e.g. rows never touched by `scripts/enrich_seed_terms.py`), candidates table, judge-decision card, and an all-mentions list with click-to-navigate to the paragraph. Empty state (zero terms) is `termsStatus`-aware (EMNLP sprint, `termsStatusEmptyMessage`, also reused for the top-chrome Terms chip tooltip — single source of truth): `running` → "Terminology pipeline is running — terms appear as paragraphs complete."; `failed` → "Terminology extraction failed for this document."; `none`/absent/zero-terms-on-`done` → "No terminology extracted for this document." (was an unconditional "precomputed offline… seeded pilot document" string). |
-| [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts) | Pure grouping/badge-resolution logic for `GlossaryTab`: `groupTerms` (lemma/stem-fallback grouping, worst-of difficulty/pair aggregation) and `resolveBadge` (strict rule-priority grounding badge: label-match / LLM / LLM-rejected / no-candidates). See [known_issues.md](../known_issues.md) "Glossary grouping's Russian stemmer fallback". |
+| [`GlossaryTab.tsx`](../../frontend/src/demo/variant-a/GlossaryTab.tsx) | Grouped glossary (wave-5 redesign, [spec](../superpowers/specs/2026-07-05-glossary-redesign-impl.md)): terms grouped by `(lemma, entity)` via [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts), 7 data columns + chevron (Difficulty/Pair/Source/Translation/Wikidata/Grounding/Mentions), accordion row expansion into Context RU/EN, a 4-step grounding-path stepper (SEARCH→CANDIDATES→EXACT→DECISION, fed by the `Term.traceJson` wire field — [contracts spec §1](../superpowers/specs/2026-06-30-demo-contracts.md), degrades gracefully to a no-trace render when a term's `trace_json` is `{}`, e.g. rows never touched by `scripts/enrich_seed_terms.py`), candidates table, judge-decision card, and an all-mentions list with click-to-navigate to the paragraph. **Trace shape fix (stability fix, 2026-07-16):** the stepper/Matched-column/judge-reason code originally read a nested `{query, search, label_match, decision}` shape (`TraceStep`) that the live pipeline never actually emits — `label_first.py::_result` writes a flat `{queries, search_source, candidates, exact_matches, judge, chosen_qid, ...}` shape instead (see `terminology.md`'s trace docs), so every one of those UI elements silently rendered "Skipped — no trace" / a permanent "—" Matched column for every real term. `stepPresentation`/`candidatesForDisplay`/the judge-reason lookup now read the real flat fields (`TraceJson`'s `queries`/`candidates`/`exact_matches`/`judge`); the old nested `TraceStep` type is kept only as `resolveBadge`'s heuristic fallback, not for rendering. The Candidates table's MATCHED column now reads `trace_json.candidates[].matched` (falls back to the plain `Term.candidates` `WikidataRef[]` list, with an honest "—" instead of a fake "none", only for legacy/seed rows with `trace_json={}`) — the previous `matched_via` field it read never existed on the wire DTO. Empty state (zero terms) is `termsStatus`-aware (EMNLP sprint, `termsStatusEmptyMessage`, also reused for the top-chrome Terms chip tooltip — single source of truth): `running` → "Terminology pipeline is running — terms appear as paragraphs complete."; `failed` → "Terminology extraction failed for this document."; `none`/absent/zero-terms-on-`done` → "No terminology extracted for this document." (was an unconditional "precomputed offline… seeded pilot document" string). |
+| [`glossary-grouping.ts`](../../frontend/src/demo/variant-a/glossary-grouping.ts) | Pure grouping/badge-resolution logic for `GlossaryTab`: `groupTerms` (lemma/stem-fallback grouping, worst-of difficulty/pair aggregation) and `resolveBadge` (strict rule-priority grounding badge: label-match / LLM / LLM-rejected / no-candidates). **Red-dot poisoning fix (stability fix, 2026-07-16):** `groupTerms`' worst-of `difficulty` aggregation used to fold every mention merged into a group, including an ungrounded raw-lemma sibling pulled in purely for lemma-dedup — so a single-candidate merge could paint an otherwise-cleanly-grounded group's headline dot red/yellow even though every mention actually resolved to that group's `qid` was fine. `buildFields` now takes the group's `qid` and, when set, aggregates `difficulty` only over mentions whose own `grounded.qid` matches it (an ungrounded group, `qid=null`, is unaffected — still folds every mention as before); `pair` aggregation is untouched since a red-difficulty mention already has `pairAccuracy=null` by contract. See [known_issues.md](../known_issues.md) "Glossary grouping's Russian stemmer fallback". |
 | [`RankingTab.tsx`](../../frontend/src/demo/variant-a/RankingTab.tsx) | Sortable table of paragraphs by aggregate score, issue count, or per-criterion score. Click navigates to the paragraph. Column header `Translation snippet` (was `Target snippet`). |
 | [`SettingsTab.tsx`](../../frontend/src/demo/variant-a/SettingsTab.tsx) | Five titled sections — **1. Model Registry, 2. Translator, 3. Judges, 4. Grounding, 5. Refiner** — under a sticky left mini-nav (anchor links; collapses to a horizontal bar above the content under 900px). `BudgetLine` renders as a slim unnumbered status strip above the sections (`data-testid="budget-line"`, e.g. "Budget: $0.18 / $2.00 · 51/200 calls"; fetches `GET /api/budget` on mount; muted normally, yellow past 50% of either the $ cap or the call cap, red past 80% — `budgetBand`, `Math.max` of both shares). Criterion editor (prompt preview, scale, weight, color, enabled toggle) — section 3's user-visible copy reads "Judges" (was "Evaluators"; `data-testid`s and internal identifiers such as `EvaluatorEditor`/`AddEvaluatorModal` keep the old `evaluator*` names, so other tests referencing them are unaffected) — and model registry manager, both fully open to every caller, no lock state. "+ Add judge" and "+ Add model" open dedicated modals (see "Add Evaluator / Add Model modals" above) instead of a phantom row or `window.prompt`. Model Registry table adds a **Host** column (`deriveHost`: "openrouter" / "local vLLM" / raw hostname, derived from `baseUrl`, never hardcoded per model) and a **Roles** badge column (`modelRoleUsage`, computed live from criteria + translator/grounding/refiner config — "default · all roles" when a model backs all 4, else the referencing subset, else a dash). The new **Refiner** section mirrors the Translator card (model select from the registry, prompt via the shared `PromptEditor`, read-only params via `ParamsInline`) via `getRefinerConfig`/`updateRefinerConfig` (`GET`/`PUT /api/refiner-config`, mirrors `translator-config`'s client shape); like Translator/Grounding it degrades to an "unavailable" affordance on a null/failed fetch rather than blanking the tab. A 409 from Remove (criterion has score/issue history) is caught and rendered inline in the expanded editor via `va-inspector-warning`, suggesting disable instead. |
 | [`review-extension.ts`](../../frontend/src/demo/variant-a/review-extension.ts) | TipTap/ProseMirror extension. Computes stacked underline decorations for issues; click handler for segment selection. Renders EN term spans on the `pairAccuracy` traffic-light via `verdict-{color}` class + `data-verdict` attr (null verdict → neutral dotted span, no color, no dot — never coerced to green); the verdict dot itself is a separate `Decoration.widget` anchored at the term's end (not a span pseudo-element), so a judge underline that splits the span into multiple DOM fragments can't render the dot more than once. RU-side difficulty stays on `difficulty-*` in `SourceWithTerms`/`TermPopover` — a separate signal (Wikidata grounding vs. pair accuracy), not unified into one scheme. Repeated `targetSurface` occurrences anchor via a per-paragraph claim registry: terms are processed in array order and each claims the first free EN occurrence of its surface, skipping any occurrence that overlaps a range an earlier term already claimed (prevents a shorter surface, e.g. "York", from matching inside a longer already-decorated term, e.g. "New York"). |
@@ -74,7 +157,7 @@ written; historical pre-rev-5 rows stay `NULL` (never backfilled — honest, not
 | [`upload/file-ingest.ts`](../../frontend/src/demo/variant-a/upload/file-ingest.ts) | Client-side file → text ingestion: `.docx` via `POST /api/documents/extract-text`, `.txt`/`.md` via `FileReader` + UTF-8 with a `windows-1251` retry on mis-decode; `splitParagraphs` (blank-line split, SSOT for both the counters and the server payload). After decoding, `decodeText` rejects the result (throws the existing 422 "corrupted file" error) if more than 10% of characters (excluding `\n`/`\t`) are control/non-printable — catches binary files that decode without a `�` but aren't actually text. |
 | [`upload/md-strip.ts`](../../frontend/src/demo/variant-a/upload/md-strip.ts) | Markdown → plain text for `.md` uploads: strips headings/emphasis/links/images/HTML/quotes/rules/code-fence markers, converts table rows to `cell — cell`. |
 
-State management: Zustand store ([`store.ts`](../../frontend/src/demo/store.ts)) with actions including (non-exhaustive) `init` (documents/criteria/models only — no auto-open), `backToPicker`, `evaluateParagraph`, `refineParagraph` (EMNLP sprint — refiner pass + chained re-score), `acceptIssue`, `applyIssueEdit`, `acceptAllIssues` (now doc-level "Accept all" only), `dismissIssue`, `saveParagraphTarget`, `resetDoc`, `switchDocument`, `createDoc`, `deleteDoc`, `refreshDocument` (precompute/translation/terms-status badge polling), `startTermsPolling`/`stopTermsPolling` (store-owned single interval, idempotent — EMNLP sprint), `openUploadModal` (optional `{aiTranslateDefault}`)/`closeUploadModal`, and CRUD actions for criteria/models (`addCriterion`, `saveCriterion`, `removeCriterion`, `addModel`, `saveModel`, `removeModel`, `testModel`).
+State management: Zustand store ([`store.ts`](../../frontend/src/demo/store.ts)) with actions including (non-exhaustive) `init` (documents/criteria/models only — no auto-open), `backToPicker`, `evaluateParagraph`, `refineParagraph` (EMNLP sprint — refiner pass + chained re-score), `acceptIssue`, `applyIssueEdit`, `acceptAllIssues` (now doc-level "Accept all" only), `dismissIssue`, `saveParagraphTarget`, `resetDoc`, `switchDocument`, `createDoc`, `deleteDoc`, `refreshDocument` (precompute/translation/terms-status badge polling — stale-fetch guard and 404 handling, see Subtleties below), `startTermsPolling`/`stopTermsPolling` (store-owned single interval, idempotent — EMNLP sprint), `openUploadModal` (optional `{aiTranslateDefault}`)/`closeUploadModal`, and CRUD actions for criteria/models (`addCriterion`, `saveCriterion`, `removeCriterion`, `addModel`, `saveModel`, `removeModel`, `testModel`).
 API client functions: `getDocuments`, `getDocument`, `createDocument`, `deleteDocument`, `extractText`, `evaluate`, `applyEdit`, `refineParagraph` (EMNLP sprint), `resetDocument`, and the full CRUD surface for criteria and models.
 
 ## REST surface
@@ -97,14 +180,14 @@ Full request/response shapes are in the contracts spec. Compact route table:
 | PATCH | `/api/issues/{iid}` | Persist reviewer dismiss/undo; accepted only via apply-edit |
 | POST | `/api/documents/{doc_id}/reset` | Reset to seed state |
 | GET | `/api/criteria` | List criteria |
-| POST | `/api/criteria` | Create criterion; `weight` validated `0..1` → 422; trimmed `name` and `prompt` must be non-empty → 422 (POST-only — PUT carries live per-keystroke field edits, where a transiently empty name must not fail) |
+| POST | `/api/criteria` | Create criterion; `weight` validated `0..1` → 422; trimmed `name` and `prompt` must be non-empty → 422 (POST-only — PUT carries live per-keystroke field edits, where a transiently empty name must not fail). A criterion created this way is now actually evaluable (2026-07-17 fix — see `judge.py` above; before it, every custom criterion's first scoring attempt raised `FileNotFoundError`) |
 | PUT | `/api/criteria/{cid}` | Full-replace criterion; `weight` validated `0..1` → 422 |
 | DELETE | `/api/criteria/{cid}` | Delete criterion; 409 if referenced by score/issue history |
 | GET | `/api/models` | List models (api key masked: first 4 chars + ellipsis) |
-| POST | `/api/models` | Register model; `params` must be a JSON object → 422 (an array/number/null/string used to 500 in the secret-key guard or, for a bare string, corrupt the registry badge) |
+| POST | `/api/models` | Register model; `params` must be a JSON object → 422 (an array/number/null/string used to 500 in the secret-key guard or, for a bare string, corrupt the registry badge); a duplicate `name` is 409 with a human `{"error": "A model with this name already exists"}` (2026-07-17 fix — the shared `sqlite3.IntegrityError` handler used to echo the raw SQLite text, `"UNIQUE constraint failed: model.name"`, verbatim; every other constraint violation still gets that raw-text fallback) |
 | PUT | `/api/models/{name:path}` | Update model; `params` must be a JSON object → 422 (same rule as POST); omitting `apiKey` preserves existing key |
 | DELETE | `/api/models/{name:path}` | Delete model if not referenced by any criterion |
-| POST | `/api/models/{name:path}/test` | Real term-extraction probe against seed paragraph idx=1; spends real money like other `/api/models` mutations |
+| POST | `/api/models/{name:path}/test` | Real term-extraction probe against seed paragraph idx=1; spends real money like other `/api/models` mutations. The error-path `message` is redacted (`redact_error` + a local `user_id`-specific regex, 2026-07-17 fix) — a provider error body can echo an internal id (e.g. OpenRouter's `'user_id': 'user_3DSj...'`), which this is the only place in `app.py` that puts a raw exception message directly in front of the UI |
 | GET | `/api/budget` | Spend snapshot (spent/cap/calls) |
 | POST | `/api/budget/reset` | Reset the in-process spend/call counters |
 | GET | `/api/paragraphs/{pid}/revisions` | Revision history for a paragraph, newest first, with the best-scored one flagged (rev-5) |
@@ -112,7 +195,7 @@ Full request/response shapes are in the contracts spec. Compact route table:
 | GET/PUT | `/api/grounding-config` | Singleton grounding config (model/prompt/params) used by `_grounding_judge_live` |
 | GET/PUT | `/api/translator-config` | Singleton translator config (model/prompt/params), mirrors `/api/grounding-config` (rev-5) |
 | POST | `/api/documents/{doc_id}/translate` | Kick off/resume background AI translation of empty paragraphs; 403 for `origin='seed'`, 409 in-progress/no-config/budget (rev-5) |
-| GET | `/api/documents/{doc_id}/export` | `?format=xlsx\|md` — download a parallel-text file (rev-5) |
+| GET | `/api/documents/{doc_id}/export` | `?format=xlsx\|md` — download a parallel-text file (rev-5); `format` is case-insensitive (`MD`/`Xlsx` etc., 2026-07-17 fix) |
 
 **Security note:** every mutating route above is open to any caller with network access to the backend — the demo has no write-side auth (admin-token gating was removed in wave-4; the owner decided Settings should be open to everyone).
 
@@ -134,7 +217,7 @@ Both modals surface server errors inline in the modal body rather than failing s
 
 Rolling the settings-rework branch onto the live server **never reseeds the DB** — `seed()` drops the whole SQLite file, destroying uploads, history, and any keys stored in model rows. The registry is cleaned with a targeted DELETE instead. Full procedure and rationale: [settings-rework spec §6](../superpowers/specs/2026-07-02-settings-rework.md).
 
-**Current update procedure (rev-5, wave-5):** [deploy/update-server.sh](../../deploy/update-server.sh) automates a `dev-demo` rollout onto the owner's server (`72.56.109.228`) — git pull, frontend build, `demo.db` backup, image rebuild + restart of ONLY the `gse-demo` container, running `python -m palimpsest.webapp.migrate` against the live DB before it starts serving, disabling the retired `cultural` criterion (`UPDATE`, never `DELETE`), and forcing `temperature: 0` on the demo model rows via the live API. See [deploy/README.md](../../deploy/README.md) for the full step list and env vars.
+**Current update procedure (rev-5, wave-5; steps re-scoped 2026-07-16 for session isolation):** [deploy/update-server.sh](../../deploy/update-server.sh) automates a `dev-demo` rollout onto the owner's server (`72.56.109.228`) — git pull, frontend build, `demo.db` backup, image rebuild, running `python -m palimpsest.webapp.migrate` against the live DB before the new container starts serving, restart of ONLY the `gse-demo` container, and a boot-critical smoke test. Migrate itself now retires the `cultural` criterion (`_reduce_to_three_criteria`, `UPDATE`/archive, never `DELETE`) AND pins each model's own MATRIX temperature on the demo model rows (`_pin_demo_model_temperature`, idempotent, every run — `temperature: 0.7` on 3 of the 4 rows, `1.0` on `deepseek/deepseek-v4-flash` per the published paper's vendor-recommended-temperature note) — both used to be separate post-serving steps in this script (a live-API `UPDATE`/`PUT` loop with no cookie), moved into `migrate.py` because under session isolation an unauthenticated post-serving write like that would silently land in a one-off session clone instead of golden. The script has NO post-serving API mutations left. See [deploy/README.md](../../deploy/README.md) for the full step list, env vars, and `/data/sessions`.
 
 1. **Backup first** (cheap, one file): `cp /opt/gse-demo/data/demo.db /opt/gse-demo/data/demo.db.bak`.
 2. **FK pre-check — must return 0, otherwise stop:**
@@ -171,7 +254,9 @@ The latest score shown to the user is determined from `kind IN ('seed', 'live')`
 
 **Error redaction.** The `error` field logged at both `_judge_live` sites is passed through `secrets_guard.redact_error()` before it reaches `budget_calls.jsonl` — `openai.AuthenticationError`'s message echoes a bad API key back verbatim ("Incorrect API key provided: sk-..."), so the raw exception text is not safe to log as-is. `redact_error` masks `sk-`/`sess-`/`pk-`-style keys and other long opaque token-like runs, and caps the message to 300 chars. See [known_issues.md](../known_issues.md) "RESOLVED 2026-07-02: API key leaked verbatim".
 
-**Cache fallback protocol:** if every LLM judge in `/evaluate` raises an exception (after its retries are exhausted), the endpoint reads `kind='cache'` rows and returns them tagged `cached=true`. The cached response reports `failedCriterionIds: []` — every criterion received a cached value, so nothing failed from the client's view (the live judges that raised are an internal detail). If no cache rows exist either, the endpoint falls through to the normal response and returns the paragraph's existing `kind IN ('seed','live')` scores unchanged, with `cached=false` (not an empty result). This means the app remains usable without a live API key.
+**Cache fallback protocol:** if every LLM judge in `/evaluate` raises an exception (after its retries are exhausted), the endpoint reads `kind='cache'` rows and returns them tagged `cached=true`. If no cache rows exist either, the endpoint falls through to the normal response and returns the paragraph's existing `kind IN ('seed','live')` scores unchanged, with `cached=false` (not an empty result). This means the app remains usable without a live API key.
+
+`failedCriterionIds` on a cached response (2026-07-17 fix) distinguishes **why** the fallback happened: `[]` on the pristine no-key path — `_judge_live`'s own `RuntimeError("no api key for model")`, raised before any network attempt, for every failing criterion — since nothing genuinely "ran"; the real failed criterion ids when live judges actually reached the provider and every one of them failed (auth error, timeout, parse error, budget exhaustion). Before this fix `_cache_response` hardcoded `[]` unconditionally, so a full live-judge outage silently looked identical to an ordinary cache read.
 
 **Dismissed/accepted issues are not resurrected on re-judge.** Before inserting a fresh `kind='live'`, `status='open'` issue row, `/evaluate` checks whether a `dismissed` or `accepted` issue (`status IN ('accepted','dismissed')`) already exists for the same `paragraph_id` + `criterion_id` + `target_fragment`; if so, the insert is skipped. This prevents a re-judge from re-surfacing a fragment the reviewer already dismissed or accepted as a brand-new open duplicate sitting next to the closed one. A genuinely different fragment on the same criterion/paragraph still inserts normally. The guard is deliberately narrow: `superseded`/`archived`/`outdated` rows are NOT user decisions, so they must not block re-detection — see the prediction-preservation invariant below.
 
@@ -193,9 +278,11 @@ A dismiss failure (the PATCH didn't confirm) rolls the status back to `open` AND
 
 ## Precompute
 
-`POST /api/documents` sets the in-memory precompute status via `precompute.mark_skipped(doc_id)` or `precompute.mark_started(doc_id, n_paragraphs)` (the latter sets `{status: 'running', done: 0, planned: min(N, 12), succeeded: 0}`) **before** building the response dict, so the 201 body's `document.precompute` field always reflects the real status immediately — never `null`. The background task itself is started via `precompute.launch(doc_id, _judge_live)` (`precompute=true` only), which wraps `asyncio.create_task(run(doc_id, judge_live))` and keeps a strong reference in `precompute._tasks[doc_id]` (an `asyncio.Task` is otherwise only weakly held and can be garbage-collected mid-run); `launch` is called after the response dict is built. `create_document` never touches `precompute._status`/`precompute._tasks` directly — `mark_started`/`launch` are the only entry points. It scores the first 12 paragraphs sequentially (not `gather`), writing `kind='seed'` (baseline scores + open issues) and `kind='cache'` (fallback copies) atomically per paragraph. Every call goes through `budget.reserve()`/`settle()` plus a global sub-cap (`PALIMPSEST_PRECOMPUTE_CALLS`, default 80) checked-and-incremented under `budget._lock` before each call — no second locking scheme. Before each paragraph write, the loop re-checks **inside** `db._lock` that (a) the document still exists and (b) no score rows exist yet for that paragraph (TOCTOU guard): if the document was deleted, or a live `/evaluate` raced ahead, during the LLM calls, the precompute results for that paragraph are discarded, never written. In-memory status (`{status, done, planned, succeeded}`, `status` one of `running|done|stopped|skipped`) is exposed via `document.precompute` in the DTO for `origin='upload'` docs and lost on process restart. `succeeded` counts paragraphs whose scores were actually written (or already present); a run that was requested but ends with `succeeded == 0` (e.g. every judge call failed for want of an API key) is surfaced in the document view as a dim inline notice pointing the user at the per-paragraph "Evaluate ↻" affordance — without it the failure was silent: unexplained "—" score chips.
+`POST /api/documents` sets the in-memory precompute status via `precompute.mark_skipped(doc_id)` or `precompute.mark_started(doc_id, n_paragraphs)` (the latter sets `{status: 'running', done: 0, planned: min(N, 12), succeeded: 0, failed: 0}`) **before** building the response dict, so the 201 body's `document.precompute` field always reflects the real status immediately — never `null`. The background task itself is started via `precompute.launch(doc_id, _judge_live)` (`precompute=true` only), which wraps `asyncio.create_task(run(doc_id, judge_live))` and keeps a strong reference in `precompute._tasks[doc_id]` (an `asyncio.Task` is otherwise only weakly held and can be garbage-collected mid-run); `launch` is called after the response dict is built. `create_document` never touches `precompute._status`/`precompute._tasks` directly — `mark_started`/`launch` are the only entry points. It scores the first 12 paragraphs sequentially (not `gather`), writing `kind='seed'` (baseline scores + open issues) and `kind='cache'` (fallback copies) atomically per paragraph. Every call goes through `budget.reserve()`/`settle()` plus a **per-session** sub-cap (`PALIMPSEST_PRECOMPUTE_CALLS`, default 80, 2026-07-17 fix — `budget._STATE["precompute_calls"]` is a `{sid: count}` dict, keyed by `db.current_sid()` like every other precompute in-memory structure; before the fix it was a single process-global int, so two concurrent isolated sessions shared one budget and one session's warming could silently exhaust the other's slots) checked-and-incremented under `budget._lock` before each call — no second locking scheme. Before each paragraph write, the loop re-checks **inside** `db._lock` that (a) the document still exists and (b) no score rows exist yet for that paragraph (TOCTOU guard): if the document was deleted, or a live `/evaluate` raced ahead, during the LLM calls, the precompute results for that paragraph are discarded, never written (these TOCTOU/delete discards do **not** count towards `failed` below — they're a benign no-op, not a genuine judge-call failure). In-memory status (`{status, done, planned, succeeded, failed}`, `status` one of `running|done|stopped|skipped`) is exposed via `document.precompute` in the DTO for `origin='upload'` docs and lost on process restart. `succeeded` counts paragraphs whose scores were actually written (or already present); a run that was requested but ends with `succeeded == 0` (e.g. every judge call failed for want of an API key) is surfaced in the document view as a dim inline notice pointing the user at the per-paragraph "Evaluate ↻" affordance — without it the failure was silent: unexplained "—" score chips.
 
-**`errorReason` (rev-5).** When a precompute run ends `done` with `succeeded==0` (planned>0), `_status[doc_id]` gains `error_reason` — `no_api_key`, `budget_exhausted`, or `all_failed` — classified from the exception the first failing paragraph raised (`precompute._classify_failure`; `translate._classify_failure` mirrors it for the translate status block). The wire DTO camelCases it to `errorReason`. This turns the previously-unexplained "ran and wrote nothing" banner into "Precompute skipped: no API key configured" / "…: budget cap reached" in the UI, instead of a bare dash with no hint.
+**`failed` (2026-07-17 fix, additive).** Counts paragraphs where a criterion's judge call genuinely raised (as opposed to a TOCTOU/delete discard) — the run loop previously discarded a failed paragraph silently and just kept going, so a **partial** failure (e.g. 2 of 12 paragraphs failed, `succeeded > 0`) was invisible in the status payload; only the all-or-nothing `succeeded == 0` case had any signal at all (the `errorReason` banner below). This is a backend-only fix — the frontend still only alarms on `succeeded == 0`; surfacing partial failure in the UI is a follow-up, tracked separately. Three distinct bugs shared this "silent warming stall" symptom (found during the EMNLP e2e campaign, T2/T5/T8/T9): (a) the process-global `_CALL_CAP` counter above — fixed by per-session keying; (b) this partial-success masking — fixed by `failed`; (c) a plain unclassified exception (anything that isn't `BudgetExceeded`/a "no api key" `RuntimeError`) falls into the generic `all_failed` `errorReason` bucket regardless of its real cause (`_classify_failure`) — **not fixed** here, only made visible: `failed` now tells you paragraphs were lost even when `error_reason` can't say more than "all_failed".
+
+**`errorReason` (rev-5).** When a precompute run ends `done` with `succeeded==0` (planned>0), `_status[doc_id]` gains `error_reason` — `no_api_key`, `budget_exhausted`, or `all_failed` — classified from the exception the first failing paragraph raised (`precompute._classify_failure`; `translate._classify_failure` mirrors it for the translate status block). The wire DTO camelCases it to `errorReason`. This turns the previously-unexplained "ran and wrote nothing" banner into "Precompute skipped: no API key configured" / "…: budget cap reached" in the UI, instead of a bare dash with no hint. `error_reason` is in fact set on the first failing paragraph regardless of whether the run later recovers (`succeeded > 0`) — the `succeeded==0` backstop at the end of the loop only fills it in via `setdefault` if no per-paragraph failure ever set it (e.g. every paragraph's `_write_paragraph` call itself returned `False`).
 
 **Delete cancels in-flight precompute.** `DELETE /api/documents/{doc_id}` calls `precompute.cancel(doc_id)` after the DB delete commits: it cancels the task in `_tasks` (if still running) and pops the `_status` entry. This stops further paid judge calls immediately and, combined with the AUTOINCREMENT ids above, closes both halves of the "spend after delete" / "id-recycling corruption" risk — any task that is already past its last cancellation checkpoint still hits the `_document_exists` re-check in `_write_paragraph` before writing.
 
@@ -207,7 +294,7 @@ See [contracts spec §5.6](../superpowers/specs/2026-07-02-custom-pair-upload-de
 
 `translate.run_translation(doc_id, client_for)` (module `translate.py`) walks paragraphs in order, skipping any that already have a `target` (idempotent resume — a repeat `POST .../translate` only fills in what's still empty). Context is a rolling window of the last 2 translated paragraphs (trimmed to 2000 chars), fed into the user prompt as "Context — previous translation". Each call goes through `budget.reserve()`/`settle()` like `_judge_live`, retries once on a transient error (`is_transient_error`), and a hard `BudgetExceeded` mid-run stops the loop immediately (`status='failed', errorReason='budget_exhausted'`) rather than marking the untried remainder "done". `POST /api/documents/{doc_id}/translate` does a rough pre-check (`budget.estimate` against the configured model+params) before even launching the background task, so an already-exhausted budget never starts one; the per-call `reserve()` remains the hard guarantee regardless.
 
-Concurrency: `translate._translating: set[int]` mirrors `app._evaluating` — while a doc_id is in it, `POST /api/paragraphs/{pid}/evaluate` and `POST /api/documents/{doc_id}/reset` both 409 `translation_in_progress`, and `DELETE /api/documents/{doc_id}` calls `translate.cancel(doc_id)` (same pattern as `precompute.cancel`) to stop the background task and discard it from the set.
+Concurrency: `translate._translating: set[tuple[str, int]]` (keyed `(sid, doc_id)`, session isolation 2026-07-16 — see that section above) mirrors `app._evaluating` — while a `(sid, doc_id)` pair is in it, `POST /api/paragraphs/{pid}/evaluate` and `POST /api/documents/{doc_id}/reset` both 409 `translation_in_progress`, and `DELETE /api/documents/{doc_id}` calls `translate.cancel(doc_id)` (same pattern as `precompute.cancel`, resolving the CURRENT session's own key) to stop the background task and discard it from the set — session-scoped by construction, so one session's delete can never cancel another session's live translate task for the same doc_id.
 
 `app._client_for(conn, model_name, params_override=None)` grew a third parameter for this: `translate.py` and `_grounding_judge_live` pass their own config's `params_json` as `params_override`, which REPLACES the model registry row's own params entirely (the registry-row params are still what `_judge_live`/the Test probe use — no override there). Before this, `_grounding_judge_live` computed its budget estimate from `grounding_config.params_json` but built the actual client from the model row's own params — a no-op-params bug now fixed by the same mechanism (see [known_issues.md](../known_issues.md)).
 
@@ -220,16 +307,30 @@ internals (extractor prompt, `GroundingConfig`, `LabelFirstGrounding`'s decision
 table, `LinkLocatePairing`) are the [terminology stage doc](../stages/terminology.md)
 — this section covers only the webapp wiring.
 
-**Status column, not an in-memory registry.** Unlike `precompute`/`translate`,
-progress lives on `document.terms_status` (`'none'|'running'|'done'|'failed'`, a
-real DB column added by `migrate.py`/`db.py::SCHEMA`) — a process restart does not
-strand the frontend on a stale `running` the way precompute/translate's in-memory
-status dicts would. Exposed as `document.termsStatus` in the wire DTO (all
-documents, including `origin='seed'`, which the migration backfills to `'done'`
-since it already has precomputed terms). `terminology_live.try_start(conn, doc_id)`
+**Status column, not an in-memory registry — but restart recovery is an explicit
+startup sweep, not automatic.** Unlike `precompute`/`translate`, progress lives on
+`document.terms_status` (`'none'|'running'|'done'|'failed'`, a real DB column
+added by `migrate.py`/`db.py::SCHEMA`). Being a persisted column does NOT by
+itself make a restart safe: a restart kills the in-flight asyncio task before it
+ever reaches `_finish()`, and the column just keeps reporting the stale `running`
+value forever — actually worse than precompute/translate's in-memory status
+dicts, which merely forget the status on restart rather than actively lying about
+it (stability fix, 2026-07-16; the previous revision of this doc claimed restart
+safety came for free from the column being DB-backed — it did not). The real
+fix is `app._reset_stuck_terms`, called once from the FastAPI lifespan right
+after `_migrate_db`: since no in-process terminology task can possibly exist for
+any doc_id immediately after a fresh process start, every document still at
+`'running'` at that point is unconditionally stale and gets reset to `'none'`
+(logged via `logger.info` when it resets ≥1 row). Exposed as `document.termsStatus`
+in the wire DTO (all documents, including `origin='seed'`, which the migration
+backfills to `'done'` since it already has precomputed terms). `terminology_live.try_start(conn, doc_id)`
 is the sole 'none' → 'running' transition, atomic under `db._lock` — it returns
 `False` (no-op) when terms already started/finished for that document, guarding
 against a resumed `POST .../translate` re-triggering the pipeline a second time.
+A document reset to `'none'` by the startup sweep has no automatic re-trigger
+today — it simply stops lying about being `'running'`; a fresh re-launch needs a
+new document action (e.g. a future explicit "retry terms" affordance), not
+wired by this fix.
 
 **Two launch points, both eventually calling `terminology_live.launch(doc_id,
 client_for, grounding_judge_live)`:**
@@ -283,6 +384,107 @@ to read "no caller in the webapp yet") now sends
 string, so a live disambiguation call actually carries the Role/output-contract
 instructions the frozen module's decision table expects.
 
+**Timeout ceilings (stability fix, 2026-07-16).** Both legs are wrapped in
+`asyncio.wait_for`, and both ceilings are deliberately set to exceed whatever
+they wrap — a ceiling *shorter* than the call it bounds fires first and
+abandons a still-running call instead of ever letting it fail/succeed on its
+own. The NER leg's ceiling (`terminology_live._effective_ner_timeout`) is
+computed from the real `LLMClient.config.timeout` (30s default,
+`llm/client.py`) plus a 5s margin at call time, rather than a hardcoded
+duplicate of that 30s — it used to default to a flat 20s, shorter than the SDK
+timeout it wrapped. The grounding leg (`pipeline.run`, run inside
+`asyncio.to_thread`) previously had no ceiling at all; it now has one too
+(`_GROUNDING_TIMEOUT`, env `PALIMPSEST_TERMS_GROUNDING_TIMEOUT`, default 180s)
+— deliberately generous (defense-in-depth, not SDK-aligned like the NER leg)
+since it wraps a whole paragraph's WikidataClient network I/O plus zero or
+more judge calls, not a single SDK request. Either ceiling firing is just
+another per-paragraph failure under this module's existing failure contract
+(caught, logged, skipped) — it does not, by itself, stop the abandoned
+background thread (an inherent `asyncio.to_thread` limitation, pre-existing
+for the NER leg and now shared by the grounding leg too).
+
+## Content clone cache
+
+EMNLP demo-video follow-up: `POST /api/documents` (`translate:false` only) now
+checks whether the upload's CONTENT already matches an existing, fully-processed
+document before touching precompute/live terminology at all. On a match it
+clones that document's terms/scores/issues straight into the new one — no LLM
+call, no waiting — so a presenter can upload a source+translation pair that is
+byte-identical to a document already run through the pipeline and get terms +
+judge scores back in the same 201 response.
+
+**Fingerprint — byte-exact, not whitespace-normalized (stability fix,
+2026-07-16).** After paragraphs are inserted (still inside the same
+`db._lock`/transaction, before the single `conn.commit()`), `app.py` hashes the
+ordered `(source, target)` pairs — `_content_fingerprint`: the raw pairs
+serialized as JSON, then `sha256`, no normalization step. Title and languages
+are deliberately excluded — the cache matches on translation content only.
+Serializing as a JSON array (not a raw string concatenation) keeps pair count
+and order load-bearing in the hash itself, so a different paragraph count or a
+reordering can never collide by construction — a mismatched count silently
+falls through to the normal (non-cloned) path, no special-case needed. No
+schema change and no persisted fingerprint column: `_find_clone_source`
+recomputes each candidate's fingerprint on the fly from its current
+`paragraph` rows on every call — the demo has few documents, so this is cheap.
+This used to whitespace-normalize each field first ("trivial paste differences
+shouldn't matter") — removed because `_clone_predictions` copies
+`term.char_start`/`char_end` verbatim onto the new document's raw text: a
+normalized-only match could differ from the source in incidental whitespace,
+silently shifting every copied offset onto the wrong characters. A raw-bytes
+hash match is byte-exact by construction, which is what makes the offset copy
+safe; the tradeoff is that a whitespace-differing paste no longer clones (it
+falls through to the real pipeline instead, which is correct, just not free).
+
+**Match rule.** A candidate must satisfy ALL of: (1) `terms_status='done'`
+(never a document that is itself `none`/`running`/`failed`); (2) at least one
+`score` row somewhere in the document (`_clone_source_eligible`, stability fix
+2026-07-16 — a `'done'` document with zero scores means the judge pipeline
+never ran for it, so cloning it would hand the new document a permanently-empty
+scores view while skipping the real pipeline that would have produced real
+ones; term-row presence is deliberately NOT part of this gate, since a
+paragraph can legitimately end with zero terms on a fully successful run); (3)
+the fingerprint match itself (byte-exact, see above). Oldest match wins if
+several qualify. Any `origin` qualifies, including the seed document.
+`translate:true` uploads are exempt outright — their targets are still empty
+at this point in `create_document`, so fingerprinting them would never
+usefully match anything real.
+
+**Copy.** `_clone_predictions` copies, paragraph-by-paragraph in `idx` order
+(index-aligned against the source document's own `idx` order): every `term`
+row verbatim (`paragraph_id` remapped only — difficulty/grounded_json/
+candidates_json/trace_json/target_surface/pair_accuracy/recommended/note all
+carried over), every `score` row verbatim including its own frozen `aggregate`/
+`criteria_key` columns (`_para_score_views` reads `score.aggregate` straight off
+the row rather than recomputing it, the same "frozen at write time" contract
+`seed.py`/`precompute._write_paragraph` use — see `aggregate.py`), and every
+`issue` row verbatim (`kind`/`status`/`criterion_id` included, so accepted/
+dismissed history carries over too, not just the open set). `created_at` on the
+copied score/issue rows is stamped to the clone's own timestamp;
+`score.revision_id` is remapped to the new paragraph's own single just-inserted
+`target_revision` (every paragraph reaching this path came from a non-translate
+upload, so it always has exactly one) — this is what makes `_best_revision`
+report `isCurrent: true` immediately on a cloned paragraph. Source rows are read
+oldest-first and re-inserted in that same relative order, so the fresh
+autoincrement ids preserve the original recency ordering and
+`_para_score_views`'s `ORDER BY created_at DESC, id DESC` tie-break reproduces
+the source document's latest/prev split exactly — a cloned document reads
+identically to its source through every existing read path (`_para_dict`,
+`_para_score_views`, `_para_issues`, `_best_revision`), no special-casing needed
+there at all.
+
+**Response and skipped launches.** On a match, `create_document` sets
+`terms_status='done'` directly (instead of `'running'`) inside the same
+lock/transaction, so the 201 body already carries `termsStatus: "done"` and the
+cloned `scores`/`issues`/`terms`/`aggregate`/`best` per paragraph — never
+`precompute.launch` nor `terminology_live.launch` run for this document.
+`precompute.mark_skipped(doc_id)` is called regardless of the request's own
+`precompute` flag (cloned scores already ARE the baseline; running precompute
+over them would be redundant spend). A single `logger.info("document %d cloned
+from %d via content fingerprint", ...)` line records the clone. A non-matching
+upload (different content, or the same content padded/trimmed to a different
+paragraph count) is entirely unaffected — it takes the pre-existing precompute/
+terminology-live path exactly as before.
+
 ## Revision history & best
 
 Every write to `paragraph.target` — upload, a manual PATCH (only if the text actually changed), apply-edit, translate, reset, and restore — also inserts a `target_revision` row (`{paragraph_id, text, origin, created_at}`; `origin` one of `seed|upload|edit|apply_edit|translate|restore`). `seed.py` writes one at seed time too, so a freshly-seeded DB and a migrated prod DB have the same shape of history. `score.revision_id` is stamped at all three score-INSERT sites (`/evaluate`, `precompute._write_paragraph`, `seed.py`) via `db.latest_revision_id(conn, pid)`.
@@ -290,6 +492,8 @@ Every write to `paragraph.target` — upload, a manual PATCH (only if the text a
 **Best revision:** `_best_revision(conn, pid)` (`app.py`) picks `argmax(aggregate)` over `kind IN ('seed','live')` scores with a non-null `revision_id` — `kind='cache'` is excluded, it's a synthetic seed-uplift preview, never a real judged revision. Exposed as `paragraph.best: {aggregate, revisionId, createdAt, isCurrent} | null` in the document DTO; `null` means the paragraph has no scored revision yet (e.g. a legacy pre-rev-5 row, or freshly translated text nobody has evaluated). This directly answers the owner's "re-evaluation can regress — never lose the best version" concern: nothing is auto-restored, but the best score+its text are always one `GET /api/paragraphs/{pid}/revisions` + `POST .../restore` away.
 
 `GET /api/paragraphs/{pid}/revisions` lists every revision (newest first) with `aggregate` = the best score attached to that specific revision (`null` if never evaluated), plus `isBest`/`isCurrent` flags. `POST /api/paragraphs/{pid}/restore {revisionId}` sets `target` to that revision's text and writes a NEW `origin='restore'` revision (restoring is itself a tracked event, not a rewind) — it does **not** copy scores; the paragraph's chip goes back to "not scored" honestly until the next explicit `/evaluate`. 404 for an unknown revision id, 409 if the revision belongs to a different paragraph.
+
+**Stale orphan-revision cleanup (2026-07-16, owner UI review #7).** Repeated manual testing on the curated demo document accumulated `target_revision` rows nobody ever scored, cluttering `GET /revisions`'s history list with "N hours ago · not scored" entries. `migrate.py`'s `_prune_orphan_revisions` (runs on every app startup, after `_curate_demo_documents` so it sees the already-renamed title) deletes, **for that one document's paragraphs only**, every `target_revision` row that is neither the paragraph's earliest (seed) revision nor referenced by any `score.revision_id` — i.e. a purely orphan, never-scored text edit. `score`/`issue` rows are never touched (owner hard invariant, `.claude/rules/invariants.md`); a revision any score row points at is excluded from the candidate set by construction, and the connection runs with `PRAGMA foreign_keys=ON` as a second line of defense. Idempotent, logs the pruned count. See `docs/superpowers/specs/2026-06-30-demo-contracts.md` "Revision-history cleanup delta".
 
 ## Export
 
@@ -354,13 +558,15 @@ When `DEMO_STATIC_DIR` is set (the image sets it to `/app/frontend/dist`), [app.
 
 - **Boundary-word de-duplication on apply.** A judge suggestion sometimes repeats the word immediately before or after the target fragment (fragment `drawn into buying and selling`, suggestion `partly incorporated into the land market`, with an existing `partly` just before). `apply-edit` (`_splice_suggestion`) drops that duplicated boundary word so the result reads `…were partly incorporated…`, never `…partly partly…`. A non-numeric `issueId` returns 404 (it can match no row), not 500.
 
-- **Single-writer concurrency.** All DB writes are serialized by a single `threading.Lock`. The app is designed to run under `uvicorn --workers 1`. Multiple workers would bypass the lock and corrupt state.
+- **Single-writer concurrency, per session (2026-07-16).** Each session's writes are serialized by its OWN `threading.Lock` (`db.current_lock()`, see "Session isolation" above) — two sessions no longer contend on one global lock. Golden (startup procedures, golden-token requests) and the legacy single-DB test mode both still serialize on one shared `db._lock`, matching the pre-session-isolation single-writer design for those cases. The app is designed to run under `uvicorn --workers 1`. Multiple workers would bypass the locks and corrupt state.
 
 - **Criterion deletion blocked by history.** `DELETE /api/criteria/{cid}` returns 409 if any `score` or `issue` rows reference that `criterion_id`. Callers must disable the criterion instead of deleting it once it has history.
 
 - **Term rows are live, not a stub (2026-07-11).** The former `POST /api/paragraphs/{pid}/terms` stub route is removed — it had zero frontend callers (terms have always travelled embedded in `GET /api/documents/{id}`, never via a standalone fetch). Term rows for an uploaded/AI-translated document are now populated automatically by the background [`terminology_live.py`](../../src/palimpsest/webapp/terminology_live.py) pipeline; see "Live terminology" below.
 
 - **`termsStatus` polling and the landing picker (2026-07-11, EMNLP sprint).** `Document`/`DocumentSummary` gain `termsStatus: 'none'|'running'|'done'|'failed'`, driving three frontend surfaces from one field: the top-chrome Terms chip (a non-interactive spinner + "Extracting terminology…" while `running`, instead of the old flat disabled look), `GlossaryTab`'s empty state (see its table row above), and `DocumentPicker`'s per-card status dot. The store polls `GET /api/documents/{id}` every 2.5s (`startTermsPolling`/`stopTermsPolling`, a single idempotent interval) while `termsStatus==='running'` OR translation is still filling targets (terms extraction follows it) — started/stopped by a `VariantA` effect keyed on `doc?.termsStatus`/`doc?.translation?.status`, so it tears down on done/failed/unmount/doc-switch the same way the existing precompute/translation badge polling does. Separately, `init()` no longer auto-opens the first document — `DocumentPicker` (docId=null) is the landing view; zero documents from `GET /documents` is a valid empty-picker state (just the blank-document card), not `documentError` (previously "No documents available" was a fatal error screen with no way to create a document — see `DocumentPicker.tsx` row above).
+
+- **`refreshDocument` stale-fetch and 404 guards (stability fix, 2026-07-16).** `refreshDocument` backs every poller (precompute/translation/terms-status), all firing every 2.5–3s. Two races fixed: (1) **stale-fetch** — if the user switches documents (or backs out to the picker) while a `GET /api/documents/{id}` for the PREVIOUS document is still in flight, the store now checks `get().document?.id` still equals the id that was requested before applying the response, so a slow response for a no-longer-active document can never clobber whatever is loaded now. (2) **deleted-document 404** — if the polled document was deleted server-side (e.g. from another tab), the fetch now 404s forever instead of ever resolving; `refreshDocument` catches that specific case, calls `stopTermsPolling()`, sets `document: null` (falls back to the picker) and refreshes the document list, instead of polling a dead id indefinitely. Any other fetch error (network blip, 5xx) leaves state untouched — pollers just retry next tick, matching `refreshDocument`'s pre-existing no-error-surfaced-to-UI contract.
 
 - **Params secret-key guard.** `POST/PUT /api/models` and `/api/criteria` reject any `params`/config dict whose keys look secret-like with HTTP 400, before touching the DB. The check (`_guard_params` in `app.py`) delegates to `secrets_guard.is_secret_key`, which is boundary-aware: strong indicators (`api_key`, `token`, `secret`, `password`, `bearer`, `authorization`, …) match anywhere in the key, while collision-prone short words (`token`, `auth`, `key`) match only as a delimited component — so `max_tokens`/`top_k` are never falsely flagged.
 

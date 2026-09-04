@@ -1,0 +1,14 @@
+4. [GET] https://glossa-mt.com/api/health => [200] 
+5. [GET] https://glossa-mt.com/api/grounding-config => [200] 
+6. [GET] https://glossa-mt.com/api/translator-config => [200] 
+7. [GET] https://glossa-mt.com/api/refiner-config => [200] 
+8. [GET] https://glossa-mt.com/api/documents => [200] 
+9. [GET] https://glossa-mt.com/api/criteria => [200] 
+10. [GET] https://glossa-mt.com/api/models => [200] 
+11. [GET] https://glossa-mt.com/api/documents/10 => [200] 
+12. [POST] https://glossa-mt.com/api/paragraphs/58/evaluate => [200] 
+13. [POST] https://glossa-mt.com/api/paragraphs/59/evaluate => [200] 
+14. [POST] https://glossa-mt.com/api/paragraphs/59/evaluate => [200] 
+15. [GET] https://glossa-mt.com/api/paragraphs/59/revisions => [200] 
+
+Note: 3 static requests not shown, run with --static option to see them.

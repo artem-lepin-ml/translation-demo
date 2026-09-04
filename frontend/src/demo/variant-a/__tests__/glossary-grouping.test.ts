@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
+  candidatesForDisplay,
   findMatchSpan,
   findSentenceContaining,
+  groupSearchQueries,
   groupTerms,
   resolveBadge,
   summarizeGroups,
   titleCase,
   type TermWithTrace,
+  type TraceQueryEntry,
 } from '../glossary-grouping';
 import type { Paragraph, WikidataRef } from '../../api-client';
 
@@ -89,7 +92,13 @@ describe('groupTerms (S2 §2.1)', () => {
     expect(groups.find((g) => g.qid === null)?.mentions).toHaveLength(2);
   });
 
-  it('group difficulty is the worst among mentions (red > yellow > green)', () => {
+  it('group difficulty is the worst among mentions, for an ungrounded group (no qid to gate on)', () => {
+    // Both mentions here are ungrounded (grounded: null, buildTerm's default)
+    // — they land in the same qid-less bucket, so every mention legitimately
+    // describes the same (failed) grounding attempt and worst-of applies
+    // uncritically. This is NOT the red-dot-with-QID scenario (see the
+    // dedicated regression test below) — a grounded group instead folds
+    // difficulty only across mentions that share ITS qid.
     const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
     const terms = [
       buildTerm({ id: 'a', paragraphId: 1, sourceLemma: 'x', difficulty: 'green' }),
@@ -154,7 +163,9 @@ describe('groupTerms (S2 §2.1)', () => {
 });
 
 describe('groupTerms — display-level stemmer fallback (wave5 §5, unnormalized source_lemma)', () => {
-  it('merges "Тигр" (grounded) with "Тигра" (ungrounded) when source_lemma === source_surface for both', () => {
+  it('merges "Тигр" (grounded) with "Тигра" (ungrounded) when source_lemma === source_surface for both, ' +
+    'WITHOUT letting the ungrounded sibling paint the group\'s difficulty red (red-dot-with-QID regression, ' +
+    'debugger-glossary-reddot-trace.md Defect 1)', () => {
     const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1)];
     const terms = [
       buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Тигр', sourceLemma: 'Тигр', grounded: wd({ qid: 'Q35591', label: 'Tigris' }), difficulty: 'yellow' }),
@@ -163,8 +174,36 @@ describe('groupTerms — display-level stemmer fallback (wave5 §5, unnormalized
     const groups = groupTerms(terms, paragraphs);
     expect(groups).toHaveLength(1);
     expect(groups[0].qid).toBe('Q35591'); // merged group shows the grounded qid
-    expect(groups[0].mentions).toHaveLength(2);
-    expect(groups[0].difficulty).toBe('red'); // worst-of across the merged mentions
+    expect(groups[0].mentions).toHaveLength(2); // the ungrounded mention is still listed ("All mentions" panel)
+    // The headline dot reflects the GROUNDED mention's own difficulty (yellow),
+    // not the worst-of across every raw-lemma sibling folded in for dedup —
+    // a QID-bearing group must never render a red dot next to a live
+    // Wikidata link (real prod repro: doc 1's "Месопотамия", see the report).
+    expect(groups[0].difficulty).toBe('yellow');
+  });
+
+  it('red-dot-with-QID regression: a grounded group keeps its own worst-of difficulty across ' +
+    'MULTIPLE same-qid mentions, still ignoring an unrelated ungrounded raw-lemma sibling ' +
+    '(real prod repro: doc 1 "Месопотамия", debugger-glossary-reddot-trace.md §c)', () => {
+    const paragraphs = [buildParagraph(1, 0), buildParagraph(2, 1), buildParagraph(3, 2)];
+    // All three are raw-lemma inflected forms of "Месопотамия" (sourceLemma
+    // === sourceSurface for each) that the heuristic stemmer folds to the
+    // same stem "месопотами" — a and b share qid Q11767 directly (same
+    // initial bucket); c only joins via the wave5 raw-lemma merge pass.
+    const terms = [
+      // Two occurrences that both actually grounded to Q11767 — worst-of
+      // between THEM (yellow) must still apply.
+      buildTerm({ id: 'a', paragraphId: 1, sourceSurface: 'Месопотамия', sourceLemma: 'Месопотамия', grounded: wd({ qid: 'Q11767', label: 'Mesopotamia' }), difficulty: 'green' }),
+      buildTerm({ id: 'b', paragraphId: 2, sourceSurface: 'Месопотамии', sourceLemma: 'Месопотамии', grounded: wd({ qid: 'Q11767', label: 'Mesopotamia' }), difficulty: 'yellow' }),
+      // A third, raw-lemma occurrence that failed to ground at all — folded
+      // in for dedup only, must not drag the group to red.
+      buildTerm({ id: 'c', paragraphId: 3, sourceSurface: 'Месопотамию', sourceLemma: 'Месопотамию', grounded: null, difficulty: 'red' }),
+    ];
+    const groups = groupTerms(terms, paragraphs);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].qid).toBe('Q11767');
+    expect(groups[0].mentions).toHaveLength(3);
+    expect(groups[0].difficulty).toBe('yellow'); // worst-of among the two Q11767 mentions only, never 'red'
   });
 
   it('merges "Евфрат" (grounded) with "Евфрата" (ungrounded) the same way', () => {
@@ -269,35 +308,35 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
   it('rule 1: resolved_by exact_label / label_match → det, "label match"', () => {
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'exact_label' } }))).toEqual({
       tone: 'det',
-      label: '◆ label match',
+      label: '◆ unambiguous · label match',
     });
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'label_match' } }))).toEqual({
       tone: 'det',
-      label: '◆ label match',
+      label: '◆ unambiguous · label match',
     });
   });
 
-  it('rule 1: llm_disambiguation → llm badge with model, fallback "LLM" when model absent', () => {
+  it('rule 1: llm_disambiguation → llm badge with model, "context-resolved · AI" (no redundant "LLM") when model absent', () => {
     expect(
       resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation', model: 'gpt-5.5-low' } })),
-    ).toEqual({ tone: 'llm', label: '◇ LLM · gpt-5.5-low' });
+    ).toEqual({ tone: 'llm', label: '◇ context-resolved · gpt-5.5-low' });
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation' } }))).toEqual({
       tone: 'llm',
-      label: '◇ LLM · LLM',
+      label: '◇ context-resolved · AI',
     });
   });
 
   it('rule 1: llm_rejected → rej badge', () => {
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_rejected' } }))).toEqual({
       tone: 'rej',
-      label: '◇ LLM rejected all',
+      label: '◇ unresolved · AI abstained',
     });
   });
 
   it('rule 1: no_candidates → none badge', () => {
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'no_candidates' } }))).toEqual({
       tone: 'none',
-      label: '○ no candidates',
+      label: '○ unresolved · no candidates',
     });
   });
 
@@ -320,7 +359,7 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
       candidates: [wd({ qid: 'Q1' }), wd({ qid: 'Q2' })],
       traceJson: { query: { lemma_hits: 1 } },
     });
-    expect(resolveBadge(term)).toEqual({ tone: 'llm', label: '◇ LLM · LLM' });
+    expect(resolveBadge(term)).toEqual({ tone: 'llm', label: '◇ context-resolved · AI' });
   });
 
   it('rule 3 heuristic: trace non-empty, no resolved_by, qid + exactly one candidate → det', () => {
@@ -329,7 +368,7 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
       candidates: [wd()],
       traceJson: { query: { lemma_hits: 1 } },
     });
-    expect(resolveBadge(term)).toEqual({ tone: 'det', label: '◆ label match' });
+    expect(resolveBadge(term)).toEqual({ tone: 'det', label: '◆ unambiguous · label match' });
   });
 
   it('rule 3 heuristic: trace non-empty, no resolved_by, no qid but candidates existed → rej', () => {
@@ -338,16 +377,57 @@ describe('resolveBadge (S2 §2.2 strict priority)', () => {
       candidates: [wd(), wd({ qid: 'Q2' })],
       traceJson: { search: { hits: 2 } },
     });
-    expect(resolveBadge(term)).toEqual({ tone: 'rej', label: '◇ LLM rejected all' });
+    expect(resolveBadge(term)).toEqual({ tone: 'rej', label: '◇ unresolved · AI abstained' });
   });
 
   it('rule 4: nothing at all (no trace, no qid, no candidates) → none', () => {
-    expect(resolveBadge(buildTerm())).toEqual({ tone: 'none', label: '○ no candidates' });
+    expect(resolveBadge(buildTerm())).toEqual({ tone: 'none', label: '○ unresolved · no candidates' });
   });
 
   it('never throws on an unrecognized resolved_by value', () => {
     expect(() => resolveBadge(buildTerm({ traceJson: { resolved_by: 'something_future' } }))).not.toThrow();
     expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'something_future' } })).tone).toBe('none');
+  });
+});
+
+// #5 owner review re-verification: "проверь снова хорошо все 3 вида
+// состояния: красный, желтый, зеленый" — one focused audit per tone,
+// specifically guarding against the "◇ LLM · LLM" double the fix removed.
+describe('resolveBadge — 3-state re-verification after the #5 badge-label fix', () => {
+  it('green (det): deterministic exact-label match, glyph ◆', () => {
+    expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'exact_label' } }))).toEqual({
+      tone: 'det',
+      label: '◆ unambiguous · label match',
+    });
+  });
+
+  it('yellow (llm): AI-resolved with a known model name → "◇ context-resolved · <model>"', () => {
+    expect(
+      resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation', model: 'gpt-5.5-low' } })),
+    ).toEqual({ tone: 'llm', label: '◇ context-resolved · gpt-5.5-low' });
+  });
+
+  it('yellow (llm): AI-resolved with no known model name → "◇ context-resolved · AI", never "LLM · LLM"', () => {
+    const badge = resolveBadge(buildTerm({ traceJson: { resolved_by: 'llm_disambiguation' } }));
+    expect(badge).toEqual({ tone: 'llm', label: '◇ context-resolved · AI' });
+    expect(badge.label).not.toContain('LLM · LLM');
+  });
+
+  it('red/gray (none): nothing grounded at all, glyph ○', () => {
+    expect(resolveBadge(buildTerm({ traceJson: { resolved_by: 'no_candidates' } }))).toEqual({
+      tone: 'none',
+      label: '○ unresolved · no candidates',
+    });
+  });
+
+  it('red/gray (rej): ambiguous — candidates existed, no exact match and no judge run, glyph ◇', () => {
+    const badge = resolveBadge(buildTerm({
+      grounded: null,
+      candidates: [wd(), wd({ qid: 'Q2' })],
+      traceJson: { resolved_by: 'ambiguous_candidates' },
+    }));
+    expect(badge.tone).toBe('rej');
+    expect(badge.label).toMatch(/^◇ unresolved · \d+ candidates$/);
   });
 });
 
@@ -395,7 +475,7 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
       traceJson: { decision: { resolved_by: 'ambiguous_candidates' } },
     } as never);
     expect(badge.tone).toBe('rej');
-    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+    expect(badge.label).toBe('◇ unresolved · 2 candidates');
   });
 
   it('maps judge_unavailable to the ambiguous badge', () => {
@@ -404,7 +484,7 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
       traceJson: { decision: { resolved_by: 'judge_unavailable' } },
     } as never);
     expect(badge.tone).toBe('rej');
-    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+    expect(badge.label).toBe('◇ unresolved · 2 candidates');
   });
 
   it('unknown resolved_by with candidates degrades to ambiguous, not "no candidates"', () => {
@@ -413,7 +493,7 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
       traceJson: { decision: { resolved_by: 'mystery_future_value' } },
     } as never);
     expect(badge.tone).toBe('rej');
-    expect(badge.label).toBe('◇ ambiguous · 2 candidates');
+    expect(badge.label).toBe('◇ unresolved · 2 candidates');
   });
 
   it('unknown resolved_by without candidates stays "no candidates"', () => {
@@ -422,6 +502,99 @@ describe('resolveBadge — ambiguous/unresolved states (e2e addendum findings)',
       traceJson: { decision: { resolved_by: 'mystery_future_value' } },
     } as never);
     expect(badge.tone).toBe('none');
-    expect(badge.label).toBe('○ no candidates');
+    expect(badge.label).toBe('○ unresolved · no candidates');
+  });
+});
+
+// ─── FIX 1: candidate display shaping — no dangling "Label — " separator ───
+describe('candidatesForDisplay — empty-description rendering (FIX 1, glossary trace polish)', () => {
+  it('a WikidataRef candidate with an empty description keeps description as "" (caller drops the separator)', () => {
+    const term = buildTerm({
+      candidates: [{ qid: 'Q1', label: 'Эйягамиль', description: '', url: 'https://www.wikidata.org/wiki/Q1' }],
+    });
+    const [c] = candidatesForDisplay(term);
+    expect(c.label).toBe('Эйягамиль');
+    expect(c.description).toBe('');
+  });
+
+  it('a trace candidate with no `description` field at all normalizes to "" (not undefined/null)', () => {
+    const term = buildTerm({
+      traceJson: {
+        candidates: [{ qid: 'Q2', label_en: 'No Desc', matched: null }],
+      },
+    });
+    const [c] = candidatesForDisplay(term);
+    expect(c.label).toBe('No Desc');
+    expect(c.description).toBe('');
+  });
+
+  it('a candidate WITH a description is unaffected', () => {
+    const term = buildTerm({
+      candidates: [{ qid: 'Q3', label: 'Ур', description: 'ancient Sumerian city-state', url: 'https://www.wikidata.org/wiki/Q3' }],
+    });
+    const [c] = candidatesForDisplay(term);
+    expect(c.description).toBe('ancient Sumerian city-state');
+  });
+});
+
+// ─── FIX 2: SEARCH-step query row grouping (glossary trace polish) ────────
+describe('groupSearchQueries (FIX 2, glossary trace polish)', () => {
+  const q = (over: Partial<TraceQueryEntry> = {}): TraceQueryEntry => ({
+    q: 'Ханейское царство',
+    kind: 'lemma',
+    mechanism: 'wbsearchentities',
+    n_hits: 0,
+    ...over,
+  });
+
+  it('3 identical unlabeled rows collapse to 1 row ×3 (prefix→cirrus→sitelink escalation, no strategy field)', () => {
+    const grouped = groupSearchQueries([q(), q(), q()]);
+    expect(grouped).toHaveLength(1);
+    expect(grouped[0]).toMatchObject({ kind: 'lemma', q: 'Ханейское царство', n_hits: 0, count: 3 });
+  });
+
+  it('labeled distinct strategies stay 3 distinct rows, none collapsed', () => {
+    const grouped = groupSearchQueries([
+      q({ strategy: 'prefix', n_hits: 0 }),
+      q({ strategy: 'cirrus', n_hits: 3 }),
+      q({ strategy: 'sitelink', n_hits: 1 }),
+    ]);
+    expect(grouped).toHaveLength(3);
+    expect(grouped.every((g) => g.count === 1)).toBe(true);
+    expect(grouped.map((g) => g.strategy)).toEqual(['prefix', 'cirrus', 'sitelink']);
+  });
+
+  it('mixed: alternating lemma/surface rows collapse per (kind, q) pair — «царя Приморья»-style', () => {
+    const lemma = q({ q: 'царь Приморья', kind: 'lemma' });
+    const surface = q({ q: 'царя Приморья', kind: 'surface' });
+    const grouped = groupSearchQueries([lemma, surface, lemma, surface, lemma]);
+    expect(grouped).toHaveLength(2);
+    const byKind = Object.fromEntries(grouped.map((g) => [g.kind, g.count]));
+    expect(byKind).toEqual({ lemma: 3, surface: 2 });
+  });
+
+  it('mixed: a labeled strategy row and unlabeled duplicates of a DIFFERENT query never merge with each other', () => {
+    const grouped = groupSearchQueries([
+      q({ strategy: 'prefix' }),
+      q({ q: 'other lemma' }),
+      q({ q: 'other lemma' }),
+    ]);
+    expect(grouped).toHaveLength(2);
+    expect(grouped.find((g) => g.strategy === 'prefix')?.count).toBe(1);
+    expect(grouped.find((g) => g.q === 'other lemma')?.count).toBe(2);
+  });
+
+  it('same kind+q but different n_hits stays distinct (never silently merges different results)', () => {
+    const grouped = groupSearchQueries([q({ n_hits: 0 }), q({ n_hits: 2 })]);
+    expect(grouped).toHaveLength(2);
+  });
+
+  it('empty input returns an empty array', () => {
+    expect(groupSearchQueries([])).toEqual([]);
+  });
+
+  it('preserves first-seen order', () => {
+    const grouped = groupSearchQueries([q({ q: 'b' }), q({ q: 'a' }), q({ q: 'b' })]);
+    expect(grouped.map((g) => g.q)).toEqual(['b', 'a']);
   });
 });

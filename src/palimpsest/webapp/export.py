@@ -1,8 +1,10 @@
-"""Export a document as a parallel-text file (spec 2026-07-05-export-xlsx).
+"""Export a document (spec 2026-07-05-export-xlsx; md re-contracted 2026-07-17).
 
-Two formats, same underlying row selection: ``.xlsx`` (openpyxl, the primary
-ask — "excel with paragraph alignment") and ``.md`` (a cheap bonus for
-copy-paste). No schema changes; both read straight off ``paragraph``/``score``.
+Two formats, same underlying row selection: ``.xlsx`` (openpyxl — parallel
+text with paragraph alignment and scores) and ``.md`` (the final translation
+text itself, blank-line-separated paragraphs — owner contract 2026-07-17,
+replacing the original table). No schema changes; both read straight off
+``paragraph``/``score``.
 """
 from __future__ import annotations
 
@@ -92,15 +94,13 @@ def build_xlsx(conn, doc) -> bytes:
     return buf.getvalue()
 
 
-def _escape_md_cell(text: str) -> str:
-    return text.replace("|", "\\|").replace("\r\n", "<br>").replace("\n", "<br>")
-
-
 def build_markdown(conn, doc) -> str:
+    # Owner contract (2026-07-17, replaces the original table bonus): the .md
+    # export is the FINAL translation text itself — title, then one block per
+    # translated paragraph separated by blank lines. No table, no source
+    # column, no cell escaping; paragraphs without a translation yet are
+    # skipped rather than emitted as empty blocks.
     rows = _rows(conn, doc["id"])
-    lines = [f"# {doc['title']}", "",
-             f"| ¶ | Source ({doc['source_lang']}) | Translation ({doc['target_lang']}) |",
-             "|---|---|---|"]
-    for idx, source, target, _score in rows:
-        lines.append(f"| {idx} | {_escape_md_cell(source)} | {_escape_md_cell(target or '')} |")
-    return "\n".join(lines) + "\n"
+    blocks = [t.strip() for _idx, _source, target, _score in rows
+              for t in [target or ""] if t.strip()]
+    return "\n\n".join([f"# {doc['title']}", *blocks]) + "\n"

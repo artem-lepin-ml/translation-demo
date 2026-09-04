@@ -1,16 +1,18 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { langLabel } from '../lang';
-import type { Paragraph, TermsStatus, WikidataRef } from '../api-client';
+import type { Paragraph, TermsStatus } from '../api-client';
 import {
+  candidatesForDisplay,
   findMatchSpan,
   findSentenceContaining,
+  groupSearchQueries,
   groupTerms,
   resolveBadge,
   summarizeGroups,
   type BadgeTone,
   type GlossaryGroup,
   type TermWithTrace,
-  type TraceStep,
+  type TraceJson,
 } from './glossary-grouping';
 
 interface Props {
@@ -44,10 +46,11 @@ export function termsStatusEmptyMessage(status: TermsStatus | undefined): string
   }
 }
 
-/** A candidate as delivered by `candidates_json` (spec S2 §2.3) — the wire
- *  `WikidataRef` type has no `matched_via` field, so it's a local, optional
- *  extension rather than a change to the shared DTO type. */
-type CandidateWithMatch = WikidataRef & { matched_via?: string };
+// `DisplayCandidate` / `candidatesForDisplay` moved to glossary-grouping.ts
+// (frontend-developer-stability-wave2) — TermPopover's "Ambiguous senses"
+// block needed the same dead-field fix as this tab's Candidates table (BUG-6),
+// so the shaping logic now lives in the shared React-free module instead of
+// this component file.
 
 const highlightClass = 't'; // mark.t — EN (target) context highlight, per mockup
 
@@ -63,22 +66,34 @@ function highlighted(text: string, needle: string, markClass?: string): ReactNod
   );
 }
 
-function viaChipClass(matchedVia: string | undefined): string {
-  if (!matchedVia || matchedVia === 'none') return 'va-gl-via no';
-  if (matchedVia.toLowerCase().includes('alias')) return 'va-gl-via al';
+/** `trace_json.queries[].strategy` → short display label (#4, grounding
+ *  trace) — names which escalating Wikidata search backend made the call, so
+ *  5 query rows read as distinct strategies instead of repeated
+ *  "lemma «…»" noise. Unrecognized values pass through as-is (defensive: a
+ *  future backend strategy still shows *something* rather than disappearing). */
+const SEARCH_STRATEGY_LABEL: Record<string, string> = {
+  prefix: 'prefix',
+  cirrus: 'full-text',
+  sitelink: 'sitelink',
+  guess: 'AI guess',
+};
+
+function viaChipClass(matchKind: string | null): string {
+  if (!matchKind) return 'va-gl-via no';
+  if (matchKind === 'alias') return 'va-gl-via al';
   return 'va-gl-via';
 }
 
 function pathHeading(tone: BadgeTone): string {
   switch (tone) {
     case 'det':
-      return 'Grounding path — resolved deterministically, no LLM call';
+      return 'Grounding path — unambiguous, no LLM call';
     case 'llm':
-      return 'Grounding path — ambiguous, resolved by LLM';
+      return 'Grounding path — context-resolved by AI';
     case 'rej':
-      return 'Grounding path — candidates found, rejected by LLM';
+      return 'Grounding path — unresolved, candidates found but rejected by AI';
     default:
-      return 'Grounding path — nothing found, no LLM call';
+      return 'Grounding path — unresolved, nothing found, no LLM call';
   }
 }
 
@@ -88,69 +103,136 @@ interface StepPresentation {
   body: ReactNode;
 }
 
-function stepPresentation(
-  tone: BadgeTone,
-  key: 'query' | 'search' | 'label_match' | 'decision',
-  step: TraceStep | undefined,
-): StepPresentation {
-  if (!step) {
-    return { state: 'skip', title: 'Skipped', body: 'no trace' };
-  }
+type StepKey = 'search' | 'candidates' | 'exact' | 'decision';
+
+/** Step-stepper header text (paper §2.1's mechanism naming: SEARCH →
+ *  CANDIDATES → EXACT → DISAMBIGUATION, step iii). `key` stays `'decision'`
+ *  everywhere else (StepKey/StepPresentation/trace shape) — only the
+ *  rendered header text follows the paper's vocabulary. */
+const STEP_HEADER_LABEL: Record<StepKey, string> = {
+  search: 'SEARCH',
+  candidates: 'CANDIDATES',
+  exact: 'EXACT',
+  decision: 'DISAMBIGUATION',
+};
+
+/** Renders the "Grounding path" panel from `trace_json`'s REAL flat shape
+ *  (`label_first.py::_result` — `{v, config, queries, search_source,
+ *  candidates, exact_matches, resolved_by, judge, chosen_qid, canon_en,
+ *  n_api_calls, latency_ms}`, confirmed against live prod
+ *  `docs/reports/debugger-glossary-reddot-trace.md` §2c).
+ *
+ *  This replaces an earlier version that read a nested `query`/`search`/
+ *  `label_match`/`decision` shape (`TraceStep`, still kept on `TraceJson` for
+ *  `resolveBadge`'s heuristic fallback) which never existed in real backend
+ *  output — every step rendered "Skipped — no trace" for every live-pipeline
+ *  term. */
+function stepPresentation(tone: BadgeTone, key: StepKey, trace: TraceJson | undefined): StepPresentation {
   const state: 'done' | 'warn' | 'fail' =
     tone === 'det' ? 'done' : tone === 'none' ? 'fail' : key === 'decision' && tone === 'rej' ? 'fail' : 'warn';
 
   switch (key) {
-    case 'query':
+    case 'search': {
+      const queries = trace?.queries ?? [];
+      if (queries.length === 0) return { state: 'skip', title: 'Skipped', body: 'no trace' };
+      // Collapse true duplicate rows (same strategy+kind+q+hits) into one row
+      // with a ×N multiplier — old traces predating the `strategy` field (or
+      // repeated fallback escalations) otherwise render several visually
+      // identical "lemma «…» 0 hits" lines (owner screenshots: 3× for
+      // "Ханейское царство", 5× for «царя Приморья»). Distinct strategies stay
+      // their own labeled rows since those ARE informative.
+      const groupedQueries = groupSearchQueries(queries);
       return {
         state,
-        title: 'Lemma, then surface',
+        title: trace?.search_source && trace.search_source !== 'none' ? trace.search_source : 'No hits',
         body: (
           <>
-            lemma <code>{step.lemma ?? '—'}</code>{' '}
-            <span className={step.lemma_hits ? 'va-gl-hit' : 'va-gl-miss'}>{step.lemma_hits ?? 0} hits</span>
-            <br />
-            surface <code>{step.surface ?? '—'}</code>{' '}
-            <span className={step.surface_hits ? 'va-gl-hit' : 'va-gl-miss'}>{step.surface_hits ?? 0} hits</span>
+            {groupedQueries.map((q, i) => (
+              <div key={i}>
+                {q.strategy && (
+                  <span className="va-gl-strategy">{SEARCH_STRATEGY_LABEL[q.strategy] ?? q.strategy} · </span>
+                )}
+                {q.kind} <code>{q.q}</code>{' '}
+                <span className={q.n_hits ? 'va-gl-hit' : 'va-gl-miss'}>{q.n_hits ?? 0} hits</span>
+                {q.count > 1 && <span className="va-gl-qmult"> ×{q.count}</span>}
+              </div>
+            ))}
           </>
         ),
       };
-    case 'search':
+    }
+    case 'candidates': {
+      const n = trace?.candidates?.length ?? 0;
+      if (n === 0 && !trace?.queries?.length) return { state: 'skip', title: 'Skipped', body: 'no trace' };
       return {
         state,
-        title: step.method ?? 'Search',
+        title: n === 1 ? '1 candidate found' : `${n} candidates found`,
         body: (
           <>
-            {step.method ?? 'search'}{' '}
-            <span className={step.hits ? 'va-gl-hit' : 'va-gl-miss'}>{step.hits ?? 0} hits</span>
+            <span className={n ? 'va-gl-hit' : 'va-gl-miss'}>{n} candidate{n === 1 ? '' : 's'}</span>
+            {trace?.n_api_calls !== undefined && (
+              <> · {trace.n_api_calls} Wikidata call{trace.n_api_calls === 1 ? '' : 's'}</>
+            )}
           </>
         ),
       };
-    case 'label_match':
+    }
+    case 'exact': {
+      const exact = trace?.exact_matches ?? [];
+      if (!trace?.queries?.length) return { state: 'skip', title: 'Skipped', body: 'no trace' };
       return {
         state,
-        title:
-          step.exact_matches === 1 ? 'Exactly 1 exact match' : `${step.exact_matches ?? 0} exact matches`,
+        title: exact.length === 1 ? 'Exactly 1 exact match' : `${exact.length} exact matches`,
         body: (
           <>
-            exact matches: <code>{step.exact_matches ?? 0}</code>
+            exact matches: <code>{exact.length}</code>
+            {exact.length > 0 && (
+              <>
+                {' — '}
+                {exact.map((m, i) => (
+                  <span key={m.qid}>
+                    {m.matched.kind}
+                    {i < exact.length - 1 ? ', ' : ''}
+                  </span>
+                ))}
+              </>
+            )}
           </>
         ),
       };
+    }
     case 'decision':
-    default:
+    default: {
+      if (!trace?.resolved_by) return { state: 'skip', title: 'Skipped', body: 'no trace' };
+      const judge = trace.judge;
       return {
         state,
-        title: step.resolved_by ? step.resolved_by.replace(/_/g, ' ') : 'Decision',
+        title: trace.resolved_by.replace(/_/g, ' '),
         body: (
           <>
-            <code>resolved_by: {step.resolved_by ?? '—'}</code>
-            <br />
-            {step.api_calls ?? 0} API calls
-            {step.llm_calls ? ` · ${step.llm_calls} LLM call${step.llm_calls > 1 ? 's' : ''}` : ''}
-            {step.elapsed_s !== undefined ? ` · ${step.elapsed_s}s` : ''}
+            <code>resolved_by: {trace.resolved_by}</code>
+            {trace.chosen_qid && (
+              <>
+                <br />
+                chosen: <code>{trace.chosen_qid}</code>
+              </>
+            )}
+            {judge?.error && (
+              // `judge.error` also carries a search-layer message for the rare
+              // wikidata_unavailable path (backend reuses the same trace key,
+              // label_first.py::ground's except clause) — kept generic rather
+              // than "judge error" so it doesn't misattribute a Wikidata
+              // outage to the disambiguation judge.
+              <>
+                <br />
+                error: {judge.error}
+              </>
+            )}
+            {trace.latency_ms !== undefined && <> · {(trace.latency_ms / 1000).toFixed(2)}s</>}
           </>
         ),
       };
+    }
   }
 }
 
@@ -245,8 +327,14 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
 
   const enSentence = primary.targetSurface ? findSentenceContaining(primaryTarget, primary.targetSurface) : null;
 
-  const candidates = primary.candidates as CandidateWithMatch[];
-  const showJudge = badge.tone === 'llm' && trace?.resolved_by === 'llm_disambiguation' && Boolean(trace?.judge_reason);
+  const candidates = candidatesForDisplay(primary);
+  // The judge's reason lives at `trace.judge.response.reason` (real flat
+  // shape) — `trace.judge_reason` (the old nested-shape guess) is never
+  // populated by the live pipeline, which made this block dead for every
+  // real llm_disambiguation term (same root cause as the Matched column and
+  // the Grounding-path steps — debugger-glossary-reddot-trace.md §2).
+  const judgeReason = trace?.judge?.response?.reason;
+  const showJudge = badge.tone === 'llm' && trace?.resolved_by === 'llm_disambiguation' && Boolean(judgeReason);
   const showMentions = group.mentions.length > 1;
 
   return (
@@ -271,12 +359,12 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
             <div className="va-gl-blk">
               <h4>{pathHeading(badge.tone)}</h4>
               <div className="va-gl-path">
-                {(['query', 'search', 'label_match', 'decision'] as const).map((key, i) => {
-                  const p = stepPresentation(badge.tone, key, trace?.[key]);
+                {(['search', 'candidates', 'exact', 'decision'] as const).map((key, i) => {
+                  const p = stepPresentation(badge.tone, key, trace);
                   return (
                     <div key={key} className={`va-gl-step ${p.state}`}>
                       <div className="va-gl-step-n">
-                        {i + 1} · {key.replace('_', ' ').toUpperCase()}
+                        {i + 1} · {STEP_HEADER_LABEL[key]}
                       </div>
                       <div className="va-gl-step-t">{p.title}</div>
                       <div className="va-gl-step-b">{p.body}</div>
@@ -316,12 +404,26 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
                                 <span className="va-gl-rejx">✗</span>
                               ) : null}
                             </td>
-                            <td>{c.qid}</td>
                             <td>
-                              <b>{c.label}</b> — {c.description}
+                              <a
+                                className="va-gl-wd"
+                                href={c.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {c.qid}
+                              </a>
                             </td>
                             <td>
-                              <span className={viaChipClass(c.matched_via)}>{c.matched_via || 'none'}</span>
+                              <b>{c.label}</b>
+                              {c.description ? <> — {c.description}</> : null}
+                            </td>
+                            <td>
+                              {c.matchKind ? (
+                                <span className={viaChipClass(c.matchKind)}>{c.matchKind}</span>
+                              ) : (
+                                <span className="va-gl-dash" title="No match provenance recorded for this candidate">—</span>
+                              )}
                             </td>
                           </tr>
                         );
@@ -334,10 +436,13 @@ function GroupDetail({ group, badge, paraInfoById, onMentionClick }: GroupDetail
               {showJudge && (
                 <div className="va-gl-blk">
                   <h4>Judge decision</h4>
-                  <div className="va-gl-judge">
-                    <div className="va-gl-judge-m">model: {trace?.model ?? 'LLM'} · Settings › Grounding</div>
-                    <div className="va-gl-judge-r">&ldquo;{trace?.judge_reason}&rdquo;</div>
-                  </div>
+                  {/* Owner: drop the "model: … · Settings › Grounding" line and
+                      its accent box — keep only the judge's reasoning quote,
+                      rendered plain per the design system. */}
+                  {/* Paper Figure 1 shows the selection "alongside the model's
+                      justification" — plain muted label, no box/accent. */}
+                  <div className="va-gl-judge-label">Justification</div>
+                  <div className="va-gl-judge-r">&ldquo;{judgeReason}&rdquo;</div>
                 </div>
               )}
 
@@ -409,8 +514,8 @@ export default function GlossaryTab({
     <div className="va-tab-content">
       <div className="va-section-title">Terminology Glossary</div>
       <div className="va-gl-summary">
-        Grouped by lemma + entity · {summary.groups} terms · {summary.mentions} mentions · resolved deterministically:{' '}
-        {summary.deterministic} · via LLM: {summary.llm} · not grounded: {summary.notGrounded}
+        Grouped by lemma + entity · {summary.groups} terms · {summary.mentions} mentions · unambiguous:{' '}
+        {summary.deterministic} · context-resolved: {summary.llm} · unresolved: {summary.notGrounded}
       </div>
       <table className="va-gl-table">
         <thead>
@@ -439,9 +544,10 @@ export default function GlossaryTab({
         </tbody>
       </table>
       <div className="va-gl-legend">
-        ◆ label match — deterministic exact-label decision, no LLM · ◇ LLM — judge disambiguated among candidates
-        (model shown) · ◇ LLM rejected all — candidates existed, none fit the context · ◇ ambiguous — candidates
-        found, no exact match and no judge run · ○ no candidates — search + enabled fallbacks returned nothing.
+        ◆ unambiguous · label match — exact Wikidata label/alias match, no LLM call · ◇ context-resolved · AI — judge
+        disambiguated among candidates by paragraph context (model name shown when known) · ◇ unresolved · AI
+        abstained — candidates existed, none fit the context · ◇ unresolved · N candidates — candidates found, no
+        exact match and no judge run · ○ unresolved · no candidates — search + enabled fallbacks returned nothing.
         <br />
         Row = unique (lemma, entity); Mentions ×N aggregates per-occurrence rows. Click any row to expand context,
         path, candidates and all mentions.

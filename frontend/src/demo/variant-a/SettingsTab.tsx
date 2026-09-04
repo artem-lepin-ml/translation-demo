@@ -1,9 +1,8 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getBudget } from '../api-client';
 import type {
-  BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig,
+  Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig,
   TestModelResult, TranslatorConfig,
 } from '../api-client';
 import type { DemoStore } from '../store';
@@ -129,7 +128,6 @@ export default function SettingsTab({
 
   const [testState, setTestState] = useState<Record<string, TestState>>({});
   const [editing, setEditing] = useState<ModelRegistryEntryPublic | null>(null);
-  const [budget, setBudget] = useState<BudgetSnapshot | null>(null);
   const [showAddEvaluator, setShowAddEvaluator] = useState(false);
   const [showAddModel, setShowAddModel] = useState(false);
   const [expandedParams, setExpandedParams] = useState<Record<string, boolean>>({});
@@ -137,12 +135,6 @@ export default function SettingsTab({
   // re-render, so rapid double/triple-clicks can fire several real (paid) calls
   // before React disables it. This ref blocks re-entry in the same tick.
   const inFlight = useRef<Set<string>>(new Set());
-
-  // Refresh the budget snapshot each time the Settings tab mounts (real-money
-  // spend is otherwise invisible in the UI — the backend has no push channel).
-  useEffect(() => {
-    getBudget().then(setBudget).catch(() => setBudget(null));
-  }, []);
 
   function stateFor(name: string): TestState {
     return testState[name] ?? defaultTestState();
@@ -205,7 +197,6 @@ export default function SettingsTab({
 
   return (
     <div className="va-tab-content">
-      {budget && <BudgetLine budget={budget} />}
 
       <div className="va-settings-layout">
         <nav className="va-settings-nav" aria-label="Settings sections" data-testid="settings-nav">
@@ -675,6 +666,7 @@ function PromptEditor({ prompt, testidPrefix, onSave }: PromptEditorProps) {
   const [mode, setMode] = useState<'edit' | 'preview'>('preview');
   const [draft, setDraft] = useState(prompt);
   const [saving, setSaving] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Re-sync when the saved prompt actually changes (successful save, or
   // switching to a different criterion) — but not while the user has unsaved
@@ -682,6 +674,20 @@ function PromptEditor({ prompt, testidPrefix, onSave }: PromptEditorProps) {
   useEffect(() => {
     setDraft(prompt);
   }, [prompt]);
+
+  // Preview -> edit transition: move focus into the textarea and place the
+  // cursor at the end, so a keyboard user who clicks Edit can type
+  // immediately and Ctrl/Cmd+navigation starts from a sane position. Fires
+  // only on the mode change (not on every keystroke) — `mode` is the only
+  // dependency.
+  useEffect(() => {
+    if (mode !== 'edit') return;
+    const el = textareaRef.current;
+    if (!el) return;
+    el.focus();
+    const end = el.value.length;
+    el.setSelectionRange(end, end);
+  }, [mode]);
 
   const dirty = draft !== prompt;
 
@@ -706,6 +712,7 @@ function PromptEditor({ prompt, testidPrefix, onSave }: PromptEditorProps) {
       </span>
       {mode === 'edit' ? (
         <textarea
+          ref={textareaRef}
           className="va-field-input va-prompt-textarea"
           data-testid={`${testidPrefix}-prompt-editor`}
           value={draft}
@@ -830,45 +837,11 @@ interface TranslatorCardProps {
 
 function TranslatorCard({ config, models, onSave, error }: TranslatorCardProps) {
   const [modelName, setModelName] = useState(config.modelName ?? '');
-  const [paramsText, setParamsText] = useState(JSON.stringify(config.params, null, 2));
-  const [paramsError, setParamsError] = useState<string | null>(null);
 
   function commitField(next: Partial<TranslatorConfig>) {
     void onSave({ modelName, prompt: config.prompt, params: config.params, ...next }).catch(() => {
       // onSave already recorded the error via the `error` prop.
     });
-  }
-
-  function commitParams() {
-    let params: Record<string, unknown>;
-    try {
-      params = JSON.parse(paramsText);
-    } catch {
-      setParamsError('Params must be valid JSON.');
-      return;
-    }
-    setParamsError(null);
-    commitField({ params });
-  }
-
-  // "Effective" preview is estimated client-side from the draft params plus
-  // the selected model's own capability fact (does it force a seed?) — there
-  // is no dedicated translator-effective-params endpoint (GET
-  // /translator-config only returns model/prompt/params), so this mirrors
-  // the same whitelist the backend validates against rather than guessing.
-  const selectedModel = models.find((m) => m.name === modelName);
-  const forcesSeed = 'seed' in (selectedModel?.effectiveParams ?? {});
-  let parsedForPreview: Record<string, unknown> | null = null;
-  try {
-    parsedForPreview = JSON.parse(paramsText);
-  } catch {
-    parsedForPreview = null;
-  }
-  const effectiveParts = parsedForPreview
-    ? Object.entries(parsedForPreview).map(([k, v]) => `${PARAM_DISPLAY_KEY[k] ?? k} ${formatParamValue(v)}`)
-    : [];
-  if (forcesSeed && parsedForPreview && !('seed' in parsedForPreview)) {
-    effectiveParts.push('seed 7 (forced for reproducibility)');
   }
 
   return (
@@ -885,24 +858,6 @@ function TranslatorCard({ config, models, onSave, error }: TranslatorCardProps) 
             <option key={m.name} value={m.name}>{m.name}</option>
           ))}
         </select>
-      </div>
-
-      <div className="va-translator-params-row">
-        <div style={{ maxWidth: 340, flex: 1 }}>
-          <div className="va-field-label">Params</div>
-          <textarea
-            className="va-field-input"
-            style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11.5, minHeight: 70, resize: 'vertical' }}
-            data-testid="translator-params"
-            value={paramsText}
-            onChange={(e) => setParamsText(e.target.value)}
-            onBlur={commitParams}
-          />
-          {paramsError && <div className="va-inline-error" data-testid="translator-params-error">{paramsError}</div>}
-          <div className="va-effective-line" data-testid="translator-effective">
-            Effective: <b>{effectiveParts.join(' · ') || '—'}</b>
-          </div>
-        </div>
       </div>
 
       <PromptEditor
@@ -934,27 +889,11 @@ interface GroundingEditorProps {
 
 function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps) {
   const [modelName, setModelName] = useState(config.modelName ?? '');
-  const [prompt, setPrompt] = useState(config.prompt);
-  const [paramsText, setParamsText] = useState(JSON.stringify(config.params, null, 2));
-  const [paramsError, setParamsError] = useState<string | null>(null);
-  const [paramsOpen, setParamsOpen] = useState(false);
 
   function commitField(next: Partial<GroundingConfig>) {
-    void onSave({ modelName, prompt, params: config.params, ...next }).catch(() => {
+    void onSave({ modelName, prompt: config.prompt, params: config.params, ...next }).catch(() => {
       // onSave already recorded the error in `error`; nothing further to do here.
     });
-  }
-
-  function commitParams() {
-    let params: Record<string, unknown>;
-    try {
-      params = JSON.parse(paramsText);
-    } catch {
-      setParamsError('Params must be valid JSON.');
-      return;
-    }
-    setParamsError(null);
-    commitField({ params });
   }
 
   return (
@@ -964,7 +903,8 @@ function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps
         <div className="va-field-label">Model</div>
         <select
           className="va-field-input va-field-select"
-          value={modelName}          onChange={(e) => { setModelName(e.target.value); commitField({ modelName: e.target.value }); }}
+          value={modelName}
+          onChange={(e) => { setModelName(e.target.value); commitField({ modelName: e.target.value }); }}
         >
           {models.map((m) => (
             <option key={m.name} value={m.name}>
@@ -974,42 +914,19 @@ function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps
         </select>
       </div>
 
-      {/* Prompt — editable (unlike EvaluatorEditor's read-only preview) */}
-      <div>
-        <div className="va-field-label">Prompt</div>
-        <textarea
-          className="va-field-input va-prompt-textarea"
-          data-testid="grounding-prompt"
-          value={prompt}          onChange={(e) => setPrompt(e.target.value)}
-          onBlur={() => commitField({ prompt })}
-        />
-      </div>
-
-      {/* Params — Model Registry's expand pattern */}
-      <div>
-        <div className="va-field-label">Params</div>
-        <span
-          className={`va-params-badge${paramsOpen ? ' open' : ''}`}
-          data-testid="grounding-params-badge"
-          onClick={() => setParamsOpen((v) => !v)}
-        >
-          <span className="chev">▶</span>{Object.keys(config.params).length} params
-        </span>
-        {paramsOpen && (
-          <div className="va-params-expanded" data-testid="grounding-params-expanded">
-            <textarea
-              className="va-field-input"
-              style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, minHeight: 100, resize: 'vertical' }}
-              value={paramsText}
-              onChange={(e) => setParamsText(e.target.value)}
-              onBlur={commitParams}
-            />
-            {paramsError && (
-              <div className="va-inline-error" data-testid="grounding-params-error">{paramsError}</div>
-            )}
-          </div>
-        )}
-      </div>
+      {/* Prompt — explicit Save/Revert (BUG-1, wave2): the textarea used to
+       *  auto-save on blur ONLY, so an edit followed by e.g. tabbing straight
+       *  to a button (never blurring into empty space) silently never
+       *  reached the server. Reuses the same PromptEditor as
+       *  Translator/Judges/Refiner — Save prompt / Revert / char count /
+       *  "Unsaved changes", not a bespoke textarea. */}
+      <PromptEditor
+        prompt={config.prompt}
+        testidPrefix="grounding"
+        onSave={async (next) => {
+          await onSave({ modelName, prompt: next, params: config.params });
+        }}
+      />
 
       {error && (
         <div className="va-inspector-warning" data-testid="grounding-field-error">
@@ -1022,9 +939,9 @@ function GroundingEditor({ config, models, onSave, error }: GroundingEditorProps
 
 // ─── RefinerCard — aggregates judge findings, rewrites the paragraph (EMNLP sprint) ──
 // Mirrors TranslatorCard: model select + editable prompt (via the shared
-// PromptEditor). Params are display-only here (ParamsInline, read-only) — the
-// refiner endpoint is brand-new this sprint, so the JSON-editing surface
-// TranslatorCard/GroundingEditor expose for params is deliberately deferred.
+// PromptEditor). Params are never shown here — role-level overrides stay
+// active server-side but are only ever displayed/edited in the Model
+// Registry section (owner call, 2026-07-11: params visible there only).
 
 interface RefinerCardProps {
   config: RefinerConfig;
@@ -1058,13 +975,6 @@ function RefinerCard({ config, models, onSave, error }: RefinerCardProps) {
         </select>
       </div>
 
-      <div>
-        <div className="va-field-label">Params</div>
-        <span data-testid="refiner-params">
-          <ParamsInline params={config.params} />
-        </span>
-      </div>
-
       <PromptEditor
         prompt={config.prompt}
         testidPrefix="refiner"
@@ -1078,26 +988,6 @@ function RefinerCard({ config, models, onSave, error }: RefinerCardProps) {
           {error}
         </div>
       )}
-    </div>
-  );
-}
-
-// ─── BudgetLine ──────────────────────────────────────────────────────────────
-
-function budgetBand(spentUsd: number, capUsd: number, calls: number, callCap: number): 'muted' | 'yellow' | 'red' {
-  const usdShare = capUsd > 0 ? spentUsd / capUsd : 0;
-  const callShare = callCap > 0 ? calls / callCap : 0;
-  const share = Math.max(usdShare, callShare);
-  if (share > 0.8) return 'red';
-  if (share > 0.5) return 'yellow';
-  return 'muted';
-}
-
-function BudgetLine({ budget }: { budget: BudgetSnapshot }) {
-  const band = budgetBand(budget.spentUsd, budget.capUsd, budget.calls, budget.callCap);
-  return (
-    <div className={`va-budget-line ${band}`} data-testid="budget-line">
-      Budget: ${budget.spentUsd.toFixed(2)} / ${budget.capUsd.toFixed(2)} · {budget.calls}/{budget.callCap} calls
     </div>
   );
 }
@@ -1195,9 +1085,33 @@ function EditModelModal({ model, onClose, onSave }: EditModelModalProps) {
     }
   }
 
-  // Defensive fallback: effectiveParams is a S1 §2.4 addition to GET /api/models;
-  // tolerate an older/mocked response shape that doesn't have it yet.
-  const effectiveParts = Object.entries(model.effectiveParams ?? {}).map(
+  // Live "Effective params" preview (BUG-3, wave2): this used to stay frozen
+  // at the dialog-open `model.effectiveParams` snapshot forever, even after
+  // editing Params below. React's documented "adjust state during render"
+  // pattern (bounded by the prevParamsText guard, so it never loops):
+  // whenever the textarea's own state changes, re-parse it immediately and,
+  // if valid, replace the preview; invalid JSON just skips the update so the
+  // last valid preview keeps showing, with a hint that it's stale. This is a
+  // client-side echo of what's currently typed, not a replayed of the
+  // server's own capability-filter logic (e.g. a forced seed) — good enough
+  // for a LOW-severity cosmetic fix; the real effective params are always
+  // re-fetched from the server on the next GET /api/models after Save.
+  const [prevParamsText, setPrevParamsText] = useState(paramsText);
+  const [previewParams, setPreviewParams] = useState<Record<string, unknown>>(
+    model.effectiveParams ?? {},
+  );
+  const [previewStale, setPreviewStale] = useState(false);
+  if (paramsText !== prevParamsText) {
+    setPrevParamsText(paramsText);
+    try {
+      const parsed = JSON.parse(paramsText) as Record<string, unknown>;
+      setPreviewParams(parsed);
+      setPreviewStale(false);
+    } catch {
+      setPreviewStale(true);   // keep showing the last valid previewParams
+    }
+  }
+  const effectiveParts = Object.entries(previewParams).map(
     ([k, v]) => `${k} ${formatParamValue(v)}`,
   );
 
@@ -1260,6 +1174,11 @@ function EditModelModal({ model, onClose, onSave }: EditModelModalProps) {
           <div className="va-effective-line" data-testid="edit-model-effective">
             {effectiveParts.length > 0 ? <b>{effectiveParts.join(' · ')}</b> : '—'}
           </div>
+          {previewStale && (
+            <span className="va-unsaved" data-testid="edit-model-effective-stale-hint">
+              Showing last valid params — current JSON is invalid
+            </span>
+          )}
         </div>
 
         {error && <div className="va-inline-error" data-testid="edit-model-error" style={{ color: 'var(--va-red)', fontSize: 12 }}>{error}</div>}
@@ -1417,6 +1336,9 @@ const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
 
 function AddModelModal({ onClose, onSave }: AddModelModalProps) {
   const [name, setName] = useState('');
+  // Shown only after the field has been touched (blurred) or a save was
+  // attempted — not on the pristine just-opened modal (BUG-2, wave2).
+  const [nameTouched, setNameTouched] = useState(false);
   const [baseUrl, setBaseUrl] = useState(DEFAULT_BASE_URL);
   const [apiKey, setApiKey] = useState('');
   const [paramsText, setParamsText] = useState('');
@@ -1426,8 +1348,13 @@ function AddModelModal({ onClose, onSave }: AddModelModalProps) {
   // state alone (`saving`) is too slow to stop a rapid double/triple-click.
   const inFlight = useRef(false);
 
+  // BUG-2 (wave2): an empty/whitespace-only Name used to create an
+  // indistinguishable "" row in the registry (and a broken `Delete ""?`
+  // confirm on cleanup). Save is disabled below whenever this is true.
+  const nameEmpty = !name.trim();
+
   async function handleSave() {
-    if (inFlight.current) return;
+    if (inFlight.current || nameEmpty) return;
     let params: Record<string, unknown> = {};
     if (paramsText.trim()) {
       try {
@@ -1443,7 +1370,12 @@ function AddModelModal({ onClose, onSave }: AddModelModalProps) {
     try {
       await onSave({ name, baseUrl, apiKey, params });
     } catch (e) {
-      setError(String(e));
+      // The backend also validates Name server-side (422 on empty/whitespace,
+      // BUG-2's backend half) — reachable on a race or a legacy client;
+      // surface its detail cleanly instead of the raw `POST /models → 422:
+      // {...}` dump.
+      const parsed = parseApiError(e);
+      setError(parsed ? `Could not add the model (${parsed.status}): ${parsed.detail}` : String(e));
     } finally {
       setSaving(false);
       inFlight.current = false;
@@ -1463,7 +1395,11 @@ function AddModelModal({ onClose, onSave }: AddModelModalProps) {
             placeholder="provider/model-id, e.g. mistralai/mistral-large"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onBlur={() => setNameTouched(true)}
           />
+          {nameTouched && nameEmpty && (
+            <div className="va-inline-error" data-testid="add-model-name-error">Name is required</div>
+          )}
         </div>
 
         <div>
@@ -1487,7 +1423,7 @@ function AddModelModal({ onClose, onSave }: AddModelModalProps) {
           <textarea
             className="va-field-input"
             style={{ fontFamily: 'var(--va-font-mono)', fontSize: 11, minHeight: 100, resize: 'vertical' }}
-            placeholder='{"max_tokens": 1536}'
+            placeholder='{"max_tokens": 20000}'
             value={paramsText}
             onChange={(e) => setParamsText(e.target.value)}
           />
@@ -1497,7 +1433,11 @@ function AddModelModal({ onClose, onSave }: AddModelModalProps) {
 
         <div className="va-modal-actions">
           <button onClick={onClose}>Cancel</button>
-          <button className="va-primary" onClick={() => void handleSave()} disabled={saving}>
+          <button
+            className="va-primary"
+            onClick={() => { setNameTouched(true); void handleSave(); }}
+            disabled={saving || nameEmpty}
+          >
             {saving ? '…' : 'Save'}
           </button>
         </div>

@@ -1,0 +1,4 @@
+accuracy Accuracy w= 0.4 enabled= True color= #4d8dff
+fluency Fluency w= 0.3 enabled= True color= #2ad4c8
+style Style w= 0.3 enabled= True color= #b072ff
+count= 3

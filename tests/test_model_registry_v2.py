@@ -1,10 +1,12 @@
-"""EMNLP demo sprint (2026-07-11): the model registry collapses to the 5
-paper models, migrate() upserts them on a live prod DB and remaps every
-role reference (criterion/translator_config/grounding_config/refiner_config)
-to the new default, then prunes the 8 obsolete rows once nothing references
-them."""
+"""EMNLP demo sprint (2026-07-11): the model registry collapses to the 4
+paper models (a 5th, TranslateGemma-27B, was dropped the same day once the
+owner finalized the registry on prod via the Settings UI), migrate() upserts
+them on a live prod DB and remaps every role reference (criterion/
+translator_config/grounding_config/refiner_config) to the new default, then
+prunes the 8 obsolete rows once nothing references them."""
 from __future__ import annotations
 
+import json
 import sqlite3
 
 import pytest
@@ -19,7 +21,7 @@ OLD_VLLM = "Qwen/Qwen3.6-27B"  # old vLLM placeholder name — NOT in the new MA
 @pytest.fixture()
 def prod_conn(tmp_path):
     """A DB shaped like the live prod DB pre-sprint: 8 legacy model rows
-    (5 OpenRouter + 3 vLLM, none of which share a name with the new 5),
+    (5 OpenRouter + 3 vLLM, none of which share a name with the new 4),
     3 criteria + translator_config + grounding_config all pointing at the
     retiring default."""
     path = tmp_path / "prod.db"
@@ -82,7 +84,7 @@ def prod_conn(tmp_path):
     return conn
 
 
-def test_five_matrix_models_present_after_migration(prod_conn):
+def test_four_matrix_models_present_after_migration(prod_conn):
     migrate.migrate(prod_conn)
     names = {r["name"] for r in prod_conn.execute("SELECT name FROM model")}
     assert names == set(MATRIX.keys())
@@ -125,26 +127,90 @@ def test_refiner_config_created_and_seeded_with_new_default(prod_conn):
     assert row["params_json"]
 
 
-def test_translategemma_vllm_row_present_and_display_only(prod_conn):
+def test_translategemma_not_in_matrix_and_never_inserted(prod_conn):
+    """TranslateGemma-27B (the local vLLM placeholder from the 2026-07-11
+    sprint's original 5-row draft) was dropped once the owner finalized the
+    registry to 4 OpenRouter-only rows on prod — migrate() must never
+    (re)insert it."""
+    assert "TranslateGemma-27B" not in MATRIX
     migrate.migrate(prod_conn)
-    row = prod_conn.execute("SELECT base_url, api_key FROM model WHERE name='TranslateGemma-27B'").fetchone()
-    assert row is not None
-    assert row["base_url"] == "http://localhost:8001/v1"
-    assert row["api_key"] == ""
+    row = prod_conn.execute("SELECT 1 FROM model WHERE name='TranslateGemma-27B'").fetchone()
+    assert row is None
+
+
+def test_translategemma_pruned_if_present_from_pre_finalization_snapshot(prod_conn):
+    """A DB snapshotted before the owner's prod finalization may still carry
+    the row from the sprint's original 5-row draft — migrate() prunes it like
+    any other now-obsolete, unreferenced model row (never re-added since it
+    is no longer in MATRIX)."""
+    prod_conn.execute(
+        "INSERT INTO model(name,base_url,api_key,params_json) VALUES(?,?,?,?)",
+        ("TranslateGemma-27B", "http://localhost:8001/v1", "", "{}"))
+    prod_conn.commit()
+    migrate.migrate(prod_conn)
+    row = prod_conn.execute("SELECT 1 FROM model WHERE name='TranslateGemma-27B'").fetchone()
+    assert row is None
 
 
 def test_owner_edited_api_key_not_clobbered_on_second_run(prod_conn):
     """INSERT OR IGNORE semantics: once the qwen row exists, migrate() must
-    never overwrite an api_key/params the owner set via Settings."""
+    never overwrite an api_key the owner set via Settings, nor any OTHER
+    params key -- EXCEPT `temperature`, which `_pin_demo_model_temperature`
+    (session isolation, 2026-07-16) deliberately re-pins to the MATRIX
+    default on EVERY migrate() run, by design: this moved former deploy-
+    script step 8's "pin temperature=0.7 on every deploy" (owner 2026-07-11,
+    judge/refiner determinism for the recorded demo) out of a live post-
+    serving API call and into migrate() itself -- see that function's
+    docstring. A non-temperature params key an owner adds still survives
+    untouched."""
     migrate.migrate(prod_conn)
-    prod_conn.execute("UPDATE model SET api_key='sk-owner-set', params_json='{\"temperature\":0.9}' "
-                       "WHERE name=?", (DEFAULT_CRITERION_MODEL,))
+    prod_conn.execute(
+        "UPDATE model SET api_key='sk-owner-set', "
+        "params_json='{\"temperature\":0.9,\"max_tokens\":999}' WHERE name=?",
+        (DEFAULT_CRITERION_MODEL,))
     prod_conn.commit()
     migrate.migrate(prod_conn)  # run again — must not clobber the owner's edit
     row = prod_conn.execute("SELECT api_key, params_json FROM model WHERE name=?",
                              (DEFAULT_CRITERION_MODEL,)).fetchone()
     assert row["api_key"] == "sk-owner-set"
-    assert row["params_json"] == '{"temperature":0.9}'
+    params = json.loads(row["params_json"])
+    assert params["max_tokens"] == 999, "a non-temperature params key survives migrate() untouched"
+    assert params["temperature"] == MATRIX[DEFAULT_CRITERION_MODEL].default_params["temperature"], \
+        "temperature is deliberately re-pinned to the MATRIX default on every migrate() run"
+
+
+def test_operator_set_current_matrix_criterion_model_survives_migrate(prod_conn):
+    """Durability fix (2026-07-16, CRITICAL): _upsert_model_registry_and_remap
+    used to test `model_name != DEFAULT_CRITERION_MODEL`, so an operator's
+    deliberate choice of any OTHER current-MATRIX model (e.g. qwen, kept in
+    place after gemini became the default) was silently reverted back to the
+    default on the very next migrate() run — and migrate() runs on every app
+    startup (app.py lifespan), i.e. every restart/redeploy. The fixed
+    predicate (`model_name NOT IN (<MATRIX names>)`) must leave it alone."""
+    migrate.migrate(prod_conn)  # first run: bootstraps the default onto every role
+    other_matrix_model = next(name for name in MATRIX if name != DEFAULT_CRITERION_MODEL)
+    prod_conn.execute("UPDATE criterion SET model_name=? WHERE id='accuracy'", (other_matrix_model,))
+    prod_conn.commit()
+    migrate.migrate(prod_conn)  # simulates a container restart/redeploy
+    row = prod_conn.execute("SELECT model_name FROM criterion WHERE id='accuracy'").fetchone()
+    assert row["model_name"] == other_matrix_model, \
+        "operator's current-MATRIX model choice must survive a migrate() restart"
+
+
+def test_operator_set_current_matrix_model_survives_migrate(prod_conn):
+    """Same durability fix as above, for the singleton configs
+    (translator_config/grounding_config/refiner_config via
+    _remap_singleton_config_model_refs) — an operator's current-MATRIX model
+    choice for grounding (e.g. gemini, distinct from a non-gemini default)
+    must survive a migrate() re-run, not just the first one."""
+    migrate.migrate(prod_conn)
+    other_matrix_model = next(name for name in MATRIX if name != DEFAULT_CRITERION_MODEL)
+    prod_conn.execute("UPDATE grounding_config SET model_name=? WHERE id=1", (other_matrix_model,))
+    prod_conn.commit()
+    migrate.migrate(prod_conn)  # simulates a container restart/redeploy
+    row = prod_conn.execute("SELECT model_name FROM grounding_config WHERE id=1").fetchone()
+    assert row["model_name"] == other_matrix_model, \
+        "operator's current-MATRIX model choice must survive a migrate() restart"
 
 
 def test_idempotent_double_run_registry(prod_conn):

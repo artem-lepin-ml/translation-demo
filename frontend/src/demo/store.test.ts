@@ -22,6 +22,8 @@ vi.mock('./api-client', async (importOriginal) => {
     getGroundingConfig: vi.fn(),
     getTranslatorConfig: vi.fn(),
     getHealth: vi.fn(),
+    deleteDocument: vi.fn(),
+    resetDocument: vi.fn(),
   };
 });
 
@@ -43,6 +45,8 @@ import {
   getGroundingConfig,
   getTranslatorConfig,
   getHealth,
+  deleteDocument,
+  resetDocument,
 } from './api-client';
 import type {
   Criterion, DocumentSummary, GroundingConfig, ModelRegistryEntryPublic, TranslatorConfig,
@@ -57,13 +61,13 @@ function issue(id: string, over: Partial<Issue> = {}): Issue {
   };
 }
 
-function makeDoc(issues: Issue[]): Document {
+function makeDoc(issues: Issue[], id = 1): Document {
   const para: Paragraph = {
     id: 1, idx: 0, source: 'ru', target: 'aaa bbb', scores: [], scoresPrev: null,
     scoresBaseline: null, aggregate: null, aggregateBaseline: null, best: null, issues, terms: [],
   };
   return {
-    id: 1, title: 't', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1,
+    id, title: 't', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1,
     sourceModel: 'm', aggregate: null, origin: 'seed', paragraphs: [para],
   };
 }
@@ -348,7 +352,7 @@ describe('dismissIssue failure surfaces paraEvalState.error (M4)', () => {
     vi.mocked(patchIssueStatus).mockRejectedValue(new Error('HTTP 500'));
     await useDemoStore.getState().dismissIssue('1');
     const st = useDemoStore.getState().paraEvalState[0];
-    expect(st.error).toContain('Dismiss failed');
+    expect(st.errorOp).toBe('dismiss');
     expect(st.error).toContain('500');
   });
 
@@ -415,6 +419,84 @@ describe('retryTranslate (S4 §3.3)', () => {
     useDemoStore.setState({ document: null });
     await useDemoStore.getState().retryTranslate();
     expect(translateDocument).not.toHaveBeenCalled();
+  });
+});
+
+describe('refreshDocument (BUG-1 stale-fetch race / BUG-3 404 handling, frontend-developer-stability-wave1)', () => {
+  it('BUG-1: discards a resolved refresh for a document the user has already switched away from', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1) });
+    let resolveDoc1: (doc: Document) => void = () => {};
+    vi.mocked(getDocument).mockImplementation((id: number) => {
+      if (id === 1) return new Promise((res) => { resolveDoc1 = res; });
+      return Promise.resolve(makeDoc([], id));
+    });
+
+    const inFlight = useDemoStore.getState().refreshDocument();   // starts fetching doc 1
+    await useDemoStore.getState().switchDocument(2);               // user switches away mid-flight
+    expect(useDemoStore.getState().document?.id).toBe(2);
+
+    resolveDoc1(makeDoc([], 1));                                   // the stale doc-1 response finally lands
+    await inFlight;
+
+    expect(useDemoStore.getState().document?.id).toBe(2);          // never clobbered back to the stale doc
+  });
+
+  it('BUG-1: a same-document refresh still applies normally (guard does not block the common case)', async () => {
+    const fresh = makeDoc([issue('9', { status: 'accepted' })], 1);
+    useDemoStore.setState({ document: makeDoc([], 1) });
+    vi.mocked(getDocument).mockResolvedValue(fresh);
+
+    await useDemoStore.getState().refreshDocument();
+
+    expect(useDemoStore.getState().document).toEqual(fresh);
+  });
+
+  it('BUG-3: a 404 on the active document clears it (falls back to the picker) and refreshes the doc list', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1) });
+    vi.mocked(getDocument).mockRejectedValue(new Error('GET /documents/1 → 404'));
+    vi.mocked(getDocuments).mockResolvedValue([]);
+
+    await useDemoStore.getState().refreshDocument();
+
+    const state = useDemoStore.getState();
+    expect(state.document).toBeNull();
+    expect(state.documentError).toBeNull();   // neutral state, not an error banner
+    expect(getDocuments).toHaveBeenCalled();
+  });
+
+  it('BUG-3: a stale 404 for a document the user already left never blanks the newly-switched-to document', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1) });
+    let rejectDoc1: (e: Error) => void = () => {};
+    vi.mocked(getDocument).mockImplementation((id: number) => {
+      if (id === 1) return new Promise((_res, rej) => { rejectDoc1 = rej; });
+      return Promise.resolve(makeDoc([], id));
+    });
+
+    const inFlight = useDemoStore.getState().refreshDocument();
+    await useDemoStore.getState().switchDocument(2);
+
+    rejectDoc1(new Error('GET /documents/1 → 404'));   // doc 1's stale 404 lands after the switch
+    await inFlight;
+
+    expect(useDemoStore.getState().document?.id).toBe(2);   // untouched
+  });
+
+  it('a non-404 failure (network/5xx) leaves state untouched — pollers just retry next tick', async () => {
+    const before = makeDoc([], 1);
+    useDemoStore.setState({ document: before });
+    vi.mocked(getDocument).mockRejectedValue(new Error('GET /documents/1 → 500'));
+
+    await useDemoStore.getState().refreshDocument();
+
+    const state = useDemoStore.getState();
+    expect(state.document).toEqual(before);
+    expect(state.documentError).toBeNull();
+  });
+
+  it('is a no-op when no document is loaded', async () => {
+    useDemoStore.setState({ document: null });
+    await useDemoStore.getState().refreshDocument();
+    expect(getDocument).not.toHaveBeenCalled();
   });
 });
 
@@ -566,6 +648,7 @@ describe('refineParagraph (EMNLP sprint — refiner pass, replaces per-paragraph
       paraEvalState: { 0: {
         loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false,
       } },
+      historyRefreshNonce: 0,
     });
   });
 
@@ -588,6 +671,9 @@ describe('refineParagraph (EMNLP sprint — refiner pass, replaces per-paragraph
     expect(state.document!.paragraphs[0].aggregate).toBe(7);   // from evalResponse, via the chained evaluate
     expect(state.paraEvalState[0].refineStage).toBeUndefined();
     expect(state.paraEvalState[0].loading).toBe(false);
+    // Refine's chained evaluateParagraph call bumps historyRefreshNonce on
+    // its own success path — Refine needs no separate bump (T3-F4/T10-F1).
+    expect(state.historyRefreshNonce).toBe(1);
   });
 
   it('holds refineStage="rescoring" while the chained evaluate is still in flight', async () => {
@@ -625,6 +711,8 @@ describe('refineParagraph (EMNLP sprint — refiner pass, replaces per-paragraph
     const state = useDemoStore.getState().paraEvalState[0];
     expect(state.refineStage).toBeUndefined();
     expect(state.error).toContain('500');
+    // T4-Н7: the banner label must say "Refine failed:", not "Evaluate failed:"
+    expect(state.errorOp).toBe('refine');
     expect(evaluate).not.toHaveBeenCalled();
   });
 });
@@ -676,5 +764,198 @@ describe('terms-status polling (store-owned single interval, S? live terminology
 
   it('stop is a safe no-op when nothing is polling', () => {
     expect(() => useDemoStore.getState().stopTermsPolling()).not.toThrow();
+  });
+
+  it('BUG-3: a 404 mid-poll (document deleted) stops the interval instead of spinning forever ' +
+    'on repeated 404s', async () => {
+    vi.mocked(getDocument).mockRejectedValue(new Error('GET /documents/1 → 404'));
+    vi.mocked(getDocuments).mockResolvedValue([]);
+
+    useDemoStore.getState().startTermsPolling();
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getDocument).toHaveBeenCalledTimes(1);
+    expect(useDemoStore.getState().document).toBeNull();   // fell back to the picker
+
+    // Without the fix this would keep firing every 2.5s forever (the 184
+    // console-404s observed in the field) — prove it genuinely stopped.
+    await vi.advanceTimersByTimeAsync(20000);
+    expect(getDocument).toHaveBeenCalledTimes(1);
+  });
+
+  it('BUG-5 (wave2): deleteDoc stops the poller synchronously on a successful DELETE, instead of waiting for a trailing 404', async () => {
+    vi.mocked(getDocument).mockResolvedValue(makeDoc([]));
+    useDemoStore.setState({
+      documents: [{ id: 1, title: 'Doc', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1, origin: 'upload' }],
+    });
+    useDemoStore.getState().startTermsPolling();
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getDocument).toHaveBeenCalledTimes(1);   // one legitimate poll while the doc was still open
+
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    vi.mocked(getDocuments).mockResolvedValue([]);
+    await useDemoStore.getState().deleteDoc(1);
+
+    // Without the fix, the interval would still be running here and fire at
+    // least one more GET against the now-deleted id before a trailing 404
+    // eventually taught it to stop (the report observed exactly two).
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(getDocument).toHaveBeenCalledTimes(1);   // no further calls after delete
+  });
+});
+
+describe('deleteDoc (BUG-5 — clears `document` synchronously on a successful delete)', () => {
+  const summary: DocumentSummary = {
+    id: 1, title: 'Doc', sourceLang: 'ru', targetLang: 'en', nParagraphs: 1, origin: 'upload',
+  };
+
+  it('sets document:null and documentLoading:true before refreshDocuments resolves (no picker flash)', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1), documents: [summary] });
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    let resolveGetDocuments!: (v: DocumentSummary[]) => void;
+    vi.mocked(getDocuments).mockImplementation(
+      () => new Promise((res) => { resolveGetDocuments = res; }),
+    );
+
+    const inFlight = useDemoStore.getState().deleteDoc(1);
+    await new Promise((r) => setTimeout(r, 0));   // let the DELETE's own microtasks settle
+    expect(useDemoStore.getState().document).toBeNull();
+    expect(useDemoStore.getState().documentLoading).toBe(true);
+
+    resolveGetDocuments([]);
+    await inFlight;
+  });
+
+  it('lands cleanly on the picker (loading cleared) when no documents remain after delete', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1), documents: [summary] });
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    vi.mocked(getDocuments).mockResolvedValue([]);
+
+    await useDemoStore.getState().deleteDoc(1);
+
+    const state = useDemoStore.getState();
+    expect(state.document).toBeNull();
+    expect(state.documentLoading).toBe(false);
+  });
+
+  it('switches to the first remaining document when one exists', async () => {
+    const other = { ...summary, id: 2 };
+    useDemoStore.setState({ document: makeDoc([], 1), documents: [summary, other] });
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    vi.mocked(getDocuments).mockResolvedValue([other]);
+    vi.mocked(getDocument).mockResolvedValue(makeDoc([], 2));
+
+    await useDemoStore.getState().deleteDoc(1);
+
+    expect(useDemoStore.getState().document?.id).toBe(2);
+  });
+});
+
+describe('resetDoc — documentResetNonce (SUSPECTED-1, wave2: History block staleness after Reset)', () => {
+  it('bumps documentResetNonce on every successful reset, so a paragraph.id-keyed History effect gets a reason to re-fire', async () => {
+    const fresh = makeDoc([], 1);
+    useDemoStore.setState({ document: makeDoc([], 1), documentResetNonce: 0 });
+    vi.mocked(resetDocument).mockResolvedValue(fresh);
+
+    await useDemoStore.getState().resetDoc();
+    expect(useDemoStore.getState().documentResetNonce).toBe(1);
+
+    await useDemoStore.getState().resetDoc();
+    expect(useDemoStore.getState().documentResetNonce).toBe(2);
+  });
+
+  it('does not bump documentResetNonce when the reset call fails', async () => {
+    useDemoStore.setState({ document: makeDoc([], 1), documentResetNonce: 0 });
+    vi.mocked(resetDocument).mockRejectedValue(new Error('POST /documents/1/reset → 500'));
+
+    await useDemoStore.getState().resetDoc();
+
+    expect(useDemoStore.getState().documentResetNonce).toBe(0);
+  });
+});
+
+describe('historyRefreshNonce — HistoryBlock refetch signal beyond documentResetNonce/Restore ' +
+  '(T3-F4/T10-F1: staleness confirmed for Refine/Evaluate/manual-edit/Accept-all)', () => {
+  beforeEach(() => {
+    useDemoStore.setState({
+      document: makeDoc([
+        issue('1', { targetFragment: 'aaa', suggestion: 'xxx' }),
+        issue('2', { targetFragment: 'bbb', suggestion: 'yyy' }),
+      ]),
+      paraEvalState: {
+        0: { loading: false, cached: false, cachedAt: null, failedCriterionIds: [], error: null, stale: false },
+      },
+      historyRefreshNonce: 0,
+    });
+  });
+
+  it('bumps after a successful evaluateParagraph (Evaluate ↻ / Retry-failed)', async () => {
+    vi.mocked(evaluate).mockResolvedValue(evalResponse);
+    await useDemoStore.getState().evaluateParagraph(1, 0);
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(1);
+  });
+
+  it('does not bump when evaluateParagraph fails', async () => {
+    vi.mocked(evaluate).mockRejectedValue(new Error('boom'));
+    await useDemoStore.getState().evaluateParagraph(1, 0);
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
+  });
+
+  it('bumps after a successful manual edit save (saveParagraphTarget)', async () => {
+    vi.mocked(patchParagraph).mockResolvedValue({
+      id: 1, idx: 0, source: 'ru', target: 'edited text', scores: [], scoresPrev: null,
+      scoresBaseline: null, aggregate: null, aggregateBaseline: null, issues: [], terms: [],
+    });
+    await useDemoStore.getState().saveParagraphTarget(1, 'edited text');
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(1);
+  });
+
+  it('does not bump when the manual edit PATCH fails', async () => {
+    vi.mocked(patchParagraph).mockRejectedValue(new Error('HTTP 500'));
+    await useDemoStore.getState().saveParagraphTarget(1, 'edited text');
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
+  });
+
+  it('bumps once after acceptAllIssues applies at least one edit', async () => {
+    vi.mocked(applyEdit)
+      .mockResolvedValueOnce({ target: 'xxx bbb', issue: issue('1', { status: 'accepted' }), siblingIssues: [] })
+      .mockResolvedValueOnce({ target: 'xxx yyy', issue: issue('2', { status: 'accepted' }), siblingIssues: [] });
+    await useDemoStore.getState().acceptAllIssues(1, 0, ['1', '2']);
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(1);
+  });
+
+  it('does not bump when acceptAllIssues applies nothing (every issue outdated)', async () => {
+    vi.mocked(applyEdit).mockRejectedValueOnce(
+      new Error('POST /paragraphs/1/apply-edit → 422: {"error":"fragment_not_found"}'),
+    );
+    vi.mocked(patchIssueStatus).mockResolvedValue(issue('1', { status: 'outdated' }));
+    await useDemoStore.getState().acceptAllIssues(1, 0, ['1']);
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
+  });
+
+  it('does NOT bump for a single acceptIssue — Accept only lives on the Issues tab, so ' +
+    'HistoryBlock is always unmounted at that moment and mounts fresh (already post-mutation) ' +
+    'next time the Scores tab opens; no bump is needed (see historyRefreshNonce doc comment)', async () => {
+    vi.mocked(applyEdit).mockResolvedValueOnce({
+      target: 'xxx bbb', issue: issue('1', { status: 'accepted' }), siblingIssues: [],
+    });
+    await useDemoStore.getState().acceptIssue(1, 0, '1');
+    expect(useDemoStore.getState().historyRefreshNonce).toBe(0);
+  });
+});
+
+
+describe('evaluate double-submit guard (T7-№5)', () => {
+  it('a second evaluateParagraph call while the first is in flight is a no-op', async () => {
+    let resolveEval: (v: typeof evalResponse) => void;
+    vi.mocked(evaluate).mockImplementation(
+      () => new Promise((res) => { resolveEval = res; }),
+    );
+    const first = useDemoStore.getState().evaluateParagraph(1, 0);
+    // second synchronous call: loading is already true -> must not POST again
+    const second = useDemoStore.getState().evaluateParagraph(1, 0);
+    expect(evaluate).toHaveBeenCalledTimes(1);
+    resolveEval!(evalResponse);
+    await Promise.all([first, second]);
+    expect(evaluate).toHaveBeenCalledTimes(1);
   });
 });

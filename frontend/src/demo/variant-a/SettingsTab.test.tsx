@@ -1,9 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import SettingsTab from './SettingsTab';
-import * as apiClient from '../api-client';
 import type {
-  BudgetSnapshot, Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig, TranslatorConfig,
+  Criterion, GroundingConfig, ModelRegistryEntryPublic, RefinerConfig, TranslatorConfig,
 } from '../api-client';
 
 afterEach(() => {
@@ -105,65 +104,6 @@ describe('SettingsTab Remove confirm guard (LOW-b)', () => {
 
     expect(window.confirm).toHaveBeenCalledWith(`Delete "${criterion.name}"?`);
     expect(props.onRemoveCriterion).not.toHaveBeenCalled();
-  });
-});
-
-describe('SettingsTab budget line', () => {
-  function mockBudget(snapshot: BudgetSnapshot) {
-    vi.spyOn(apiClient, 'getBudget').mockResolvedValue(snapshot);
-  }
-
-  it('renders the spend and call counts from a fetched snapshot', async () => {
-    mockBudget({ spentUsd: 0.18, capUsd: 2.0, calls: 51, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.textContent).toBe('Budget: $0.18 / $2.00 · 51/200 calls');
-  });
-
-  it('applies the muted band under 50% of cap', async () => {
-    mockBudget({ spentUsd: 0.18, capUsd: 2.0, calls: 51, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.className).toContain('muted');
-  });
-
-  it('applies the yellow band above 50% of cap', async () => {
-    mockBudget({ spentUsd: 1.2, capUsd: 2.0, calls: 51, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.className).toContain('yellow');
-  });
-
-  it('applies the red band above 80% of cap', async () => {
-    mockBudget({ spentUsd: 1.8, capUsd: 2.0, calls: 51, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.className).toContain('red');
-  });
-
-  it('applies the red band above 80% of the call cap even when spend is low', async () => {
-    mockBudget({ spentUsd: 0.01, capUsd: 2.0, calls: 190, callCap: 200 });
-    renderSettings();
-
-    const line = await screen.findByTestId('budget-line');
-    expect(line.className).toContain('red');
-  });
-
-  it('does not render the budget line when the fetch fails', async () => {
-    let rejectFetch!: (e: Error) => void;
-    vi.spyOn(apiClient, 'getBudget').mockReturnValue(
-      new Promise((_resolve, reject) => { rejectFetch = reject; }),
-    );
-    renderSettings();
-    rejectFetch(new Error('network error'));
-
-    // let the rejected promise's .catch(() => setBudget(null)) flush
-    await new Promise((r) => setTimeout(r, 0));
-    expect(screen.queryByTestId('budget-line')).toBeNull();
   });
 });
 
@@ -284,7 +224,7 @@ describe('SettingsTab Add Model modal', () => {
   it('shows inline error on invalid params JSON and does not save', async () => {
     const props = await openAddModel();
     fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: 'foo/bar' } });
-    fireEvent.change(screen.getByPlaceholderText('{"max_tokens": 1536}'), { target: { value: '{not json' } });
+    fireEvent.change(screen.getByPlaceholderText('{"max_tokens": 20000}'), { target: { value: '{not json' } });
     fireEvent.click(screen.getByText('Save'));
 
     expect(await screen.findByTestId('add-model-error')).toBeTruthy();
@@ -300,6 +240,48 @@ describe('SettingsTab Add Model modal', () => {
     const arg = (props.onAddModel as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(arg.name).toBe('foo/bar');
     expect(arg.baseUrl).toBe('https://openrouter.ai/api/v1');
+  });
+
+  it('BUG-2 (wave2): Save is disabled while Name is empty, and blurring an empty Name shows inline validation', async () => {
+    const props = await openAddModel();
+    const saveBtn = screen.getByText('Save') as HTMLButtonElement;
+    expect(saveBtn.disabled).toBe(true);
+    expect(screen.queryByTestId('add-model-name-error')).toBeNull();   // not shown on pristine open
+
+    fireEvent.blur(screen.getByPlaceholderText(/provider\/model-id/));
+    expect(await screen.findByTestId('add-model-name-error')).toBeTruthy();
+    expect(props.onAddModel).not.toHaveBeenCalled();
+  });
+
+  it('BUG-2 (wave2): Save stays disabled for a whitespace-only Name', async () => {
+    await openAddModel();
+    fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: '   ' } });
+    expect((screen.getByText('Save') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('BUG-2 (wave2): a non-empty Name re-enables Save and clears the inline error', async () => {
+    await openAddModel();
+    const nameInput = screen.getByPlaceholderText(/provider\/model-id/);
+    fireEvent.blur(nameInput);
+    expect(await screen.findByTestId('add-model-name-error')).toBeTruthy();
+
+    fireEvent.change(nameInput, { target: { value: 'foo/bar' } });
+    expect((screen.getByText('Save') as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.queryByTestId('add-model-name-error')).toBeNull();
+  });
+
+  it('BUG-2 (wave2): a server 422 on Name (race/legacy client) surfaces a clean detail message', async () => {
+    const onAddModel = vi.fn().mockRejectedValue(
+      new Error('POST /models → 422: {"detail":"name must not be blank"}'),
+    );
+    const props = await openAddModel({ onAddModel });
+    fireEvent.change(screen.getByPlaceholderText(/provider\/model-id/), { target: { value: 'foo/bar' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    const err = await screen.findByTestId('add-model-error');
+    expect(err.textContent).toContain('422');
+    expect(err.textContent).toContain('name must not be blank');
+    expect(props.onAddModel).toHaveBeenCalled();
   });
 });
 
@@ -540,15 +522,51 @@ describe('SettingsTab EditModelModal — API key clear (S1 §2.5)', () => {
     expect(block.textContent).toContain('max_tokens 1536');
     expect(block.textContent).toContain('seed 7');
   });
+
+  it('BUG-3 (wave2): recomputes the Effective params preview live as the Params textarea changes, instead of staying frozen at dialog-open', async () => {
+    const withEffective: ModelRegistryEntryPublic = {
+      ...model,
+      params: { max_tokens: 1536 },
+      effectiveParams: { max_tokens: 1536, seed: 7 },
+    };
+    renderSettings({ models: [withEffective] });
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
+
+    const paramsInput = screen.getByDisplayValue(/max_tokens/);
+    fireEvent.change(paramsInput, { target: { value: JSON.stringify({ max_tokens: 2048 }) } });
+
+    const block = await screen.findByTestId('edit-model-effective');
+    expect(block.textContent).toContain('max_tokens 2048');
+    expect(block.textContent).not.toContain('seed 7');
+    expect(screen.queryByTestId('edit-model-effective-stale-hint')).toBeNull();
+  });
+
+  it('BUG-3 (wave2): invalid JSON keeps showing the last valid preview plus a hint, without crashing', async () => {
+    const withEffective: ModelRegistryEntryPublic = {
+      ...model,
+      params: { max_tokens: 1536 },
+      effectiveParams: { max_tokens: 1536 },
+    };
+    renderSettings({ models: [withEffective] });
+    fireEvent.click(await screen.findByTestId(`edit-model-btn-${model.name}`));
+
+    const paramsInput = screen.getByDisplayValue(/max_tokens/);
+    fireEvent.change(paramsInput, { target: { value: '{not json' } });
+
+    const block = await screen.findByTestId('edit-model-effective');
+    expect(block.textContent).toContain('max_tokens 1536');
+    expect(await screen.findByTestId('edit-model-effective-stale-hint')).toBeTruthy();
+  });
 });
 
 describe('SettingsTab Translator card (S4 §3.4)', () => {
-  it('renders above Evaluators with model/params/prompt from translatorConfig', async () => {
+  it('renders above Evaluators with model/prompt from translatorConfig; call params stay Model-Registry-only', async () => {
     renderSettings();
     const card = await screen.findByTestId('translator-card');
     expect(within(card).getByText('openai/gpt-5.4-mini', { selector: 'option' })).toBeTruthy();
-    expect(within(card).getByTestId('translator-params').textContent).toContain('2048');
     expect(screen.getByText('Applies to the next translation run')).toBeTruthy();
+    expect(screen.queryByTestId('translator-params')).toBeNull();
+    expect(screen.queryByTestId('translator-effective')).toBeNull();
   });
 
   it('does not render the Translator card when translatorConfig is null, showing the unavailable affordance instead (2026-07-06 prod incident)', () => {
@@ -574,32 +592,15 @@ describe('SettingsTab Translator card (S4 §3.4)', () => {
     ));
   });
 
-  it('editing params and blurring commits via onSaveTranslatorConfig', async () => {
-    const onSaveTranslatorConfig = vi.fn().mockResolvedValue(undefined);
-    renderSettings({ onSaveTranslatorConfig });
-    const textarea = await screen.findByTestId('translator-params');
-    fireEvent.change(textarea, { target: { value: '{"max_tokens": 999}' } });
-    fireEvent.blur(textarea);
-
-    await waitFor(() => expect(onSaveTranslatorConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ params: { max_tokens: 999 } }),
-    ));
-  });
-
-  it('shows an inline error on invalid params JSON', async () => {
-    renderSettings();
-    const textarea = await screen.findByTestId('translator-params');
-    fireEvent.change(textarea, { target: { value: '{not json' } });
-    fireEvent.blur(textarea);
-    expect(await screen.findByTestId('translator-params-error')).toBeTruthy();
-  });
-
   it('shows an inline error when the save is rejected', async () => {
     const onSaveTranslatorConfig = vi.fn().mockRejectedValue(new Error('PUT /translator-config → 500'));
-    renderSettings({ onSaveTranslatorConfig });
-    const textarea = await screen.findByTestId('translator-params');
-    fireEvent.change(textarea, { target: { value: '{"max_tokens": 999}' } });
-    fireEvent.blur(textarea);
+    const otherModel: ModelRegistryEntryPublic = { ...model, name: 'anthropic/claude' };
+    renderSettings({ models: [model, otherModel], onSaveTranslatorConfig });
+
+    const card = await screen.findByTestId('translator-card');
+    const select = within(card).getByRole('combobox') as HTMLSelectElement;
+    fireEvent.change(select, { target: { value: otherModel.name } });
+
     expect((await screen.findByTestId('translator-field-error')).textContent).toContain('500');
   });
 });
@@ -614,6 +615,18 @@ describe('SettingsTab PromptEditor (S1 §2.3, shared by evaluator + translator)'
     fireEvent.click(within(screen.getByTestId('evaluator-prompt-toggle')).getByText('Edit'));
     expect(screen.getByTestId('evaluator-prompt-editor')).toBeTruthy();
     expect(screen.queryByTestId('evaluator-prompt-preview')).toBeNull();
+  });
+
+  it('moves focus into the textarea (cursor at end) on the preview -> edit transition (keyboard a11y)', async () => {
+    renderSettings({ criteria: [{ ...criterion, prompt: 'Rate accuracy.' }] });
+    fireEvent.click(await screen.findByText('Accuracy'));
+
+    fireEvent.click(within(screen.getByTestId('evaluator-prompt-toggle')).getByText('Edit'));
+    const textarea = screen.getByTestId('evaluator-prompt-editor') as HTMLTextAreaElement;
+
+    expect(document.activeElement).toBe(textarea);
+    expect(textarea.selectionStart).toBe(textarea.value.length);
+    expect(textarea.selectionEnd).toBe(textarea.value.length);
   });
 
   it('Save prompt is disabled until the draft differs from the saved prompt, then calls onUpdateCriterion with the full body', async () => {
@@ -667,7 +680,7 @@ describe('SettingsTab Grounding card', () => {
     sessionStorage.clear();
   });
 
-  it('renders the Grounding section with the model select populated', async () => {
+  it('renders the Grounding section with the model select populated; call params stay Model-Registry-only', async () => {
     renderSettings();
 
     // Numbered heading now shares text with its nav link ("4. Grounding"),
@@ -677,6 +690,7 @@ describe('SettingsTab Grounding card', () => {
     const select = editor.querySelector('select') as HTMLSelectElement;
     expect(select.value).toBe(model.name);
     expect(select.querySelectorAll('option')).toHaveLength(1);
+    expect(within(editor).queryByTestId('grounding-params-badge')).toBeNull();
   });
 
   it('does not render the Grounding editor when groundingConfig is null, showing the unavailable affordance instead (2026-07-06 prod incident)', () => {
@@ -687,19 +701,52 @@ describe('SettingsTab Grounding card', () => {
     expect(screen.getByTestId('grounding-config-unavailable')).toBeTruthy();
   });
 
-  it('editing the prompt and blurring calls onSaveGroundingConfig', async () => {
+  // BUG-1 (wave2): Grounding's prompt editor used to be a bare textarea that
+  // auto-saved on blur ONLY — an edit followed by e.g. tabbing straight to a
+  // button (never blurring into empty space) silently never reached the
+  // server. It now reuses the shared PromptEditor (Save prompt / Revert /
+  // char count / "Unsaved changes"), the same as Translator/Judges/Refiner —
+  // these tests mirror the Refiner card's own PromptEditor coverage above.
+  it('BUG-1 (wave2): renders the shared PromptEditor with explicit Save/Revert, not a bare auto-saving textarea', async () => {
+    renderSettings();
+    const editor = await screen.findByTestId('grounding-editor');
+
+    expect(within(editor).getByTestId('grounding-prompt-toggle')).toBeTruthy();
+    fireEvent.click(within(within(editor).getByTestId('grounding-prompt-toggle')).getByText('Edit'));
+    expect(within(editor).getByTestId('grounding-prompt-editor')).toBeTruthy();
+    expect(within(editor).getByTestId('grounding-prompt-save')).toBeTruthy();
+    expect(within(editor).getByTestId('grounding-prompt-revert')).toBeTruthy();
+  });
+
+  it('BUG-1 (wave2): editing the prompt and clicking Save prompt calls onSaveGroundingConfig with the full body', async () => {
     const onSaveGroundingConfig = vi.fn().mockResolvedValue(undefined);
     renderSettings({ onSaveGroundingConfig });
+    const editor = await screen.findByTestId('grounding-editor');
 
-    const promptInput = await screen.findByTestId('grounding-prompt');
-    fireEvent.change(promptInput, { target: { value: 'New judge prompt.' } });
-    fireEvent.blur(promptInput);
+    fireEvent.click(within(within(editor).getByTestId('grounding-prompt-toggle')).getByText('Edit'));
+    const textarea = within(editor).getByTestId('grounding-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'New judge prompt.' } });
+    fireEvent.click(within(editor).getByTestId('grounding-prompt-save'));
 
     await waitFor(() => expect(onSaveGroundingConfig).toHaveBeenCalledWith({
       modelName: groundingConfig.modelName,
       prompt: 'New judge prompt.',
       params: groundingConfig.params,
     }));
+  });
+
+  it('BUG-1 (wave2): a blur without clicking Save prompt does NOT save (the old silent-loss path)', async () => {
+    const onSaveGroundingConfig = vi.fn().mockResolvedValue(undefined);
+    renderSettings({ onSaveGroundingConfig });
+    const editor = await screen.findByTestId('grounding-editor');
+
+    fireEvent.click(within(within(editor).getByTestId('grounding-prompt-toggle')).getByText('Edit'));
+    const textarea = within(editor).getByTestId('grounding-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'Edited but never saved.' } });
+    fireEvent.blur(textarea);
+
+    expect(onSaveGroundingConfig).not.toHaveBeenCalled();
+    expect(screen.getByText('Unsaved changes')).toBeTruthy();
   });
 
   it('changing the model select calls onSaveGroundingConfig immediately', async () => {
@@ -716,26 +763,15 @@ describe('SettingsTab Grounding card', () => {
     ));
   });
 
-  it('expands params and shows an inline error on invalid JSON', async () => {
-    renderSettings();
-
-    const badge = await screen.findByTestId('grounding-params-badge');
-    fireEvent.click(badge);
-    const paramsArea = await screen.findByTestId('grounding-params-expanded');
-    const textarea = paramsArea.querySelector('textarea') as HTMLTextAreaElement;
-    fireEvent.change(textarea, { target: { value: '{not json' } });
-    fireEvent.blur(textarea);
-
-    expect(await screen.findByTestId('grounding-params-error')).toBeTruthy();
-  });
-
   it('shows an inline error when the save is rejected', async () => {
     const onSaveGroundingConfig = vi.fn().mockRejectedValue(new Error('PUT /grounding-config → 500'));
     renderSettings({ onSaveGroundingConfig });
+    const editor = await screen.findByTestId('grounding-editor');
 
-    const promptInput = await screen.findByTestId('grounding-prompt');
-    fireEvent.change(promptInput, { target: { value: 'New judge prompt.' } });
-    fireEvent.blur(promptInput);
+    fireEvent.click(within(within(editor).getByTestId('grounding-prompt-toggle')).getByText('Edit'));
+    const textarea = within(editor).getByTestId('grounding-prompt-editor');
+    fireEvent.change(textarea, { target: { value: 'New judge prompt.' } });
+    fireEvent.click(within(editor).getByTestId('grounding-prompt-save'));
 
     expect((await screen.findByTestId('grounding-field-error')).textContent).toContain('500');
   });
@@ -773,29 +809,15 @@ describe('SettingsTab 5-section layout with mini-nav (EMNLP sprint)', () => {
       '#settings-refiner',
     ]);
   });
-
-  it('keeps BudgetLine above the sections as an unnumbered strip (not one of the 5 titled sections)', async () => {
-    vi.spyOn(apiClient, 'getBudget').mockResolvedValue(
-      { spentUsd: 0.1, capUsd: 2.0, calls: 1, callCap: 200 },
-    );
-    renderSettings();
-    const budget = await screen.findByTestId('budget-line');
-    const layout = (await screen.findByTestId('settings-nav')).closest('.va-settings-layout');
-
-    // BudgetLine sits as a sibling before .va-settings-layout, not nested
-    // inside it — i.e. it is not one of the 5 numbered sections.
-    expect(layout?.contains(budget)).toBe(false);
-    expect(screen.getAllByTestId('settings-section-title')).toHaveLength(5);
-  });
 });
 
 describe('SettingsTab Refiner card (EMNLP sprint)', () => {
-  it('renders with model/params/prompt from refinerConfig', async () => {
+  it('renders with model/prompt from refinerConfig; call params stay Model-Registry-only', async () => {
     renderSettings();
     const card = await screen.findByTestId('refiner-card');
     expect(within(card).getByText(model.name, { selector: 'option' })).toBeTruthy();
-    expect(within(card).getByTestId('refiner-params').textContent).toContain('max_tokens');
     expect(within(card).getByTestId('refiner-prompt-preview')).toBeTruthy();
+    expect(within(card).queryByTestId('refiner-params')).toBeNull();
   });
 
   it('does not render the Refiner card when refinerConfig is null, showing the unavailable affordance instead', () => {

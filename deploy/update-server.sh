@@ -28,10 +28,21 @@
 #      the deploy with the failing endpoint named (this is the gate a
 #      migrated-but-still-500ing endpoint, e.g. the grounding_config outage,
 #      should have caught before reaching prod)
-#   7. disable the retired Cultural Adaptation criterion on PROD DATA
-#      (UPDATE, never DELETE — score/issue history is irreproducible)
-#   8. force temperature=0 on the demo model rows via the live API (judge
-#      determinism for the recorded demo)
+#
+# Session isolation (2026-07-16, docs/superpowers/specs/2026-07-16-session-
+# isolation.md): this script used to end with two more steps — disabling the
+# retired Cultural Adaptation criterion and pinning temperature=0.7 on the
+# demo model rows — both applied as live, no-cookie HTTP PUT/UPDATE calls
+# AFTER the container started serving. Under session isolation an
+# unauthenticated write like that would silently land in a one-off session
+# clone instead of the canonical golden DB, never actually reaching prod.
+# Both are now idempotent steps INSIDE `palimpsest.webapp.migrate` (step 5
+# above, which always runs against the real golden DB before the container
+# starts): the Cultural Adaptation criterion is already retired by
+# `_reduce_to_three_criteria` (it was a duplicate of this script's former
+# step 7 — verified, then removed here), and `_pin_demo_model_temperature`
+# now does what the former step 8's live-API loop did. This script has NO
+# post-serving API mutations left.
 #
 # Caddy: no config change needed — gse-demo keeps the same container name,
 # port (8000) and grader-net membership, so the existing Caddy site block
@@ -56,36 +67,37 @@ log() { printf '\n[update-server] %s\n' "$1"; }
 cd "$REPO_DIR"
 
 if [ "$SKIP_GIT" != "1" ]; then
-    log "1/8 git pull origin $DEPLOY_BRANCH"
+    log "1/6 git pull origin $DEPLOY_BRANCH"
     git fetch origin "$DEPLOY_BRANCH"
     git checkout "$DEPLOY_BRANCH"
     git pull --ff-only origin "$DEPLOY_BRANCH"
 else
-    log "1/8 skipped (SKIP_GIT=1 — tree deployed by rsync)"
+    log "1/6 skipped (SKIP_GIT=1 — tree deployed by rsync)"
 fi
 
 if [ "$SKIP_NPM" != "1" ]; then
-    log "2/8 npm build (frontend/dist)"
+    log "2/6 npm build (frontend/dist)"
     (cd frontend && npm ci && npm run build)
 else
-    log "2/8 skipped (SKIP_NPM=1 — using prebuilt frontend/dist)"
+    log "2/6 skipped (SKIP_NPM=1 — using prebuilt frontend/dist)"
     if [ ! -d "$REPO_DIR/frontend/dist" ]; then
         log "ERROR: frontend/dist missing — build locally before rsync"
         exit 1
     fi
 fi
 
-log "3/8 backup demo.db"
+log "3/6 backup demo.db"
 if [ -f "$DATA_DIR/demo.db" ]; then
     cp "$DATA_DIR/demo.db" "$DATA_DIR/demo.db.bak-$(date +%s)"
 else
     echo "  (no existing demo.db at $DATA_DIR — first deploy, nothing to back up)"
 fi
 
-log "4/8 docker build $IMAGE_NAME"
+log "4/6 docker build $IMAGE_NAME"
 docker build -t "$IMAGE_NAME" .
 
-log "5/8 migrate the DB (one-shot container, before the new server starts)"
+log "5/6 migrate the DB (one-shot container, before the new server starts) -- includes criterion"
+log "    retirement + demo model temperature pin, see the session-isolation note above"
 docker run --rm \
     -v "$DATA_DIR:/data" \
     -e PALIMPSEST_DB=/data/demo.db \
@@ -107,8 +119,10 @@ if [ -n "$OPENROUTER_API_KEY" ]; then
 fi
 
 docker run -d --name "$CONTAINER_NAME" \
+    --restart unless-stopped \
     --network "$NETWORK_NAME" \
     -v "$DATA_DIR:/data" \
+    -e PALIMPSEST_BUDGET_LOG=/data/budget_calls.jsonl \
     "${ENV_ARGS[@]}" \
     "$IMAGE_NAME"
 
@@ -122,7 +136,7 @@ for _ in $(seq 1 30); do
     sleep 1
 done
 
-log "6/8 smoke test: boot-critical GET endpoints must all answer 200"
+log "6/6 smoke test: boot-critical GET endpoints must all answer 200"
 BOOT_CRITICAL_ENDPOINTS=(
     /api/documents
     /api/criteria
@@ -148,50 +162,6 @@ if status != 200:
         exit 1
     fi
     log "  $ep -> 200"
-done
-
-log "7/8 disable the retired Cultural Adaptation criterion (UPDATE, never DELETE)"
-python3 - "$DATA_DIR/demo.db" <<'PY'
-import sqlite3
-import sys
-
-db_path = sys.argv[1]
-conn = sqlite3.connect(db_path)
-conn.execute("UPDATE criterion SET enabled=0 WHERE id='cultural'")
-conn.commit()
-print(f"  criterion 'cultural' rows updated: {conn.total_changes}")
-conn.close()
-PY
-
-log "8/8 force temperature=0 on the demo model rows via the live API"
-MODELS=(
-    "qwen/qwen3.6-27b"
-    "google/gemma-3-27b-it"
-    "deepseek/deepseek-v4-flash"
-    "google/gemini-3.1-flash-lite"
-)
-for name in "${MODELS[@]}"; do
-    docker exec "$CONTAINER_NAME" python -c "
-import json
-import urllib.request
-
-name = '$name'
-api = 'http://localhost:$API_PORT'
-with urllib.request.urlopen(f'{api}/api/models') as r:
-    rows = json.load(r)
-row = next((m for m in rows if m['name'] == name), None)
-if row is None:
-    print(f'  skip {name} — not present in the model registry')
-else:
-    params = dict(row['params'])
-    params['temperature'] = 0
-    body = json.dumps({'baseUrl': row['baseUrl'], 'params': params}).encode()
-    req = urllib.request.Request(
-        f'{api}/api/models/{name}', data=body, method='PUT',
-        headers={'Content-Type': 'application/json'})
-    urllib.request.urlopen(req)
-    print(f'  {name}: temperature forced to 0')
-"
 done
 
 log "done — $CONTAINER_NAME is running $DEPLOY_BRANCH with the migrated DB"

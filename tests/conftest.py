@@ -4,8 +4,16 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from palimpsest.webapp import db, translate
+from palimpsest.webapp import budget, db, translate
 from palimpsest.webapp.app import app
+
+
+@pytest.fixture(autouse=True)
+def _budget_log_tmp(tmp_path, monkeypatch):
+    # budget._LOG_PATH defaults to "budget_calls.jsonl" relative to the CWD;
+    # without this, every pytest run drops a fake-model spend log into the
+    # repo root (which once leaked into the prod image via rsync+docker build).
+    monkeypatch.setattr(budget, "_LOG_PATH", str(tmp_path / "budget_calls.jsonl"))
 
 
 @pytest.fixture()

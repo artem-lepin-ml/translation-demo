@@ -110,7 +110,7 @@ interface Document extends DocumentSummary {
   sourceModel: string;
   aggregate: number | null;     // среднее paragraph.aggregate (на лету, из замороженных)
   paragraphs: Paragraph[];
-  precompute: { status: 'running' | 'done' | 'stopped' | 'skipped'; done: number; planned: number; succeeded: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-4 (custom-pair-upload); присутствует для origin='upload', null для origin='seed'
+  precompute: { status: 'running' | 'done' | 'stopped' | 'skipped'; done: number; planned: number; succeeded: number; failed: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-4 (custom-pair-upload); присутствует для origin='upload', null для origin='seed'. failed: number — 2026-07-17 fix (additive), см. дельту внизу файла
   translation: { status: 'running' | 'done' | 'failed'; done: number; total: number; errorReason?: 'no_api_key' | 'budget_exhausted' | 'all_failed' } | null;  // rev-5 (translator): присутствует, когда присутствует precompute (т.е. origin='upload'); зеркалит форму precompute
   termsStatus: 'none' | 'running' | 'done' | 'failed';  // 2026-07-11 (live terminology, см. дельту внизу файла): присутствует ДЛЯ ВСЕХ документов (в т.ч. origin='seed', там всегда 'done') — в отличие от precompute/translation это колонка БД (document.terms_status), не in-memory реестр
 }
@@ -123,6 +123,7 @@ interface Document extends DocumentSummary {
 // LLMClient.complete(**params) как есть. Так гетерогенные модели не ломают контракт.
 interface ModelRegistryEntry {       // тело POST/PUT (с ключом)
   name: string;        // PK = wire model id (e.g. "openai/gpt-5.5"); неизменяем на PUT
+                        // POST: непустая после strip() строка (422 иначе) — без whitelist на формат id
   baseUrl: string;     // https://openrouter.ai/api/v1
   apiKey: string;      // write-only — НИКОГДА не возвращается в GET
   params: Record<string, unknown>;   // моки: {temperature, max_tokens}; позже — реальные per-model
@@ -172,7 +173,7 @@ PATCH  /api/issues/{id}             {status: 'open'|'dismissed'}
 
 # контрибьюшен 2 — пул оценщиков (Settings)
 GET    /api/criteria                            -> Criterion[]
-POST   /api/criteria               {Criterion}  -> Criterion
+POST   /api/criteria               {Criterion}  -> Criterion            # 2026-07-17 fix: теперь действительно evaluable (см. дельту внизу файла) — ранее первая же оценка любого кастомного критерия падала FileNotFoundError, потому что judge.py читал ТОЛЬКО файл prompts/scoring/<id>.md, никогда БД-строку с пользовательским prompt
 PUT    /api/criteria/{id}          {Criterion}  -> Criterion            # id из тела игнорируется
 DELETE /api/criteria/{id}                       -> 204 | 409            # 409 если есть скоры/issues; используй enabled=false
 
@@ -200,7 +201,7 @@ POST   /api/budget/reset                        -> {spentUsd, capUsd, calls, cal
 - **Агрегат — один общий хелпер, всегда по ВСЕМ enabled-критериям:** `aggregate = Σ( norm(value)·weight ) / Σ weight`, `norm(value)=(value−scaleMin)/(scaleMax−scaleMin)` (показ ×10). Нормализация обязательна (шкалы критериев разные). **`seed.py` и `/evaluate` зовут ОДИН и тот же `compute_aggregate()`** — иначе baseline и latest несравнимы. При частичном/подмножественном `/evaluate` агрегат считается по ВСЕМ enabled-критериям, подставляя **последний доступный** score для не-переоценённых (а не по подмножеству). Заморожен в момент оценки; правка весов задним числом не меняет показанное «до».
 - **Сравнимость наборов:** каждая оценка хранит `criteria_key` (отсортированные id enabled-критериев на момент оценки). UI сравнивает `criteria_key` baseline и latest; **различаются → бейдж «набор критериев изменился, дельта не сравнима»** (иначе прирост — артефакт включения/выключения критерия, а не качества).
 - **Частичный сбой `/evaluate`:** упавший критерий отсутствует в `scores` и попадает в `failedCriterionIds` (явное поле ответа); HTTP 200.
-- **Живой + кеш-фолбэк (решение владельца):** `/evaluate` идёт в LLM с таймаутом T (≈20 с). На этапе seed для показательных абзацев вставляются строки `kind='cache'` (ожидаемый результат после правок). При таймауте/сбое, если у абзаца есть `kind='cache'` — возвращаем его значения с `cached:true`, **НИЧЕГО не вставляя** в score/issue (read-only passthrough, «preview»). Cache-строки **исключены** из выбора «текущего»: `latest = max(created_at) WHERE kind IN ('seed','live')`. Так документ не открывается уже-улучшенным и cached-ответ не инвертирует дельту.
+- **Живой + кеш-фолбэк (решение владельца):** `/evaluate` идёт в LLM с таймаутом T (≈20 с). На этапе seed для показательных абзацев вставляются строки `kind='cache'` (ожидаемый результат после правок). При таймауте/сбое, если у абзаца есть `kind='cache'` — возвращаем его значения с `cached:true`, **НИЧЕГО не вставляя** в score/issue (read-only passthrough, «preview»). Cache-строки **исключены** из выбора «текущего»: `latest = max(created_at) WHERE kind IN ('seed','live')`. Так документ не открывается уже-улучшенным и cached-ответ не инвертирует дельту. **`failedCriterionIds` на cached-ответе (2026-07-17 fix, см. дельту внизу файла):** `[]`, если ни один живой судья реально не пытался вызваться (единственная причина — не настроен api-ключ, `_judge_live`'s `RuntimeError("no api key for model")` до сетевого вызова) — обычное чтение кеша; иначе — реальный список упавших критериев, когда живые судьи ДЕЙСТВИТЕЛЬНО вызвались и все упали (auth-ошибка, таймаут, ошибка парсинга, исчерпание бюджета). До фикса поле было жёстко зашито `[]` при любом cached-ответе.
 - **Reset (решение владельца):** `POST /api/documents/{id}/reset` удаляет score/issue-строки c `kind='live'` по документу и восстанавливает `paragraph.target = paragraph.seed_target` (immutable). Baseline (`kind='seed'`) и cache (`kind='cache'`) переживают. Reset также **принудительно реоткрывает** все `kind='seed'` issue-строки (`status='open'`), независимо от их предыдущего статуса — ранее dismissed seed-issue снова становится open после сброса. Возвращает свежий `Document`. Гонка с живым `/evaluate`: документ несёт `version`; `/evaluate` и `reset` его инкрементят; `reset` отдаёт `409`, если по документу есть незавершённый `/evaluate` (in-memory guard). 
 - **`/apply-edit` цепочкой:** на `422 fragment_not_found` статус issue **НЕ меняется** (остаётся `open`), UI показывает ошибку «текст изменился — пересчитайте». Цепочка accept применяется в порядке `charStart` (меньше шанс сдвига фрагментов). При INSERT нового open-issue, если уже есть `accepted`/`dismissed` issue с тем же `(paragraphId, criterionId, targetFragment)` — новый **не вставляется** (без дублей-наложений на спан).
 - **`POST /api/models/{name}/test` — зонд-вызов (роудмапа п.4):** `404` только для неизвестного `name`; любой другой исход — `200`. Отсутствие api-ключа/env, таймаут (общий `EVAL_TIMEOUT`≈20 с), ошибка API, ошибка парсинга JSON-ответа модели или блок бюджета — все дают `200 TestModelResult{ok:false, message:<причина>}` (та же философия, что у кеш-фолбэка `/evaluate`: неудачный реальный вызов — не 5xx). Модели даётся русский абзац `idx=1` с просьбой извлечь термины JSON-массивом; `reference` = нормализованные surface-формы seed `term`-строк этого абзаца (slash-split на составные формы вроде «марту/амурру»); `share = matched/total`; `ok = (нет ошибки) И share ≥ 0.5`. Реальный вызов идёт через `_client_for` + `LLMClient.complete`, под тем же бюджетным гардом (`budget.py`, жёсткий кап $2, pre-call резервирование), что и `/evaluate`.
@@ -359,6 +360,10 @@ POST /api/documents/{doc_id}/translate           -> 202 {status:'started', total
 GET  /api/documents/{doc_id}/export?format=xlsx|md  -> file (Content-Disposition: attachment)
      # 200 xlsx: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
      # 200 md:   text/markdown; charset=utf-8
+     #      md payload (owner contract 2026-07-17, supersedes the rev-5 table format):
+     #      "# {title}" + final translation text only — one block per paragraph in
+     #      idx order, blank-line separated; no table, no source column, no escaping;
+     #      paragraphs with an empty target (mid-translate) are skipped
      # 404 unknown document; 422 unknown format
 
 # health limits (S3 §2.3)
@@ -420,7 +425,7 @@ GET  /api/health -> {service, status, limits: {maxParagraphs, maxParaChars}}
 Отдельная секция (не переиспользует нумерацию §7/«ревизия N» во избежание коллизии редактирования с параллельной дельтой критериев/моделей/refiner той же спринт-волны — см. lane B1). Полная реализация: `src/palimpsest/webapp/terminology_live.py`; поведенческие детали (launch-точки, sync/async-мост к живому судье, бюджет) — [webapp.md § Live terminology](../../subsystems/webapp.md#live-terminology); семантика grounding/pairing (переиспользуется без изменений) — [terminology.md § Live trigger](../../stages/terminology.md).
 
 **Что изменилось в контракте:**
-- **`Document.termsStatus: 'none'|'running'|'done'|'failed'`** добавлено в §1 `Document` (инлайн-коммент выше) — присутствует для ВСЕХ документов (в т.ч. `origin='seed'` → всегда `'done'`, миграцией). В отличие от `precompute`/`translation` это колонка БД (`document.terms_status`, `db.py::SCHEMA` + `migrate.py`), не in-memory реестр — переживает рестарт процесса.
+- **`Document.termsStatus: 'none'|'running'|'done'|'failed'`** добавлено в §1 `Document` (инлайн-коммент выше) — присутствует для ВСЕХ документов (в т.ч. `origin='seed'` → всегда `'done'`, миграцией). В отличие от `precompute`/`translation` это колонка БД (`document.terms_status`, `db.py::SCHEMA` + `migrate.py`), не in-memory реестр — значение колонки переживает рестарт процесса, но само по себе это НЕ значит «безопасно»: рестарт убивает фоновую asyncio-задачу до `_finish()`, и колонка так и остаётся на `'running'` навсегда (хуже, чем in-memory-словари precompute/translation, которые статус просто теряют, а не лгут им бесконечно). Исправлено stability-фиксом 2026-07-16: `app._reset_stuck_terms` в lifespan-старте (сразу после `migrate()`) безусловно сбрасывает каждый `'running'`-документ в `'none'` — в момент старта процесса ни для одного `doc_id` ещё не может существовать реальной фоновой задачи. Подробности — [webapp.md § Live terminology](../../subsystems/webapp.md#live-terminology).
 - **`POST /api/paragraphs/{id}/terms` удалён** (§2, §5) — был stub (`SELECT`-passthrough, ноль вызовов с фронта). `Term[]` абзаца теперь заполняется автоматически: (a) для документов без `translate` — сразу после создания (таргеты уже есть); (b) для `translate:true` — по завершении фонового перевода (`translate.py`'s `_run` получил опциональный `terms_launch` колбэк), чтобы pairing видел финальный, а не пустой, target. Сид-документ никогда не запускается этим путём — у него уже есть precomputed термины (`scripts/load_terms.py`), и миграция ставит `terms_status='done'` явно.
 - **`app._grounding_judge_live` теперь реально вызывается** (раньше — мёртвый код с пустым system-сообщением, TODO "no caller in the webapp yet"): шлёт `DEFAULT_GROUNDING_JUDGE_SYSTEM_PROMPT` как system, budget reserve/settle без изменений.
 
@@ -443,6 +448,8 @@ The judge-criterion set collapses to `{accuracy, fluency, style}`. `terminology`
 `seed.py` now seeds all 5 rows **unconditionally** — the `PALIMPSEST_SEED_DEMO` env flag no longer branches model seeding (the flag itself is unused dead config now; `docs/subsystems/webapp.md`'s description of it is stale pending a docs-keeper pass, flagged not fixed by this delta). `DEFAULT_CRITERION_MODEL` moves from `openai/gpt-5.4-mini` to `qwen/qwen3.6-27b`.
 
 **Migration (prod data):** `_upsert_model_registry_and_remap` runs FIRST in `migrate()` — `INSERT OR IGNORE`s the 5 new rows (never clobbers an owner-edited `api_key`/`params` on a re-run) and repoints every `criterion.model_name` to the new default. `translator_config`/`grounding_config`/`refiner_config.model_name` are repointed the same way once their tables are guaranteed to exist. The 8 obsolete model rows are then deleted (config, not predictions — deletion is fine here, unlike `score`/`issue`) once nothing still references them; a defensive re-check skips (rather than raising) any row a future caller might still reference.
+
+**Delta 2026-07-16 (gemini-everywhere default + migration durability fix), superseding the two paragraphs above.** `DEFAULT_CRITERION_MODEL` (`model_matrix.py`) moved a second time, `qwen/qwen3.6-27b` → `google/gemini-3.1-flash-lite`, for every role (translator, all 3 judge criteria, refiner; grounding was already effectively on gemini) — see `docs/known_issues.md` for the qwen-as-refiner empty-output/timeout finding that motivated it. `qwen/qwen3.6-27b` stays in `MATRIX`, just no longer the default. Same delta fixed a CRITICAL durability bug found by code review: `_upsert_model_registry_and_remap`'s criterion remap and `_remap_singleton_config_model_refs`'s config remap both used to test `model_name != DEFAULT_CRITERION_MODEL`, which reverted an operator's deliberate, still-valid model choice (any current-MATRIX model other than the default) back to the default on every `migrate()` run — and `migrate()` runs on every app startup, i.e. every restart/redeploy. Both predicates now test `model_name NOT IN (<current MATRIX names>)` instead — only a genuinely retired (off-MATRIX) model gets remapped; any current-MATRIX operator choice now survives every restart. See `src/palimpsest/webapp/migrate.py` and `docs/known_issues.md` (RESOLVED 2026-07-16 entry) for the full before/after.
 
 ### New: refiner role
 
@@ -485,3 +492,149 @@ POST /api/paragraphs/{pid}/refine
 **Call semantics:** findings = the paragraph's `status='open'` issues across ALL criteria — the same set `_para_issues` (app.py) surfaces to the inspector, filtered to `open` (accepted/dismissed/outdated history is not re-litigated). Budget reserve/settle + `REFINE_TIMEOUT=60s` + one transient retry mirror the `_judge_live`/`_evaluate` pattern; unlike `/evaluate`, there is **no cache fallback**. On success, in one transaction: `paragraph.target` updated, every gathered finding's `issue.status` set to `'accepted'` (re-checked `AND status='open'` at write time — a TOCTOU guard against a concurrent human dismiss/accept during the LLM call), `target_revision(origin='refine')` written. Model output is defensively stripped of an accidental ```` ``` ````-fence and one layer of wrapping quotes before being accepted; empty/whitespace-only output is rejected as a `502` failure, never written.
 
 **Response-shape note (deliberate, verified against the already-shipped frontend, not a guess):** unlike `/apply-edit`'s `{target, issue, siblingIssues}` shape, `/refine` returns the **full** `Paragraph` dict (`_para_dict`) — matching `api-client.ts`'s `refineParagraph(): Promise<Paragraph>` and `store.ts`'s merge (`{...p, ...updated}`), which already shipped ahead of this backend work.
+
+## Grounding-trace strategy label delta (2026-07-16, EMNLP-demo sprint — owner UI review)
+
+`Term.traceJson` (§1, `GroundingTrace` v1 — schema fully specified in [2026-07-03-grounding-label-first-design.md §5](2026-07-03-grounding-label-first-design.md)) gains no new top-level key; each entry of its existing `queries[]` array gains one new field, `"strategy"`, alongside the existing `{q, kind, mechanism, n_hits}`. `strategy` is exactly `"prefix" | "cirrus" | "sitelink" | "guess"` (the last added 2026-07-17 with the live label-guess tier: an LLM-guessed canonical label re-queried via `wbsearchentities`), naming which of the escalating Wikidata backends produced that call (`wbsearchentities` rungs 1-2 and the non-baseline widening tiers → `"prefix"`; CirrusSearch rung 3 → `"cirrus"`; RU-Wikipedia-title→wikibase-item rung 4 → `"sitelink"`) — 1:1 with `mechanism`, added because a raw trace of 5 `wbsearchentities`/`cirrus`/`wikipedia_wikibase_item` calls for a 2-word mention read as dumb repetition in the UI rather than a legible escalation ladder. Backend: `generate_candidates()` ([candidates.py](../../../src/palimpsest/terminology/grounding/candidates.py), see [terminology.md](../../stages/terminology.md) for the full ladder). No DB/DDL change (`trace_json` stays a free-form JSON blob); frontend renders `q.strategy` per query row.
+
+## Document picker curation delta (2026-07-16, EMNLP-demo sprint — owner UI review)
+
+Owner decision from a screenshot review of the live picker: of the 3 documents the shared demo DB has accumulated (the `origin='seed'` document from `seed.py`, plus two `origin='upload'` documents loaded via `scripts/create_demo_docs.py data/seed/demo_docs/{mesopotamia-2,qin-state}.json`), keep only **"World History — Selected Passages"** visible in the landing picker; hide the seed document ("Mesopotamia — ancient Near East") and "The Qin State — Ancient China". Per-session document isolation (letting each visitor see only their own uploads) is a separate, deferred idea — this delta is a coarse, shared-DB curation flag, not that.
+
+**Mechanism:** new column `document.hidden INTEGER NOT NULL DEFAULT 0` (`db.py` SCHEMA + an idempotent `PRAGMA table_info`-guarded `ALTER TABLE` in `migrate.py`, same pattern as every other additive column here). `GET /api/documents` (§2, the picker list) adds `WHERE hidden=0`; `GET /api/documents/{id}` is **unchanged** — a hidden document is still a full, deep-linkable `Document`, its `score`/`issue` rows untouched (owner hard invariant against deleting predictions, `.claude/rules/invariants.md`). No wire-DTO change: `hidden` is a server-side filter, not exposed on `DocumentSummary`/`Document`, and `POST /api/documents` gains no way to set it — only `migrate.py`'s `_curate_demo_documents` (idempotent, **title-prefix match**, never a hardcoded id — robust whether the title came from a fresh seed or an existing prod DB) decides hidden state, hiding any document whose title starts with `Mesopotamia` or `The Qin State`, and stripping a decorative `" (Draft Translation)"`/`" (pilot)"` title suffix wherever one still appears (general, not hardcoded to one document — also cleans a pre-fix prod title, not just the source JSON's already-clean one). Runs on every app startup (`_lifespan` → `_migrate_db`), so a curated state is self-healing even if a document is ever re-created with an old-style title.
+
+**Source-level cleanup (not just migration):** `seed.py`'s own document title and `data/seed/demo_docs/mesopotamia-2.json`'s title are both already suffix-free at the source — `migrate()`'s hide-by-prefix rule still applies to `seed.py`'s document regardless (title-prefix match doesn't depend on the suffix), matching `terms_status`'s existing precedent (`_backfill_seed_document_terms_status`): `seed.py` doesn't set `hidden` explicitly on its INSERT, `migrate()` is the single place that decides it, for a freshly-seeded DB exactly as for a migrated prod one.
+
+**Known consequence, flagged not silently fixed:** [docs/testing/e2e-data.md](../../testing/e2e-data.md)'s canonical journeys 1-7 are written against the seed pilot document, which this delta hides from the picker — those journeys still work as a direct API/deep-link check but are stale as picker-driven click-through steps until re-validated against "World History — Selected Passages" at the next `/verify-pr`/e2e-tester pass (see the manifest's own flag note, added in this same change).
+
+## Revision-history cleanup delta (2026-07-16, EMNLP-demo sprint — owner UI review #7)
+
+Owner decision from the same screenshot review: repeated manual testing on the curated demo document ("World History — Selected Passages", the sole survivor of the picker curation delta above) left `target_revision` rows nobody ever scored, showing up in `GET /api/paragraphs/{pid}/revisions` (§2) as "N hours ago · not scored" clutter.
+
+**Mechanism (no DTO/DDL change — `RevisionEntry`'s shape is untouched, this is a data-cleanliness fix, not a contract change):** `migrate.py`'s `_prune_orphan_revisions`, gated by exact document TITLE match to the curated document (runs strictly after `_curate_demo_documents` in `migrate()`'s step order, so it always sees the already-renamed canonical title), deletes every `target_revision` row for that document's paragraphs that is BOTH (i) not the paragraph's earliest (seed) revision AND (ii) not referenced by any `score.revision_id` row anywhere. Score/issue rows are **never** touched or deleted (owner hard invariant, `.claude/rules/invariants.md`) — a revision any `score` row points at is excluded from the delete candidate set by construction (not merely by an FK error being caught), with `PRAGMA foreign_keys=ON` as a second line of defense on the connection. Idempotent (a second run finds nothing left to prune) and logs the pruned row count. Runs on every app startup, same as the picker curation step. See `docs/subsystems/webapp.md` "Revision history & best" and `migrate.py::_prune_orphan_revisions`.
+
+## Session isolation delta (2026-07-16, EMNLP-demo sprint — parallel reviewers)
+
+Full design: [2026-07-16-session-isolation.md](2026-07-16-session-isolation.md). Resolves the
+"deferred idea" flagged in the document-picker-curation delta above (per-session document
+isolation) — every browser session now transparently works against its own ephemeral SQLite
+clone of the golden DB, so uploads/edits/settings from one reviewer are invisible to another,
+and only the owner's golden-token path (below) reaches the canonical DB the picker-curation
+delta operates on.
+
+**REST-level behavior change (no DTO/DDL change — every existing request/response shape in
+§1/§2 is byte-identical):**
+
+- Every `/api/*` request now carries/receives a `glossa_sid` cookie (`HttpOnly; Path=/;
+  SameSite=lax; Secure; Max-Age=14400`) — set by the server on the first request without one
+  (or with a malformed value), reused after that. Frontend needs no change: same-origin
+  cookies are sent automatically by the browser, and the Vite dev proxy carries them too.
+- New request header `X-Golden-Session`, checked constant-time against env
+  `DEMO_ADMIN_TOKEN`: when it matches, the request routes to the canonical golden DB instead
+  of a session clone and no `Set-Cookie` is issued. `DEMO_ADMIN_TOKEN` unset → the header is
+  silently ignored (an ordinary session is created as if the header were absent) — this is
+  the ONLY way to add a document/setting that every session's clone inherits, besides a
+  redeploy's own migrate/seed/curation steps.
+- No new/changed JSON fields, status codes, or routes. `GET /api/documents/{id}` for a
+  doc_id that exists in golden but not (yet) in the caller's session clone behaves exactly
+  like a doc_id that was never created — `404`, same as always (the clone simply doesn't
+  have that autoincrement row).
+
+**Data invariant (extends, does not relax, the existing one):** golden's `score`/`issue`
+rows remain governed by the "never delete predictions" invariant in full force. A session
+clone's file is deleted on TTL/restart — this is explicitly NOT a deletion of canonical
+predictions (owner decision, 2026-07-16): the clone was never canonical to begin with, and
+nothing a reviewer does in their own session can ever reach a golden `score`/`issue` row.
+
+**`scripts/create_demo_docs.py`** (the owner's only path to add canonical documents through
+the real API+LLM pipeline, referenced by the document-picker-curation delta above as
+producing the `mesopotamia-2`/`qin-state` uploads) gains `--golden-token`/env
+`GLOSSA_GOLDEN_TOKEN`, sent on every request it makes (create + poll) — without it, a plain
+unauthenticated run against a session-isolated server would create documents nobody else
+(including a re-run of the script itself) can ever see again.
+
+## EMNLP e2e-campaign bugfix delta (2026-07-17)
+
+Three confirmed bugs from the EMNLP demo-sprint e2e campaign (T2/T5/T8/T9), all in the
+backend evaluate/precompute path. No DDL change; two additive DTO fields.
+
+**Fix 1 — custom criterion could never be evaluated (CRITICAL, judge.py).**
+`judge.py::_scoring_prompt(criterion_id)` always read `prompts/scoring/<id>.md` from disk and
+never looked at the criterion's own DB row — only the 3 built-in ids (`accuracy`/`fluency`/
+`style`) have a matching file, so scoring a custom criterion (created via `POST
+/api/criteria {prompt}`, §2 above) was a deterministic `FileNotFoundError` on the very first
+attempt, before any LLM call. Design fact confirmed by reading `seed.py:84-89`: the 3
+built-in rows' `criterion.prompt` column is populated **verbatim from the same files** at
+seed time, so making the DB row the source of truth is safe universally, not just for custom
+rows. Fix: `_scoring_prompt(criterion_id, prompt=None)` / `scoring_system_prompt(...,
+*, prompt=None)` / `judge_one(..., prompt=None)` all gained an optional `prompt` override
+that wins when non-empty; `app.py::_judge_live` (the one real call site, `_client_for` +
+`judge_one`) threads `criterion["prompt"]` through both the token-estimate call and the real
+scoring call. A criterion whose DB prompt is empty **and** has no matching file still raises
+`FileNotFoundError` — same as before — but that exception was already caught by
+`asyncio.gather(..., return_exceptions=True)` in `/evaluate` and by `precompute._run`'s own
+try/except, so it always surfaced as a per-criterion `failedCriterionIds` entry, never a
+500 — no additional guard was needed for that edge case.
+
+**Fix 2 — silent precompute stalls under parallel sessions (precompute.py, budget.py).**
+Two distinct bugs shared one symptom ("precompute silently classifies paragraphs
+`budget_exhausted` or finishes claiming success while data is missing"); a third, pre-existing
+bug was surfaced (not fixed) by this work:
+
+- **(a) Fixed — process-global call sub-cap.** `precompute._take_call_slot()` checked/
+  incremented `budget._STATE["precompute_calls"]` as a single process-wide `int` capped by
+  `_CALL_CAP` (env `PALIMPSEST_PRECOMPUTE_CALLS`, default 80) — under session isolation
+  (2026-07-16 delta above), every browser session runs its own precompute warm-up against its
+  own SQLite clone, but they all shared this ONE counter. One session's 12-paragraph
+  warm-up could exhaust the cap before a concurrent session's warm-up even got a slot, which
+  then silently stopped (`status:'stopped', errorReason:'budget_exhausted'`) despite the real
+  $ budget being nowhere near its cap. Fix: `budget._STATE["precompute_calls"]` is now a
+  `{sid: count}` dict, keyed by `db.current_sid()` — the same rekeying every other precompute
+  in-memory structure (`_status`, `_tasks`) already uses for session isolation. Each session
+  gets its own independent `_CALL_CAP` budget.
+- **(b) Fixed — partial-success masking.** The precompute run loop (`precompute.py::_run`)
+  silently discarded a paragraph whose judge call raised and kept going to the next one; the
+  final status only ever gained an `errorReason` when `succeeded == 0` (100% failure) — a
+  *partial* failure (e.g. 2 of 12 paragraphs failed, the rest succeeded) was completely
+  invisible in the status payload, `status: 'done'` looked identical to a clean run. Fix:
+  `precompute.mark_started`/`mark_skipped`/`_run` all gain a `failed: number` counter
+  (additive, backward-compatible — see the `Document.precompute` DTO update above), counting
+  paragraphs where a criterion's judge call genuinely raised (NOT a TOCTOU/delete discard,
+  which is a benign no-op). This is a **backend-only** fix — the frontend still only alarms
+  on `succeeded === 0`; wiring a partial-failure UI affordance off the new `failed` count is a
+  follow-up, not part of this delta.
+- **(c) Surfaced, not fixed — generic exception classification.** `precompute
+  ._classify_failure` buckets anything that isn't `budget.BudgetExceeded` or a `RuntimeError`
+  containing "no api key" into a catch-all `'all_failed'` `errorReason`, regardless of the
+  real cause (a judge JSON-parse error and a raw network blip are indistinguishable in the
+  reported reason). Not addressed by this delta — `failed` now at least tells an operator
+  paragraphs were lost even when `errorReason` can't say more than `'all_failed'`.
+
+**Fix 3 — full judge failure masked as an ordinary cache read (app.py).**
+`app.py::evaluate`'s `if not succeeded:` branch always called `_cache_response(conn, p,
+enabled, failed)` but the function itself hardcoded `"failedCriterionIds": []` in its return,
+ignoring the `failed` argument entirely — so a cached response looked byte-identical whether
+it came from an ordinary cache-only read (no live attempt was ever meaningful, e.g. no api
+key configured — see §3 "Живой + кеш-фолбэк" above) or from every live judge genuinely
+running and failing (auth error, timeout, parse error, budget exhaustion). Fix: `evaluate()`
+now classifies the `asyncio.gather` exceptions before calling `_cache_response` — `[]` when
+every exception is `_judge_live`'s own pristine "no api key" `RuntimeError` (no live attempt
+was ever made), the real `failed` list otherwise; `_cache_response` uses the argument it
+already had instead of the literal `[]`. Additive semantics change, no field renamed/removed.
+
+**Small polish, same lane:**
+- `POST /api/models` duplicate `name` → `409 {"error": "A model with this name already
+  exists"}` instead of the raw SQLite text (`"UNIQUE constraint failed: model.name"`); every
+  other `sqlite3.IntegrityError` still falls back to the raw text (no change to that path).
+- `POST /api/models/{name}/test`'s error-path `message` now also strips a provider-internal
+  `user_id` token (regex `user_[A-Za-z0-9]+`, local to `app.py` — distinct from `secrets_
+  guard.redact_error`'s key-shaped redaction, which this endpoint's error path also gained;
+  before this fix it built its message from the raw exception with no redaction at all).
+- `GET /api/documents/{id}/export?format=` is now case-insensitive (`MD`/`Xlsx` both work).
+- `export.slugify` locked with a unit test for a fully-CJK title: falls back to `document`
+  (same as the existing Cyrillic-fallback case), filename remains uniquely keyed by the doc
+  id (`{slug}-{id}.{ext}`) regardless.
+
+doc-parity: [webapp.md](../../subsystems/webapp.md) (`judge.py`/precompute/export/models-409
+rows and the "Cache fallback protocol"/"Precompute" prose) updated in the same commit as the
+code.

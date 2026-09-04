@@ -1,4 +1,4 @@
-"""seed(): all 5 matrix models registered; criteria repointed to an on-matrix model."""
+"""seed(): all 4 matrix models registered; criteria repointed to an on-matrix model."""
 from __future__ import annotations
 
 import pytest
@@ -15,9 +15,9 @@ def seeded(tmp_path, monkeypatch):
         db._conn.close(); db._conn = None
 
 
-def test_five_models_seeded(seeded):
+def test_four_models_seeded(seeded):
     conn = seeded.connect()
-    assert conn.execute("SELECT COUNT(*) n FROM model").fetchone()["n"] == 5
+    assert conn.execute("SELECT COUNT(*) n FROM model").fetchone()["n"] == 4
 
 
 def test_criteria_point_at_matrix_model(seeded):

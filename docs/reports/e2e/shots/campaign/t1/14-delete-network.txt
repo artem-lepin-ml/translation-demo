@@ -1,0 +1,44 @@
+T1 F4 redo — 2026-07-17 — fresh session `-s=t1` (new ephemeral cookie clone), doc 18
+("T1 F4 redo — delete proof", 3 ¶, created via minimal AI-translate paste).
+
+Full request log for the run (playwright-cli requests, session t1):
+
+4. [GET] https://glossa-mt.com/api/health => [200]
+5. [GET] https://glossa-mt.com/api/grounding-config => [200]
+6. [GET] https://glossa-mt.com/api/translator-config => [200]
+7. [GET] https://glossa-mt.com/api/refiner-config => [200]
+8. [GET] https://glossa-mt.com/api/documents => [200]
+9. [GET] https://glossa-mt.com/api/criteria => [200]
+10. [GET] https://glossa-mt.com/api/models => [200]
+11. [POST] https://glossa-mt.com/api/documents => [201]   (create minimal 3-¶ doc, id=18)
+12. [GET] https://glossa-mt.com/api/documents => [200]
+13. [GET] https://glossa-mt.com/api/documents/18 => [200]
+14. [GET] https://glossa-mt.com/api/documents/18 => [200]
+15. [GET] https://glossa-mt.com/api/documents/18 => [200]
+16. [DELETE] https://glossa-mt.com/api/documents/18 => [204]   <-- 1st DELETE, one confirm()
+17. [GET] https://glossa-mt.com/api/documents => [200]
+18. [DELETE] https://glossa-mt.com/api/documents/18 => [204]   <-- 2nd DELETE, SAME confirm()
+19. [GET] https://glossa-mt.com/api/documents/10 => [200]
+
+DELETE request detail (both, via `playwright-cli request <n>`):
+
+#16 [DELETE] https://glossa-mt.com/api/documents/18
+  status: 204, duration: 309ms, type: fetch, mimeType: application/json
+  Response headers: date: Fri, 17 Jul 2026 08:34:53 GMT, server: Caddy, uvicorn
+
+#18 [DELETE] https://glossa-mt.com/api/documents/18
+  status: 204, duration: 309ms, type: fetch, mimeType: application/json
+  Response headers: date: Fri, 17 Jul 2026 08:34:53 GMT, server: Caddy, uvicorn
+
+Both DELETEs share the identical server `date` header (same second) and identical
+309ms duration reported by the client — consistent with a double-bound click handler
+firing two requests for one user action (one 🗑 click + one dialog-accept), not two
+separate user actions. Both returned 204 (idempotent, no visible harm).
+
+Post-delete verification (direct fetch, not UI cache):
+  GET /api/documents/18 => 404 {"detail":"document not found"}
+  GET /api/documents     => [{"id":10, ...}]  (only the seed clone remains)
+
+=> F4 (double-DELETE on one confirm) RE-REPRODUCED on this session, 2nd independent
+   confirmation within the T1 run (see original run's network-requests-full.txt for
+   the first). Not downgraded.

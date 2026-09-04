@@ -60,16 +60,19 @@ def test_test_endpoint_slashed_name_routes(client, monkeypatch):
 
 def test_delete_unused_model_slashed_name_routes(client):
     c, _ = client
-    # a vLLM row not referenced by any criterion → 204 (proves the route matched)
-    r = c.delete("/api/models/TranslateGemma-27B")
+    # google/gemma-3-27b-it is seeded but not referenced by any criterion/
+    # config (only qwen/qwen3.6-27b, DEFAULT_CRITERION_MODEL, is) → 204
+    # (proves the slashed-name route matched a real, existing row)
+    r = c.delete("/api/models/google/gemma-3-27b-it")
     assert r.status_code == 204, r.text
 
 
 def test_delete_referenced_model_returns_409_not_404(client):
     c, _ = client
-    # qwen/qwen3.6-27b is the seeded criteria model (DEFAULT_CRITERION_MODEL) →
-    # 409, NOT a routing 404 (proves the slashed-name route matched)
-    r = c.delete("/api/models/qwen/qwen3.6-27b")
+    # google/gemini-3.1-flash-lite is the seeded criteria model
+    # (DEFAULT_CRITERION_MODEL, 2026-07-16 gemini-everywhere default) → 409,
+    # NOT a routing 404 (proves the slashed-name route matched)
+    r = c.delete("/api/models/google/gemini-3.1-flash-lite")
     assert r.status_code == 409, r.text
 
 
@@ -180,6 +183,29 @@ def test_post_model_params_valid_dict_accepted(client):
     r = c.post("/api/models", json={"name": "new/model", **_model_payload()})
     assert r.status_code == 200, r.text
     assert r.json()["params"] == {"max_tokens": 512}
+
+
+def test_post_model_empty_name_is_422(client):
+    """e2e iter1 BUG-2: an empty name used to create an unusable registry row
+    with "name": "" — the name field must be validated like any other."""
+    c, _ = client
+    r = c.post("/api/models", json={"name": "", **_model_payload()})
+    assert r.status_code == 422, r.text
+
+
+def test_post_model_whitespace_name_is_422(client):
+    c, _ = client
+    r = c.post("/api/models", json={"name": "   ", **_model_payload()})
+    assert r.status_code == 422, r.text
+
+
+def test_post_model_valid_name_still_works(client):
+    c, _ = client
+    r = c.post("/api/models", json={"name": "valid/new-model", **_model_payload()})
+    assert r.status_code == 200, r.text
+    assert r.json()["name"] == "valid/new-model"
+    got = c.get("/api/models").json()
+    assert any(row["name"] == "valid/new-model" for row in got)
 
 
 def test_put_model_params_array_is_422(client):
