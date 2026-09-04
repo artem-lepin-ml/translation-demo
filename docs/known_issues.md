@@ -145,7 +145,7 @@ A precompute run whose every judge call failed (most commonly: no `OPENROUTER_AP
 - **False positives (narrative imperatives).** A translation that legitimately starts with an imperative-shaped sentence — e.g. "Consider the treaty of 1258 BCE..." — can trip `_ADVICE_START` the same way "Consider 'temple centers'..." does. This degrades gracefully: the suggestion moves into `explanation` as `Advice: ...`, Accept becomes unavailable for that issue, and no data is lost — the flagged fragment and the rest of the translation are untouched, and the reviewer can still read the (now-explanatory) text and dismiss the issue. No corpus or test case has hit this in practice (the 2 flagged corpus rows, ids 46/47, are both genuine advice), but the heuristic is english-lexicon-based and not immune to it.
 - **False negatives (novel advice phrasings).** A judge can phrase advice in a way that matches neither the advisory lexicon nor the quoted-alternative structural signal (e.g. no leading "Consider/Use/...", no meta marker, no quoted pair) — such a suggestion sails through `sanitize_issue()` unflagged. This is a tail risk, mitigated at the point of harm rather than at ingest: `apply_edit` in `app.py` re-runs `looks_like_advice()` on every stored `suggestion` before splicing (independent of whatever ingest-time sanitization did or didn't catch), so even an unflagged-at-seed row still can't be spliced into a translation if it later reads as advice under the same heuristic. The residual gap is a phrasing the heuristic misses at *both* checkpoints — accepted as a known limitation; the fix is a stronger/learned classifier, not attempted here. ⚠️ The corpus audit that grounded the heuristic's current lexicon/signal set (`docs/reports/2026-07-02-suggestion-guard-audit.md`) was never committed to any branch in this repo (confirmed via `git log --all --diff-filter=A`) — this paragraph and the "Advice-text guard" section in [webapp.md](subsystems/webapp.md) are the surviving evidence; the re-validation trigger for when `feat/seed-refresh` re-seeds under a new corpus is not otherwise recorded.
 
-### deepseek-v4-flash reasons by default on CloseRouter provider-9 (empty content at tight max_tokens)
+### deepseek-v4-flash reasons by default on OpenRouter provider-9 (empty content at tight max_tokens)
 Discovered by the 2026-07-07 live smoke ([report](reports/2026-07-07-deepseek-closerouter-smoke.md)): with no
 explicit flag, `deepseek/deepseek-v4-flash` on the pinned `provider-9` route spends completion budget on
 reasoning tokens — at `max_tokens=8` the whole budget went to reasoning and `content` came back EMPTY with
@@ -154,7 +154,7 @@ gpt-5.4-mini reasoning-billing note in [model_matrix.py](../src/palimpsest/webap
 verified 19/19 calls: `extra_body: {reasoning: {enabled: false}}` → `reasoning_tokens=0`, clean output.
 Any tight-`max_tokens` call to this model without the flag risks silent empty responses.
 
-### CloseRouter: provider-9 pin + response_format=json_object → 400 on deepseek-v4-flash
+### OpenRouter: provider-9 pin + response_format=json_object → 400 on deepseek-v4-flash
 Same smoke run: `response_format={"type":"json_object"}` works on route `auto` and the reasoning-off flag is
 orthogonal, but combining the `provider-9` pin with json_object yields a deterministic 400 Bad Request from the
 upstream. Judge-style calls (strict JSON) to deepseek must use `auto` (10/10 success in the 2026-07-05 triage,

@@ -88,9 +88,9 @@ the wiki-eval scope per spec §1 non-goals).
 Add these entries to `configs/models.yaml` on sr004 (do not remove the existing entries — Ф0's BOUQUET
 parity smoke reuses the verbatim `qwen3_6-27b` key as-is).
 
-**deepseek — copied VERBATIM from the 2026-07-07 CloseRouter smoke**
+**deepseek — copied VERBATIM from the 2026-07-07 OpenRouter smoke**
 ([report](../reports/2026-07-07-deepseek-closerouter-smoke.md); both traps are also recorded in
-[known_issues.md](../known_issues.md#deepseek-v4-flash-reasons-by-default-on-closerouter-provider-9-empty-content-at-tight-max_tokens)):
+[known_issues.md](../known_issues.md#deepseek-v4-flash-reasons-by-default-on-openrouter-provider-9-empty-content-at-tight-max_tokens)):
 
 ```yaml
 deepseek-v4-flash-translate:
@@ -275,7 +275,7 @@ this is the single highest-risk ASSUMPTION in this section, because a wrong/miss
 ## Ф0 — probe (day 1, before paid volume)
 
 1. **All three servers answer**: `curl http://localhost:<port>/v1/models` for each of the three ports above.
-2. **CloseRouter reachable** with the patched client (patch 05): a throwaway single call through
+2. **OpenRouter reachable** with the patched client (patch 05): a throwaway single call through
    `deepseek-v4-flash-translate` — confirm no 403 (the WAF watchpoint from the smoke report) and that
    `reasoning_tokens=0` (confirms the `reasoning.enabled: false` flag from the models.yaml delta is honored
    on THIS route/session — the smoke report's finding was session-scoped, not guaranteed permanent).
@@ -358,7 +358,7 @@ uv run python scripts/02_translate_json.py \
   --run-name deepseek-v4-flash --bucket wiki --model deepseek-v4-flash-translate \
   --system-prompt 02_translate/system_universal.md --user-prompt 02_translate/user.md \
   --input data/wiki/wiki_original.json --out-root data/wiki/translating \
-  --max-concurrency 8   # ASSUMPTION — CloseRouter concurrency, spec §5/§7: "семафор 4-8"
+  --max-concurrency 8   # ASSUMPTION — OpenRouter concurrency, spec §5/§7: "семафор 4-8"
 ```
 
 **Qwen3.6-27B and Qwen3-4B — 5-paragraph mechanics smoke only** (spec §4 Ф1: not the full pilot cycle):

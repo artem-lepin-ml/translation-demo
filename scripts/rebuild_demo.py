@@ -4,7 +4,7 @@
 Grounding: G6 (label_first) via ``pipeline.run`` — deterministic exact-label
 match first, LLM judge escalation only on genuine ambiguity (per-decision
 trace written to ``term.trace``, see spec 2026-07-03-grounding-label-first-design.md
-§3). The judge is the live CloseRouter gateway (``google/gemini-3.1-flash-lite``
+§3). The judge is the live OpenRouter gateway (``google/gemini-3.1-flash-lite``
 @ ``provider-9``, temperature=0 — same provider selection as
 ``scripts/eval_grounding.py``/``scripts/wiki_eval.py``) when
 ``OPENROUTER_API_KEY`` is available; otherwise ``judge=None`` and every
@@ -79,10 +79,10 @@ def _build_judge():
     """Live grounding judge for LLM disambiguation escalation.
 
     Same provider selection as the eval harness (scripts/eval_grounding.py /
-    scripts/wiki_eval.py): the CloseRouter gateway running
+    scripts/wiki_eval.py): the OpenRouter gateway running
     ``google/gemini-3.1-flash-lite`` @ ``provider-9`` on the repo's live
     ``OPENROUTER_API_KEY`` — model/provider/base-url are env-overridable
-    (``CLOSEROUTER_MODEL`` / ``CLOSEROUTER_PROVIDER`` / ``OPENROUTER_BASE_URL``).
+    (``OPENROUTER_MODEL`` / ``OPENROUTER_PROVIDER`` / ``OPENROUTER_BASE_URL``).
     Returns ``(judge_callable, path_used, stats)`` — ``judge_callable`` is
     ``None`` on any setup failure so the caller degrades to
     ``judge_unavailable`` honestly (no silent top-1 fallback). ``stats`` is a
@@ -93,9 +93,9 @@ def _build_judge():
     if not api_key:
         return None, "no OPENROUTER_API_KEY — judge=None (fallback)", None
 
-    model = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
-    provider = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
-    base_url = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+    model = os.environ.get("OPENROUTER_MODEL", "google/gemini-3.1-flash-lite")
+    provider = os.environ.get("OPENROUTER_PROVIDER", "provider-9")
+    base_url = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 
     # Lazy import: keep this module importable without `openai` installed
     # when the judge path isn't exercised (mirrors term_pipeline.py's pattern).
@@ -146,7 +146,7 @@ def _build_judge():
         parsed["_cost_usd"] = cost
         return parsed
 
-    return judge, f"live CloseRouter judge ({model} @ {provider})", stats
+    return judge, f"live OpenRouter judge ({model} @ {provider})", stats
 
 
 def main() -> int:

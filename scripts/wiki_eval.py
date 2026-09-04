@@ -51,22 +51,22 @@ DEFAULT_PAGES_CACHE = ROOT / "data/eval/wiki/pages"
 WIKIDATA_CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
 OUT_ROOT = ROOT / "reports/terminology/wiki-eval"
 
-# Extraction + judge provider. Default = CloseRouter (OpenAI-compatible gateway at
+# Extraction + judge provider. Default = OpenRouter (OpenAI-compatible gateway at
 # OPENROUTER_BASE_URL) running google/gemini-3.1-flash-lite pinned to provider-9.
 # Model and route are overridable three ways, in priority order: CLI --model/
-# --provider (ticket 002, model-comparison runs) > CLOSEROUTER_MODEL/
-# CLOSEROUTER_PROVIDER env vars > the hardcoded defaults below. provider-9 was
+# --provider (ticket 002, model-comparison runs) > OPENROUTER_MODEL/
+# OPENROUTER_PROVIDER env vars > the hardcoded defaults below. provider-9 was
 # verified on a 2026-07-05 probe: 10/10, ~1.4s, honest prompt tokens (5),
 # cost surfaced — the fastest/cheapest clean route in the fleet. Pin an explicit
 # route because "auto" can land on a reseller-padded provider for some models
-# (e.g. gpt-5.4-mini -> provider-6, +4400 hidden prompt tokens/call). CloseRouter's
+# (e.g. gpt-5.4-mini -> provider-6, +4400 hidden prompt tokens/call). OpenRouter's
 # WAF rejects the OpenAI SDK's default User-Agent; palimpsest.llm.client sends a
-# neutral one. WIKI_EVAL_PROVIDER switches the gateway: "openrouter" (openrouter.ai)
-# or "openai-direct" (gpt-4o-mini on api.openai.com) as fallbacks -- --model/
-# --provider only affect the closerouter branch (see _resolve_route).
-WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "closerouter")
-CLOSEROUTER_MODEL = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
-CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
+# neutral one. WIKI_EVAL_PROVIDER switches the gateway: default "openrouter", or
+# "openai-direct" (gpt-4o-mini on api.openai.com) as a fallback -- --model/
+# --provider only affect the openrouter branch (see _resolve_route).
+WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "openrouter")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-3.1-flash-lite")
+OPENROUTER_PROVIDER = os.environ.get("OPENROUTER_PROVIDER", "provider-9")
 
 JUDGE_MAX_TOKENS = 512
 
@@ -76,34 +76,27 @@ def _resolve_route(model: str | None = None, provider: str | None = None) -> dic
 
     Computed as a function (not module-level constants) so CLI ``--model``/
     ``--provider`` always win regardless of import order -- the previous
-    design baked ``CLOSEROUTER_MODEL``/``CLOSEROUTER_PROVIDER`` into
+    design baked ``OPENROUTER_MODEL``/``OPENROUTER_PROVIDER`` into
     module-level constants at import time, before argparse had even run
     (ticket 002). ``model``/``provider`` override the env vars only on the
-    default ``closerouter`` branch; the ``openrouter``/``openai-direct``
-    fallbacks keep their own fixed model, unaffected by CLI overrides.
+    default ``openrouter`` branch; the ``openai-direct`` fallback keeps its
+    own fixed model, unaffected by CLI overrides.
     """
-    cr_model = model or CLOSEROUTER_MODEL
-    cr_provider = provider or CLOSEROUTER_PROVIDER
-    if WIKI_EVAL_PROVIDER == "closerouter":
-        base = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+    or_model = model or OPENROUTER_MODEL
+    or_provider = provider or OPENROUTER_PROVIDER
+    if WIKI_EVAL_PROVIDER == "openrouter":
+        base = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
         # "auto" (ticket 004, model-comparison matrix): omit the provider key
         # from extra_body entirely rather than send {"provider": "auto"} --
         # verified in ticket-003 triage for models with no clean pinned route
         # (e.g. qwen3.7-plus). model_slug() still appends "--auto" to the
         # run-dir slug since it just formats whatever --provider was passed.
-        cr_extra_body = None if cr_provider == "auto" else {"provider": cr_provider}
+        or_extra_body = None if or_provider == "auto" else {"provider": or_provider}
         return {
-            "extract_model": cr_model, "judge_model": cr_model,
+            "extract_model": or_model, "judge_model": or_model,
             "extract_base_url": base, "judge_base_url": base,
             "extract_api_key_env": "OPENROUTER_API_KEY", "judge_api_key_env": "OPENROUTER_API_KEY",
-            "extract_extra_body": cr_extra_body, "judge_extra_body": cr_extra_body,
-        }
-    elif WIKI_EVAL_PROVIDER == "openrouter":
-        return {
-            "extract_model": "anthropic/claude-haiku-4.5", "judge_model": "anthropic/claude-haiku-4.5",
-            "extract_base_url": "https://openrouter.ai/api/v1", "judge_base_url": "https://openrouter.ai/api/v1",
-            "extract_api_key_env": "OPENROUTER_API_KEY", "judge_api_key_env": "OPENROUTER_API_KEY",
-            "extract_extra_body": None, "judge_extra_body": None,
+            "extract_extra_body": or_extra_body, "judge_extra_body": or_extra_body,
         }
     else:  # openai-direct fallback
         return {
@@ -138,7 +131,7 @@ DEFAULT_LLM_WORKERS = 4
 
 # Last-resort retry budget for extraction/judge calls (owner directive, qwen-run
 # resilience patch, 2026-07-05): the client.py default (3 attempts, 1/3/9s) is
-# tuned for isolated blips, not the minutes-long hard-503 windows CloseRouter's
+# tuned for isolated blips, not the minutes-long hard-503 windows OpenRouter's
 # circuit breaker produces once a flappy route (e.g. provider-8) trips it under
 # a 429 storm. A `run`/`ablate` invocation makes ~35k calls total, so a single
 # call exhausting only 3 short retries must not be allowed to kill the whole
@@ -526,8 +519,8 @@ JUDGE_REASK_SYSTEM_PROMPT = (
 def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threading.Semaphore, *,
                   model: str | None = None, provider: str | None = None,
                   tracker: FailureTracker | None = None):
-    """Judge on the same provider as the extractor (default CloseRouter
-    claude-haiku-4.5, pinned via CLOSEROUTER_PROVIDER). Returns None when the
+    """Judge on the same provider as the extractor (default OpenRouter
+    claude-haiku-4.5, pinned via OPENROUTER_PROVIDER). Returns None when the
     provider key is unset so the caller can fall back to judge=None.
 
     ``llm_semaphore`` (ticket 002b): same shared instance as
@@ -539,7 +532,7 @@ def _build_judge(guard: BudgetGuard, llm_semaphore: _CountingSemaphore | threadi
     Last-resort tolerance (qwen-run resilience patch, 2026-07-05): retries at
     ``RESILIENT_ATTEMPTS``/``RESILIENT_BACKOFF`` (6 attempts, up to 60s
     backoff) instead of ``complete_retrying``'s 3-attempt default, to ride
-    out CloseRouter's multi-minute circuit-breaker windows -- via the shared
+    out OpenRouter's multi-minute circuit-breaker windows -- via the shared
     ``_complete_with_slot`` helper, which holds ``llm_semaphore`` only during
     each network attempt, never during the sleep between attempts
     (semaphore-starvation fix, 2026-07-06; see its docstring). If a call is
@@ -1024,8 +1017,8 @@ def cmd_run(args) -> int:
         print(f"\nForecast ${est_cost:.4f} is within --max-usd ${args.max_usd:.2f}. Dry run only -- nothing written.")
         return 0
 
-    model = args.model or CLOSEROUTER_MODEL
-    provider = args.provider or CLOSEROUTER_PROVIDER
+    model = args.model or OPENROUTER_MODEL
+    provider = args.provider or OPENROUTER_PROVIDER
     slug = model_slug(model, provider)
 
     # --resume (container-restart resilience patch): reuse a prior run's dir
@@ -1273,8 +1266,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--cache", default=str(DEFAULT_PAGES_CACHE))
     p_run.add_argument("--config", default="111", help="3-bit config id, e.g. 111 = use_lemma+use_fallbacks+match_aliases")
     p_run.add_argument("--max-usd", type=float, default=DEFAULT_MAX_USD)
-    p_run.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
-    p_run.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
+    p_run.add_argument("--model", default=None, help="model id override (else OPENROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
+    p_run.add_argument("--provider", default=None, help="OpenRouter provider route override (else OPENROUTER_PROVIDER env, else provider-9)")
     p_run.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_run.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
                         help="articles processed concurrently (ticket 002b); LLM calls "
@@ -1301,8 +1294,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p_ablate.add_argument("--gt", default=str(DEFAULT_GT))
     p_ablate.add_argument("--cache", default=str(DEFAULT_PAGES_CACHE))
     p_ablate.add_argument("--max-usd", type=float, default=DEFAULT_MAX_USD)
-    p_ablate.add_argument("--model", default=None, help="model id override (else CLOSEROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
-    p_ablate.add_argument("--provider", default=None, help="CloseRouter provider route override (else CLOSEROUTER_PROVIDER env, else provider-9)")
+    p_ablate.add_argument("--model", default=None, help="model id override (else OPENROUTER_MODEL env, else google/gemini-3.1-flash-lite)")
+    p_ablate.add_argument("--provider", default=None, help="OpenRouter provider route override (else OPENROUTER_PROVIDER env, else provider-9)")
     p_ablate.add_argument("--max-judge-calls", type=int, default=MAX_JUDGE_CALLS, help="hard ceiling on judge calls (spec Sec.11)")
     p_ablate.add_argument("--article-workers", type=int, default=DEFAULT_ARTICLE_WORKERS,
                            help="articles processed concurrently (ticket 002b); LLM calls "

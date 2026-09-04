@@ -11,10 +11,10 @@ from openai import OpenAI
 
 from ..config import ModelConfig
 
-# CloseRouter's WAF blocks the OpenAI SDK's default User-Agent (HTTP 403 "Your
+# OpenRouter's WAF blocks the OpenAI SDK's default User-Agent (HTTP 403 "Your
 # request was blocked") before it ever routes to a model — any neutral UA
-# passes. Sent on every client so identical code works against CloseRouter,
-# OpenRouter, OpenAI and local vLLM.
+# passes. Sent on every client so identical code works against OpenRouter,
+# OpenAI and local vLLM.
 USER_AGENT = "palimpsest-llm/1.0"
 
 # Hard ceiling on concurrent in-flight requests when a caller fans out. Providers
@@ -64,7 +64,7 @@ def _extract_usage(resp) -> Usage:
     cost = getattr(u, "cost", None)
     if cost is None:
         extra = getattr(u, "model_extra", None) or {}
-        # OpenRouter surfaces `cost`; CloseRouter surfaces `cost_usd`.
+        # Some provider routes surface `cost`; others surface `cost_usd`.
         cost = extra.get("cost")
         if cost is None:
             cost = extra.get("cost_usd")
@@ -130,7 +130,7 @@ class LLMClient:
         `attempts` times, sleeping `backoff[i]` between tries; deterministic
         errors (400/401/malformed JSON) propagate on the first hit — a retry
         would only burn another paid call and fail the same way. Owner directive
-        for CloseRouter's ~90% per-route success: 3 attempts, 1s/3s/9s backoff.
+        for OpenRouter's ~90% per-route success: 3 attempts, 1s/3s/9s backoff.
         """
         for i in range(attempts):
             try:

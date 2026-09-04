@@ -1,8 +1,8 @@
-"""Provider-route triage for CloseRouter models (ticket 003, 2026-07-05-model-comparison).
+"""Provider-route triage for OpenRouter models (ticket 003, 2026-07-05-model-comparison).
 
 For each model id: probe a set of routes (`auto` + `provider-N` pins via
 `extra_body={"provider": ...}`) with tiny (`max_tokens=8`) calls through
-`palimpsest.llm.client.LLMClient` (carries the neutral User-Agent CloseRouter's
+`palimpsest.llm.client.LLMClient` (carries the neutral User-Agent OpenRouter's
 WAF requires). Classifies each route on success rate, latency, prompt-token
 honesty (padding disqualifier) and cost/call, then applies the selection rule:
 
@@ -50,7 +50,7 @@ from palimpsest.llm.client import LLMClient, LLMConfig
 
 PROMPT = "Reply with exactly: ok"
 SYSTEM = ""
-BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 API_KEY_ENV = "OPENROUTER_API_KEY"
 
 # $/Mtok (prompt, completion) — owner-supplied catalog prices, used only when a

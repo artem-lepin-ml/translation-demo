@@ -32,22 +32,17 @@ GOLD_SOURCES = ROOT / "data/seed/gold_sources"
 CACHE = ROOT / "reports/terminology/wikidata_cache.jsonl"
 OUT_ROOT = ROOT / "reports/terminology/g6"
 
-# Judge provider mirrors scripts/wiki_eval.py: default CloseRouter gateway running
+# Judge provider mirrors scripts/wiki_eval.py: default OpenRouter gateway running
 # google/gemini-3.1-flash-lite @ provider-9, env-overridable. openai-direct
 # gpt-4o-mini remains a fallback. WAF User-Agent handled in palimpsest.llm.client.
-WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "closerouter")
-CLOSEROUTER_MODEL = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
-CLOSEROUTER_PROVIDER = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
-if WIKI_EVAL_PROVIDER == "closerouter":
-    JUDGE_MODEL = CLOSEROUTER_MODEL
-    JUDGE_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+WIKI_EVAL_PROVIDER = os.environ.get("WIKI_EVAL_PROVIDER", "openrouter")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-3.1-flash-lite")
+OPENROUTER_PROVIDER = os.environ.get("OPENROUTER_PROVIDER", "provider-9")
+if WIKI_EVAL_PROVIDER == "openrouter":
+    JUDGE_MODEL = OPENROUTER_MODEL
+    JUDGE_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
     JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
-    JUDGE_EXTRA_BODY = {"provider": CLOSEROUTER_PROVIDER}
-elif WIKI_EVAL_PROVIDER == "openrouter":
-    JUDGE_MODEL = CLOSEROUTER_MODEL
-    JUDGE_BASE_URL = "https://openrouter.ai/api/v1"
-    JUDGE_API_KEY_ENV = "OPENROUTER_API_KEY"
-    JUDGE_EXTRA_BODY = None
+    JUDGE_EXTRA_BODY = {"provider": OPENROUTER_PROVIDER}
 else:
     JUDGE_MODEL = "gpt-4o-mini"
     JUDGE_BASE_URL = "https://api.openai.com/v1"
@@ -171,7 +166,7 @@ class BudgetGuard:
 
 def _build_judge(guard: BudgetGuard):
     """Lazy-import LLMClient (no direct `openai` import outside palimpsest.llm.client
-    by design). Judge runs on the provider selected above (default CloseRouter
+    by design). Judge runs on the provider selected above (default OpenRouter
     gemini-3.1-flash-lite @ provider-9), returning None when its key is unset."""
     from palimpsest.llm.client import LLMClient, LLMConfig
 

@@ -20,7 +20,7 @@ in priority order per unique surface:
 
   1. ``data/seed/lemmas.json`` — the hand-curated surface->lemma map (trusted;
      non-``null`` entries win).
-  2. an LLM lemmatizer pass (same CloseRouter provider selection as the eval
+  2. an LLM lemmatizer pass (same OpenRouter provider selection as the eval
      harness / ``rebuild_demo.py``) for the surfaces ``lemmas.json`` doesn't
      cover — handles multi-word agreement (``Нижней Месопотамии`` ->
      ``Нижняя Месопотамия``) a single-word map can't.
@@ -100,9 +100,9 @@ def _build_lemmatizer():
     if not api_key:
         return None, None
 
-    model = os.environ.get("CLOSEROUTER_MODEL", "google/gemini-3.1-flash-lite")
-    provider = os.environ.get("CLOSEROUTER_PROVIDER", "provider-9")
-    base_url = os.environ.get("OPENROUTER_BASE_URL", "https://api.closerouter.dev/v1")
+    model = os.environ.get("OPENROUTER_MODEL", "google/gemini-3.1-flash-lite")
+    provider = os.environ.get("OPENROUTER_PROVIDER", "provider-9")
+    base_url = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 
     from palimpsest.llm.client import LLMClient, LLMConfig
 
