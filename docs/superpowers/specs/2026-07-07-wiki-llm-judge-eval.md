@@ -88,7 +88,7 @@ mean 63 / p90 123 / max 392 — [отчёт](../../reports/python-pro-wiki-corpu
 (решение В5: не-thinking, стабильный vLLM; в реестр Данила добавляется новой записью), `qwen3_6-27b`,
 `deepseek/deepseek-v4-flash` (CloseRouter; для него в `models.yaml` — запись с base_url CloseRouter).
 Сэмплинг переводов = как у Данила (temp 0.7 у локальных; deepseek T=0.3). **Смоук 2026-07-07 выполнен**
-([отчёт](../../reports/2026-07-07-deepseek-closerouter-smoke.md), 10/10 переводов + 9/9 judge-парсов кодом
+([отчёт](../../reports/2026-07-07-deepseek-gateway-smoke.md), 10/10 переводов + 9/9 judge-парсов кодом
 Данила, $0.0052): deepseek по умолчанию reasoning-ит на provider-9 (пустой контент при тесном max_tokens) —
 обязательный `extra_body: {reasoning: {enabled: false}}` для всех ролей; для judge-роли (JSON-режим) пин
 provider-9 несовместим с `response_format=json_object` (400) — J′ ходит маршрутом `auto`; перевод — с пином.

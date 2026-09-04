@@ -40,7 +40,7 @@ brief (`.claude/`, `docs/experiments/`, `docs/reports/`, `docs/research/`,
 
 `docs/known_issues.md:149` and `docs/stages/translation-eval.md:92` still contain
 the literal substring `closerouter` — both are markdown links to
-`docs/reports/2026-07-07-deepseek-closerouter-smoke.md`, a file under the
+`docs/reports/2026-07-07-deepseek-gateway-smoke.md`, a file under the
 exempt `docs/reports/` directory. I did not rename that report file (out of
 scope per the brief: "Do not touch those directories"), so the link's `href`
 must keep spelling the real filename to resolve. This makes the literal
@@ -193,7 +193,7 @@ New commit: **`54151e0`** "Initial public release" (message unchanged).
 None outstanding for the mechanical rename itself. One judgment call to flag
 to the owner: whether the two link-only `closerouter` residues in
 translation-demo (`known_issues.md`, `translation-eval.md`, both pointing at
-`docs/reports/2026-07-07-deepseek-closerouter-smoke.md`) and the two KD-MT
+`docs/reports/2026-07-07-deepseek-gateway-smoke.md`) and the two KD-MT
 citation residues in glossa-mt (`docs/api-contracts.md`) are acceptable as
 permanent state, or whether the owner wants the exempt-directory report file
 itself renamed at some point (which would let the link text go fully clean
@@ -203,7 +203,7 @@ too) — I did not do that since it was explicitly out of scope here.
 
 - Did not rename or touch anything under `docs/reports/` in either repo
   (out of scope, explicitly listed as exempt) — including the file
-  `2026-07-07-deepseek-closerouter-smoke.md` that two links point at.
+  `2026-07-07-deepseek-gateway-smoke.md` that two links point at.
 - Did not touch the two `KD-MT, EMNLP 2024` citations in glossa-mt's
   `docs/api-contracts.md` — factual citation to a real external paper, not
   this project's venue.

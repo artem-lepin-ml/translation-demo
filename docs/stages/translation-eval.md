@@ -89,7 +89,7 @@ Add these entries to `configs/models.yaml` on sr004 (do not remove the existing 
 parity smoke reuses the verbatim `qwen3_6-27b` key as-is).
 
 **deepseek — copied VERBATIM from the 2026-07-07 OpenRouter smoke**
-([report](../reports/2026-07-07-deepseek-closerouter-smoke.md); both traps are also recorded in
+([report](../reports/2026-07-07-deepseek-gateway-smoke.md); both traps are also recorded in
 [known_issues.md](../known_issues.md#deepseek-v4-flash-reasons-by-default-on-openrouter-provider-9-empty-content-at-tight-max_tokens)):
 
 ```yaml
