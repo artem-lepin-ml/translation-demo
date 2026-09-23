@@ -30,12 +30,12 @@ Palimpsest is an interactive translation-evaluation web app: a paragraph-level L
 
 ## Working rules for the demo
 
-Feature work follows the standard 8-step pipeline from the global process (spec → `/verify-spec` → plan → worktree → execute → `/verify-pr` + e2e → finish), applied per `feat/<topic>` branch off `dev-demo`:
+Small and medium changes follow the light path in [CLAUDE.md § Process](../../CLAUDE.md#process) (branch, change, real tests, browser check for UI, PR). Large features follow the full pipeline (spec → `/verify-spec` → plan → worktree → execute → `/verify-pr` + e2e → finish), applied per `feat/<topic>` branch off `dev-demo`:
 
 1. **Spec** in [docs/superpowers/specs/](../superpowers/specs/), reviewed by `/verify-spec` before planning.
 2. **Plan** in [docs/superpowers/plans/](../superpowers/plans/).
 3. **Worktree** — isolated `feat/<topic>` branch off `dev-demo`, never `main` (see [CLAUDE.md — Branches & worktrees](../../CLAUDE.md#branches--worktrees)).
 4. **Verify** — `/verify-pr` aspect review plus a real-browser e2e run against [e2e-data.md](../testing/e2e-data.md), gated on an independent audit.
-5. **Finish** — doc-parity check, HTML report, merge back into `dev-demo`.
+5. **Finish** — doc-parity check, HTML report, PR into `dev-demo` (the owner merges).
 
 See [CLAUDE.md](../../CLAUDE.md) for the full process and the project's Hard Invariants.

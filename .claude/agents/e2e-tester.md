@@ -5,7 +5,7 @@ description: >-
   journeys (all roles), using ONLY real test data from the project data manifest,
   and produces an evidence-first md report with screenshots. Success = a found bug.
   USE PROACTIVELY for any e2e/browser verification of a feature or PR.
-  MUST BE USED at workflow steps 6 (Verify) and 8 (Finish) whenever the change
+  Used at the verify and finish stages of a large feature whenever the change
   touches UI or user scenarios.
 model: sonnet
 effort: high

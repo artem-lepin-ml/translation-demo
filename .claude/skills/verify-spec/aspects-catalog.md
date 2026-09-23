@@ -1,6 +1,6 @@
 # Canonical review aspects catalog + mechanics rules
 
-Single source of truth. Used by the `/verify-spec` (step 2) and `/verify-pr` (step 6) skills.
+Single source of truth. Used by the `/verify-spec` and `/verify-pr` skills (large features — CLAUDE.md § Process).
 The project adaptation lives in `<repo>/docs/superpowers/review-aspects.md`.
 
 ## Catalog
@@ -36,7 +36,7 @@ Severity scale: CRITICAL — invariant/goal violation, blocks the base scenario;
 3. Aspect selection is the orchestrator's call: by the spec/PR content, minimum 3 for a spec (/verify-spec), minimum 5 for final testing (/verify-pr). Chosen and consciously skipped aspects are recorded in the report, one line with a reason each.
 4. Aggregation (the orchestrator itself or a `model: opus` subagent, effort high): dedup across aspects (a match from different aspects raises confidence); final severity = MAX, not average; agent contradictions → a separate "agents disagree" section. With >8 launched aspects — clusters: (A) product/UX (2, 6 + product customs), (B) architecture/data (3, 4, 5), (C) goal/quality/operations (1, 7, 8); each cluster is folded by a Sonnet-high aggregator, the final summary by the orchestrator/Opus.
 5. Plan rework (mandatory step): after aggregation the orchestrator amends the spec/plan — closes the holes, moves decisions into the text, logs forks to the D-journal.
-6. Gate: unresolved CRITICAL/HIGH → step 7 (Fix) / spec rework; only MEDIUM/LOW → proceed.
+6. Gate: unresolved CRITICAL/HIGH → root-cause fix / spec rework; only MEDIUM/LOW → proceed.
 
 ## Generating the project file `docs/superpowers/review-aspects.md`
 

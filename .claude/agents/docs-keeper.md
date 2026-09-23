@@ -4,8 +4,8 @@ description: >-
   Maintains project documentation to the L1->L4 convention: doc-parity in the
   same commit as code/contract changes, single source of truth, legacy doc
   cleanup. USE PROACTIVELY after any code or contract change that affects
-  documented behavior. MUST BE USED at workflow step 5 (Execute) before
-  committing contract changes and at step 8 (Finish) for the final parity check.
+  documented behavior. On a large feature, use it during execution before
+  committing contract changes and at finish for the final parity check.
 model: sonnet
 effort: medium
 memory: user

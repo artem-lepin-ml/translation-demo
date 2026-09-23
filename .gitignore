@@ -58,7 +58,6 @@ data/e2e-budget_calls.jsonl
 # Workflow-hardening: orchestration state, session backups, memory DBs
 .claude/settings.local.json
 .claude/session-context/backups/
-.claude/.orchestration-active
 .claude/.subagent-markers/
 .claude/memory/*.db
 .claude/memory/*.db-wal

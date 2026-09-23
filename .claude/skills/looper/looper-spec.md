@@ -94,7 +94,7 @@ council:
   - id: reviewer-1
     role: judge                  # reviewer (notes only) | judge (verdict)
     cli: claude
-    model: opus-4.8-high
+    model: opus-5.5-high
     invoke: ["claude", "-p"]
     timeout_sec: 600
     scope: [plan, delivery]
