@@ -7,7 +7,7 @@ description: >-
   already-complete spec (that's /verify-spec) and does NOT turn the spec into
   an implementation plan (that's writing-plans, later). Use PROACTIVELY
   before the planning step, on a draft spec.
-model: sonnet
+model: opus
 tools: Read, Glob, Grep, Write
 ---
 

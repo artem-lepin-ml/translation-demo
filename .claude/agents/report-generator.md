@@ -7,7 +7,7 @@ description: >-
   findings (that stays with docs-keeper, e2e-tester, code-reviewer, or the
   verify-spec/verify-pr aspect agents). Use when an HTML report is due (owner request
   or a large feature) to render it from already-produced findings.
-model: sonnet
+model: opus
 tools: Read, Glob, Write
 ---
 
