@@ -47,15 +47,6 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|NotebookEdit|Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/orchestrator-write-gate.py\""
-          }
-        ]
-      },
-      {
         "matcher": "",
         "hooks": [
           {

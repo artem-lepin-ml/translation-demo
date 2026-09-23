@@ -1,6 +1,6 @@
 # E2E Test Data Manifest — Palimpsest demo
 
-Up-link: [docs/subsystems/webapp.md](../subsystems/webapp.md) · process: global step 6/8 e2e-tester uses **only** the real data named here, driven **through the UI** (never seeded via DB writes or URL params).
+Up-link: [docs/subsystems/webapp.md](../subsystems/webapp.md) · process: the `e2e-tester` (large-feature verify/finish, CLAUDE.md § Process) uses **only** the real data named here, driven **through the UI** (never seeded via DB writes or URL params).
 
 ## App under test
 

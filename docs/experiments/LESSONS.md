@@ -30,7 +30,7 @@ self-improvement step); never rewrite prior entries.
 - **Parallel means parallel — check the actual concurrency cap.** The
   Workflow tool caps per-run concurrency at `min(16, cores−2)` — 2 on a
   4-core cloud box; split fans across concurrent runs or use direct
-  background agents instead (CLAUDE.md R6).
+  background agents instead (CLAUDE.md § When to use agents).
 - **Wikidata-heavy passes compete for the same rate budget.** Never run two
   Wikidata-heavy replays/re-groundings concurrently — observed a 429 storm
   and ~3x slowdown when they overlapped.

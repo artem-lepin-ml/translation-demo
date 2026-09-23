@@ -2,7 +2,7 @@
 
 Routing document for agents on **`dev-demo`** — the Palimpsest translation-evaluation demo. Product overview and quickstart in [README.md](README.md); the demo subsystem in [docs/subsystems/webapp.md](docs/subsystems/webapp.md); the API/data contract (single source of truth for wire DTOs, REST, SQLite DDL) in [docs/superpowers/specs/2026-06-30-demo-contracts.md](docs/superpowers/specs/2026-06-30-demo-contracts.md).
 
-This file holds **both the project specifics** (branch topology, conventions, hard invariants, routing) **and the working methodology inline**: the language policy, the 8-step Scenario A/B process, model routing and the agent dispatch map, dynamic workflows, communication style and the HTML report template. The methodology lives here rather than in a separate `@`-imported doc because cloud sessions (claude.ai/code) must see it deterministically — an `@`-import of a process doc proved unreliable in the cloud, while `CLAUDE.md` itself always loads. Durable owner rules beyond both are still `@`-imported (those demonstrably load): @.claude/rules/invariants.md and @.claude/rules/working-style.md. All config (agents, skills, commands, hooks) is in-repo under `.claude/` so cloud sessions see it — nothing depends on a machine-local `~/.claude`. Facts that drift — the model list, evaluator criteria and weights, scores, the team — live in their own source of truth (config, DB, contract, README) and are never copied here. Placing a new rule: methodology/process → the relevant section here; a durable owner rule → `.claude/rules/`; never duplicate.
+This file holds **both the project specifics** (branch topology, conventions, hard invariants, routing) **and the working methodology inline**: the language policy, the size-based process (small / medium / large, autonomous mode), model routing and the agent roster, communication style and the HTML report template. The methodology lives here rather than in a separate `@`-imported doc because cloud sessions (claude.ai/code) must see it deterministically — an `@`-import of a process doc proved unreliable in the cloud, while `CLAUDE.md` itself always loads. Durable owner rules beyond both are still `@`-imported (those demonstrably load): @.claude/rules/invariants.md and @.claude/rules/working-style.md. All config (agents, skills, commands, hooks) is in-repo under `.claude/` so cloud sessions see it — nothing depends on a machine-local `~/.claude`. Facts that drift — the model list, evaluator criteria and weights, scores, the team — live in their own source of truth (config, DB, contract, README) and are never copied here. Placing a new rule: methodology/process → the relevant section here; a durable owner rule → `.claude/rules/`; never duplicate.
 
 ## Language policy
 
@@ -10,67 +10,56 @@ Think, plan and talk to subagents in English (token economy). ALL owner-facing o
 
 ## Process
 
-### Core concept
-Spec-driven development. We craft a high-quality spec together; you then execute it fully autonomously (no interruptions, no check-ins). I review only specs, reviews and the docs/ documentation.
+Keep it light: the process scales with the task. The main session does small work itself; ceremony (spec, aspect reviews, agent pipeline, HTML report) is reserved for large features.
 
-### Finding unknowns
-Cross-cutting discovery playbook — turning unknown-unknowns into known-unknowns before/during/after implementation (blindspot pass, brainstorm/prototype, interview, references, implementation notes, pitch, quiz): [.claude/playbooks/finding-unknowns.md](.claude/playbooks/finding-unknowns.md). It underpins the 8-step flow rather than replacing it — the W-phases map onto the steps (W1–W5 → brainstorm/verify-spec/plan, W6 → execute, W7–W8 → verify/finish), and its unknowns taxonomy is the lens for deciding which step a task actually needs.
+### Task sizes
 
-### Scenario A (I'm present and actively participating)
+| Size | Examples | What it needs |
+|---|---|---|
+| **Small** | a fix, a bug, a change that fits one PR | The main session does it directly: `feat/<topic>` branch + worktree (§ Branches & worktrees), the change with its doc update, real tests, a browser check if UI is touched, PR. No spec, no mandatory agents. |
+| **Medium** | a feature across a few modules, still one PR | A short plan in chat, then the same as small. Agents only where they pay off (below). |
+| **Large** | a new subsystem, a cross-cutting contract change, multi-PR work | Brainstorm ([brainstorming](.claude/skills/superpowers-brainstorming/SKILL.md), + [visual-companion](.claude/skills/superpowers-brainstorming/visual-companion.md) for UI) → spec in [docs/superpowers/specs/](docs/superpowers/specs/), owner approves → `/verify-spec` → plan (`spec-expander`, then [writing-plans](.claude/skills/superpowers-writing-plans/SKILL.md)) → execute ([subagent-driven-development](.claude/skills/superpowers-subagent-driven-development/SKILL.md) or [parallel agents](.claude/skills/superpowers-dispatching-parallel-agents/SKILL.md)) → `/verify-pr` + `e2e-tester` on real data from [docs/testing/e2e-data.md](docs/testing/e2e-data.md) → fix root causes ([systematic-debugging](.claude/skills/superpowers-systematic-debugging/SKILL.md); systemic ones go to [docs/PROBLEMS.md](docs/PROBLEMS.md)) and re-verify → `docs-keeper` final parity check → HTML report (§ Reports) → PR. |
 
-1. **Brainstorm** — [brainstorming](.claude/skills/superpowers-brainstorming/SKILL.md) (+ [visual-companion](.claude/skills/superpowers-brainstorming/visual-companion.md) when there is UI/UX/design). Spec → [docs/superpowers/specs/](docs/superpowers/specs/). Goal: a spec with goal, scope, success criteria and the most correct plan to reach the goal, honoring every subtlety of the task and my global vision.
-2. **Verify Spec** — skill `/verify-spec`: the orchestrator picks ≥3 relevant aspects from `docs/superpowers/review-aspects.md` (the skill generates it if missing), one subagent = one aspect (fresh context, read-only), structured findings → aggregation (max severity, disagreements section) → mandatory spec/plan rework → gate (CRITICAL/HIGH → rework and re-review of the affected aspects).
-3. **Plan** — first run `spec-expander` on the draft spec: it drafts missing sections against the review-aspects rubrics and flags OPEN gaps; the expanded spec is the planner input. Then [writing-plans](.claude/skills/superpowers-writing-plans/SKILL.md). Plan → [docs/superpowers/plans/](docs/superpowers/plans/). Work the spec out in more detail, down to a plan.
-4. **Branch + worktree** — [using-git-worktrees](.claude/skills/superpowers-using-git-worktrees/SKILL.md). Branch `feat/<topic>` off `dev-demo`.
-5. **Execute** — [subagent-driven-development](.claude/skills/superpowers-subagent-driven-development/SKILL.md) or a dynamic workflow. Parallelize independent task classes as much as possible. Remember tests and documentation. Every commit that changes a contract/behavior is accompanied by a `docs-keeper` call (doc-parity in the same commit).
-<loop>
-6. **Verify** — skill `/verify-pr`: the orchestrator picks ≥5 aspects from `docs/superpowers/review-aspects.md`; aspect agents with full rights write and run unit/integration tests, check code and data (isolated DB only). In parallel — a browser run by the `e2e-tester` agent + a mandatory audit of its report (Sonnet auditor, PASS/FAIL gate: provenance/screenshot failures send the run back). At Verify/Ship, also dispatch `docs-architect-l4` for any architecture-depth documentation (invariants/rationale/data-flow/failure-modes) — separate from `docs-keeper`'s L1→L4 parity check. Deliver the full PR-quality report per the **Reports** section (HTML, 360 diagram). Serious problems found → step 7; nothing critical and all scores positive → step 8.
-7. **Fix** — [systematic-debugging](.claude/skills/superpowers-systematic-debugging/SKILL.md): carefully analyze the code and context, find the deep root cause and fix it. If the problem is systemic or complex, log it to docs/PROBLEMS.md; after finding all occurrences, run deep research + a tournament via dynamic workflow to find the best solution. After fixing everything, redo step 6 from a clean slate.
-</loop>
-8. **Finish** — run the `e2e-tester` agent (real data ONLY from the `docs/testing/e2e-data.md` manifest; the full user journey in the browser — e.g. the teacher's and the student's path, not DB-seeding via URL — for ALL scenarios described in the PR) + the audit of its report; then `docs-keeper` — final doc-parity check across the whole PR. Failure → back into the loop at step 6. Success → final HTML report per **Reports** in [docs/reports/](docs/reports/). If there is something to test, deploy a full test environment for me and await my tests and review. Approved → [finishing-a-development-branch](.claude/skills/superpowers-finishing-a-development-branch/SKILL.md), PR `feat/<topic>` → `dev-demo`. Not approved → understand why, improve step 6 so it would catch the problems I found, and return to step 6.
+Unclear requirements or an unfamiliar area: use the [finding-unknowns playbook](.claude/playbooks/finding-unknowns.md) (blindspot pass, prototype, interview) before building. Research experiments do not follow these sizes — they go through `experiment-runner`'s own owner-approval gate.
 
-If the task is very large: decompose and execute with several parallel background agents — a swarm via [dispatching-parallel-agents](.claude/skills/superpowers-dispatching-parallel-agents/SKILL.md).
+### When to use agents
 
-**My participation is needed only at steps 1, 2 and 8. All other steps run autonomously without me.**
+Only where they pay off: **independent parallel branches of work**, **large research or search sweeps**, and **an independent review before merging a risky change** (contracts, data-deleting paths, security). Otherwise the main session does the work itself. Every subagent gets an explicit `model:` — never the inherited session model (§ Model routing). Parallel means parallel: the Workflow tool caps concurrency per run at min(16, CPU cores − 2), so check `nproc` before a fan-out and split it across concurrent runs if the cap would serialize it.
 
-### Scenario B (fully autonomous)
+### Verification
 
-Applies when I write "работай полностью автономно" or "я отошел на X минут / часов" — you understand I cannot participate in the development process.
+- **Tests really run.** Never claim "passed" without a run; report "ran" vs "didn't run + why".
+- **UI changes: really click through them in the browser** (preferred tools in § Useful skills & MCP) — every touched button and transition, not only the main scenario; take and inspect screenshots.
+- **Fix the root cause, not the symptom.**
 
-**All permissions are granted in this mode. Hanging or asking me anything = failure of your autonomy task.**
+### Finishing
 
-The pipeline is roughly the same as with me (scenario A), but you work on a large number of features over a long period (e.g. all night). I set a measurable goal, scope and the approximate expected result via goal. You build a path of concrete PRs and execute each through the 8 steps of scenario A, replacing me with your own higher-quality diligence.
+Open a PR into `dev-demo`; the owner reviews and merges — never merge yourself. An HTML report is produced only on the owner's request or for a large feature (§ Reports). § Hard Invariants apply at every size.
 
-You follow the same 8 steps as in scenario A, but instead of my decision-making at step 1 you run deep research and then a tournament via dynamic workflow and pick the best option fitting the project and my vision. To understand my vision, read my specs and documentation from the last 2 days; on conflict, documentation beats specs and newer versions beat older ones. At step 8 you replace my review with deeper tests aimed wider, and REAL simulation of my actions in the browser via playwright MCP. Steps 2/5/6/8 use the same skills and agents as scenario A: /verify-spec, docs-keeper, /verify-pr, e2e-tester with audit.
+### Autonomous mode
 
-#### Recurring problems to watch for and avoid
-I often find these problems in your browser testing:
-- You get lazy about testing through the browser → nothing actually works in reality. Make sure you really test through the browser and write the widest, most realistic e2e tests; take and inspect screenshots (at least 10 per PR).
-- You get lazy and do only the main scenario, forgetting the others. Make sure ALL scenarios are executed, not just the main one; that every button and transition works — as if a teacher and students were really using the platform. Finding a bug or a problem during e2e is a big win.
-- You underdeliver while hours of time remain. I tell you to work 8 hours and you stop after 2 having "finished the tasks" — that's bad; there are surely still problems and bugs. If you finish early: rescan, recheck, run more e2e tests. If everything is truly done: clean legacy code in 2 passes (don't cling to garbage), find fresh data via web search, think up next features and implement them. Build new plans — develop the project in the direction I set. Never stop — I will come and stop you myself when needed.
+Applies when I write "работай полностью автономно" or "я отошел на X минут / часов". All permissions are granted; asking me anything is a failure — replace my decisions with research and your own diligence. To understand my vision, read my specs and docs from the last 2 days; on conflict, docs beat specs and newer beats older. Finish the stated goal fully, verify for real (including the browser for UI), report honestly what is done and what is not, then stop.
 
-### Review aspects
-Canonical catalog of aspects, findings format and aggregation rules: `.claude/skills/verify-spec/aspects-catalog.md` (single source of truth). Project adaptation: `<repo>/docs/superpowers/review-aspects.md` (generated by the /verify-spec and /verify-pr skills; manual edits go into `<!-- custom -->` sections).
+Recurring problems I find in your browser testing:
+- You get lazy about testing through the browser → nothing actually works in reality. Really test through the browser with the widest, most realistic e2e runs; take and inspect screenshots (at least 10 per UI PR).
+- You do only the main scenario and forget the others. Execute ALL scenarios; every button and transition must work — as if real users were using the app. Finding a bug during e2e is a win.
 
 ## Model routing & dispatch
 
-### Agent usage (model routing)
+### Model routing
 
-| Task | Model | Effort |
-|---|---|---|
-| Orchestration (main session), brainstorm & spec writing, high-level research planning, decisions on how to fix findings, final aggregation & reports to the owner | Fable 5 | high |
-| Deep research, systematic debugging (step 7), aspect-report aggregation by a subagent, code WITHOUT a ready plan (freeform/exploratory), security-critical code | Opus 4.8 (`model: opus`) | high → xhigh |
-| ALL code written to a ready plan/spec (standard practice), unit tests, aspect reviewers (steps 2/6), documentation updates, docs-keeper, e2e report audits | Sonnet 4.6 (`model: sonnet`) | medium → high |
-| Repo recon, search/grep, mechanical edits | Haiku 4.5 (`model: haiku`) | low |
-| e2e-tester (browser runs) | Sonnet 4.6 (`model: sonnet` in agent frontmatter) | high |
+| Role | Model |
+|---|---|
+| Main session — orchestrates and does small work itself | the owner's pick (Fable 5.1 or Opus 5.5) |
+| Strongest subagent tier: hard design, specs, freeform code without a plan, debugging, security-critical code, reports, aggregation | Opus 5.5 (`model: opus`) |
+| Default executor: code to a ready plan, tests, reviews, docs, `e2e-tester` | Sonnet 5 (`model: sonnet`) |
+| Recon, search, mechanical edits | Haiku 4.5 (`model: haiku`) |
 
-Rules: (R1) subagents NEVER inherit the session model — set `model:` explicitly; aggregation is done by the orchestrator itself or a `model: opus` subagent; (R2) executors medium/high, aggregators high/xhigh — sparingly; (R3) Fable 5 may auto-reroute biology/cybersec-adjacent prompts to Opus 4.8 — if systematic, consciously switch the agent's model with a D-journal entry; (R4) escalation: Sonnet → Opus → Fable ("Fable — when the task would justify a senior contractor"); (R5) code: a ready plan/spec exists → ALWAYS Sonnet (not Opus and not Fable); no plan and the code is freeform → Opus; (R6) parallel means parallel (owner, 2026-07-06): the Workflow tool caps per-run agent concurrency at min(16, CPU cores − 2) — on a 4-core cloud container that is only 2 concurrent agents — so check `nproc` BEFORE fanning out; if the cap would serialize the fan, split it into several CONCURRENT Workflow invocations or dispatch background Agent subagents directly (the workflow cap does not bind them), and keep only true data dependencies sequential inside one run.
+Fable runs only as the main session — no subagent is ever pinned to it. Escalate Sonnet → Opus when an attempt demonstrably fails.
 
-### Dispatch map (task class → named agent)
+### Agent roster
 
-**The orchestrator MUST pass the named agent type in Agent/Task calls; falling back to the generic agent is a protocol violation (and is what the P1.1 orchestrator write-gate's pressure is meant to prevent).** The gate (`.claude/hooks/orchestrator-write-gate.py`) blocks the main thread's own direct Edit/Write/Bash while orchestrating — its whole point is to force dispatch onto one of the named lanes below, so an unnamed/generic dispatch defeats it just as much as a direct edit would.
-
-Registered battle-tier agents (18: 14 vendored + 4 native), each lane made mutually disjoint — read `.claude/agents/*.md` for the full description, this is only the one-line trigger:
+Registered agents, one line each — read `.claude/agents/*.md` for the full description. Use a named agent when its lane fits:
 
 | Agent (`agentType`) | Dispatch when |
 |---|---|
@@ -88,18 +77,16 @@ Registered battle-tier agents (18: 14 vendored + 4 native), each lane made mutua
 | `ml-engineer` | Production ML systems engineering: pipelines, training, serving infra |
 | `data-scientist` | Data analysis: statistics, hypothesis/A-B testing, predictive modeling |
 | `prompt-engineer` | LLM prompt design, evaluation, and optimization before it ships |
-| `docs-keeper` | L1→L4 doc-parity upkeep (steps 5/8) |
+| `docs-keeper` | L1→L4 doc-parity upkeep (large features: during execution and the final parity check) |
 | `doc-syncer` | Mechanical stage-doc sync (`docs/stages/<NN>.md`, `docs/pipeline.md`) after code edits |
-| `e2e-tester` | Real-browser end-to-end QA of a feature/PR (steps 6/8) |
+| `e2e-tester` | Real-browser end-to-end QA of a large feature/PR |
 | `pr-writer` | Drafting the PR title/body and the push/merge shell handoff |
-| `docs-architect-l4` | Architecture-depth L4 docs (invariants, rationale + rejected alternatives, data-flow, failure modes) at Verify/Ship |
+| `docs-architect-l4` | Architecture-depth L4 docs (invariants, rationale + rejected alternatives, data-flow, failure modes) when a large feature needs them |
 | `experiment-runner` | Bounded, approval-gated research experiments (train/eval ratchet loops) |
 | `report-generator` | Rendering the final served dark-HTML report from existing findings |
 | `spec-expander` | Expanding a draft spec to full rubric coverage before the planning step |
 
 **Bench-tier agents** (`.claude/agents-bench/`) are NOT registered/dispatchable — they are promoted into `.claude/agents/` via `git mv` only when a concrete project need arises; until promoted, don't route to them.
-
-**Specialized tool, not part of the 8-step flow:** research/experiment work does not follow Scenario A/B — it goes through `experiment-runner`'s own owner-approval gate (writes TASK/BUDGET/PLAN → owner creates APPROVED → git-ratcheted modify→train→eval loop via the looper skill).
 
 ## Branches & worktrees
 
@@ -111,7 +98,7 @@ Repo topology after the 2026-07-01 reorg:
 
 ### Task isolation — one task = one branch + one worktree
 
-Isolation is **per task, not per agent**. Every task runs under its own orchestrator in its own `feat/<topic>` branch and worktree, and all subagents dispatched by that orchestrator work inside that same worktree. What must never happen is two *tasks* (two orchestrators) sharing a branch or worktree — that is what keeps parallel commits conflict-free. The primary checkout hosts `old-gse-translating`; `dev-demo` keeps its own dedicated worktree that task agents don't touch.
+Isolation is **per task, not per agent**. Every task runs in its own session on its own `feat/<topic>` branch and worktree, and any subagents that session dispatches work inside that same worktree. What must never happen is two *tasks* (two sessions) sharing a branch or worktree — that is what keeps parallel commits conflict-free. The primary checkout hosts `old-gse-translating`; `dev-demo` keeps its own dedicated worktree that task agents don't touch.
 
 Task lifecycle in a session:
 
@@ -123,13 +110,9 @@ Bundled, pending an owner decision (unique un-merged work, not on any keeper): `
 
 ## Agents, skills & docs lookup
 
-- **Dispatch work to named agents — the roster is large and the lanes are disjoint.** Pick the agent per the dispatch map and the model-routing table in § Model routing & dispatch; don't fall back to the generic agent, and don't implement in the orchestrator thread — the orchestrator plans, dispatches, aggregates.
-- **Skills are in-repo** under [.claude/skills/](.claude/skills/), flattened one level deep so cloud sessions auto-discover them: the `superpowers-*` set (brainstorming, writing-plans, subagent-driven-development, dispatching-parallel-agents, systematic-debugging, using-git-worktrees, finishing-a-development-branch), `/verify-spec`, `/verify-pr`, `report-gen`, `playwright-cli`, `looper`. Which skill fires at which process step → § Process.
+- **Agents are optional.** When a task does call for one (§ When to use agents), pick the named lane from § Agent roster with an explicit `model:`.
+- **Skills are in-repo** under [.claude/skills/](.claude/skills/), flattened one level deep so cloud sessions auto-discover them: the `superpowers-*` set (brainstorming, writing-plans, subagent-driven-development, dispatching-parallel-agents, systematic-debugging, using-git-worktrees, finishing-a-development-branch), `/verify-spec`, `/verify-pr`, `report-gen`, `playwright-cli`, `looper`. Which skill belongs to which task size → § Process.
 - **Library/framework docs: context7 first.** For any question about a library, framework, SDK, API or CLI tool, fetch current docs through the context7 MCP (`resolve-library-id` → `query-docs`); if context7 doesn't cover it, web-search for the official docs. Never answer such questions from training memory.
-
-### Dynamic workflow
-Use a hierarchical structure: chief aggregator → per-topic aggregators → several agents per topic. Choose the interaction format, agent roles and count yourself (usually 5–30). Use a dynamic workflow only when you understand why it beats a swarm or a naive single-agent run.
-Concurrency: rule R6 in § Model routing & dispatch (parallel means parallel; mind the Workflow per-run cap).
 
 ### Useful skills & MCP
 - Browser e2e, in order of preference: (1) **`playwright-cli` skill** — primary for interactive/adversarial runs (~4x cheaper than MCP: disk snapshots read selectively, `snapshot --depth/--scope`; named sessions `-s=<topic>` isolate parallel runs/worktrees); (2) **scripted `npx playwright test`** — cheapest for regression suites (model sees pass/fail + report, not DOM); (3) **playwright MCP** (`--isolated`) — fallback for interactive a11y-ref reasoning only; (4) **chrome-devtools MCP** — perf/network/console debugging, not e2e driving.
@@ -176,16 +159,16 @@ State the concrete finding (e.g. "`SettingsTab.tsx:172` already renders the regi
 ### Style (chat replies AND reports)
 You are a professional who has read the full report, understood it, and now narrates it to me: from ideas to details, from simple to complex. Lead with the main thing, then an overview of what was done, then specifics. Be honest with me and critically list the shortcomings yourself — don't wait for me to find them. Explicitly separate "ran" vs "didn't run + why". No boilerplate (`## Summary`/`## Description`). Alternatives in prose: current state → 2–3 options with code-level tradeoffs → a recommendation; `AskUserQuestion` only for narrow binary choices.
 
-### HTML report template (steps 6/8 and any long piece of work)
+### HTML report template (on the owner's request or for a large feature)
 An HTML page in `docs/reports/`, **dark theme**, visual graphics over walls of text. Block order:
 1. **«Главное»** — summary lead, 1–2 sentences: outcome + verdict.
-2. **360 diagram** — radar with per-aspect scores (the step-6 aspects map to the axes) + overall verdict badge.
+2. **360 diagram** — radar with per-aspect scores (the `/verify-pr` aspects map to the axes) + overall verdict badge.
 3. **Structured overview of what was done** — from ideas to details: goal → what changed (tables/cards) → key decisions and why.
 4. **Critical findings & shortcomings** — bugs, risks, tech debt, unresolved flags; severity-tagged, nothing hidden.
 5. **Run artifacts (evidence)** — attached confirmations of every claim: test run outputs (counts, 0-failures lines), e2e proof (screenshots embedded/linked from `shots/`, scenario table with provenance), audit verdicts, commit hashes. A claim without an artifact doesn't go in the report.
 6. **Next steps / owner decisions needed.**
 
-**Delivery — the report must actually reach the owner; a bare `.md`/file path is not delivery.** Local sessions: serve on completion via a background `python3 -m http.server <port> --bind 127.0.0.1` from the report directory (ports 8096+, check availability) and give the direct link `http://localhost:<port>/<file>.html`. Cloud sessions (claude.ai/code): localhost is unreachable for the owner — publish the same template as a **Claude Artifact** and give the artifact link. Work is not finished until the report is delivered one of these ways.
+**Delivery — the report must actually reach the owner; a bare `.md`/file path is not delivery.** Local sessions: serve on completion via a background `python3 -m http.server <port> --bind 127.0.0.1` from the report directory (ports 8096+, check availability) and give the direct link `http://localhost:<port>/<file>.html`. Cloud sessions (claude.ai/code): localhost is unreachable for the owner — publish the same template as a **Claude Artifact** and give the artifact link. When a report is due, the work is not finished until it is delivered one of these ways.
 
 The report itself can be rendered via `report-generator` (report-gen skill + `tokyo-night.css`) from already-produced findings in `docs/reports/`/`docs/experiments/`, instead of hand-authoring — it assembles presentation only, it does not perform the analysis.
 
@@ -198,7 +181,7 @@ The report itself can be rendered via `report-generator` (report-gen skill + `to
 3. Single source of truth: every fact lives in one file; the rest link, never copy.
 4. Conventional Commits in English (`feat(webapp): …`, `fix(scoring): …`); subject imperative, scope = module or concern.
 5. Branch + PR mandatory: new work happens in its own task branch + worktree (here: `feat/<topic>` off `dev-demo` — see § Branches & worktrees); never commit directly to the trunk.
-6. Language: documentation is written in English; owner-facing reports and replies are in Russian, delivered with HTML-level graphics (Claude Artifact in cloud sessions, served HTML locally) — § Language policy, § Reports & communication style.
+6. Language: documentation is written in English; owner-facing reports and replies are in Russian; an HTML report, when one is due, is delivered as a Claude Artifact in cloud sessions or served HTML locally — § Language policy, § Reports & communication style.
 7. No AI signatures: no "made by claude" / "Generated with Claude Code" footers and no `Co-Authored-By` trailers — not in commits, not in PR bodies.
 
 ### Project-specific
@@ -213,7 +196,7 @@ The report itself can be rendered via `report-generator` (report-gen skill + `to
 These are process-level principles on top of the Hard Invariants above.
 
 1. **Module isolation via interfaces.** Every module/entity is independent and interacts ONLY through its declared interface (API contract / schema) and nothing else. This reduces code complexity for agents.
-2. **Documentation and tests are first-class.** Tests are written by a separate agent, from the docs (doc-parity in the same commit — CLAUDE.md Hard Invariant 2).
+2. **Documentation and tests are first-class.** Every change ships with its tests and its doc update (doc-parity in the same commit — Hard Invariant 2); on a large feature, tests are written from the docs by a separate agent.
 3. **Honesty.** Never claim "checks passed" without a real run of acceptance tests; explicitly separate "ran" vs "didn't run + why".
 
 ## Routing

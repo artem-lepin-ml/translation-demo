@@ -1,7 +1,7 @@
 # Pipeline problems log
 
 Up-link: [docs/README.md](README.md). Logs **systemic or complex** pipeline problems per
-[CLAUDE.md](../CLAUDE.md) § Process step 7 ("Fix") — the kind that need a real root-cause
+[CLAUDE.md](../CLAUDE.md) § Process (the large-feature fix loop) — the kind that need a real root-cause
 pass (systematic-debugging) and possibly a deep-research + tournament before a fix lands,
 not a one-line patch. This is a working log, not a limitations doc:
 

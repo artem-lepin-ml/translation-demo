@@ -1,13 +1,13 @@
 ---
 description: >-
-  Aspect-based adversarial review of a spec/design doc (workflow step 2 Verify
-  Spec). Orchestrator picks >=3 relevant aspects from the project aspects file,
+  Aspect-based adversarial review of a spec/design doc (spec-review stage of a
+  large feature). Orchestrator picks >=3 relevant aspects from the project aspects file,
   dispatches one fresh-context READ-ONLY subagent per aspect, aggregates
   structured findings (max severity), reworks the plan, applies the gate.
   Use when a spec or design document needs verification before writing-plans.
 ---
 
-# /verify-spec — aspect-based spec review (step 2, read-only)
+# /verify-spec — aspect-based spec review (read-only)
 
 Input: spec path (from the argument; if absent — the newest one in `docs/superpowers/specs/`).
 

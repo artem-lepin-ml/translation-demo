@@ -85,7 +85,7 @@ without it).
 ```yaml
 ---
 status: ready          # ready | in-progress | blocked | done
-agent: <named-agent>   # a named agent from CLAUDE.md's dispatch map, e.g. backend-developer
+agent: <named-agent>   # a named agent from CLAUDE.md's agent roster, e.g. backend-developer
 model: sonnet           # a ticket is a plan to execute -> always sonnet (CLAUDE.md model routing R5)
 depends_on: []          # list of blocking ticket numbers, e.g. [1, 2]; [] if none
 files: []               # repo paths this ticket is expected to touch

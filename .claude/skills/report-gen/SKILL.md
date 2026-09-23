@@ -4,9 +4,8 @@ description: >-
   Assemble a served, dark Tokyo Night HTML report from docs/reports/ and
   docs/experiments/ source data into docs/reports/html/, filling only the
   canonical template's designated content slots — never its CSS or layout.
-  Use at workflow steps 6 (Verify) and 8 (Finish), or for any long piece of
-  work that needs the final HTML report per CLAUDE.md's "HTML report
-  template" section.
+  Use when an HTML report is due — on the owner's request or for a large
+  feature — per CLAUDE.md's "HTML report template" section.
 ---
 
 # report-gen
@@ -50,7 +49,7 @@ canonical structure — six blocks in the fixed order from
 1. **Главное** (`main-verdict`, `overall-badge`) — 1-2 sentence outcome +
    verdict.
 2. **360&deg; radar** (`radar-svg`, `radar-table-rows`) — per-aspect scores as
-   axes on the SVG polygon, mirrored in the legend table. The step-6 aspects
+   axes on the SVG polygon, mirrored in the legend table. The `/verify-pr` aspects
    map to the axes; recompute `<polygon>` points and axis label positions for
    the real aspect count, but keep the `<svg>` wrapper/grid/viewBox as-is.
 3. **Что сделано** (`overview`) — goal &rarr; what changed (tables/cards)

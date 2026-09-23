@@ -206,6 +206,8 @@ All hook scripts live in `.claude/hooks/`, executable, POSIX shell or Python
 (prefer Python for JSON parsing via stdin). Wire them in `.claude/settings.json`.
 
 ### P1.1 Orchestrator write-gate (PreToolUse)
+> ⚠️ LEGACY — removed 2026-09-23 (owner decision: the main session implements small work itself). The hook, its `settings.json` entry and the `.orchestration-active` flag are gone; see [CLAUDE.md § Process](../CLAUDE.md#process).
+
 Behavior: when file `.claude/.orchestration-active` exists AND the event comes from
 the **main thread** (no `agent_type` / empty subagent context in the hook's stdin
 JSON), deny tools `Edit|Write|MultiEdit|NotebookEdit` and deny `Bash` commands that

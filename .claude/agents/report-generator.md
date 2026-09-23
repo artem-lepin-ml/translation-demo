@@ -5,9 +5,8 @@ description: >-
   docs/experiments/ data into docs/reports/html/ — presentation only. Does
   NOT perform the analysis/review itself and does NOT author the source
   findings (that stays with docs-keeper, e2e-tester, code-reviewer, or the
-  verify-spec/verify-pr aspect agents). Use PROACTIVELY at workflow steps 6
-  (Verify) and 8 (Finish) to render the final HTML report from
-  already-produced findings.
+  verify-spec/verify-pr aspect agents). Use when an HTML report is due (owner request
+  or a large feature) to render it from already-produced findings.
 model: sonnet
 tools: Read, Glob, Write
 ---

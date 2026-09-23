@@ -20,20 +20,20 @@ user-invoked skill never calls another user-invoked skill.**
 |---|---|---|
 | `grill-with-docs` | User-invoked | `disable-model-invocation: true` in frontmatter (owner-fixed) |
 | `grilling` | User-invoked | Owner-fixed; relentless plan/design interview the user deliberately starts |
-| `handoff` | Model-invoked | Owner-fixed; compacts the running conversation into a W7 doc, fires as a helper near context/session end rather than as a numbered process step |
+| `handoff` | Model-invoked | Owner-fixed; compacts the running conversation into a W7 doc, fires as a helper near context/session end rather than as a process stage |
 | `looper` | User-invoked | `disable-model-invocation: true` in frontmatter; scaffolds a whole agent loop, a deliberate one-off setup action |
-| `playwright-cli` | Model-invoked | No `disable-model-invocation` flag and no numbered process step of its own — CLAUDE.md lists it under "Useful skills & MCP" as the preferred *mechanism* the `e2e-tester` agent (or any browser task) reaches for mid-task, not something the orchestrator names as its own step |
-| `report-gen` | User-invoked | Description self-declares "Use at workflow steps 6 (Verify) and 8 (Finish)" — an explicit tie to named process steps, invoked to assemble the final report deliverable |
-| `superpowers-brainstorming` | User-invoked | Process step 1 ("Brainstorm"), named explicitly in CLAUDE.md § Process |
-| `superpowers-dispatching-parallel-agents` | User-invoked | Named explicitly in CLAUDE.md § Process ("swarm via dispatching-parallel-agents") and § Dynamic workflow as the orchestrator's deliberate strategy choice for 2+ independent tasks |
-| `superpowers-finishing-a-development-branch` | User-invoked | Process step 8 ("Finish"), named explicitly in CLAUDE.md § Process |
-| `superpowers-subagent-driven-development` | User-invoked | Process step 5 ("Execute"), named explicitly in CLAUDE.md § Process |
-| `superpowers-systematic-debugging` | Model-invoked | Description reads as an ambient helper trigger ("Use when encountering any bug... before proposing fixes"); process step 7 references it but the skill itself auto-fires whenever a bug/failure surfaces, not only at that numbered step |
-| `superpowers-using-git-worktrees` | User-invoked | Process step 4 ("Branch + worktree"), named explicitly in CLAUDE.md § Process, and the entry action for the per-task isolation model in § Branches & worktrees |
-| `superpowers-writing-plans` | User-invoked | Process step 3 ("Plan"), named explicitly in CLAUDE.md § Process |
+| `playwright-cli` | Model-invoked | No `disable-model-invocation` flag and no process stage of its own — CLAUDE.md lists it under "Useful skills & MCP" as the preferred *mechanism* the `e2e-tester` agent (or any browser task) reaches for mid-task, not a process stage of its own |
+| `report-gen` | User-invoked | Invoked deliberately when an HTML report is due (owner request or a large feature) to assemble the report deliverable |
+| `superpowers-brainstorming` | User-invoked | Large-feature brainstorm stage, CLAUDE.md § Process |
+| `superpowers-dispatching-parallel-agents` | User-invoked | Large-feature execute stage, CLAUDE.md § Process — a deliberate strategy choice for 2+ independent tasks |
+| `superpowers-finishing-a-development-branch` | User-invoked | Finishing a branch, CLAUDE.md § Branches & worktrees |
+| `superpowers-subagent-driven-development` | User-invoked | Large-feature execute stage, CLAUDE.md § Process |
+| `superpowers-systematic-debugging` | Model-invoked | Description reads as an ambient helper trigger ("Use when encountering any bug... before proposing fixes"); CLAUDE.md § Process names it for the large-feature fix loop, but the skill itself auto-fires whenever a bug/failure surfaces |
+| `superpowers-using-git-worktrees` | User-invoked | The entry action for the per-task isolation model in § Branches & worktrees |
+| `superpowers-writing-plans` | User-invoked | Large-feature plan stage, CLAUDE.md § Process |
 | `to-issues` | User-invoked | Owner-fixed; `disable-model-invocation: true` in frontmatter |
-| `verify-pr` | User-invoked | Process step 6 ("Verify"), named explicitly in CLAUDE.md § Process |
-| `verify-spec` | User-invoked | Process step 2 ("Verify Spec"), named explicitly in CLAUDE.md § Process |
+| `verify-pr` | User-invoked | Large-feature verify stage, CLAUDE.md § Process |
+| `verify-spec` | User-invoked | Large-feature spec-review stage, CLAUDE.md § Process |
 
 ## Not yet vendored
 
